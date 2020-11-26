@@ -1,0 +1,160 @@
+package synfron.reshaper.burp.ui.components.rules.thens;
+
+import synfron.reshaper.burp.core.messages.MessageValue;
+import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.messages.MessageValueType;
+import synfron.reshaper.burp.core.rules.thens.ThenSet;
+import synfron.reshaper.burp.ui.models.rules.thens.ThenSetModel;
+import synfron.reshaper.burp.ui.utils.DocumentActionListener;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
+
+public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends ThenSet<T>> extends ThenComponent<P, T> {
+    protected JCheckBox useMessageValue;
+    protected JComboBox<MessageValue> sourceMessageValue;
+    protected JTextField sourceIdentifier;
+    protected JComboBox<MessageValueType> sourceMessageValueType;
+    private JTextField sourceMessageValuePath;
+    protected JCheckBox useReplace;
+    protected JTextField regexPattern;
+    protected JTextField text;
+    protected JTextField replacementText;
+    protected JComboBox<MessageValueType> destinationMessageValueType;
+    protected JTextField destinationMessageValuePath;
+
+    public ThenSetComponent(P then) {
+        super(then);
+        initComponent();
+    }
+
+    private void initComponent() {
+        useMessageValue = new JCheckBox("Use Message Value");
+        sourceMessageValue = new JComboBox<>(MessageValue.values());
+        sourceIdentifier = new JTextField();
+        sourceMessageValueType = new JComboBox<>(MessageValueType.values());
+        sourceMessageValuePath = new JTextField();
+        useReplace = new JCheckBox("Use Regex Replace");
+        regexPattern = new JTextField();
+        text = new JTextField();
+        replacementText = new JTextField();
+        destinationMessageValueType = new JComboBox<>(MessageValueType.values());
+        destinationMessageValuePath = new JTextField();
+        JButton save = new JButton("Save");
+
+        useMessageValue.setSelected(model.isUseMessageValue());
+        sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
+        sourceIdentifier.setText(model.getSourceIdentifier());
+        sourceMessageValueType.setSelectedItem(model.getSourceMessageValueType());
+        sourceMessageValuePath.setText(model.getSourceMessageValuePath());
+        useReplace.setSelected(model.isUseReplace());
+        regexPattern.setText(model.getRegexPattern());
+        text.setText(model.getText());
+        replacementText.setText(model.getReplacementText());
+        destinationMessageValueType.setSelectedItem(model.getDestinationMessageValueType());
+        destinationMessageValuePath.setText(model.getDestinationMessageValuePath());
+
+        useMessageValue.addActionListener(this::onUseMessageValueChanged);
+        sourceMessageValue.addActionListener(this::onSourceMessageValueChanged);
+        sourceIdentifier.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceIdentifierChanged));
+        sourceMessageValueType.addActionListener(this::onSourceMessageValueTypeChanged);
+        sourceMessageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceMessageValuePathChanged));
+        useReplace.addActionListener(this::onUseReplaceChanged);
+        regexPattern.getDocument().addDocumentListener(new DocumentActionListener(this::onRegexPatternChanged));
+        text.getDocument().addDocumentListener(new DocumentActionListener(this::onTextChanged));
+        replacementText.getDocument().addDocumentListener(new DocumentActionListener(this::onReplacementTextChanged));
+        destinationMessageValueType.addActionListener(this::onDestinationMessageValueTypeChanged);
+        destinationMessageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationMessageValuePathChanged));
+        save.addActionListener(this::onSave);
+
+        mainContainer.add(useMessageValue, "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Source Message Value", sourceMessageValue),
+                useMessageValue,
+                () -> useMessageValue.isSelected()
+        ), "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Source Identifier", sourceIdentifier),
+                List.of(useMessageValue, sourceMessageValue),
+                () -> useMessageValue.isSelected() && MessageValueHandler.hasIdentifier((MessageValue)sourceMessageValue.getSelectedItem())
+        ), "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Text", text),
+                useMessageValue,
+                () -> !useMessageValue.isSelected()
+        ), "wrap");
+        mainContainer.add(getLabeledField("Source Message Value Type", sourceMessageValueType), "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Source Message Value Path", sourceMessageValuePath),
+                List.of(sourceMessageValueType),
+                () -> sourceMessageValueType.getSelectedItem() != MessageValueType.Text
+        ), "wrap");
+        mainContainer.add(useReplace, "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Regex Pattern", regexPattern),
+                useReplace,
+                () -> useReplace.isSelected()
+        ), "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Regex Replacement Text", replacementText),
+                useReplace,
+                () -> useReplace.isSelected()
+        ), "wrap");
+        getExtendedComponents().forEach(component -> mainContainer.add(component, "wrap"));
+        mainContainer.add(getLabeledField("Destination Message Value Type", destinationMessageValueType), "wrap");
+        mainContainer.add(withVisibilityFieldChangeDependency(
+                getLabeledField("Destination Message Value Path", destinationMessageValuePath),
+                destinationMessageValueType,
+                () -> destinationMessageValueType.getSelectedItem() != MessageValueType.Text
+        ), "wrap");
+        mainContainer.add(getPaddedButton(save));
+    }
+
+    private void onUseMessageValueChanged(ActionEvent actionEvent) {
+        model.setUseMessageValue(useMessageValue.isSelected());
+    }
+
+    private void onSourceMessageValueChanged(ActionEvent actionEvent) {
+        model.setSourceMessageValue((MessageValue) sourceMessageValue.getSelectedItem());
+    }
+
+    private void onSourceIdentifierChanged(ActionEvent actionEvent) {
+        model.setSourceIdentifier(sourceIdentifier.getText());
+    }
+
+    private void onSourceMessageValueTypeChanged(ActionEvent actionEvent) {
+        model.setSourceMessageValueType((MessageValueType) sourceMessageValueType.getSelectedItem());
+    }
+
+    private void onSourceMessageValuePathChanged(ActionEvent actionEvent) {
+        model.setSourceMessageValuePath(sourceMessageValuePath.getText());
+    }
+
+    private void onUseReplaceChanged(ActionEvent actionEvent) {
+        model.setUseReplace(useReplace.isSelected());
+    }
+
+    private void onRegexPatternChanged(ActionEvent actionEvent) {
+        model.setRegexPattern(regexPattern.getText());
+    }
+
+    private void onTextChanged(ActionEvent actionEvent) {
+        model.setText(text.getText());
+    }
+
+    private void onReplacementTextChanged(ActionEvent actionEvent) {
+        model.setReplacementText(replacementText.getText());
+    }
+
+    private void onDestinationMessageValueTypeChanged(ActionEvent actionEvent) {
+        model.setDestinationMessageValueType((MessageValueType) destinationMessageValueType.getSelectedItem());
+    }
+
+    private void onDestinationMessageValuePathChanged(ActionEvent actionEvent) {
+        model.setDestinationMessageValuePath(destinationMessageValuePath.getText());
+    }
+
+    protected abstract List<Component> getExtendedComponents();
+}

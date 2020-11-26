@@ -1,0 +1,41 @@
+package synfron.reshaper.burp.core.rules.thens;
+
+import synfron.reshaper.burp.core.rules.RuleOperationType;
+
+import java.util.List;
+
+public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
+    public static final ThenType<ThenBreak> Break = new ThenType<>("Break", ThenBreak.class);
+    public static final ThenType<ThenDelay> Delay = new ThenType<>("Delay", ThenDelay.class);
+    public static final ThenType<ThenLog> Log = new ThenType<>("Log", ThenLog.class);
+    public static final ThenType<ThenHighlight> Highlight = new ThenType<>("Highlight", ThenHighlight.class);
+    public static final ThenType<ThenRunRules> RunRules = new ThenType<>("Run Rules", ThenRunRules.class);
+    public static final ThenType<ThenRunScript> RunScript = new ThenType<>("Run Script", ThenRunScript.class);
+    public static final ThenType<ThenSetEventDirection> SetEventDirection = new ThenType<>("Set Event Direction", ThenSetEventDirection.class);
+    public static final ThenType<ThenSetValue> SetValue = new ThenType<>("Set Value", ThenSetValue.class);
+    public static final ThenType<ThenDeleteValue> DeleteValue = new ThenType<>("Delete Value", ThenDeleteValue.class);
+    public static final ThenType<ThenSetVariable> SetVariable = new ThenType<>("Set Variable", ThenSetVariable.class);
+    public static final ThenType<ThenDeleteVariable> DeleteVariable = new ThenType<>("Delete Variable", ThenDeleteVariable.class);
+    public static final ThenType<ThenDrop> Drop = new ThenType<>("Drop", ThenDrop.class);
+
+    private ThenType(String name, Class<T> type) {
+        super(name, type);
+    }
+
+    public static List<ThenType<?>> getTypes() {
+        return List.of(
+                Break,
+                Delay,
+                Log,
+                Highlight,
+                RunRules,
+                RunScript,
+                SetEventDirection,
+                SetValue,
+                DeleteValue,
+                SetVariable,
+                DeleteVariable,
+                Drop
+        );
+    }
+}

@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'com.synfron.reshaper.burp'
+version '0.9'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    implementation 'net.portswigger.burp.extender:burp-extender-api:2.1'
+    implementation 'com.jayway.jsonpath:json-path:2.4.0'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'org.jsoup:jsoup:1.13.1'
+    implementation 'com.miglayout:miglayout-swing:5.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
+    implementation 'net.jodah:expiringmap:0.5.9'
+    implementation 'org.mozilla:rhino:1.7.13'
+    implementation 'cat.inspiracio:rhino-js-engine:1.7.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

@@ -1,0 +1,75 @@
+package synfron.reshaper.burp.core.messages.entities;
+
+import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.utils.CollectionExtensions;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class HttpRequestStatusLine extends HttpEntity {
+    private final String statusLine;
+    private boolean parsed;
+    private boolean changed;
+    private HttpRequestUrl url;
+    private String method;
+    private String version;
+
+    public HttpRequestStatusLine(String statusLine) {
+        this.statusLine = statusLine;
+    }
+
+    private void prepare() {
+        if (!parsed) {
+            String[] lineParts = statusLine.split(" ", 3);
+            method = CollectionExtensions.elementAtOrDefault(lineParts, 0, "");
+            url = new HttpRequestUrl(CollectionExtensions.elementAtOrDefault(lineParts, 1, ""));
+            version = CollectionExtensions.elementAtOrDefault(lineParts, 3, "");;
+            parsed = true;
+        }
+    }
+
+    public HttpRequestUrl getUrl() {
+        prepare();
+        return url;
+    }
+
+    public void setUrl(String url) {
+        prepare();
+        this.url = new HttpRequestUrl(url);
+        changed = true;
+    }
+
+    public String getVersion() {
+        prepare();
+        return version;
+    }
+
+    public void setVersion(String version) {
+        prepare();
+        this.version = version;
+        changed = true;
+    }
+
+    public String getMethod() {
+        prepare();
+        return method;
+    }
+
+    public void setMethod(String method) {
+        prepare();
+        this.method = method;
+        changed = true;
+    }
+
+    public boolean isChanged() {
+        return changed || (url != null && url.isChanged());
+    }
+
+    public String getValue() {
+        return !isChanged() ? statusLine : Stream.of(getMethod(), getUrl().getValue(), getVersion())
+                        .filter(StringUtils::isNotEmpty)
+                        .collect(Collectors.joining(" ")
+        );
+    }
+
+}
