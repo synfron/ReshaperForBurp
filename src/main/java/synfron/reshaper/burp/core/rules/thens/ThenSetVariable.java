@@ -12,7 +12,7 @@ import synfron.reshaper.burp.core.vars.*;
 public class ThenSetVariable extends ThenSet<ThenSetVariable> {
 
     @Getter @Setter
-    private VariableSource targetSource;
+    private VariableSource targetSource = VariableSource.Global;
     @Getter @Setter
     private VariableString variableName;
 

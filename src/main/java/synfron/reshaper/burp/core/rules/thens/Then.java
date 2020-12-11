@@ -12,8 +12,12 @@ import synfron.reshaper.burp.core.rules.RuleResponse;
         @JsonSubTypes.Type(value = ThenDelay.class),
         @JsonSubTypes.Type(value = ThenDeleteValue.class),
         @JsonSubTypes.Type(value = ThenDeleteVariable.class),
+        @JsonSubTypes.Type(value = ThenDrop.class),
+        @JsonSubTypes.Type(value = ThenHighlight.class),
         @JsonSubTypes.Type(value = ThenLog.class),
         @JsonSubTypes.Type(value = ThenRunRules.class),
+        @JsonSubTypes.Type(value = ThenRunScript.class),
+        @JsonSubTypes.Type(value = ThenSetEventDirection.class),
         @JsonSubTypes.Type(value = ThenSetValue.class),
         @JsonSubTypes.Type(value = ThenSetVariable.class)
 })

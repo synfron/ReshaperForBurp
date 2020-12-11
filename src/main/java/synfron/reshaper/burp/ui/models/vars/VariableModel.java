@@ -96,6 +96,7 @@ public class VariableModel {
         if (validate().size() != 0) {
             return false;
         }
+        Variable variable = this.variable;
         if (variable == null) {
             variable = GlobalVariables.get().add(name);
         } else if (!StringUtils.equals(variable.getName(), name)) {
@@ -117,9 +118,7 @@ public class VariableModel {
     public boolean equals(Object obj) {
         if (obj instanceof VariableModel) {
             VariableModel other = (VariableModel)obj;
-            return variable != null ?
-                    Objects.equals(other.variable, variable) :
-                    super.equals(obj);
+            return Objects.equals(other.variable, variable) || super.equals(obj);
         }
         return super.equals(obj);
     }

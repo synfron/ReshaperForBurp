@@ -2,6 +2,8 @@ package synfron.reshaper.burp.core.rules.thens.entities;
 
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
+import synfron.reshaper.burp.core.vars.Variable;
+import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.core.vars.Variables;
 
 import java.util.Objects;
@@ -22,16 +24,23 @@ public class VariablesObj {
     }
 
     private String getVariable(Variables variables, String name) {
-        return variables.has(name) ?
-                Objects.toString(variables.get(name).getValue()) :
+        Variable variable = variables.getOrDefault(name);
+        return variable != null ?
+                Objects.toString(variable.getValue()) :
                 null;
     }
 
     public void setGlobalVariable(String name, String value) {
+        if (!VariableString.isValidVariableName(name)) {
+            throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
+        }
         GlobalVariables.get().add(name).setValue(value);
     }
 
     public void setEventVariable(String name, String value) {
+        if (!VariableString.isValidVariableName(name)) {
+            throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
+        }
         eventInfo.getVariables().add(name).setValue(value);
     }
 

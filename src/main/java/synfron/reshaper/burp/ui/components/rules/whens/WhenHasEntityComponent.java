@@ -26,8 +26,8 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
 
-        messageValue.addActionListener(this::onDestinationMessageValueChanged);
-        identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationIdentifierChanged));
+        messageValue.addActionListener(this::onMessageValueChanged);
+        identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
         save.addActionListener(this::onSave);
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
@@ -40,11 +40,11 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
         mainContainer.add(getPaddedButton(save));
     }
 
-    private void onDestinationMessageValueChanged(ActionEvent actionEvent) {
+    private void onMessageValueChanged(ActionEvent actionEvent) {
         model.setMessageValue((MessageValue)messageValue.getSelectedItem());
     }
 
-    private void onDestinationIdentifierChanged(ActionEvent actionEvent) {
+    private void onIdentifierChanged(ActionEvent actionEvent) {
         model.setIdentifier(identifier.getText());
     }
 }

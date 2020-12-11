@@ -17,6 +17,8 @@ public abstract class WhenModel<P extends WhenModel<P, T>, T extends When<T>> ex
 
     public WhenModel(T ruleOperation, Boolean isNew) {
         super(ruleOperation, isNew);
+        negate = ruleOperation.isNegate();
+        useOrCondition = ruleOperation.isUseOrCondition();
     }
 
     public WhenModel<?,?> withListener(IEventListener<PropertyChangedArgs> listener) {

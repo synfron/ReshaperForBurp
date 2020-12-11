@@ -19,7 +19,7 @@ public class ThenDelay extends Then<ThenDelay> {
         try {
             Thread.sleep(ObjectUtils.defaultIfNull(delay.getInt(eventInfo.getVariables()), 0));
         } catch (InterruptedException e) {
-            Log.get().withMessage("Delay interrupted").withException(e).log();
+            Log.get().withMessage("Delay interrupted").withException(e).logErr();
         }
         return RuleResponse.Continue;
     }

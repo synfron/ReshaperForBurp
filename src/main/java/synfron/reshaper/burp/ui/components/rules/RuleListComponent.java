@@ -151,6 +151,12 @@ public class RuleListComponent extends JPanel {
 
     public void setSelectionContainer(RuleContainerComponent ruleContainer) {
         this.ruleContainer = ruleContainer;
+
+        if (ruleListModel.size() == 0) {
+            Rule rule = new Rule();
+            rule.setEnabled(false);
+            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
+        }
         defaultSelect();
     }
 }

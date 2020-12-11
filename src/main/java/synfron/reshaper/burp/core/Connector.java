@@ -55,7 +55,7 @@ public class Connector implements IProxyListener, IExtensionStateListener {
                 bufferedOutputStream.write(eventInfo.getHttpResponseMessage().getValue());
                 bufferedOutputStream.flush();
             } catch (Exception e) {
-                Log.get().withMessage("Event processing failed").withException(e).log();
+                Log.get().withMessage("Event processing failed").withException(e).logErr();
             } finally {
                 close(socket);
             }
@@ -71,7 +71,7 @@ public class Connector implements IProxyListener, IExtensionStateListener {
                         Socket socket = serverSocket.accept();
                         processServerConnection(socket);
                     } catch (Exception e) {
-                        Log.get().withMessage("Server accept new connection failed").withException(e).log();
+                        Log.get().withMessage("Server accept new connection failed").withException(e).logErr();
                     }
                 }
             }).start();
@@ -86,7 +86,7 @@ public class Connector implements IProxyListener, IExtensionStateListener {
                 closeable.close();
             }
         } catch (Exception ex) {
-            Log.get().withMessage("Failed closing stream").withException(ex).log();
+            Log.get().withMessage("Failed closing stream").withException(ex).logErr();
         }
     }
 
@@ -106,34 +106,38 @@ public class Connector implements IProxyListener, IExtensionStateListener {
         try {
             EventInfo eventInfo = asEventInfo(messageIsRequest, message);
             rulesEngine.run(eventInfo);
-            IHttpRequestResponse messageInfo = message.getMessageInfo();
-            if (eventInfo.getDataDirection() == DataDirection.Request) {
-                messageInfo.setRequest(eventInfo.getHttpRequestMessage().getValue());
-                messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
-                        eventInfo.getDestinationAddress(),
-                        eventInfo.getDestinationPort(),
-                        eventInfo.getHttpProtocol().toLowerCase()
-                ));
-            } else if (messageIsRequest && eventInfo.getDataDirection() == DataDirection.Response) {
-                messageInfo.setRequest(BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
-                        Stream.concat(Stream.of(
+            if (eventInfo.isChanged()) {
+                IHttpRequestResponse messageInfo = message.getMessageInfo();
+                if (eventInfo.getDataDirection() == DataDirection.Request) {
+                    messageInfo.setRequest(eventInfo.getHttpRequestMessage().getValue());
+                    messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
+                            eventInfo.getDestinationAddress(),
+                            eventInfo.getDestinationPort(),
+                            eventInfo.getHttpProtocol().toLowerCase()
+                    ));
+                } else if (messageIsRequest && eventInfo.getDataDirection() == DataDirection.Response) {
+                    messageInfo.setRequest(BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
+                            Stream.concat(Stream.of(
                                     eventInfo.getHttpRequestMessage().getStatusLine().getValue(),
                                     "Reshaper-ID: " + message.getMessageReference()
-                                ),
-                                eventInfo.getHttpRequestMessage().getHeaders().getValue().stream()
-                        ).collect(Collectors.toList()),
-                        eventInfo.getHttpRequestMessage().getBody().getValue()
-                ));
-                continuationMap.put(message.getMessageReference(), eventInfo);
-                messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
-                        serverSocket.getInetAddress().getHostAddress(),
-                        serverSocket.getLocalPort(),
-                        "http"
-                ));
-                message.setInterceptAction(IInterceptedProxyMessage.ACTION_DONT_INTERCEPT);
-            } else {
+                                    ),
+                                    eventInfo.getHttpRequestMessage().getHeaders().getValue().stream()
+                            ).collect(Collectors.toList()),
+                            eventInfo.getHttpRequestMessage().getBody().getValue()
+                    ));
+                    continuationMap.put(message.getMessageReference(), eventInfo);
+                    messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
+                            serverSocket.getInetAddress().getHostAddress(),
+                            serverSocket.getLocalPort(),
+                            "http"
+                    ));
+                    message.setInterceptAction(IInterceptedProxyMessage.ACTION_DONT_INTERCEPT);
+                } else {
+                    messageInfo.setResponse(eventInfo.getHttpResponseMessage().getValue());
+                }
+            }
+            if (eventInfo.getDataDirection() == DataDirection.Response) {
                 continuationMap.remove(message.getMessageReference());
-                messageInfo.setResponse(eventInfo.getHttpResponseMessage().getValue());
             }
         } catch (Exception e) {
             Log.get().withMessage("Critical Error").withException(e).logErr();

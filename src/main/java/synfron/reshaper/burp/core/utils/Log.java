@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.utils;
 
 import burp.BurpExtender;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.PrintWriter;
@@ -34,7 +35,11 @@ public class Log {
 
 
     public Log withException(Exception exception) {
-        this.exception = String.format("%s\n%s", exception.getMessage(), ExceptionUtils.getStackTrace(exception));
+        this.exception = String.format(
+                "%s\n%s",
+                StringUtils.defaultString(exception.getMessage(), ""),
+                ExceptionUtils.getStackTrace(exception)
+        );
         return this;
     }
 

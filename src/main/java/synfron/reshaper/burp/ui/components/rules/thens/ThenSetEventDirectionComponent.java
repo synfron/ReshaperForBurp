@@ -24,7 +24,7 @@ public class ThenSetEventDirectionComponent extends ThenComponent<ThenSetEventDi
         dataDirection.addActionListener(this::onSetEventDirectionChanged);
         save.addActionListener(this::onSave);
 
-        mainContainer.add(getLabeledField("Set Event Direction", dataDirection), "wrap");
+        mainContainer.add(getLabeledField("Event Direction", dataDirection), "wrap");
         mainContainer.add(getPaddedButton(save));
     }
 

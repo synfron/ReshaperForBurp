@@ -31,7 +31,7 @@ public class Variables {
     public Variable get(String name)
     {
         CaseInsensitiveString key = new CaseInsensitiveString(name);
-        if (variables.containsKey(key))
+        if (!variables.containsKey(key))
         {
             throw new IndexOutOfBoundsException("Variable does not exist.");
         }

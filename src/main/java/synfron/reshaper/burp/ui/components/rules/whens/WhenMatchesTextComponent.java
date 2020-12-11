@@ -32,10 +32,10 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         messageValue = new JComboBox<>(MessageValue.values());
         identifier = new JTextField();
         messageValueType = new JComboBox<>(MessageValueType.values());
-        matchType = new JComboBox<>(MatchType.values());
         messageValuePath = new JTextField();
         sourceText = new JTextField();
         matchText = new JTextField();
+        matchType = new JComboBox<>(MatchType.values());
         JButton save = new JButton("Save");
 
         useMessageValue.setSelected(model.isUseMessageValue());

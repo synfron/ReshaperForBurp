@@ -12,12 +12,14 @@ import java.util.List;
 public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, ThenSetVariable> {
 
     @Getter
-    private VariableSource targetSource = VariableSource.Global;
+    private VariableSource targetSource;
     @Getter
     private String variableName;
 
     public ThenSetVariableModel(ThenSetVariable then, Boolean isNew) {
         super(then, isNew);
+        targetSource = then.getTargetSource();
+        variableName = VariableString.getFormattedString(then.getVariableName(), variableName);
     }
 
     public void setTargetSource(VariableSource targetSource) {

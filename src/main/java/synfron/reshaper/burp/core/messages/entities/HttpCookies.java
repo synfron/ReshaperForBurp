@@ -59,7 +59,7 @@ public class HttpCookies extends HttpEntity {
                 for (String cookieEntry : cookieEntries) {
                     String[] cookieEntryParts = cookieEntry.split("=", 2);
                     cookies.put(
-                            new CaseInsensitiveString(cookieEntryParts[0]),
+                            new CaseInsensitiveString(cookieEntryParts[0].trim()),
                             CollectionExtensions.elementAtOrDefault(cookieEntryParts, 1, "").stripLeading()
                     );
                 }

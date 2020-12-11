@@ -123,13 +123,14 @@ public class VariableListComponent extends JPanel {
                     variableListModel.removeElement(new VariableModel(item));
                     defaultSelect();
                     break;
-                case Update:
+                case Update: {
                     int index = variableListModel.indexOf(new VariableModel(item));
                     if (index >= 0) {
                         VariableModel model = variableListModel.get(index);
                         variableListModel.set(index, model);
                     }
                     break;
+                }
             }
         });
     }
@@ -147,6 +148,10 @@ public class VariableListComponent extends JPanel {
 
     public void setSelectionContainer(VariableContainerComponent variableContainer) {
         this.variableContainer = variableContainer;
+
+        if (variableListModel.size() == 0) {
+            variableListModel.addElement(new VariableModel().withListener(newVariableModelChangedListener));
+        }
         defaultSelect();
     }
 }

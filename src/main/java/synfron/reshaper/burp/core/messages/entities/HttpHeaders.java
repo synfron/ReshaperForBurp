@@ -70,10 +70,10 @@ public abstract class HttpHeaders extends HttpEntity {
                     String[] headerParts = headerLine.split(":", 2);
                     String headerValue = CollectionExtensions.elementAtOrDefault(headerParts, 1, "").stripLeading();
                     if (headerParts[0].toLowerCase().equals(cookieHeaderName.toLowerCase())) {
-                        cookies = new HttpCookies(headerParts[1]);
+                        cookies = new HttpCookies(headerParts[1].trim());
                         headers.put(new CaseInsensitiveString(headerParts[0]), new Mapped<>(() -> this.cookies.getValue()));
                     } else {
-                        headers.put(new CaseInsensitiveString(headerParts[0]), new Value<>(headerValue));
+                        headers.put(new CaseInsensitiveString(headerParts[0]), new Value<>(headerValue.trim()));
                     }
                 }
             }

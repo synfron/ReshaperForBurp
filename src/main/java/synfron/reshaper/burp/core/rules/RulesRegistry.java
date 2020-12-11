@@ -3,11 +3,13 @@ package synfron.reshaper.burp.core.rules;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.*;
 import synfron.reshaper.burp.core.settings.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RulesRegistry {
     @Getter
@@ -24,7 +26,7 @@ public class RulesRegistry {
     @Getter
     private final CollectionChangedEvent collectionChangedEvent = new CollectionChangedEvent();
 
-    public void deleteRule(Rule rule) {
+    public synchronized void deleteRule(Rule rule) {
         int index = rules.indexOf(rule);
         if (index >= 0) {
             rules.remove(index);
@@ -33,7 +35,7 @@ public class RulesRegistry {
         }
     }
 
-    public void addRule(Rule rule) {
+    public synchronized void addRule(Rule rule) {
         rules.add(rule);
         version++;
         collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Add, rules.size() - 1, rule));
@@ -49,7 +51,7 @@ public class RulesRegistry {
         }
     }
 
-    public void movePrevious(Rule rule)
+    public synchronized void movePrevious(Rule rule)
     {
         if (rule != null) {
             int currentIndex = rules.indexOf(rule);
@@ -63,7 +65,7 @@ public class RulesRegistry {
         }
     }
 
-    public void moveNext(Rule rule)
+    public synchronized void moveNext(Rule rule)
     {
         if (rule != null)
         {
@@ -85,6 +87,6 @@ public class RulesRegistry {
     }
 
     public void saveRules() {
-        Settings.store("Reshaper.rules", rules);
+        Settings.store("Reshaper.rules", rules.stream().filter(rule -> StringUtils.isNotEmpty(rule.getName())).collect(Collectors.toList()));
     }
 }

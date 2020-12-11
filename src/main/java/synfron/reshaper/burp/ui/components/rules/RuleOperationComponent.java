@@ -25,15 +25,19 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
     }
 
     protected Component getLabeledField(String label, Component innerComponent) {
+        JPanel container = new JPanel();
+        container.setLayout(new MigLayout());
+        container.setBorder(null);
+
         if (innerComponent instanceof JTextField) {
             JTextField textField = (JTextField)innerComponent;
             textField.setColumns(20);
             textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
             textField.setAlignmentX(LEFT_ALIGNMENT);
+            container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
+        } else if (innerComponent instanceof JComboBox<?>) {
+            container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
         }
-
-        JPanel container = new JPanel();
-        container.setLayout(new MigLayout());
 
         container.add(new JLabel(label), "wrap");
         container.add(innerComponent);
@@ -72,6 +76,8 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
             BooleanSupplier condition
     ) {
         JPanel container = new JPanel();
+        ((FlowLayout)container.getLayout()).setHgap(0);
+        ((FlowLayout)container.getLayout()).setVgap(0);
         if (dependent.isEnabled()) {
             container.add(dependent);
         }
