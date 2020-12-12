@@ -1,6 +1,8 @@
 # Reshaper for Burp
 Extension for Burp Suite to trigger actions and manipulate HTTP request and response traffic using configurable rules
 
+![Screenshot](https://user-images.githubusercontent.com/48854453/101978373-6b332280-3c22-11eb-806b-ef9b6c72a060.png)
+
 ## Rules
 
 Rules allow you to set actions to perform (called Thens) if HTTP messages/connections (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order.
@@ -55,6 +57,8 @@ Share values across different rules while processing the same event or all event
 
 ## Contributions
 Contributions are encouraged. Issues and Pull Requests welcome. Also help us spread the word.
+
+Primary Developer: Daquanne Dwight
 
 ## License
 MIT License. See [LICENSE](https://github.com/synfron/ReshaperForBurp/blob/master/LICENSE)
