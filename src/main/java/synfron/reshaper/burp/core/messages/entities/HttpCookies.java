@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.utils.CaseInsensitiveString;
-import synfron.reshaper.burp.core.utils.CollectionExtensions;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -60,7 +60,7 @@ public class HttpCookies extends HttpEntity {
                     String[] cookieEntryParts = cookieEntry.split("=", 2);
                     cookies.put(
                             new CaseInsensitiveString(cookieEntryParts[0].trim()),
-                            CollectionExtensions.elementAtOrDefault(cookieEntryParts, 1, "").stripLeading()
+                            CollectionUtils.elementAtOrDefault(cookieEntryParts, 1, "").stripLeading()
                     );
                 }
             }

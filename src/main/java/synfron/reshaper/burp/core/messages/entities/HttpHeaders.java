@@ -68,7 +68,7 @@ public abstract class HttpHeaders extends HttpEntity {
             for (String headerLine : headerLines) {
                 if (headerLine.length() > 0) {
                     String[] headerParts = headerLine.split(":", 2);
-                    String headerValue = CollectionExtensions.elementAtOrDefault(headerParts, 1, "").stripLeading();
+                    String headerValue = CollectionUtils.elementAtOrDefault(headerParts, 1, "").stripLeading();
                     if (headerParts[0].toLowerCase().equals(cookieHeaderName.toLowerCase())) {
                         cookies = new HttpCookies(headerParts[1].trim());
                         headers.put(new CaseInsensitiveString(headerParts[0]), new Mapped<>(() -> this.cookies.getValue()));

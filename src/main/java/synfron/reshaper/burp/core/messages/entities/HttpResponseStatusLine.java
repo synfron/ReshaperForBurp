@@ -2,7 +2,7 @@ package synfron.reshaper.burp.core.messages.entities;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.utils.CollectionExtensions;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,9 +23,9 @@ public class HttpResponseStatusLine extends HttpEntity {
     private void prepare() {
         if (!parsed) {
             String[] lineParts = statusLine.split(" ", 3);
-            version = CollectionExtensions.elementAtOrDefault(lineParts, 0, "");
-            code = CollectionExtensions.elementAtOrDefault(lineParts, 1, "");
-            message = CollectionExtensions.elementAtOrDefault(lineParts, 2, "");
+            version = CollectionUtils.elementAtOrDefault(lineParts, 0, "");
+            code = CollectionUtils.elementAtOrDefault(lineParts, 1, "");
+            message = CollectionUtils.elementAtOrDefault(lineParts, 2, "");
             parsed = true;
         }
     }

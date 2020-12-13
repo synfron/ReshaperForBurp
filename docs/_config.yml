@@ -1,2 +1,4 @@
 theme: jekyll-theme-cayman
 title: Reshaper for Burp
+kramdown:
+  auto_ids: true

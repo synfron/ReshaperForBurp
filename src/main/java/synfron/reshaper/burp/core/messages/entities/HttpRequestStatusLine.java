@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.messages.entities;
 
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.utils.CollectionExtensions;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,9 +21,9 @@ public class HttpRequestStatusLine extends HttpEntity {
     private void prepare() {
         if (!parsed) {
             String[] lineParts = statusLine.split(" ", 3);
-            method = CollectionExtensions.elementAtOrDefault(lineParts, 0, "");
-            url = new HttpRequestUrl(CollectionExtensions.elementAtOrDefault(lineParts, 1, ""));
-            version = CollectionExtensions.elementAtOrDefault(lineParts, 3, "");;
+            method = CollectionUtils.elementAtOrDefault(lineParts, 0, "");
+            url = new HttpRequestUrl(CollectionUtils.elementAtOrDefault(lineParts, 1, ""));
+            version = CollectionUtils.elementAtOrDefault(lineParts, 3, "");;
             parsed = true;
         }
     }

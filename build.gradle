@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.synfron.reshaper.burp'
-version '0.9.1'
+version '0.9.2'
 
 repositories {
     mavenCentral()
@@ -14,7 +14,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.16'
     implementation 'net.portswigger.burp.extender:burp-extender-api:2.1'
     implementation 'com.jayway.jsonpath:json-path:2.4.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'com.miglayout:miglayout-swing:5.2'

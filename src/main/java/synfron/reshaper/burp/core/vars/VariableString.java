@@ -25,6 +25,10 @@ public class VariableString implements Serializable {
         return !Pattern.matches("\\{\\{|}}", name);
     }
 
+    public boolean isEmpty() {
+        return StringUtils.isEmpty(text);
+    }
+
     public String getFormattedString()
     {
         return String.format(text, variables.stream().map(variable ->
@@ -92,6 +96,22 @@ public class VariableString implements Serializable {
             variableVals.add(Objects.toString(value));
         }
         return String.format(text, variableVals.toArray());
+    }
+
+    public static String getTextOrDefault(Variables connectionVariables, VariableString variableString, String defaultValue) {
+        return variableString != null && !variableString.isEmpty() ?
+                StringUtils.defaultIfEmpty(variableString.getText(connectionVariables), defaultValue) :
+                defaultValue;
+    }
+
+    public static String getText(Variables connectionVariables, VariableString variableString) {
+        return variableString != null ? variableString.getText(connectionVariables) : null;
+    }
+
+    public static int getIntOrDefault(Variables connectionVariables, VariableString variableString, int defaultValue) {
+        return variableString != null && !variableString.isEmpty() ?
+                variableString.getInt(connectionVariables) :
+                defaultValue;
     }
 
     public static boolean isPotentialInt(String formattedString) {

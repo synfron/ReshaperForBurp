@@ -10,8 +10,8 @@ import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.rules.thens.entities.ConsoleObj;
-import synfron.reshaper.burp.core.rules.thens.entities.ReshaperObj;
+import synfron.reshaper.burp.core.rules.thens.entities.script.ConsoleObj;
+import synfron.reshaper.burp.core.rules.thens.entities.script.ReshaperObj;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

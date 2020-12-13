@@ -2,6 +2,9 @@
 
 Rules allow you to set actions to perform (called Thens) if HTTP messages/connections (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order. If the Rule is set to auto-run, the Rule will be run automatically when an HTTP event is received, otherwise it must be specifically triggered. Rules must be enabled to run at all.
 
+* auto-gen TOC:
+{:toc}
+
 ## Message Values
 
 Source Address - Example: `127.0.0.1`
@@ -211,6 +214,14 @@ Scripts have access to certain Reshaper specific functions.
 
 Reshaper.
 
+&nbsp;&nbsp;&nbsp;&nbsp;event.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessageValueKeys()
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessageValue(messageValueKey, messageValueIdentifier)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setMessageValue(messageValueKey, messageValueIdentifier, value)
+
 &nbsp;&nbsp;&nbsp;&nbsp;variables.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getGlobalVariable(name)
@@ -321,6 +332,28 @@ Delete a variable
 Variable Source - Global or Event scope.
 
 Variable Name - The name of the variable to delete. Supports variable tags.
+
+### Send To
+
+Send data to other Burp tools
+
+#### Fields
+
+Send To - Comparer, Intruder, Repeater, or Spider
+
+Override Defaults - Select to be able to override values to send to the given Burp tool
+
+Host - Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+
+Port - Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+
+Protocol - HTTP or HTTPS. Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+
+Request - Full HTTP request text. Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+
+Value - Value to compare. Leave empty to use default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
+
+URL - Leave empty to use default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
 
 ### Drop
 

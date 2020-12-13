@@ -19,7 +19,7 @@ Matches Text - If a value (text, variable, or HTTP event entity) matches a value
 
 Proxy Name - If received by a certain Burp proxy listener
 
-[More](https://synfron.github.io/ReshaperForBurp/Rules.html#Whens)
+[More](https://synfron.github.io/ReshaperForBurp/Rules.html#whens)
 
 ### Thens
 
@@ -45,9 +45,11 @@ Set Variable - Set a variable using another value (text, variable, or HTTP event
 
 Delete Variable - Delete a variable
 
+Send To - Send data to other Burp tools
+
 Drop - Have Burp drop the connection
 
-[More](https://synfron.github.io/ReshaperForBurp/Rules.html#Thens)
+[More](https://synfron.github.io/ReshaperForBurp/Rules.html#thens)
 
 ## Variables
 

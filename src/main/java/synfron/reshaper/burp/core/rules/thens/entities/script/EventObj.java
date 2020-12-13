@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.core.rules.thens.entities;
+package synfron.reshaper.burp.core.rules.thens.entities.script;
 
 import org.apache.commons.lang3.EnumUtils;
 import synfron.reshaper.burp.core.messages.EventInfo;

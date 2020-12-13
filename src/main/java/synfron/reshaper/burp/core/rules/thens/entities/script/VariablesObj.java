@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.core.rules.thens.entities;
+package synfron.reshaper.burp.core.rules.thens.entities.script;
 
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.vars.GlobalVariables;

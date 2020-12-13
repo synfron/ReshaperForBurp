@@ -1,18 +1,11 @@
 package synfron.reshaper.burp.core.utils;
 
 import burp.BurpExtender;
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.io.PrintWriter;
-
 @SuppressWarnings("FieldCanBeLocal")
 public class Log {
-
-    private static PrintWriter errWriter;
-    private static PrintWriter outWriter;
-    private static final Gson gson = new Gson();
     private String message;
     private String exception;
     private Object payload;
@@ -44,10 +37,10 @@ public class Log {
     }
 
     public void log() {
-        BurpExtender.getCallbacks().printOutput(gson.toJson(this));
+        BurpExtender.getCallbacks().printOutput(Serializer.serialize(this));
     }
 
     public void logErr() {
-        BurpExtender.getCallbacks().printError(gson.toJson(this));
+        BurpExtender.getCallbacks().printError(Serializer.serialize(this));
     }
 }
