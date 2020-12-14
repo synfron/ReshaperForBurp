@@ -28,11 +28,11 @@ public class ThenRunScript extends Then<ThenRunScript> {
     public RuleResponse perform(EventInfo eventInfo) {
         try {
             Context context = Context.enter();
+            context.setLanguageVersion(Context.VERSION_1_7);
             Scriptable scope = context.newObject(getSharedScope());
             scope.setPrototype(getSharedScope());
             scope.setParentScope(null);
             ScriptableObject.putProperty(scope, "Reshaper", new ReshaperObj(eventInfo));
-            ScriptableObject.putProperty(scope, "console", new ConsoleObj());
             context.evaluateString(scope, script, "<cmd>", 1, null);
         } finally {
             Context.exit();
@@ -44,7 +44,9 @@ public class ThenRunScript extends Then<ThenRunScript> {
         if (sharedScope == null) {
             try {
                 Context context = Context.enter();
+                context.setLanguageVersion(Context.VERSION_1_7);
                 sharedScope = context.initSafeStandardObjects();
+                ScriptableObject.putProperty(sharedScope, "console", new ConsoleObj());
                 String coreJs = IOUtils.toString(
                         Objects.requireNonNull(ThenRunScript.class.getClassLoader().getResourceAsStream("files/core.js")),
                         Charset.defaultCharset()
