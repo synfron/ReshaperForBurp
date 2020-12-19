@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.messages.entities;
 
 import burp.BurpExtender;
 import burp.IResponseInfo;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -78,11 +79,19 @@ public class HttpResponseMessage extends HttpEntity {
 
     public byte[] getValue() {
         return !isChanged() ?
-                response :
+                getAdjustedResponse(response) :
                 BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
                     Stream.concat(Stream.of(getStatusLine().getValue()), getHeaders().getValue().stream()).collect(Collectors.toList()),
                     getBody().getValue()
                 );
+    }
+
+    private byte[] getAdjustedResponse(byte[] response) {
+        IResponseInfo responseInfo = BurpExtender.getCallbacks().getHelpers().analyzeResponse(response);
+        return BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
+                CollectionUtils.splitNewLines(responseInfo.getHeaders()),
+                Arrays.copyOfRange(response, responseInfo.getBodyOffset(), response.length)
+        );
     }
 
     public String getText() {

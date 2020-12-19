@@ -7,7 +7,7 @@ import lombok.Setter;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = WhenEventDirection.class),
         @JsonSubTypes.Type(value = WhenHasEntity.class),

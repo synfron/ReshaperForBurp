@@ -136,7 +136,7 @@ public class Connector implements IProxyListener, IExtensionStateListener {
                     messageInfo.setResponse(eventInfo.getHttpResponseMessage().getValue());
                 }
             }
-            if (eventInfo.getDataDirection() == DataDirection.Response) {
+            if (!messageIsRequest) {
                 continuationMap.remove(message.getMessageReference());
             }
         } catch (Exception e) {

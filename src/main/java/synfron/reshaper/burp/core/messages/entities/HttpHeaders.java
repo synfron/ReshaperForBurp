@@ -88,7 +88,7 @@ public abstract class HttpHeaders extends HttpEntity {
 
     public List<String> getValue() {
         if (!isChanged()) {
-            return this.headerLines;
+            return CollectionUtils.splitNewLines(this.headerLines);
         }
 
         List<String> headerLines = new ArrayList<>();

@@ -42,6 +42,6 @@ public class Variable {
     }
 
     public String toString() {
-        return Objects.toString(value);
+        return Objects.toString(name);
     }
 }

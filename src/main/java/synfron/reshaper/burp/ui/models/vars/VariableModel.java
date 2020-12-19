@@ -118,7 +118,7 @@ public class VariableModel {
     public boolean equals(Object obj) {
         if (obj instanceof VariableModel) {
             VariableModel other = (VariableModel)obj;
-            return Objects.equals(other.variable, variable) || super.equals(obj);
+            return (variable != null && Objects.equals(other.variable, variable)) || super.equals(obj);
         }
         return super.equals(obj);
     }

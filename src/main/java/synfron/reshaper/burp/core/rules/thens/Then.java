@@ -6,7 +6,7 @@ import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ThenBreak.class),
         @JsonSubTypes.Type(value = ThenDelay.class),

@@ -4,5 +4,6 @@ public enum CollectionChangedAction {
     Add,
     Move,
     Update,
-    Remove
+    Remove,
+    Reset
 }

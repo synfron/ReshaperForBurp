@@ -7,6 +7,7 @@ package synfron.reshaper.burp.ui.components;
 
 import burp.ITab;
 import synfron.reshaper.burp.ui.components.rules.RulesTabComponent;
+import synfron.reshaper.burp.ui.components.settings.SettingsTabComponent;
 import synfron.reshaper.burp.ui.components.vars.VariablesTabComponent;
 
 import javax.swing.*;
@@ -17,9 +18,6 @@ import java.awt.*;
  * @author AssistantX
  */
 public class ReshaperComponent extends JPanel implements ITab {
-
-    private RulesTabComponent rules;
-    private VariablesTabComponent variables;
 
     public ReshaperComponent() {
         initComponents();
@@ -33,11 +31,13 @@ public class ReshaperComponent extends JPanel implements ITab {
     private JTabbedPane getTabs() {
         JTabbedPane tabs = new JTabbedPane();
 
-        rules = new RulesTabComponent();
-        variables = new VariablesTabComponent();
+        RulesTabComponent rules = new RulesTabComponent();
+        VariablesTabComponent variables = new VariablesTabComponent();
+        SettingsTabComponent settings = new SettingsTabComponent();
 
         tabs.addTab("Rules", rules);
-        tabs.addTab("Variables", variables);
+        tabs.addTab("Global Variables", variables);
+        tabs.addTab("Settings", settings);
         return tabs;
     }
 

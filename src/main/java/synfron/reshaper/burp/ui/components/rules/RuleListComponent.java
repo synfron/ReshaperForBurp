@@ -11,6 +11,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RuleListComponent extends JPanel {
@@ -64,29 +67,45 @@ public class RuleListComponent extends JPanel {
     }
 
     private void onRulesCollectionChanged(CollectionChangedArgs collectionChangedArgs) {
-        int index = (int)collectionChangedArgs.getKey();
-        Rule item = (Rule)collectionChangedArgs.getItem();
         switch (collectionChangedArgs.getAction()) {
             case Add: {
+                Rule item = (Rule)collectionChangedArgs.getItem();
                 RuleModel model = new RuleModel(item, true).withListener(ruleModelChangeListener);
                 ruleListModel.addElement(model);
                 rulesList.setSelectedValue(model, true);
                 break;
             }
-            case Remove:
+            case Remove: {
+                int index = (int)collectionChangedArgs.getKey();
                 ruleListModel.remove(index);
                 defaultSelect();
                 break;
+            }
             case Update: {
+                int index = (int)collectionChangedArgs.getKey();
                 RuleModel model = ruleListModel.get(index);
                 ruleListModel.set(index, model);
                 break;
             }
             case Move: {
+                int index = (int)collectionChangedArgs.getKey();
                 int newIndex = (int) collectionChangedArgs.getNewKey();
                 RuleModel model = ruleListModel.remove(index);
                 ruleListModel.add(newIndex, model);
                 rulesList.setSelectedIndex(newIndex);
+                break;
+            }
+            case Reset: {
+                Map<Rule, RuleModel> ruleModelMap = Collections.list(
+                        ruleListModel.elements()).stream().collect(Collectors.toMap(RuleModel::getRule, Function.identity())
+                );
+                ruleListModel.clear();
+                ruleListModel.addAll(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules().stream()
+                        .map(rule -> ruleModelMap.containsKey(rule) ?
+                                ruleModelMap.get(rule) :
+                                new RuleModel(rule).withListener(ruleModelChangeListener)
+                        ).collect(Collectors.toList()));
+                defaultSelect();
                 break;
             }
         }

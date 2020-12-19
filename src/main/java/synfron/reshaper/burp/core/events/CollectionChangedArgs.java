@@ -10,6 +10,10 @@ public class CollectionChangedArgs {
     private final Object newKey;
     private final Object item;
 
+    public CollectionChangedArgs(Object source, CollectionChangedAction action) {
+        this(source, action, null, null, null);
+    }
+
     public CollectionChangedArgs(Object source, CollectionChangedAction action, Object key, Object item) {
         this(source, action, key, key, item);
     }

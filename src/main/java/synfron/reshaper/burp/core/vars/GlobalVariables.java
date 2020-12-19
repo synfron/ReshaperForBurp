@@ -2,10 +2,13 @@ package synfron.reshaper.burp.core.vars;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.ObjectUtils;
-import synfron.reshaper.burp.core.settings.Settings;
+import synfron.reshaper.burp.core.events.CollectionChangedAction;
+import synfron.reshaper.burp.core.events.CollectionChangedArgs;
+import synfron.reshaper.burp.core.settings.Storage;
 import synfron.reshaper.burp.core.utils.CaseInsensitiveString;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class GlobalVariables extends Variables {
@@ -20,14 +23,28 @@ public class GlobalVariables extends Variables {
 
     public void save()
     {
-        Map<CaseInsensitiveString, Variable> persistables = variables.entrySet().stream()
-                .filter(variable -> variable.getValue().isPersistent())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        Settings.store("Reshaper.variables", persistables);
+        Storage.store("Reshaper.variables", exportVariables());
     }
 
     public void load() {
-        variables = ObjectUtils.defaultIfNull(Settings.get("Reshaper.variables", new TypeReference<>() {}), variables);
+        importVariables(Storage.get("Reshaper.variables", new TypeReference<>() {}), true);
+    }
+
+    public List<Variable> exportVariables() {
+        return variables.values().stream()
+                .filter(Variable::isPersistent)
+                .collect(Collectors.toList());
+    }
+
+    public void importVariables(List<Variable> variables, boolean overrideDuplicates) {
+        variables = ObjectUtils.defaultIfNull(variables, Collections.emptyList());
+        variables.forEach(variable -> {
+            if (overrideDuplicates) {
+                this.variables.put(new CaseInsensitiveString(variable.getName()), variable);
+            } else {
+                this.variables.computeIfAbsent(new CaseInsensitiveString(variable.getName()), name -> variable);
+            }
+        });
+        collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Reset));
     }
 }

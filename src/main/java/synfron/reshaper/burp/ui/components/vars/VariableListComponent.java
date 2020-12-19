@@ -11,7 +11,12 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class VariableListComponent extends JPanel {
     private JList<VariableModel> variableList;
@@ -129,6 +134,25 @@ public class VariableListComponent extends JPanel {
                         VariableModel model = variableListModel.get(index);
                         variableListModel.set(index, model);
                     }
+                    break;
+                }
+                case Reset: {
+                    List<VariableModel> currentModels = Collections.list(variableListModel.elements());
+                    Map<Variable, VariableModel> variableModelMap = currentModels.stream()
+                            .filter(variableModel -> variableModel.getVariable() != null)
+                            .collect(Collectors.toMap(VariableModel::getVariable, Function.identity()));
+                    Stream<VariableModel> draftModels = currentModels.stream()
+                            .filter(model -> model.getVariable() == null);
+                    variableListModel.clear();
+                    variableListModel.addAll(Stream.concat(
+                            GlobalVariables.get().getValues().stream()
+                            .map(variable -> variableModelMap.containsKey(variable) ?
+                                    variableModelMap.get(variable) :
+                                    new VariableModel(variable).withListener(variableModelChangedListener)
+                            ),
+                            draftModels
+                    ).collect(Collectors.toList()));
+                    defaultSelect();
                     break;
                 }
             }

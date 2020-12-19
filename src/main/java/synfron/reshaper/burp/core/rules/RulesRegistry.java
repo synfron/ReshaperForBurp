@@ -5,11 +5,14 @@ import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.*;
-import synfron.reshaper.burp.core.settings.Settings;
+import synfron.reshaper.burp.core.settings.Storage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RulesRegistry {
     @Getter
@@ -81,12 +84,29 @@ public class RulesRegistry {
     }
 
     public void loadRules() {
-        rules = ObjectUtils.defaultIfNull(Settings.get("Reshaper.rules", new TypeReference<>() {}), rules);
-        rules.forEach(rule -> rule.getPropertyChangedEvent().add(rulePropertyChangedListener));
-        version++;
+        importRules(Storage.get("Reshaper.rules", new TypeReference<>() {}), false);
     }
 
     public void saveRules() {
-        Settings.store("Reshaper.rules", rules.stream().filter(rule -> StringUtils.isNotEmpty(rule.getName())).collect(Collectors.toList()));
+        Storage.store("Reshaper.rules", exportRules());
+    }
+
+    public void importRules(List<Rule> rules, boolean overrideDuplicates) {
+        rules = ObjectUtils.defaultIfNull(rules, Collections.emptyList());
+        Set<String> existingRules = this.rules.stream().map(Rule::toString).collect(Collectors.toSet());
+        Set<String> newRules = rules.stream().map(Rule::toString).collect(Collectors.toSet());
+        this.rules = Stream.concat(
+                this.rules.stream()
+                        .filter(rule -> !overrideDuplicates || !newRules.contains(rule.getName())),
+                rules.stream()
+                        .filter(rule -> overrideDuplicates || !existingRules.contains(rule.getName()))
+                        .map(rule -> rule.withListener(rulePropertyChangedListener))
+        ).collect(Collectors.toList());
+        version++;
+        collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Reset));
+    }
+
+    public List<Rule> exportRules() {
+        return rules.stream().filter(rule -> StringUtils.isNotEmpty(rule.getName())).collect(Collectors.toList());
     }
 }

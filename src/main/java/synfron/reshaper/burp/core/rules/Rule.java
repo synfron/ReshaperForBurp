@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.rules;
 
 import lombok.Getter;
 import lombok.Setter;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.rules.thens.Then;
@@ -43,5 +44,10 @@ public class Rule implements Serializable {
     @Override
     public String toString() {
         return name;
+    }
+
+    public Rule withListener(IEventListener<PropertyChangedArgs> listener) {
+        propertyChangedEvent.add(listener);
+        return this;
     }
 }
