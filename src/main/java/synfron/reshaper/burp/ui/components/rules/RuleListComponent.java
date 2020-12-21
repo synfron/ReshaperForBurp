@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
+import synfron.reshaper.burp.ui.utils.WrapLayout;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -112,7 +113,7 @@ public class RuleListComponent extends JPanel {
     }
 
     private Component getActionBar() {
-        JPanel actionBar = new JPanel();
+        JPanel actionBar = new JPanel(new WrapLayout());
 
         JButton add = new JButton("Add");
         JButton moveUp = new JButton("Move Up");

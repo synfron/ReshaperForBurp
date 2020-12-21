@@ -17,6 +17,7 @@ public class VariablesTabComponent extends JPanel {
         variablesList.setSelectionContainer(variableContainer);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, variablesList, variableContainer);
+        splitPane.setDividerSize(3);
 
         add(splitPane);
     }

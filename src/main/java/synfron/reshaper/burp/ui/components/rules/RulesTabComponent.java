@@ -17,6 +17,8 @@ public class RulesTabComponent extends JPanel {
         ruleList.setSelectionContainer(ruleContainer);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, ruleList, ruleContainer);
+        splitPane.setDividerLocation(ruleList.getPreferredSize().width);
+        splitPane.setDividerSize(3);
 
         add(splitPane);
     }

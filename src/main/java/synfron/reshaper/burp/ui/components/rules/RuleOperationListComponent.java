@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
+import synfron.reshaper.burp.ui.utils.WrapLayout;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -90,7 +91,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     }
 
     private Component getActionBar() {
-        JPanel actionBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel actionBar = new JPanel(new WrapLayout(FlowLayout.RIGHT));
 
         JButton moveUp = new JButton("Move Up");
         JButton moveDown = new JButton("Move Down");
