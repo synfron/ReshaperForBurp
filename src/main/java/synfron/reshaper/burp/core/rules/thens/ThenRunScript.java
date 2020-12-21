@@ -2,64 +2,32 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.IOUtils;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.rules.thens.entities.script.ConsoleObj;
-import synfron.reshaper.burp.core.rules.thens.entities.script.ReshaperObj;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Objects;
+import synfron.reshaper.burp.core.rules.thens.entities.script.Dispatcher;
+import synfron.reshaper.burp.core.rules.thens.entities.script.Environment;
 
 
 public class ThenRunScript extends Then<ThenRunScript> {
-    private static ScriptableObject sharedScope;
     @Getter @Setter
     private String script;
-
-
+    @Getter @Setter
+    private int maxExecutionSeconds = 10;
 
     public RuleResponse perform(EventInfo eventInfo) {
-        try {
-            Context context = Context.enter();
-            context.setLanguageVersion(Context.VERSION_1_7);
-            Scriptable scope = context.newObject(getSharedScope());
-            scope.setPrototype(getSharedScope());
-            scope.setParentScope(null);
-            ScriptableObject.putProperty(scope, "Reshaper", new ReshaperObj(eventInfo));
-            context.evaluateString(scope, script, "<cmd>", 1, null);
-        } finally {
-            Context.exit();
-        }
-        return RuleResponse.Continue;
-    }
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxExecutionSeconds(maxExecutionSeconds);
+        dispatcher.getDataBag().put("eventInfo", eventInfo);
 
-    private static synchronized ScriptableObject getSharedScope() {
-        if (sharedScope == null) {
-            try {
-                Context context = Context.enter();
-                context.setLanguageVersion(Context.VERSION_1_7);
-                sharedScope = context.initSafeStandardObjects();
-                ScriptableObject.putProperty(sharedScope, "console", new ConsoleObj());
-                String coreJs = IOUtils.toString(
-                        Objects.requireNonNull(ThenRunScript.class.getClassLoader().getResourceAsStream("files/core.js")),
-                        Charset.defaultCharset()
-                );
-                context.evaluateString(sharedScope, coreJs, "<cmd>", 1, null);
-                sharedScope.sealObject();
-            } catch (IOException e) {
-                throw new WrappedException(e);
-            } finally {
-                Context.exit();
-            }
-        }
-        return sharedScope;
+        dispatcher.start(context -> context.evaluateString(
+                Environment.getEventScope(context),
+                Environment.scriptWithWindow(script),
+                "<cmd>",
+                1,
+                null
+        ));
+        return RuleResponse.Continue;
     }
 
     @Override

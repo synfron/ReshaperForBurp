@@ -10,9 +10,6 @@ import synfron.reshaper.burp.ui.components.ReshaperComponent;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * @author AssistantX
- */
 public class Window extends JFrame {
 
     public static void main(String[] args) {

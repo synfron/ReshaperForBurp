@@ -240,6 +240,8 @@ Reshaper.
 
 Script - The text of the JavaScript script to run.
 
+Max Execution (secs) - Terminate long-running scripts after this time.
+
 ### Set Event Direction
 
 Change whether to send a request or to send a response at the end of processing

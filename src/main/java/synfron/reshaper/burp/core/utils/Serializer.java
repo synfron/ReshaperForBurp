@@ -30,9 +30,12 @@ public class Serializer {
         return objectMapper;
     }
 
-    public static String serialize(Object value) {
+    public static String serialize(Object value, boolean prettyPrint) {
         try  {
-            return getObjectMapper().writeValueAsString(value);
+            return (prettyPrint ?
+                    getObjectMapper().writer().withDefaultPrettyPrinter() :
+                    getObjectMapper().writer()
+            ).writeValueAsString(value);
         } catch (IOException e) {
             throw new WrappedException(e);
         }

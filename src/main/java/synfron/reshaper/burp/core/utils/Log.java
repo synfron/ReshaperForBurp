@@ -37,10 +37,10 @@ public class Log {
     }
 
     public void log() {
-        BurpExtender.getCallbacks().printOutput(Serializer.serialize(this));
+        BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
     }
 
     public void logErr() {
-        BurpExtender.getCallbacks().printError(Serializer.serialize(this));
+        BurpExtender.getCallbacks().printError(Serializer.serialize(this, true));
     }
 }

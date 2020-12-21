@@ -11,7 +11,6 @@ import synfron.reshaper.burp.core.vars.Variable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 public class SettingsManager {
@@ -33,7 +32,7 @@ public class SettingsManager {
             ExportSettings exportSettings = new ExportSettings();
             exportSettings.setVariables(variables);
             exportSettings.setRules(rules);
-            Files.writeString(file.toPath(), Serializer.serialize(exportSettings));
+            Files.writeString(file.toPath(), Serializer.serialize(exportSettings, false));
         } catch (IOException e) {
             throw new WrappedException(e);
         }

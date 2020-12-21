@@ -3,18 +3,23 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenRunScript;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScript> {
 
     @Getter
     private String script;
+    @Getter
+    private String maxExecutionSeconds;
 
     public ThenRunScriptModel(ThenRunScript then, Boolean isNew) {
         super(then, isNew);
         script = then.getScript();
+        maxExecutionSeconds = Objects.toString(then.getMaxExecutionSeconds());
     }
 
     public void setScript(String script) {
@@ -22,10 +27,18 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
         propertyChanged("script", script);
     }
 
+    public void setMaxExecutionSeconds(String maxExecutionSeconds) {
+        this.maxExecutionSeconds = maxExecutionSeconds;
+        propertyChanged("maxExecutionSeconds", maxExecutionSeconds);
+    }
+
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(script)) {
             errors.add("Script is required");
+        }
+        if (!TextUtils.isInt(maxExecutionSeconds)) {
+            errors.add("Max Execution (secs) must be an integer");
         }
         return errors;
     }
@@ -35,6 +48,7 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
             return false;
         }
         ruleOperation.setScript(script);
+        ruleOperation.setMaxExecutionSeconds(Integer.parseInt(maxExecutionSeconds));
         setSaved(true);
         return true;
     }

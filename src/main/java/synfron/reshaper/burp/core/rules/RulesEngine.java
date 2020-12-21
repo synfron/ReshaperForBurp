@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.core.rules;
 
 import lombok.Getter;
+import org.mozilla.javascript.RhinoException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
@@ -84,9 +85,9 @@ public class RulesEngine {
             {
                 thenResult = thenResult.or(perform(rule.getThens(), eventInfo));
             }
-        }
-        catch (Exception e)
-        {
+        } catch (RhinoException e) {
+            Log.get().withMessage("Failure running rule").withException(e).withPayload(e.getScriptStackTrace()).logErr();
+        } catch (Exception e) {
             Log.get().withException(e).withMessage("Failure running rule").withPayload(rule).logErr();
         }
         return thenResult;
