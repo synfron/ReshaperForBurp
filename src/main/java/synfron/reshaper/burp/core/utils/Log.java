@@ -37,10 +37,20 @@ public class Log {
     }
 
     public void log() {
-        BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+        try {
+            BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+        } catch (Exception e) {
+            payload = "Failed to log with original payload";
+            BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+        }
     }
 
     public void logErr() {
-        BurpExtender.getCallbacks().printError(Serializer.serialize(this, true));
+        try {
+            BurpExtender.getCallbacks().printError(Serializer.serialize(this, true));
+        } catch (Exception e) {
+            payload = "Failed to log with original payload";
+            BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+        }
     }
 }

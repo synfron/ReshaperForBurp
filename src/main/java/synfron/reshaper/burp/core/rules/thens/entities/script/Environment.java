@@ -22,13 +22,16 @@ public class Environment {
         if (sharedScope == null) {
             try {
                 context.setLanguageVersion(Context.VERSION_1_7);
+                context.getWrapFactory().setJavaPrimitiveWrap(false);
                 sharedScope = context.initSafeStandardObjects();
                 ScriptableObject.putProperty(sharedScope, "Reshaper", new ReshaperObj());
                 ScriptableObject.putProperty(sharedScope, "console", new ConsoleObj());
+                ScriptableObject.putProperty(sharedScope, "XMLHttpRequest", new NativeJavaClass(sharedScope, XmlHttpRequestObj.class));
                 ScriptableObject.putProperty(sharedScope, "setTimeout", new NativeJavaMethod(getSetTimeoutMember(), "setTimeout"));
                 ScriptableObject.putProperty(sharedScope, "setInterval", new NativeJavaMethod(getSetIntervalMember(), "setInterval"));
                 ScriptableObject.putProperty(sharedScope, "clearTimeout", new NativeJavaMethod(getClearTimeoutMember(), "clearTimeout"));
                 context.evaluateString(sharedScope, getScript("files/core.js"), "<cmd>", 1, null);
+                context.evaluateString(sharedScope, getScript("files/fetch.js"), "<cmd>", 1, null);
                 sharedScope.sealObject();
             } catch (NoSuchMethodException e) {
                 throw new WrappedException(e);
@@ -39,6 +42,7 @@ public class Environment {
 
     public static Scriptable getEventScope(Context context) {
         context.setLanguageVersion(Context.VERSION_1_7);
+        context.getWrapFactory().setJavaPrimitiveWrap(false);
         Scriptable scope = context.newObject(getSharedScope(context));
         scope.setPrototype(getSharedScope(context));
         scope.setParentScope(null);

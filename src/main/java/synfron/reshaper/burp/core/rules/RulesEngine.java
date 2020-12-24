@@ -14,14 +14,6 @@ public class RulesEngine {
     @Getter
     private final RulesRegistry rulesRegistry = new RulesRegistry();
 
-    public void init() {
-        rulesRegistry.loadRules();
-    }
-
-    public void save() {
-        rulesRegistry.saveRules();
-    }
-
     private boolean match(List<When<?>> whens, EventInfo eventInfo)
     {
         boolean  isMatch = true;

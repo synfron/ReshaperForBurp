@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.messages;
 
-import burp.BurpExtender;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.List;
@@ -137,10 +137,10 @@ public class MessageValueHandler {
                 eventInfo.getHttpRequestMessage().getStatusLine().setUrl(replacementText);
                 break;
             case HttpRequestMessage:
-                eventInfo.setHttpRequestMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(replacementText));
+                eventInfo.setHttpRequestMessage(TextUtils.stringToBytes(replacementText));
                 break;
             case HttpResponseMessage:
-                eventInfo.setHttpResponseMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(replacementText));
+                eventInfo.setHttpResponseMessage(TextUtils.stringToBytes(replacementText));
                 break;
             case DestinationPort:
                 eventInfo.setDestinationPort(Integer.parseInt(replacementText));

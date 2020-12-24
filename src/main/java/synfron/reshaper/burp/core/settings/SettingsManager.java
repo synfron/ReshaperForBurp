@@ -2,8 +2,10 @@ package synfron.reshaper.burp.core.settings;
 
 import burp.BurpExtender;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.Getter;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.rules.Rule;
+import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.utils.Serializer;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
@@ -14,14 +16,17 @@ import java.nio.file.Files;
 import java.util.List;
 
 public class SettingsManager {
+    @Getter
+    private GeneralSettings generalSettings = new GeneralSettings();
+
     public void importSettings(File file, boolean overrideDuplicates) {
         try {
             ExportSettings exportSettings = Serializer.deserialize(
                     Files.readString(file.toPath()),
                     new TypeReference<>() {}
             );
-            GlobalVariables.get().importVariables(exportSettings.getVariables(), overrideDuplicates);
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().importRules(exportSettings.getRules(), overrideDuplicates);
+            getGlobalVariables().importVariables(exportSettings.getVariables(), overrideDuplicates);
+            getRulesRegistry().importRules(exportSettings.getRules(), overrideDuplicates);
         } catch (IOException e) {
             throw new WrappedException(e);
         }
@@ -36,5 +41,25 @@ public class SettingsManager {
         } catch (IOException e) {
             throw new WrappedException(e);
         }
+    }
+
+    public void loadSettings() {
+        generalSettings.importSettings(Storage.get("Reshaper.generalSettings", new TypeReference<>() {}));
+        getGlobalVariables().importVariables(Storage.get("Reshaper.variables", new TypeReference<>() {}), false);
+        getRulesRegistry().importRules(Storage.get("Reshaper.rules", new TypeReference<>() {}), false);
+    }
+
+    public void saveSettings() {
+        Storage.store("Reshaper.generalSettings", generalSettings);
+        Storage.store("Reshaper.variables", getGlobalVariables().exportVariables());
+        Storage.store("Reshaper.rules", getRulesRegistry().exportRules());
+    }
+
+    private GlobalVariables getGlobalVariables() {
+        return GlobalVariables.get();
+    }
+
+    private RulesRegistry getRulesRegistry() {
+        return BurpExtender.getConnector().getRulesEngine().getRulesRegistry();
     }
 }

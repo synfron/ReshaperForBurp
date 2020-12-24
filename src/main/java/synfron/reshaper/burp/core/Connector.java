@@ -7,8 +7,9 @@ import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.RulesEngine;
+import synfron.reshaper.burp.core.settings.GeneralSettings;
+import synfron.reshaper.burp.core.settings.SettingsManager;
 import synfron.reshaper.burp.core.utils.Log;
-import synfron.reshaper.burp.core.vars.GlobalVariables;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -16,65 +17,92 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.InputMismatchException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Connector implements IProxyListener, IExtensionStateListener {
+public class Connector implements IProxyListener, IHttpListener, IExtensionStateListener {
 
+    private static final AtomicInteger lastMessageId = new AtomicInteger(1);
     @Getter
     private final RulesEngine rulesEngine = new RulesEngine();
     private ServerSocket serverSocket;
     private final Map<Integer, EventInfo> continuationMap = ExpiringMap.builder()
-            .expiration(5, TimeUnit.MINUTES).build();
+            .expiration(30, TimeUnit.SECONDS).build();
+    @Getter
+    private final SettingsManager settingsManager = new SettingsManager();
     private boolean activated = true;
+    private ExecutorService serverExecutor;
 
     public void init() {
         activated = true;
-        GlobalVariables.get().load();
-        rulesEngine.init();
+        settingsManager.loadSettings();
         createServer();
     }
 
     @Override
     public void extensionUnloaded() {
         activated = false;
-        GlobalVariables.get().save();
-        rulesEngine.save();
+        settingsManager.saveSettings();
+        closeServer();
         Log.get().withMessage("Reshaper unloaded").log();
     }
 
+    private void closeServer() {
+        try {
+            if (serverExecutor != null) {
+                serverExecutor.shutdownNow();
+                serverSocket.close();
+            }
+        } catch (Exception ignored) {}
+        finally {
+            serverExecutor = null;
+            serverSocket = null;
+        }
+    }
+
     private void processServerConnection(Socket socket) {
-        new Thread(() -> {
+        serverExecutor.execute(() -> {
             try {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedReader.readLine();
                 int reshaperId = getReshaperId(bufferedReader.readLine());
                 EventInfo eventInfo = continuationMap.remove(reshaperId);
+                if (eventInfo.isShouldDrop()) {
+                    close(socket);
+                }
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
                 bufferedOutputStream.write(eventInfo.getHttpResponseMessage().getValue());
                 bufferedOutputStream.flush();
             } catch (Exception e) {
-                Log.get().withMessage("Event processing failed").withException(e).logErr();
+                if (activated) {
+                    Log.get().withMessage("Event processing failed").withException(e).logErr();
+                }
             } finally {
                 close(socket);
             }
-        }).start();
+        });
     }
 
     private void createServer() {
         try {
+            serverExecutor = Executors.newCachedThreadPool();
             serverSocket = new ServerSocket(0, 50, InetAddress.getLoopbackAddress());
-            new Thread(() -> {
+            serverExecutor.execute(() -> {
                 while (activated) {
                     try {
                         Socket socket = serverSocket.accept();
                         processServerConnection(socket);
                     } catch (Exception e) {
-                        Log.get().withMessage("Server accept new connection failed").withException(e).logErr();
+                        if (activated) {
+                            Log.get().withMessage("Server accept new connection failed").withException(e).logErr();
+                        }
                     }
                 }
-            }).start();
+            });
         } catch (IOException e) {
             throw new WrappedException(e);
         }
@@ -86,12 +114,18 @@ public class Connector implements IProxyListener, IExtensionStateListener {
                 closeable.close();
             }
         } catch (Exception ex) {
-            Log.get().withMessage("Failed closing stream").withException(ex).logErr();
+            if (activated) {
+                Log.get().withMessage("Failed closing stream").withException(ex).logErr();
+            }
         }
     }
 
     private EventInfo asEventInfo(boolean messageIsRequest, IInterceptedProxyMessage message) {
         return new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, message);
+    }
+
+    private EventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, IHttpRequestResponse requestResponse) {
+        return new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, burpTool, requestResponse);
     }
 
     private int getReshaperId(String header) {
@@ -101,13 +135,12 @@ public class Connector implements IProxyListener, IExtensionStateListener {
         return Integer.parseInt(header.split(":", 2)[1].trim());
     }
 
-    @Override
-    public void processProxyMessage(boolean messageIsRequest, IInterceptedProxyMessage message) {
+    private void processEvent(boolean isRequest, EventInfo eventInfo, IInterceptedProxyMessage interceptedMessage) {
+        int messageId = isRequest ? lastMessageId.getAndIncrement() : -1;
         try {
-            EventInfo eventInfo = asEventInfo(messageIsRequest, message);
             rulesEngine.run(eventInfo);
             if (eventInfo.isChanged()) {
-                IHttpRequestResponse messageInfo = message.getMessageInfo();
+                IHttpRequestResponse messageInfo = eventInfo.getRequestResponse();
                 if (eventInfo.getDataDirection() == DataDirection.Request) {
                     messageInfo.setRequest(eventInfo.getHttpRequestMessage().getValue());
                     messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
@@ -115,32 +148,66 @@ public class Connector implements IProxyListener, IExtensionStateListener {
                             eventInfo.getDestinationPort(),
                             eventInfo.getHttpProtocol().toLowerCase()
                     ));
-                } else if (messageIsRequest && eventInfo.getDataDirection() == DataDirection.Response) {
-                    messageInfo.setRequest(BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
-                            Stream.concat(Stream.of(
-                                    eventInfo.getHttpRequestMessage().getStatusLine().getValue(),
-                                    "Reshaper-ID: " + message.getMessageReference()
-                                    ),
-                                    eventInfo.getHttpRequestMessage().getHeaders().getValue().stream()
-                            ).collect(Collectors.toList()),
-                            eventInfo.getHttpRequestMessage().getBody().getValue()
-                    ));
-                    continuationMap.put(message.getMessageReference(), eventInfo);
-                    messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
-                            serverSocket.getInetAddress().getHostAddress(),
-                            serverSocket.getLocalPort(),
-                            "http"
-                    ));
-                    message.setInterceptAction(IInterceptedProxyMessage.ACTION_DONT_INTERCEPT);
+                    if (eventInfo.isShouldDrop()) {
+                        if (interceptedMessage != null) {
+                            interceptedMessage.setInterceptAction(IInterceptedProxyMessage.ACTION_DROP);
+                        } else {
+                            sendToSelf(messageId, eventInfo, interceptedMessage);
+                        }
+                    }
+                } else if (isRequest && eventInfo.getDataDirection() == DataDirection.Response) {
+                    sendToSelf(messageId, eventInfo, interceptedMessage);
                 } else {
                     messageInfo.setResponse(eventInfo.getHttpResponseMessage().getValue());
                 }
             }
-            if (!messageIsRequest) {
-                continuationMap.remove(message.getMessageReference());
-            }
         } catch (Exception e) {
             Log.get().withMessage("Critical Error").withException(e).logErr();
         }
+    }
+
+    private void sendToSelf(int messageId, EventInfo eventInfo, IInterceptedProxyMessage interceptedMessage) {
+        IHttpRequestResponse messageInfo = eventInfo.getRequestResponse();
+        messageInfo.setRequest(BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
+                Stream.concat(Stream.of(
+                        eventInfo.getHttpRequestMessage().getStatusLine().getValue(),
+                        "Reshaper-ID: " + messageId
+                        ),
+                        eventInfo.getHttpRequestMessage().getHeaders().getValue().stream()
+                ).collect(Collectors.toList()),
+                eventInfo.getHttpRequestMessage().getBody().getValue()
+        ));
+        continuationMap.put(messageId, eventInfo);
+        messageInfo.setHttpService(BurpExtender.getCallbacks().getHelpers().buildHttpService(
+                serverSocket.getInetAddress().getHostAddress(),
+                serverSocket.getLocalPort(),
+                "http"
+        ));
+        if (interceptedMessage != null) {
+            interceptedMessage.setInterceptAction(IInterceptedProxyMessage.ACTION_DONT_INTERCEPT);
+        }
+    }
+
+    @Override
+    public void processProxyMessage(boolean messageIsRequest, IInterceptedProxyMessage message) {
+        EventInfo eventInfo = asEventInfo(messageIsRequest, message);
+        processEvent(messageIsRequest, eventInfo, message);
+    }
+
+    @Override
+    public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) {
+        if (toolFlag != BurpTool.Proxy.getId()) {
+            BurpTool burpTool = getBurpToolIfEnabled(toolFlag);
+            if (burpTool != null && burpTool != BurpTool.Proxy) {
+                EventInfo eventInfo = asEventInfo(messageIsRequest, burpTool, messageInfo);
+                processEvent(messageIsRequest, eventInfo, null);
+            }
+        }
+    }
+
+    private BurpTool getBurpToolIfEnabled(int toolFlag) {
+        GeneralSettings generalSettings = settingsManager.getGeneralSettings();
+        BurpTool burpTool = BurpTool.getById(toolFlag);
+        return burpTool != null && generalSettings.isCapture(burpTool) ? burpTool : null;
     }
 }

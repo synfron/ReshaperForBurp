@@ -5,6 +5,7 @@ import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.Rule;
+import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.WrapLayout;
 
@@ -163,20 +164,22 @@ public class RuleListComponent extends JPanel {
     }
 
     private void onAdd(ActionEvent actionEvent) {
-        Rule rule = new Rule();
-        rule.setEnabled(false);
-
-        BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
+        BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(createNewRule());
     }
 
     public void setSelectionContainer(RuleContainerComponent ruleContainer) {
         this.ruleContainer = ruleContainer;
 
         if (ruleListModel.size() == 0) {
-            Rule rule = new Rule();
-            rule.setEnabled(false);
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
+            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(createNewRule());
         }
         defaultSelect();
+    }
+
+    private Rule createNewRule() {
+        Rule rule = new Rule();
+        rule.setEnabled(false);
+        rule.getWhens().add(new WhenEventDirection());
+        return rule;
     }
 }

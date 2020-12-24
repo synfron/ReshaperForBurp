@@ -1,7 +1,9 @@
 package synfron.reshaper.burp.core.utils;
 
+import burp.BurpExtender;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONValue;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -52,5 +54,17 @@ public class TextUtils {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public static String toString(Object value) {
+        return value != null ? value.toString() : null;
+    }
+
+    public static String bytesToString(byte[] bytes) {
+        return BurpExtender.getCallbacks().getHelpers().bytesToString(ObjectUtils.defaultIfNull(bytes, new byte[0]));
+    }
+
+    public static byte[] stringToBytes(String value) {
+        return BurpExtender.getCallbacks().getHelpers().stringToBytes(StringUtils.defaultString(value));
     }
 }

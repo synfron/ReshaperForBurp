@@ -7,7 +7,6 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScript> {
 
@@ -19,7 +18,7 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
     public ThenRunScriptModel(ThenRunScript then, Boolean isNew) {
         super(then, isNew);
         script = then.getScript();
-        maxExecutionSeconds = Objects.toString(then.getMaxExecutionSeconds());
+        maxExecutionSeconds = TextUtils.toString(then.getMaxExecutionSeconds());
     }
 
     public void setScript(String script) {

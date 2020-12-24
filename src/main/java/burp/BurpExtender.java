@@ -20,6 +20,7 @@ public class BurpExtender implements IBurpExtender {
         callbacks.addSuiteTab(new ReshaperComponent());
         callbacks.setExtensionName("Reshaper");
         callbacks.registerProxyListener(connector);
+        callbacks.registerHttpListener(connector);
         callbacks.registerExtensionStateListener(connector);
         Log.get().withMessage("Reshaper started").log();
     }

@@ -10,6 +10,7 @@ import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.net.MalformedURLException;
@@ -63,7 +64,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                             "https"
                     ),
                     CollectionUtils.defaultIfEmpty(
-                            BurpExtender.getCallbacks().getHelpers().stringToBytes(
+                            TextUtils.stringToBytes(
                                     VariableString.getTextOrDefault(eventInfo.getVariables(), request, "")
                             ),
                             eventInfo.getHttpRequestMessage().getValue()
@@ -89,7 +90,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                             "https"
                     ),
                     CollectionUtils.defaultIfEmpty(
-                            BurpExtender.getCallbacks().getHelpers().stringToBytes(
+                            TextUtils.stringToBytes(
                                     VariableString.getTextOrDefault(eventInfo.getVariables(), request, "")
                             ),
                             eventInfo.getHttpRequestMessage().getValue()
@@ -111,7 +112,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         if (overrideDefaults) {
             BurpExtender.getCallbacks().sendToComparer(
                     CollectionUtils.defaultIfEmpty(
-                            BurpExtender.getCallbacks().getHelpers().stringToBytes(
+                            TextUtils.stringToBytes(
                                     VariableString.getTextOrDefault(eventInfo.getVariables(), value, "")
                             ),
                             eventInfo.getHttpRequestMessage().getValue()

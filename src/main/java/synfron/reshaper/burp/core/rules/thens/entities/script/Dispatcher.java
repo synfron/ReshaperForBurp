@@ -26,6 +26,8 @@ public class Dispatcher {
     private Map<String, Object> dataBag;
     @Getter @Setter
     private int maxExecutionSeconds = 10;
+    @Getter
+    private boolean timeoutReach = false;
 
     public Map<String, Object> getDataBag() {
         if (dataBag == null) {
@@ -38,7 +40,7 @@ public class Dispatcher {
         return current.get();
     }
 
-    public void setCurrent() {
+    private void setCurrent() {
         current.set(this);
     }
 
@@ -80,6 +82,10 @@ public class Dispatcher {
         }
     }
 
+    public Task execute(Consumer<Context> consumer) {
+        return new Task(executor.submit(getRunner(consumer, false, true)));
+    }
+
     public Task execute(Consumer<Context> consumer, long delay, TimeUnit timeUnit) {
         return new Task(executor.schedule(getRunner(consumer, false, true), delay, timeUnit));
     }
@@ -94,6 +100,7 @@ public class Dispatcher {
             executor.submit(getRunner(consumer, true, true));
             if (!executor.awaitTermination(getMaxExecutionSeconds(), TimeUnit.SECONDS)) {
                 executor.shutdownNow();
+                timeoutReach = true;
                 throw new RuntimeException("Script execution timed out");
             }
             if (firstException != null) {

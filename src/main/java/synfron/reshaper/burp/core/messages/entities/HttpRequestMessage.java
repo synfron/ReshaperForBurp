@@ -4,6 +4,7 @@ import burp.BurpExtender;
 import burp.IRequestInfo;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     public void setBody(String body) {
-        this.body = new HttpBody(BurpExtender.getCallbacks().getHelpers().stringToBytes(body));
+        this.body = new HttpBody(TextUtils.stringToBytes(body));
         changed = true;
     }
 
@@ -94,6 +95,6 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     public String getText() {
-        return BurpExtender.getCallbacks().getHelpers().bytesToString(getValue());
+        return TextUtils.bytesToString(getValue());
     }
 }

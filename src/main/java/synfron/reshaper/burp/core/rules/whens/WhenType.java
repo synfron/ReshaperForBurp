@@ -10,6 +10,7 @@ public class WhenType<T extends When<T>> extends RuleOperationType<T> {
     public static final WhenType<WhenHasEntity> HasEntity = new WhenType<>("Has Entity", WhenHasEntity.class);
     public static final WhenType<WhenMatchesText> MatchesText = new WhenType<>("Matches Text", WhenMatchesText.class);
     public static final WhenType<WhenProxyName> ProxyName = new WhenType<>("Proxy Name", WhenProxyName.class);
+    public static final WhenType<WhenFromTool> FromTool = new WhenType<>("From Tool", WhenFromTool.class);
 
     @JsonCreator
     private WhenType(String name, Class<T> type) {
@@ -21,7 +22,8 @@ public class WhenType<T extends When<T>> extends RuleOperationType<T> {
                 EventDirection,
                 HasEntity,
                 MatchesText,
-                ProxyName
+                ProxyName,
+                FromTool
         );
     }
 }

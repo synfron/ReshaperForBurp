@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.messages.entities;
 
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -38,7 +39,7 @@ public class HttpRequestUrl extends HttpEntity {
 
     public void setPath(String path) {
         prepare();
-        uriBuilder.setPath(path);
+        uriBuilder.setPath(StringUtils.defaultIfBlank(path, "/"));
         changed = true;
     }
 

@@ -99,6 +99,6 @@ public abstract class HttpHeaders extends HttpEntity {
     }
 
     public String getText() {
-        return String.join("\n", getValue());
+        return String.join("\r\n", getValue());
     }
 }

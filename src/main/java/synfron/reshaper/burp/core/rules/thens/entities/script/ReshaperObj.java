@@ -4,6 +4,7 @@ import org.apache.commons.lang3.EnumUtils;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -11,7 +12,6 @@ import synfron.reshaper.burp.core.vars.Variables;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReshaperObj {
@@ -31,7 +31,7 @@ public class ReshaperObj {
         private String getVariable(Variables variables, String name) {
             Variable variable = variables.getOrDefault(name);
             return variable != null ?
-                    Objects.toString(variable.getValue()) :
+                    TextUtils.toString(variable.getValue()) :
                     null;
         }
 

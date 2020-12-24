@@ -26,6 +26,6 @@ public class Value<T> implements IValue<T> {
 
     @Override
     public String toString() {
-        return Objects.toString(getValue());
+        return TextUtils.toString(getValue());
     }
 }

@@ -6,8 +6,7 @@ import lombok.Getter;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
-
-import java.util.Objects;
+import synfron.reshaper.burp.core.utils.TextUtils;
 
 public class Variable {
     @Getter
@@ -42,6 +41,6 @@ public class Variable {
     }
 
     public String toString() {
-        return Objects.toString(name);
+        return TextUtils.toString(name);
     }
 }

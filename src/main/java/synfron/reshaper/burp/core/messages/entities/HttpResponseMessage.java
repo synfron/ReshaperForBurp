@@ -3,6 +3,7 @@ package synfron.reshaper.burp.core.messages.entities;
 import burp.BurpExtender;
 import burp.IResponseInfo;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -73,7 +74,7 @@ public class HttpResponseMessage extends HttpEntity {
     }
 
     public void setBody(String body) {
-        this.body = new HttpBody(BurpExtender.getCallbacks().getHelpers().stringToBytes(body));
+        this.body = new HttpBody(TextUtils.stringToBytes(body));
         changed = true;
     }
 
@@ -95,6 +96,6 @@ public class HttpResponseMessage extends HttpEntity {
     }
 
     public String getText() {
-        return BurpExtender.getCallbacks().getHelpers().bytesToString(getValue());
+        return TextUtils.bytesToString(getValue());
     }
 }

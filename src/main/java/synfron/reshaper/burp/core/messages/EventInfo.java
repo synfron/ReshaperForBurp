@@ -1,20 +1,24 @@
 package synfron.reshaper.burp.core.messages;
 
+import burp.IHttpRequestResponse;
 import burp.IInterceptedProxyMessage;
 import lombok.Getter;
+import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.vars.Variables;
 
 public class EventInfo {
     @Getter
-    private final IInterceptedProxyMessage proxyMessage;
+    private final IHttpRequestResponse requestResponse;
+    @Getter
+    private final BurpTool burpTool;
     @Getter
     private DataDirection dataDirection;
     @Getter
-    private String proxyName;
+    private final String proxyName;
     @Getter
-    private String sourceAddress;
+    private final String sourceAddress;
     @Getter
     private String destinationAddress;
     @Getter
@@ -22,23 +26,39 @@ public class EventInfo {
     @Getter
     private String httpProtocol;
     @Getter
+    private boolean shouldDrop;
+    @Getter
     private HttpRequestMessage httpRequestMessage;
     @Getter
     private HttpResponseMessage httpResponseMessage;
     @Getter
-    private Variables variables = new Variables();
+    private final Variables variables = new Variables();
     private boolean changed;
 
     public EventInfo(DataDirection dataDirection, IInterceptedProxyMessage proxyMessage) {
+        this.burpTool = BurpTool.Proxy;
         this.dataDirection = dataDirection;
-        this.proxyMessage = proxyMessage;
-        httpRequestMessage = new HttpRequestMessage(proxyMessage.getMessageInfo().getRequest());
-        httpResponseMessage = new HttpResponseMessage(proxyMessage.getMessageInfo().getResponse());
+        this.requestResponse = proxyMessage.getMessageInfo();
+        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest());
+        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse());
         proxyName = proxyMessage.getListenerInterface();
-        httpProtocol = proxyMessage.getMessageInfo().getHttpService().getProtocol();
+        httpProtocol = requestResponse.getHttpService().getProtocol();
         sourceAddress = proxyMessage.getClientIpAddress().getHostAddress();
-        destinationPort = proxyMessage.getMessageInfo().getHttpService().getPort();
-        destinationAddress = proxyMessage.getMessageInfo().getHttpService().getHost();
+        destinationPort = requestResponse.getHttpService().getPort();
+        destinationAddress = requestResponse.getHttpService().getHost();
+    }
+
+    public EventInfo(DataDirection dataDirection, BurpTool burpTool, IHttpRequestResponse requestResponse) {
+        this.burpTool = burpTool;
+        this.dataDirection = dataDirection;
+        this.requestResponse = requestResponse;
+        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest());
+        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse());
+        httpProtocol = requestResponse.getHttpService().getProtocol();
+        sourceAddress = "burp::";
+        destinationPort = requestResponse.getHttpService().getPort();
+        destinationAddress = requestResponse.getHttpService().getHost();
+        proxyName = null;
     }
 
     public void setDataDirection(DataDirection dataDirection) {
@@ -68,6 +88,11 @@ public class EventInfo {
 
     public void setHttpProtocol(String httpProtocol) {
         this.httpProtocol = httpProtocol;
+        changed = true;
+    }
+
+    public void setShouldDrop(boolean shouldDrop) {
+        this.shouldDrop = shouldDrop;
         changed = true;
     }
 

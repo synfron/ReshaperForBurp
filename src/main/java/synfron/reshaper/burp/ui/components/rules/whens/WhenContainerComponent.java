@@ -17,6 +17,7 @@ public class WhenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(WhenModelType.HasEntity, WhenHasEntityComponent.class);
         componentMap.put(WhenModelType.MatchesText, WhenMatchesTextComponent.class);
         componentMap.put(WhenModelType.ProxyName, WhenProxyNameComponent.class);
+        componentMap.put(WhenModelType.FromTool, WhenFromToolComponent.class);
     }
 
     @Override

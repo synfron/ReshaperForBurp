@@ -93,7 +93,7 @@ public class VariableString implements Serializable {
                 case Global: value = GlobalVariables.get().getOrDefault(variable.getName()); break;
                 case Event: value = connectionVariables != null ? connectionVariables.getOrDefault(variable.getName()) : null; break;
             }
-            variableVals.add(Objects.toString(value));
+            variableVals.add(TextUtils.toString(value));
         }
         return String.format(text, variableVals.toArray());
     }

@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.messages.entities;
 
-import burp.BurpExtender;
 import lombok.Getter;
+import synfron.reshaper.burp.core.utils.TextUtils;
 
 public class HttpBody extends HttpEntity {
 
@@ -15,7 +15,7 @@ public class HttpBody extends HttpEntity {
     }
 
     public byte[] getValue() {
-        return !isChanged() ? rawBytes : BurpExtender.getCallbacks().getHelpers().stringToBytes(text);
+        return !isChanged() ? rawBytes : TextUtils.stringToBytes(text);
     }
 
     public boolean hasValue() {
@@ -24,7 +24,7 @@ public class HttpBody extends HttpEntity {
 
     public String getText() {
         if (text == null) {
-            text = BurpExtender.getCallbacks().getHelpers().bytesToString(rawBytes);
+            text = TextUtils.bytesToString(rawBytes);
         }
         return text;
     }

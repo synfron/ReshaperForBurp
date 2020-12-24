@@ -158,6 +158,12 @@ If received by a certain Burp proxy listener
 
 Proxy Name - The Burp proxy listener interface (e.g. 127.0.0.1:8080)
 
+### From Tool
+
+If the HTTP message is from a specific Burp tool
+
+Tool - Proxy, Repeater, Intruder, Target, Spider, Scanner, or Extender
+
 ## Thens
 
 ### Break

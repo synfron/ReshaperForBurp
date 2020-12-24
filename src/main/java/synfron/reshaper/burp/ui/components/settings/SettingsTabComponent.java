@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.settings;
 import burp.BurpExtender;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.rules.Rule;
+import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.core.settings.SettingsManager;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
@@ -25,7 +26,15 @@ public class SettingsTabComponent extends JPanel {
     private JCheckBox overrideDuplicates;
     private DefaultTableModel exportRulesModel;
     private DefaultTableModel exportVariablesModel;
-    private SettingsManager settingsManager = new SettingsManager();
+    private final SettingsManager settingsManager = BurpExtender.getConnector().getSettingsManager();
+    private final GeneralSettings generalSettings = settingsManager.getGeneralSettings();
+    private JCheckBox proxy;
+    private JCheckBox repeater;
+    private JCheckBox intruder;
+    private JCheckBox scanner;
+    private JCheckBox spider;
+    private JCheckBox target;
+    private JCheckBox extender;
 
     public SettingsTabComponent() {
         initComponent();
@@ -34,8 +43,86 @@ public class SettingsTabComponent extends JPanel {
     private void initComponent() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        add(getGeneralSettings());
         add(getExportSettings());
         add(getImportSettings());
+    }
+
+    private Component getGeneralSettings() {
+        JPanel container = new JPanel(new MigLayout());
+        container.setBorder(new CompoundBorder(
+                BorderFactory.createTitledBorder("General"),
+                BorderFactory.createEmptyBorder(4,4,4,4))
+        );
+
+        container.add(new JLabel("Capture Traffic From:"), "wrap");
+        container.add(getCaptureTrafficOptions());
+        return container;
+    }
+
+    private Component getCaptureTrafficOptions() {
+        JPanel container = new JPanel(new MigLayout());
+
+        proxy = new JCheckBox("Proxy");
+        repeater = new JCheckBox("Repeater");
+        intruder = new JCheckBox("Intruder");
+        scanner = new JCheckBox("Scanner");
+        spider = new JCheckBox("Spider");
+        target = new JCheckBox("Target");
+        extender = new JCheckBox("Extender");
+
+        proxy.setSelected(generalSettings.isCaptureProxy());
+        repeater.setSelected(generalSettings.isCaptureRepeater());
+        intruder.setSelected(generalSettings.isCaptureIntruder());
+        scanner.setSelected(generalSettings.isCaptureScanner());
+        spider.setSelected(generalSettings.isCaptureSpider());
+        target.setSelected(generalSettings.isCaptureTarget());
+        extender.setSelected(generalSettings.isCaptureExtender());
+
+        proxy.addActionListener(this::onProxyChanged);
+        repeater.addActionListener(this::onRepeaterChanged);
+        intruder.addActionListener(this::onIntruderChanged);
+        scanner.addActionListener(this::onScannerChanged);
+        spider.addActionListener(this::onSpiderChanged);
+        target.addActionListener(this::onTargetChanged);
+        extender.addActionListener(this::onExtenderChanged);
+
+        container.add(proxy);
+        container.add(repeater, "wrap");
+        container.add(intruder);
+        container.add(scanner, "wrap");
+        container.add(spider);
+        container.add(target, "wrap");
+        container.add(extender);
+        return container;
+    }
+
+    private void onProxyChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureProxy(proxy.isSelected());
+    }
+
+    private void onRepeaterChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureRepeater(repeater.isSelected());
+    }
+
+    private void onIntruderChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureIntruder(intruder.isSelected());
+    }
+
+    private void onScannerChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureScanner(scanner.isSelected());
+    }
+
+    private void onSpiderChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureSpider(spider.isSelected());
+    }
+
+    private void onTargetChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureTarget(target.isSelected());
+    }
+
+    private void onExtenderChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureExtender(extender.isSelected());
     }
 
     private Component getExportSettings() {

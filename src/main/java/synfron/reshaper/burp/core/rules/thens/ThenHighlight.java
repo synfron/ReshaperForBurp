@@ -13,7 +13,7 @@ public class ThenHighlight extends Then<ThenHighlight> {
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
-        eventInfo.getProxyMessage().getMessageInfo().setHighlight(color.getValue());
+        eventInfo.getRequestResponse().setHighlight(color.getValue());
         return RuleResponse.Continue;
     }
 

@@ -1,10 +1,8 @@
 package synfron.reshaper.burp.core.vars;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.ObjectUtils;
 import synfron.reshaper.burp.core.events.CollectionChangedAction;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
-import synfron.reshaper.burp.core.settings.Storage;
 import synfron.reshaper.burp.core.utils.CaseInsensitiveString;
 
 import java.util.Collections;
@@ -19,15 +17,6 @@ public class GlobalVariables extends Variables {
 
     public static GlobalVariables get() {
         return global;
-    }
-
-    public void save()
-    {
-        Storage.store("Reshaper.variables", exportVariables());
-    }
-
-    public void load() {
-        importVariables(Storage.get("Reshaper.variables", new TypeReference<>() {}), true);
     }
 
     public List<Variable> exportVariables() {

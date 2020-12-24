@@ -19,6 +19,8 @@ Matches Text - If a value (text, variable, or HTTP event entity) matches a value
 
 Proxy Name - If received by a certain Burp proxy listener
 
+From Tool - If the HTTP message is from a specific Burp tool
+
 [More](https://synfron.github.io/ReshaperForBurp/Rules.html#whens)
 
 ### Thens

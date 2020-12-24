@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -35,13 +36,13 @@ public class VariableModel {
     public VariableModel(Variable variable) {
         this.variable = variable.withListener(variablePropertyChanged);
         name = variable.getName();
-        value = StringUtils.defaultString(Objects.toString(variable.getValue()));
+        value = StringUtils.defaultString(TextUtils.toString(variable.getValue()));
         persistent = variable.isPersistent();
     }
 
     private void onVariableChanged(PropertyChangedArgs propertyChangedArgs) {
         SwingUtilities.invokeLater(() -> {
-            value = StringUtils.defaultString(Objects.toString(variable.getValue()));
+            value = StringUtils.defaultString(TextUtils.toString(variable.getValue()));
             persistent = variable.isPersistent();
             propertyChanged("this", this);
             setSaved(true);

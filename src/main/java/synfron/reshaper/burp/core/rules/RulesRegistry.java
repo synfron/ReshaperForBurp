@@ -1,11 +1,9 @@
 package synfron.reshaper.burp.core.rules;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.*;
-import synfron.reshaper.burp.core.settings.Storage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,14 +79,6 @@ public class RulesRegistry {
                 collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Move, currentIndex - 1, currentIndex, rule));
             }
         }
-    }
-
-    public void loadRules() {
-        importRules(Storage.get("Reshaper.rules", new TypeReference<>() {}), false);
-    }
-
-    public void saveRules() {
-        Storage.store("Reshaper.rules", exportRules());
     }
 
     public void importRules(List<Rule> rules, boolean overrideDuplicates) {
