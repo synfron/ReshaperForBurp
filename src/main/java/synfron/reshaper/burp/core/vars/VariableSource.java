@@ -2,5 +2,6 @@ package synfron.reshaper.burp.core.vars;
 
 public enum VariableSource {
     Event,
-    Global
+    Global,
+    Message
 }

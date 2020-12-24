@@ -21,7 +21,7 @@ public class ThenSetVariableComponent extends ThenSetComponent<ThenSetVariableMo
 
     @Override
     protected List<Component> getExtendedComponents() {
-        targetSource = new JComboBox<>(VariableSource.values());
+        targetSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
         variableName = new JTextField();
 
         targetSource.setSelectedItem(model.getTargetSource());

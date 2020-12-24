@@ -29,7 +29,7 @@ public class ThenDeleteVariable extends Then<ThenDeleteVariable> {
                 variables = GlobalVariables.get();
                 break;
         }
-        variables.remove(variableName.getText(eventInfo.getVariables()));
+        variables.remove(variableName.getText(eventInfo));
         return RuleResponse.Continue;
     }
 

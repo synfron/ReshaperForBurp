@@ -37,16 +37,16 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> {
         }
         if (variables != null)
         {
-            Variable variable = variables.add(variableName.getText(eventInfo.getVariables()));
+            Variable variable = variables.add(variableName.getText(eventInfo));
             if (destinationMessageValuePath != null && destinationMessageValueType != MessageValueType.Text && variable.getValue() != null)
             {
                 switch (destinationMessageValueType)
                 {
                     case Json:
-                        variable.setValue(TextUtils.setJsonValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo.getVariables()), replacementText));
+                        variable.setValue(TextUtils.setJsonValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText));
                         break;
                     case Html:
-                        variable.setValue(TextUtils.setHtmlValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo.getVariables()), replacementText));
+                        variable.setValue(TextUtils.setHtmlValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText));
                         break;
                 }
             } else {

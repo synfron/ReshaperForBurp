@@ -59,8 +59,6 @@ public class ReshaperObj {
     }
 
     public static class EventObj {
-        private final MessageValueHandler messageValueHandler = new MessageValueHandler();
-
         public List<String> getMessageValueKeys() {
             return Arrays.stream(MessageValue.values()).map(value -> value.name()).collect(Collectors.toList());
         }
@@ -70,7 +68,7 @@ public class ReshaperObj {
             if (messageValue == null) {
                 throw new IllegalArgumentException(String.format("Invalid message value key: '%s'", key));
             }
-            return messageValueHandler.getValue(
+            return MessageValueHandler.getValue(
                     (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
                     EnumUtils.getEnumIgnoreCase(MessageValue.class, key),
                     VariableString.getAsVariableString(identifier, false)
@@ -82,7 +80,7 @@ public class ReshaperObj {
             if (messageValue == null) {
                 throw new IllegalArgumentException(String.format("Invalid message value key: '%s'", key));
             }
-            messageValueHandler.setValue(
+            MessageValueHandler.setValue(
                     (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
                     EnumUtils.getEnumIgnoreCase(MessageValue.class, key),
                     VariableString.getAsVariableString(identifier, false),

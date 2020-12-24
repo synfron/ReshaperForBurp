@@ -17,7 +17,7 @@ public class ThenDelay extends Then<ThenDelay> {
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
         try {
-            Thread.sleep(ObjectUtils.defaultIfNull(delay.getInt(eventInfo.getVariables()), 0));
+            Thread.sleep(ObjectUtils.defaultIfNull(delay.getInt(eventInfo), 0));
         } catch (InterruptedException e) {
             Log.get().withMessage("Delay interrupted").withException(e).logErr();
         }

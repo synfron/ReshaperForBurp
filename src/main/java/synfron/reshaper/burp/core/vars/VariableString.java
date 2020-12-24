@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.MessageValue;
+import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.Serializable;
@@ -71,9 +75,9 @@ public class VariableString implements Serializable {
         }
     }
 
-    public Integer getInt(Variables connectionVariables)
+    public Integer getInt(EventInfo eventInfo)
     {
-        String text = getText(connectionVariables);
+        String text = getText(eventInfo);
         Integer nullableValue = null;
         try {
             nullableValue = Integer.parseInt(text);
@@ -83,7 +87,7 @@ public class VariableString implements Serializable {
         return nullableValue;
     }
 
-    public String getText(Variables connectionVariables)
+    public String getText(EventInfo eventInfo)
     {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
@@ -91,26 +95,42 @@ public class VariableString implements Serializable {
             Variable value = null;
             switch (variable.getVariableSource()) {
                 case Global: value = GlobalVariables.get().getOrDefault(variable.getName()); break;
-                case Event: value = connectionVariables != null ? connectionVariables.getOrDefault(variable.getName()) : null; break;
+                case Event: value = eventInfo.getVariables().getOrDefault(variable.getName()); break;
+                case Message: value = getMessageVariable(eventInfo, variable.getName()); break;
             }
-            variableVals.add(TextUtils.toString(value));
+            variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
         }
         return String.format(text, variableVals.toArray());
     }
 
-    public static String getTextOrDefault(Variables connectionVariables, VariableString variableString, String defaultValue) {
+    private Variable getMessageVariable(EventInfo eventInfo, String variableName) {
+        Variable variable = null;
+        String[] variableNameParts = variableName.split(":", 2);
+        MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
+        String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
+        if (messageValue != null) {
+            String value = StringUtils.defaultString(
+                    MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false))
+            );
+            variable = new Variable(messageValue.name());
+            variable.setValue(value);
+        }
+        return variable;
+    }
+
+    public static String getTextOrDefault(EventInfo eventInfo, VariableString variableString, String defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
-                StringUtils.defaultIfEmpty(variableString.getText(connectionVariables), defaultValue) :
+                StringUtils.defaultIfEmpty(variableString.getText(eventInfo), defaultValue) :
                 defaultValue;
     }
 
-    public static String getText(Variables connectionVariables, VariableString variableString) {
-        return variableString != null ? variableString.getText(connectionVariables) : null;
+    public static String getText(EventInfo eventInfo, VariableString variableString) {
+        return variableString != null ? variableString.getText(eventInfo) : null;
     }
 
-    public static int getIntOrDefault(Variables connectionVariables, VariableString variableString, int defaultValue) {
+    public static int getIntOrDefault(EventInfo eventInfo, VariableString variableString, int defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
-                variableString.getInt(connectionVariables) :
+                variableString.getInt(eventInfo) :
                 defaultValue;
     }
 

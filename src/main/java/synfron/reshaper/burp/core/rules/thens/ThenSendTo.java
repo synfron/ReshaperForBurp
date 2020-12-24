@@ -57,15 +57,15 @@ public class ThenSendTo extends Then<ThenSendTo> {
     private void sendToIntruder(EventInfo eventInfo) {
         if (overrideDefaults) {
             BurpExtender.getCallbacks().sendToIntruder(
-                    VariableString.getTextOrDefault(eventInfo.getVariables(), host, eventInfo.getDestinationAddress()),
-                    VariableString.getIntOrDefault(eventInfo.getVariables(), port, eventInfo.getDestinationPort()),
+                    VariableString.getTextOrDefault(eventInfo, host, eventInfo.getDestinationAddress()),
+                    VariableString.getIntOrDefault(eventInfo, port, eventInfo.getDestinationPort()),
                     StringUtils.equalsIgnoreCase(
-                            VariableString.getTextOrDefault(eventInfo.getVariables(), protocol, eventInfo.getHttpProtocol()),
+                            VariableString.getTextOrDefault(eventInfo, protocol, eventInfo.getHttpProtocol()),
                             "https"
                     ),
                     CollectionUtils.defaultIfEmpty(
                             TextUtils.stringToBytes(
-                                    VariableString.getTextOrDefault(eventInfo.getVariables(), request, "")
+                                    VariableString.getTextOrDefault(eventInfo, request, "")
                             ),
                             eventInfo.getHttpRequestMessage().getValue()
                     )
@@ -83,15 +83,15 @@ public class ThenSendTo extends Then<ThenSendTo> {
     private void sendToRepeater(EventInfo eventInfo) {
         if (overrideDefaults) {
             BurpExtender.getCallbacks().sendToRepeater(
-                    VariableString.getTextOrDefault(eventInfo.getVariables(), host, eventInfo.getDestinationAddress()),
-                    VariableString.getIntOrDefault(eventInfo.getVariables(), port, eventInfo.getDestinationPort()),
+                    VariableString.getTextOrDefault(eventInfo, host, eventInfo.getDestinationAddress()),
+                    VariableString.getIntOrDefault(eventInfo, port, eventInfo.getDestinationPort()),
                     StringUtils.equalsIgnoreCase(
-                            VariableString.getTextOrDefault(eventInfo.getVariables(), protocol, eventInfo.getHttpProtocol()),
+                            VariableString.getTextOrDefault(eventInfo, protocol, eventInfo.getHttpProtocol()),
                             "https"
                     ),
                     CollectionUtils.defaultIfEmpty(
                             TextUtils.stringToBytes(
-                                    VariableString.getTextOrDefault(eventInfo.getVariables(), request, "")
+                                    VariableString.getTextOrDefault(eventInfo, request, "")
                             ),
                             eventInfo.getHttpRequestMessage().getValue()
                     ),
@@ -113,7 +113,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
             BurpExtender.getCallbacks().sendToComparer(
                     CollectionUtils.defaultIfEmpty(
                             TextUtils.stringToBytes(
-                                    VariableString.getTextOrDefault(eventInfo.getVariables(), value, "")
+                                    VariableString.getTextOrDefault(eventInfo, value, "")
                             ),
                             eventInfo.getHttpRequestMessage().getValue()
                     )
@@ -127,7 +127,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         try {
             if (overrideDefaults && url != null && !url.isEmpty()) {
                 BurpExtender.getCallbacks().sendToSpider(
-                        new URL(url.getText(eventInfo.getVariables()))
+                        new URL(url.getText(eventInfo))
                 );
             } else {
                 BurpExtender.getCallbacks().sendToSpider(

@@ -11,8 +11,6 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
-    protected final transient MessageValueHandler messageValueHandler = new MessageValueHandler();
-
     @Getter @Setter
     private boolean useMessageValue = true;
     @Getter @Setter
@@ -38,7 +36,7 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
 
     private String getValue(EventInfo eventInfo)
     {
-        return messageValueHandler.getValue(eventInfo, sourceMessageValue, sourceIdentifier);
+        return MessageValueHandler.getValue(eventInfo, sourceMessageValue, sourceIdentifier);
     }
 
     protected String getReplacementValue(EventInfo eventInfo)
@@ -48,24 +46,24 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
         {
             text = getValue(eventInfo);
         } else {
-            text = this.text.getText(eventInfo.getVariables());
+            text = this.text.getText(eventInfo);
         }
         if (sourceMessageValueType != MessageValueType.Text && sourceMessageValuePath != null)
         {
             switch (sourceMessageValueType)
             {
                 case Json:
-                    text = StringUtils.defaultString(TextUtils.getJsonValue(text, sourceMessageValuePath.getText(eventInfo.getVariables())));
+                    text = StringUtils.defaultString(TextUtils.getJsonValue(text, sourceMessageValuePath.getText(eventInfo)));
                     break;
                 case Html:
-                    text = StringUtils.defaultString(TextUtils.getHtmlValue(text, sourceMessageValuePath.getText(eventInfo.getVariables())));
+                    text = StringUtils.defaultString(TextUtils.getHtmlValue(text, sourceMessageValuePath.getText(eventInfo)));
                     break;
             }
         }
 
         if (useReplace && replacementText != null)
         {
-            text = text.replaceAll(regexPattern.getText(eventInfo.getVariables()), replacementText.getText(eventInfo.getVariables()));
+            text = text.replaceAll(regexPattern.getText(eventInfo), replacementText.getText(eventInfo));
         }
         return text;
     }

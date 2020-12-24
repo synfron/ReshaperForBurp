@@ -64,16 +64,16 @@ public class WhenHasEntity extends When<WhenHasEntity> {
                 matches = eventInfo.getHttpResponseMessage().getHeaders().getCount() > 0;
                 break;
             case HttpRequestHeader:
-                matches = eventInfo.getHttpRequestMessage().getHeaders().contains(identifier.getText(eventInfo.getVariables()));
+                matches = eventInfo.getHttpRequestMessage().getHeaders().contains(identifier.getText(eventInfo));
                 break;
             case HttpResponseHeader:
-                matches = eventInfo.getHttpResponseMessage().getHeaders().contains(identifier.getText(eventInfo.getVariables()));
+                matches = eventInfo.getHttpResponseMessage().getHeaders().contains(identifier.getText(eventInfo));
                 break;
             case HttpRequestCookie:
-                matches = eventInfo.getHttpRequestMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo.getVariables()));
+                matches = eventInfo.getHttpRequestMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
                 break;
             case HttpResponseCookie:
-                matches = eventInfo.getHttpResponseMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo.getVariables()));
+                matches = eventInfo.getHttpResponseMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
                 break;
             case HttpRequestUriPath:
                 matches = StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getPath());
@@ -82,7 +82,7 @@ public class WhenHasEntity extends When<WhenHasEntity> {
                 matches = StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameters());
                 break;
             case HttpRequestUriQueryParameter:
-                matches = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo.getVariables())) != null;
+                matches = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo)) != null;
                 break;
         }
 

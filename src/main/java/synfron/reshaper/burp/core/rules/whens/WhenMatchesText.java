@@ -12,7 +12,6 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 public class WhenMatchesText extends When<WhenMatchesText> {
-    private final transient MessageValueHandler messageValueHandler = new MessageValueHandler();
     @Getter
     @Setter
     private VariableString identifier;
@@ -43,10 +42,10 @@ public class WhenMatchesText extends When<WhenMatchesText> {
         boolean isMatch = false;
         try {
             String sourceText = useMessageValue ?
-                    messageValueHandler.getValue(eventInfo, messageValue, identifier) :
-                    this.sourceText.getText(eventInfo.getVariables());
+                    MessageValueHandler.getValue(eventInfo, messageValue, identifier) :
+                    this.sourceText.getText(eventInfo);
             sourceText = getPathValue(sourceText, eventInfo);
-            String matchText = this.matchText.getText(eventInfo.getVariables());
+            String matchText = this.matchText.getText(eventInfo);
 
             switch (matchType) {
                 case BeginsWith:
@@ -76,10 +75,10 @@ public class WhenMatchesText extends When<WhenMatchesText> {
             switch (messageValueType)
             {
                 case Json:
-                    value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo.getVariables()));
+                    value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo));
                     break;
                 case Html:
-                    value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo.getVariables()));
+                    value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo));
                     break;
             }
         }

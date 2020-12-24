@@ -3,6 +3,8 @@ Extension for Burp Suite to trigger actions and reshape HTTP request and respons
 
 ![Screenshot](https://user-images.githubusercontent.com/48854453/102699312-ad0b2c80-4211-11eb-9ccc-17c86c56ad99.png)
 
+[Example Usage](https://synfron.github.io/ReshaperForBurp/Examples.html)
+
 ## Rules
 
 Rules allow you to set actions to perform (called Thens) if HTTP messages/connections (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order.

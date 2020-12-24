@@ -15,7 +15,7 @@ public class ThenLog extends Then<ThenLog> {
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
-        Log.get().withMessage(text.getText(eventInfo.getVariables())).log();
+        Log.get().withMessage(text.getText(eventInfo)).log();
         return RuleResponse.Continue;
     }
 

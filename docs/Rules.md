@@ -7,15 +7,17 @@ Rules allow you to set actions to perform (called Thens) if HTTP messages/connec
 
 ## Message Values
 
-Source Address - Example: `127.0.0.1`
+&lt;Friendly Name&gt; (&lt;Name Used in Variables&gt;)
 
-Destination Address - Example: `www.example.com`
+Source Address (SourceAddress) - Example: `127.0.0.1`
 
-Destination Port - Example: `80`
+Destination Address (DestinationAddress) - Example: `www.example.com`
 
-Protocol - http or https
+Destination Port (DestinationPort) - Example: `80`
 
-Request Message - Example: 
+Protocol (HttpProtocol) - http or https
+
+Request Message (HttpRequestMessage) - Example: 
 ```
 GET / HTTP/1.1
 Host: www.example.com
@@ -29,19 +31,19 @@ Pragma: no-cache
 Cache-Control: no-cache
 ```
 
-Request Status Line - Example: `GET /path/to/page/index.html?claim=reset&type=plain HTTP/1.1`
+Request Status Line (HttpRequestStatusLine) - Example: `GET /path/to/page/index.html?claim=reset&type=plain HTTP/1.1`
 
-Request Method - Example: `GET`
+Request Method (HttpRequestMethod) - Example: `GET`
 
-Request URI - Example: `/path/to/page/index.html?claim=reset&type=plain`
+Request URI (HttpRequestUri) - Example: `/path/to/page/index.html?claim=reset&type=plain`
 
-Request URI Path - Example: `/path/to/page/index.html` from `/path/to/page/index.html?claim=reset&type=plain`
+Request URI Path (HttpRequestUriPath) - Example: `/path/to/page/index.html` from `/path/to/page/index.html?claim=reset&type=plain`
 
-Request URI Query Parameters - Example: `claim=reset&type=plain` from `/path/to/page/index.html?claim=reset&type=plain`
+Request URI Query Parameters (HttpRequestUriQueryParameters) - Example: `claim=reset&type=plain` from `/path/to/page/index.html?claim=reset&type=plain`
 
-Request URI Query Parameter - Example: `plain` at identifier `type` from `/path/to/page/index.html?claim=reset&type=plain`
+Request URI Query Parameter (HttpRequestUriQueryParameter) - Example: `plain` at identifier `type` from `/path/to/page/index.html?claim=reset&type=plain`
 
-Request Headers -  Example: 
+Request Headers (HttpRequestHeaders) -  Example: 
 ```
 Host: www.example.com
 User-Agent: Mozilla/5.0 Firefox/78.0
@@ -55,13 +57,13 @@ Pragma: no-cache
 Cache-Control: no-cache
 ```
 
-Request Header - Example: `gzip, deflate` at identifier `Accept-Encoding`
+Request Header (HttpRequestHeader) - Example: `gzip, deflate` at identifier `Accept-Encoding`
 
-Request Cookie - Example: `2Zy8` at identifier `AID`
+Request Cookie (HttpRequestCookie) - Example: `2Zy8` at identifier `AID`
 
-Request Body
+Request Body (HttpRequestBody)
 
-Response Message - Example:
+Response Message (HttpResponseMessage) - Example:
 ```
 HTTP/1.1 404 Not Found
 Accept-Ranges: bytes
@@ -78,13 +80,13 @@ Content-Length: 1256
 Connection: close
 ```
 
-Response Status Line - Example: `HTTP/1.1 404 Not Found`
+Response Status Line (HttpResponseStatusLine) - Example: `HTTP/1.1 404 Not Found`
 
-Response Status Code - Example: `404`
+Response Status Code (HttpResponseStatusCode) - Example: `404`
 
-Response Status Message - Example: `Not Found`
+Response Status Message (HttpResponseStatusMessage) - Example: `Not Found`
 
-Response Headers - Example:
+Response Headers (HttpResponseHeaders) - Example:
 ```
 HTTP/1.1 404 Not Found
 Accept-Ranges: bytes
@@ -102,11 +104,11 @@ Content-Length: 1256
 Connection: close
 ```
 
-Response Header - Example: `max-age=604800` at identifier `Cache-Control`
+Response Header (HttpResponseHeader) - Example: `max-age=604800` at identifier `Cache-Control`
 
-Response Cookie - Example: `2Zy8` at identifier `AID`
+Response Cookie (HttpResponseCookie) - Example: `2Zy8` at identifier `AID`
 
-Response Body
+Response Body (HttpResponseBody)
 
 ## Whens
 

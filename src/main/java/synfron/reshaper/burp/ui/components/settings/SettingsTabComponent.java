@@ -228,14 +228,14 @@ public class SettingsTabComponent extends JPanel {
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 settingsManager.importSettings(fileChooser.getSelectedFile(), overrideDuplicates.isSelected());
-            }
-            refreshLists();
+                refreshLists();
 
-            JOptionPane.showMessageDialog(this,
-                    "Import successful",
-                    "Import",
-                    JOptionPane.PLAIN_MESSAGE
-            );
+                JOptionPane.showMessageDialog(this,
+                        "Import successful",
+                        "Import",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+            }
         } catch (Exception e) {
             Log.get().withMessage("Error importing data").withException(e).logErr();
 

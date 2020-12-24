@@ -17,7 +17,7 @@ public class MessageValueHandler {
         ).contains(messageValue);
     }
 
-    public String getValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier)
+    public static String getValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier)
     {
         String value = null;
         switch (messageValue)
@@ -29,10 +29,10 @@ public class MessageValueHandler {
                 value = eventInfo.getHttpResponseMessage().getHeaders().getText();
                 break;
             case HttpRequestHeader:
-                value = eventInfo.getHttpRequestMessage().getHeaders().getHeader(identifier.getText(eventInfo.getVariables()));
+                value = eventInfo.getHttpRequestMessage().getHeaders().getHeader(identifier.getText(eventInfo));
                 break;
             case HttpResponseHeader:
-                value = eventInfo.getHttpResponseMessage().getHeaders().getHeader(identifier.getText(eventInfo.getVariables()));
+                value = eventInfo.getHttpResponseMessage().getHeaders().getHeader(identifier.getText(eventInfo));
                 break;
             case HttpRequestBody:
                 value = eventInfo.getHttpRequestMessage().getBody().getText();
@@ -50,10 +50,10 @@ public class MessageValueHandler {
                 value = eventInfo.getHttpProtocol();
                 break;
             case HttpRequestCookie:
-                value = eventInfo.getHttpRequestMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo.getVariables()));
+                value = eventInfo.getHttpRequestMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
                 break;
             case HttpResponseCookie:
-                value = eventInfo.getHttpResponseMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo.getVariables()));
+                value = eventInfo.getHttpResponseMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
                 break;
             case SourceAddress:
                 value = eventInfo.getSourceAddress();
@@ -86,7 +86,7 @@ public class MessageValueHandler {
                 value = eventInfo.getHttpResponseMessage().getStatusLine().getMessage();
                 break;
             case HttpRequestUriQueryParameter:
-                value = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo.getVariables()));
+                value = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo));
                 break;
             case HttpRequestUriQueryParameters:
                 value = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameters();
@@ -95,7 +95,7 @@ public class MessageValueHandler {
         return StringUtils.defaultString(value);
     }
 
-    public void setValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier, String replacementText) {
+    public static void setValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier, String replacementText) {
         switch (messageValue)
         {
             case HttpRequestHeaders:
@@ -105,10 +105,10 @@ public class MessageValueHandler {
                 eventInfo.getHttpResponseMessage().setHeaders(StringUtils.defaultString(replacementText));
                 break;
             case HttpRequestHeader:
-                eventInfo.getHttpRequestMessage().getHeaders().setHeader(identifier.getText(eventInfo.getVariables()), replacementText);
+                eventInfo.getHttpRequestMessage().getHeaders().setHeader(identifier.getText(eventInfo), replacementText);
                 break;
             case HttpResponseHeader:
-                eventInfo.getHttpResponseMessage().getHeaders().setHeader(identifier.getText(eventInfo.getVariables()), replacementText);
+                eventInfo.getHttpResponseMessage().getHeaders().setHeader(identifier.getText(eventInfo), replacementText);
                 break;
             case HttpRequestBody:
                 eventInfo.getHttpRequestMessage().setBody(StringUtils.defaultString(replacementText));
@@ -126,10 +126,10 @@ public class MessageValueHandler {
                 eventInfo.setHttpProtocol(replacementText);
                 break;
             case HttpRequestCookie:
-                eventInfo.getHttpRequestMessage().getHeaders().getCookies().setCookie(identifier.getText(eventInfo.getVariables()), replacementText);
+                eventInfo.getHttpRequestMessage().getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText);
                 break;
             case HttpResponseCookie:
-                eventInfo.getHttpResponseMessage().getHeaders().getCookies().setCookie(identifier.getText(eventInfo.getVariables()), replacementText);
+                eventInfo.getHttpResponseMessage().getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText);
                 break;
             case SourceAddress:
                 throw new UnsupportedOperationException("Cannot set Source Address");
@@ -161,7 +161,7 @@ public class MessageValueHandler {
                 eventInfo.getHttpResponseMessage().getStatusLine().setMessage(StringUtils.defaultString(replacementText));
                 break;
             case HttpRequestUriQueryParameter:
-                eventInfo.getHttpRequestMessage().getStatusLine().getUrl().setQueryParameter(identifier.getText(eventInfo.getVariables()), replacementText);
+                eventInfo.getHttpRequestMessage().getStatusLine().getUrl().setQueryParameter(identifier.getText(eventInfo), replacementText);
                 break;
             case HttpRequestUriQueryParameters:
                 eventInfo.getHttpRequestMessage().getStatusLine().getUrl().setQueryParameters(StringUtils.defaultString(replacementText));
