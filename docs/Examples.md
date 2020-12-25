@@ -33,7 +33,7 @@ The following is an example of how to do this which can be modified for your use
 19. Change `Message Value` to `Destination Address`.
 20. Set `Match Text` to `www.example.com`.
 21. Add Then -> `Set Value`.
-22. Set `Text` to `{{global:exampleAuth}}`.
+22. Set `Text` to {% raw %}`{{global:exampleAuth}}`.{% endraw %}
 23. Change `Destination Message Value` to `Request Header`.
 24. Set `Destination Identifier` to `Authorization`.
 25. At the bottom right of the window, check `Enabled` and click `Save`.
@@ -96,7 +96,7 @@ The following is an example of how to do this which can be modified for your use
 9. Add Then -> `Set Event Direction`.
 10. Change `Event Direction` to `Response`.
 11. Add Then -> `Set Value`.
-12. Set `Text` to `{{global:mockResponse}}`.
+12. Set `Text` to {% raw %}`{{global:mockResponse}}`.{% endraw %}
 13. Change `Destination Message Value` to `Response Message`.
 14. At the bottom right of the window, check `Enabled` and click `Save`.
 
