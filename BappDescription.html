@@ -1,0 +1,34 @@
+<p>Trigger actions and reshape HTTP request and response traffic using configurable rules</p>
+
+<p>Rules</p>
+<p>Rules allow you to set actions to perform (called Thens) if HTTP messages/connections (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order.</p>
+
+<p>Whens</p>
+<ul>
+	<li>Event Direction - If the HTTP message is a Request or Response</li>
+	<li>Has Entity - If the HTTP event contains a certain entity</li>
+	<li>Matches Text - If a value (text, variable, or HTTP event entity) matches a value</li>
+	<li>Proxy Name - If received by a certain Burp proxy listener</li>
+	<li>From Tool - If the HTTP message is from a specific Burp tool</li>
+</ul>
+
+<p>Thens</p>
+<ul>
+	<li>Break - Stop rules or then action processing</li>
+	<li>Delay - Delay further processing/sending of the HTTP event</li>
+	<li>Log - Log message to the Burp extension console</li>
+	<li>Highlight - Highlight the request/response line in the HTTP history</li>
+	<li>Run Rules - Run a specific rule or all auto-run rules</li>
+	<li>Run Script - Execute a JavaScript script</li>
+	<li>Set Event Direction - Change whether to send a request or to send a response at the end of processing</li>
+	<li>Set Value - Set the value of an HTTP event using another value (text, variable, or HTTP event entity)</li>
+	<li>Delete Value - Remove an HTTP message entity</li>
+	<li>Set Variable - Set a variable using another value (text, variable, or HTTP event entity)</li>
+	<li>Delete Variable - Delete a variable</li>
+	<li>Send To - Send data to other Burp tools</li>
+	<li>Drop - Have Burp drop the connection</li>
+</ul>
+
+<p>Variables</p>
+<p>Share values across different rules while processing the same event or all events</p>
+
