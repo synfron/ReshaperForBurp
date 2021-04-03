@@ -31,40 +31,40 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         useMessageValue = new JCheckBox("Use Message Value");
         messageValue = new JComboBox<>(MessageValue.values());
         identifier = new JTextField();
+        sourceText = new JTextField();
         messageValueType = new JComboBox<>(MessageValueType.values());
         messageValuePath = new JTextField();
-        sourceText = new JTextField();
-        matchText = new JTextField();
         matchType = new JComboBox<>(MatchType.values());
+        matchText = new JTextField();
         JButton save = new JButton("Save");
 
         useMessageValue.setSelected(model.isUseMessageValue());
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
+        sourceText.setText(model.getSourceText());
         messageValueType.setSelectedItem(model.getMessageValueType());
         messageValuePath.setText(model.getMessageValuePath());
-        sourceText.setText(model.getSourceText());
-        matchText.setText(model.getMatchText());
         matchType.setSelectedItem(model.getMatchType());
+        matchText.setText(model.getMatchText());
 
         useMessageValue.addActionListener(this::onUseMessageValueChanged);
         messageValue.addActionListener(this::onMessageValueChanged);
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
+        sourceText.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceTextChanged));
         messageValueType.addActionListener(this::onMessageValueTypeChanged);
         messageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onMessageValuePathChanged));
-        sourceText.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceTextChanged));
-        matchText.getDocument().addDocumentListener(new DocumentActionListener(this::onMatchTextChanged));
         matchType.addActionListener(this::onMatchTypeChanged);
+        matchText.getDocument().addDocumentListener(new DocumentActionListener(this::onMatchTextChanged));
         save.addActionListener(this::onSave);
 
         mainContainer.add(useMessageValue, "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
-                getLabeledField("Message Value", messageValue),
+                getLabeledField("Source Message Value", messageValue),
                 useMessageValue,
                 () -> useMessageValue.isSelected()
         ), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
-                getLabeledField("Identifier", identifier),
+                getLabeledField("Source Identifier", identifier),
                 List.of(useMessageValue, messageValue),
                 () -> useMessageValue.isSelected() && MessageValueHandler.hasIdentifier((MessageValue) messageValue.getSelectedItem())
         ), "wrap");
@@ -73,14 +73,14 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
                 useMessageValue,
                 () -> !useMessageValue.isSelected()
         ), "wrap");
-        mainContainer.add(getLabeledField("Message Value Type", messageValueType), "wrap");
+        mainContainer.add(getLabeledField("Source Value Type", messageValueType), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
-                getLabeledField("Message Value Path", messageValuePath),
+                getLabeledField("Source Value Path", messageValuePath),
                 List.of(useMessageValue, messageValueType),
                 () -> messageValueType.getSelectedItem() != MessageValueType.Text
         ), "wrap");
-        mainContainer.add(getLabeledField("Match Text", matchText), "wrap");
         mainContainer.add(getLabeledField("Match Type", matchType), "wrap");
+        mainContainer.add(getLabeledField("Match Text", matchText), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
         mainContainer.add(getPaddedButton(save));
     }
