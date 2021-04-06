@@ -112,6 +112,8 @@ public class VariableComponent extends JPanel {
         githubLink.setFont(font.deriveFont(attributes));
 
         githubLink.addMouseListener(new MouseListener() {
+            private Color originalColor = githubLink.getForeground();
+
             @SneakyThrows
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -131,7 +133,7 @@ public class VariableComponent extends JPanel {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                githubLink.setForeground(Color.BLACK);
+                githubLink.setForeground(originalColor);
             }
         });
 

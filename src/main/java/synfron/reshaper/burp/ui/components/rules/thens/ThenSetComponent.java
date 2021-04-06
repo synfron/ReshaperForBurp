@@ -81,13 +81,13 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
                 () -> useMessageValue.isSelected() && MessageValueHandler.hasIdentifier((MessageValue)sourceMessageValue.getSelectedItem())
         ), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
-                getLabeledField("Text", text),
+                getLabeledField("Source Text", text),
                 useMessageValue,
                 () -> !useMessageValue.isSelected()
         ), "wrap");
-        mainContainer.add(getLabeledField("Source Message Value Type", sourceMessageValueType), "wrap");
+        mainContainer.add(getLabeledField("Source Value Type", sourceMessageValueType), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
-                getLabeledField("Source Message Value Path", sourceMessageValuePath),
+                getLabeledField("Source Value Path", sourceMessageValuePath),
                 List.of(sourceMessageValueType),
                 () -> sourceMessageValueType.getSelectedItem() != MessageValueType.Text
         ), "wrap");
@@ -103,9 +103,9 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
                 () -> useReplace.isSelected()
         ), "wrap");
         getExtendedComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getLabeledField("Destination Message Value Type", destinationMessageValueType), "wrap");
+        mainContainer.add(getLabeledField("Destination Value Type", destinationMessageValueType), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
-                getLabeledField("Destination Message Value Path", destinationMessageValuePath),
+                getLabeledField("Destination Value Path", destinationMessageValuePath),
                 destinationMessageValueType,
                 () -> destinationMessageValueType.getSelectedItem() != MessageValueType.Text
         ), "wrap");

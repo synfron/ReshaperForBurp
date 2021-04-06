@@ -58,7 +58,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
                     isMatch = sourceText.contains(matchText);
                     break;
                 case Equals:
-                    isMatch = sourceText.endsWith(matchText);
+                    isMatch = sourceText.equals(matchText);
                     break;
                 case Regex:
                     isMatch = TextUtils.isMatch(sourceText, matchText);
