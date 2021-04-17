@@ -11,28 +11,28 @@ import java.util.List;
 public abstract class RuleOperationModel<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> {
     @Getter
     protected final T ruleOperation;
-    protected boolean saved;
+    protected boolean validated;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
     public RuleOperationModel(T ruleOperation, boolean isNew) {
         this.ruleOperation = ruleOperation;
-        this.saved = !isNew;
+        this.validated = !isNew;
     }
 
     public List<String> validate() {
         return new ArrayList<>();
     }
 
-    protected void setSaved(boolean saved) {
-        if (saved != this.saved) {
-            this.saved = saved;
-            propertyChangedEvent.invoke(new PropertyChangedArgs(this, "saved", saved));
+    protected void setValidated(boolean validated) {
+        if (validated != this.validated) {
+            this.validated = validated;
+            propertyChangedEvent.invoke(new PropertyChangedArgs(this, "saved", validated));
         }
     }
 
     protected void propertyChanged(String name, Object value) {
-        setSaved(false);
+        setValidated(false);
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, name, value));
     }
 
@@ -42,7 +42,7 @@ public abstract class RuleOperationModel<P extends RuleOperationModel<P, T>, T e
 
     @Override
     public String toString() {
-        return ruleOperation.getType().getName() + (saved ? "" : " *");
+        return ruleOperation.getType().getName() + (validated ? "" : " *");
     }
 
     public abstract RuleOperationModelType<P, T> getType();

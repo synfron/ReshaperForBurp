@@ -21,14 +21,14 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
     private void initComponent() {
         identifier = new JTextField();
         messageValue = new JComboBox<>(MessageValue.values());
-        JButton save = new JButton("Save");
+        JButton validate = new JButton("Validate");
 
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
 
         messageValue.addActionListener(this::onMessageValueChanged);
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
-        save.addActionListener(this::onSave);
+        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
@@ -37,7 +37,7 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
                 () -> MessageValueHandler.hasIdentifier((MessageValue)messageValue.getSelectedItem())
         ), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onMessageValueChanged(ActionEvent actionEvent) {

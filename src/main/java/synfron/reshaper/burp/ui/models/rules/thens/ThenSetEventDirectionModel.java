@@ -25,7 +25,7 @@ public class ThenSetEventDirectionModel extends ThenModel<ThenSetEventDirectionM
             return false;
         }
         ruleOperation.setDataDirection(dataDirection);
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -34,7 +34,7 @@ public class ThenSetEventDirectionModel extends ThenModel<ThenSetEventDirectionM
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

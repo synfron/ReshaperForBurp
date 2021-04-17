@@ -128,7 +128,7 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
         ruleOperation.setDestinationMessageValueType(destinationMessageValueType);
         ruleOperation.setDestinationMessageValuePath(VariableString.getAsVariableString(destinationMessageValuePath));
 
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 }

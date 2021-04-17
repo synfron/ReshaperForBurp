@@ -41,7 +41,7 @@ public abstract class WhenModel<P extends WhenModel<P, T>, T extends When<T>> ex
         ruleOperation.setNegate(negate);
         ruleOperation.setUseOrCondition(useOrCondition);
 
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

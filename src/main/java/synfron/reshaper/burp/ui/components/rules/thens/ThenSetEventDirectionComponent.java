@@ -17,15 +17,15 @@ public class ThenSetEventDirectionComponent extends ThenComponent<ThenSetEventDi
 
     private void initComponent() {
         dataDirection = new JComboBox<>(DataDirection.values());
-        JButton save = new JButton("Save");
+        JButton validate = new JButton("Validate");
 
         dataDirection.setSelectedItem(model.getDataDirection());
 
         dataDirection.addActionListener(this::onSetEventDirectionChanged);
-        save.addActionListener(this::onSave);
+        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Event Direction", dataDirection), "wrap");
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onSetEventDirectionChanged(ActionEvent actionEvent) {

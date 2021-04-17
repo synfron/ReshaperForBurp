@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.rules;
 import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -12,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> extends JScrollPane {
+public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> extends JScrollPane implements IFormComponent {
 
     @Getter
     protected final P model;
@@ -24,26 +25,6 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
         setViewportView(mainContainer);
     }
 
-    protected Component getLabeledField(String label, Component innerComponent) {
-        JPanel container = new JPanel();
-        container.setLayout(new MigLayout());
-        container.setBorder(null);
-
-        if (innerComponent instanceof JTextField) {
-            JTextField textField = (JTextField)innerComponent;
-            textField.setColumns(20);
-            textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
-            textField.setAlignmentX(LEFT_ALIGNMENT);
-            container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
-        } else if (innerComponent instanceof JComboBox<?>) {
-            container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
-        }
-
-        container.add(new JLabel(label), "wrap");
-        container.add(innerComponent);
-        return container;
-    }
-
     protected Component getPaddedButton(JButton button) {
         JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         outerContainer.setAlignmentX(LEFT_ALIGNMENT);
@@ -53,7 +34,7 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
         return outerContainer;
     }
 
-    protected void onSave(ActionEvent actionEvent) {
+    protected void onValidate(ActionEvent actionEvent) {
         if (!model.persist()) {
             JOptionPane.showMessageDialog(this,
                     String.join("\n", model.validate()),

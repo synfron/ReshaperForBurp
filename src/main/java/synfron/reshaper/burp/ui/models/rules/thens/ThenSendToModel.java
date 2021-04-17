@@ -120,7 +120,7 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         ruleOperation.setRequest(VariableString.getAsVariableString(request));
         ruleOperation.setValue(VariableString.getAsVariableString(value));
         ruleOperation.setUrl(VariableString.getAsVariableString(url));
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -129,7 +129,7 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

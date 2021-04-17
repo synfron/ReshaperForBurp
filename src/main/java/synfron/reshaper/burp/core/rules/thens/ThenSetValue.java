@@ -2,14 +2,18 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.tuple.Pair;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
-import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class ThenSetValue extends ThenSet<ThenSetValue> {
     @Getter @Setter
@@ -23,8 +27,12 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
 
     public RuleResponse perform(EventInfo eventInfo)
     {
-        String replacementText = getReplacementValue(eventInfo);
-        setValue(eventInfo, replacementText);
+        try {
+            String replacementText = getReplacementValue(eventInfo);
+            setValue(eventInfo, replacementText);
+        } catch (Exception e) {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, true, Collections.emptyList());
+        }
         return RuleResponse.Continue;
     }
 
@@ -43,6 +51,13 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
             }
         }
         MessageValueHandler.setValue(eventInfo, destinationMessageValue, destinationIdentifier, replacementText);
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Arrays.asList(
+                Pair.of("destinationMessageValue", destinationMessageValue),
+                Pair.of("destinationIdentifier", VariableString.getTextOrDefault(eventInfo, destinationIdentifier, null)),
+                Pair.of("valueType", destinationMessageValueType != MessageValueType.Text ? destinationMessageValueType : null),
+                Pair.of("valuePath", destinationMessageValueType != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, destinationMessageValuePath, null) : null),
+                Pair.of("input", replacementText)
+        ));
     }
 
     @Override

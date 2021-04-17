@@ -17,15 +17,15 @@ public class ThenLogComponent extends ThenComponent<ThenLogModel, ThenLog> {
 
     private void initComponent() {
         text = new JTextField();
-        JButton save = new JButton("Save");
+        JButton validate = new JButton("Validate");
 
         text.setText(model.getText());
 
         text.getDocument().addDocumentListener(new DocumentActionListener(this::onTextChanged));
-        save.addActionListener(this::onSave);
+        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Text", text), "wrap");
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onTextChanged(ActionEvent actionEvent) {

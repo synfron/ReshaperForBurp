@@ -57,7 +57,7 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

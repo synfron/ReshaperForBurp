@@ -2,10 +2,10 @@ package synfron.reshaper.burp.core.rules.whens;
 
 import lombok.Getter;
 import lombok.Setter;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
-import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.utils.TextUtils;
@@ -40,12 +40,14 @@ public class WhenMatchesText extends When<WhenMatchesText> {
     @Override
     public boolean isMatch(EventInfo eventInfo) {
         boolean isMatch = false;
+        String sourceText = null;
+        String matchText = null;
         try {
-            String sourceText = useMessageValue ?
+            sourceText = useMessageValue ?
                     MessageValueHandler.getValue(eventInfo, messageValue, identifier) :
                     this.sourceText.getText(eventInfo);
             sourceText = getPathValue(sourceText, eventInfo);
-            String matchText = this.matchText.getText(eventInfo);
+            matchText = this.matchText.getText(eventInfo);
 
             switch (matchType) {
                 case BeginsWith:
@@ -66,6 +68,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
             }
         } catch (Exception ignored) {
         }
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, matchType, matchText, VariableString.getTextOrDefault(eventInfo, identifier, null), sourceText, isMatch);
         return isMatch;
     }
 

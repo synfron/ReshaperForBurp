@@ -14,6 +14,7 @@ public class ThenHighlight extends Then<ThenHighlight> {
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
         eventInfo.getRequestResponse().setHighlight(color.getValue());
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, false, color.getValue());
         return RuleResponse.Continue;
     }
 

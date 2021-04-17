@@ -36,6 +36,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
     private final SettingsManager settingsManager = new SettingsManager();
     private boolean activated = true;
     private ExecutorService serverExecutor;
+    private final String dataDirectionWarning = "Sanity Check - Warning: The %s changed but the data direction is set to %s. Your changes may have no impact. Consider using 'When Data Direction' or 'Then Set Data Direction' to restrict or change the data direction.";
 
     public void init() {
         activated = true;
@@ -121,11 +122,15 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
     }
 
     private EventInfo asEventInfo(boolean messageIsRequest, IInterceptedProxyMessage message) {
-        return new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, message);
+        EventInfo eventInfo = new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, message);
+        eventInfo.getDiagnostics().setEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
+        return eventInfo;
     }
 
     private EventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, IHttpRequestResponse requestResponse) {
-        return new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, burpTool, requestResponse);
+        EventInfo eventInfo = new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, burpTool, requestResponse);
+        eventInfo.getDiagnostics().setEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
+        return eventInfo;
     }
 
     private int getReshaperId(String header) {
@@ -140,6 +145,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
         try {
             rulesEngine.run(eventInfo);
             if (eventInfo.isChanged()) {
+                sanityCheck(eventInfo);
                 IHttpRequestResponse messageInfo = eventInfo.getRequestResponse();
                 if (eventInfo.getDataDirection() == DataDirection.Request) {
                     messageInfo.setRequest(eventInfo.getHttpRequestMessage().getValue());
@@ -152,7 +158,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
                         if (interceptedMessage != null) {
                             interceptedMessage.setInterceptAction(IInterceptedProxyMessage.ACTION_DROP);
                         } else {
-                            sendToSelf(messageId, eventInfo, interceptedMessage);
+                            sendToSelf(messageId, eventInfo, null);
                         }
                     }
                 } else if (isRequest && eventInfo.getDataDirection() == DataDirection.Response) {
@@ -163,6 +169,21 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
             }
         } catch (Exception e) {
             Log.get().withMessage("Critical Error").withException(e).logErr();
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) {
+                Log.get().withMessage(eventInfo.getDiagnostics().getLogs()).logRaw();
+            }
+        }
+    }
+
+    private void sanityCheck(EventInfo eventInfo) {
+        if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
+            if (eventInfo.isRequestChanged() && eventInfo.getDataDirection() == DataDirection.Response) {
+                Log.get().withMessage(String.format(dataDirectionWarning, "request", "Response")).log();
+            }
+            if (eventInfo.isResponseChanged() && eventInfo.getDataDirection() == DataDirection.Request) {
+                Log.get().withMessage(String.format(dataDirectionWarning, "response", "Request")).log();
+            }
         }
     }
 
@@ -206,7 +227,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
     }
 
     private BurpTool getBurpToolIfEnabled(int toolFlag) {
-        GeneralSettings generalSettings = settingsManager.getGeneralSettings();
+        GeneralSettings generalSettings = BurpExtender.getGeneralSettings();
         BurpTool burpTool = BurpTool.getById(toolFlag);
         return burpTool != null && generalSettings.isCapture(burpTool) ? burpTool : null;
     }

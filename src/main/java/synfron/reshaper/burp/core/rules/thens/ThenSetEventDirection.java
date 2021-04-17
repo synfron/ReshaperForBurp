@@ -15,6 +15,7 @@ public class ThenSetEventDirection extends Then<ThenSetEventDirection> {
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
         eventInfo.setDataDirection(dataDirection);
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, false, dataDirection);
         return RuleResponse.Continue;
     }
 

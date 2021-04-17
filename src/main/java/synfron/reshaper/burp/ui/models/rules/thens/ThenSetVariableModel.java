@@ -56,7 +56,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

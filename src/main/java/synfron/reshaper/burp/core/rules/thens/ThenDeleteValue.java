@@ -19,7 +19,15 @@ public class ThenDeleteValue extends Then<ThenDeleteValue> {
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
-        MessageValueHandler.setValue(eventInfo, messageValue, identifier, null);
+        boolean hasError = false;
+        try {
+            MessageValueHandler.setValue(eventInfo, messageValue, identifier, null);
+        } catch (Exception e) {
+            hasError = true;
+            throw e;
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, messageValue, VariableString.getTextOrDefault(eventInfo, identifier, null));
+        }
         return RuleResponse.Continue;
     }
 

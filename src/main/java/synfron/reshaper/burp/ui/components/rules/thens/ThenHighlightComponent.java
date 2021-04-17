@@ -16,15 +16,15 @@ public class ThenHighlightComponent extends ThenComponent<ThenHighlightModel, Th
 
     private void initComponent() {
         color = new JComboBox<>(ThenHighlight.HighlightColor.values());
-        JButton save = new JButton("Save");
+        JButton validate = new JButton("Validate");
 
         color.setSelectedItem(model.getColor());
 
         color.addActionListener(this::onColorChanged);
-        save.addActionListener(this::onSave);
+        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Color", color), "wrap");
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onColorChanged(ActionEvent actionEvent) {
