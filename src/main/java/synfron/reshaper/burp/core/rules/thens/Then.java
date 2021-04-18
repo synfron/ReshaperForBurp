@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleResponse;
@@ -24,4 +25,13 @@ import synfron.reshaper.burp.core.rules.RuleResponse;
 })
 public abstract class Then<T extends Then<T>> implements IRuleOperation<T> {
     public abstract RuleResponse perform(EventInfo eventInfo);
+
+    @SuppressWarnings("unchecked")
+    public T copy() {
+        try {
+            return (T)this.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new WrappedException(e);
+        }
+    }
 }

@@ -119,16 +119,19 @@ public class RuleListComponent extends JPanel {
         JButton add = new JButton("Add");
         JButton moveUp = new JButton("Move Up");
         JButton moveDown = new JButton("Move Down");
+        JButton duplicate = new JButton("Duplicate");
         JButton delete = new JButton("Delete");
 
         add.addActionListener(this::onAdd);
         moveUp.addActionListener(this::onMoveUp);
         moveDown.addActionListener(this::onMoveDown);
+        duplicate.addActionListener(this::onDuplicate);
         delete.addActionListener(this::onDelete);
 
         actionBar.add(add);
         actionBar.add(moveUp);
         actionBar.add(moveDown);
+        actionBar.add(duplicate);
         actionBar.add(delete);
 
         return actionBar;
@@ -165,6 +168,13 @@ public class RuleListComponent extends JPanel {
 
     private void onAdd(ActionEvent actionEvent) {
         BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(createNewRule());
+    }
+
+    private void onDuplicate(ActionEvent actionEvent) {
+        RuleModel rule = rulesList.getSelectedValue();
+        if (rule != null) {
+            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule.getRule().copy());
+        }
     }
 
     public void setSelectionContainer(RuleContainerComponent ruleContainer) {
