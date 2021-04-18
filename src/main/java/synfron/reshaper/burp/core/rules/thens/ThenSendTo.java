@@ -4,6 +4,7 @@ import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
@@ -15,7 +16,11 @@ import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -40,7 +45,6 @@ public class ThenSendTo extends Then<ThenSendTo> {
 
     public RuleResponse perform(EventInfo eventInfo)
     {
-        boolean hasError = false;
         switch (sendTo) {
             case Comparer:
                 sendToComparer(eventInfo);
@@ -53,6 +57,9 @@ public class ThenSendTo extends Then<ThenSendTo> {
                 break;
             case Spider:
                 sendToSpider(eventInfo);
+                break;
+            case Browser:
+                sendToBrowser(eventInfo);
                 break;
         }
         return RuleResponse.Continue;
@@ -192,6 +199,47 @@ public class ThenSendTo extends Then<ThenSendTo> {
                     Pair.of("sendTo", sendTo),
                     Pair.of("url", url)
             ));
+        }
+    }
+
+    private void sendToBrowser(EventInfo eventInfo) {
+        URL url = null;
+        boolean hasError = false;
+        try {
+            if (overrideDefaults && this.url != null && !this.url.isEmpty()) {
+                url = new URL(this.url.getText(eventInfo));
+            } else {
+                url = ObjectUtils.getUrl(
+                        eventInfo.getHttpProtocol().toLowerCase(),
+                        eventInfo.getDestinationAddress(),
+                        eventInfo.getDestinationPort(),
+                        eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getValue()
+                );
+            }
+            openBrowser(url.toURI());
+        } catch (URISyntaxException | IOException e) {
+            hasError = true;
+            throw new WrappedException(e);
+        } catch (Exception e) {
+            hasError = true;
+            throw e;
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
+                    Pair.of("sendTo", sendTo),
+                    Pair.of("url", url)
+            ));
+        }
+    }
+
+    private void openBrowser(URI uri) throws IOException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            Desktop.getDesktop().browse(uri);
+        } else if (SystemUtils.IS_OS_WINDOWS) {
+            Runtime.getRuntime().exec("start " + url);
+        } else if (SystemUtils.IS_OS_MAC) {
+            Runtime.getRuntime().exec(String.format("open \"%s\"", url));
+        } else {
+            Runtime.getRuntime().exec(String.format("xdg-open \"%1$s\" || sensible-browser \"%1$s\" || x-www-browser \"%1$s\"", url));
         }
     }
 

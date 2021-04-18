@@ -96,7 +96,10 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         mainContainer.add(withVisibilityFieldChangeDependency(
                 getLabeledField("URL", url),
                 List.of(overrideDefaults, sendTo),
-                () -> overrideDefaults.isSelected() && sendTo.getSelectedItem() == SendToOption.Spider
+                () -> overrideDefaults.isSelected() && (
+                        sendTo.getSelectedItem() == SendToOption.Spider ||
+                                sendTo.getSelectedItem() == SendToOption.Browser
+                )
         ), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
