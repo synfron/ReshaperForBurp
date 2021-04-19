@@ -17,12 +17,10 @@ public class ThenBreakComponent extends ThenComponent<ThenBreakModel, ThenBreak>
 
     private void initComponent() {
         breakType = new JComboBox<>(RuleResponse.getValues().stream().skip(1).toArray(RuleResponse[]::new));
-        JButton validate = new JButton("Validate");
 
         breakType.setSelectedItem(model.getBreakType());
 
         breakType.addActionListener(this::onBreakTypeChanged);
-        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Break Type", breakType), "wrap");
         mainContainer.add(getPaddedButton(validate));

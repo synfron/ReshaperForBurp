@@ -19,6 +19,7 @@ public class VariableComponent extends JPanel {
     private JTextField variableName;
     private JTextArea variableText;
     private JCheckBox persistent;
+    private JButton save;
 
     public VariableComponent(VariableModel model) {
         this.model = model;
@@ -27,9 +28,11 @@ public class VariableComponent extends JPanel {
     }
 
     private void onVariablePropertyChanged(PropertyChangedArgs propertyChangedArgs) {
-        if (propertyChangedArgs.getName().equals("this")) {
+        if ("this".equals(propertyChangedArgs.getName())) {
             variableText.setText(model.getValue());
             persistent.setSelected(model.isPersistent());
+        } else if ("saved".equals(propertyChangedArgs.getName())) {
+            setSaveButtonState();
         }
     }
 
@@ -39,6 +42,16 @@ public class VariableComponent extends JPanel {
         add(getVariableNameBox(), BorderLayout.PAGE_START);
         add(getVariableTextBox(), BorderLayout.CENTER);
         add(getActionBar(), BorderLayout.PAGE_END);
+    }
+
+    private void setSaveButtonState() {
+        if (model.isSaved()) {
+            save.setEnabled(false);
+            save.setText("Saved");
+        } else {
+            save.setEnabled(true);
+            save.setText("Save");
+        }
     }
 
     private Component getVariableNameBox() {
@@ -89,7 +102,8 @@ public class VariableComponent extends JPanel {
 
         persistent = new JCheckBox("Persistent");
         persistent.setSelected(model.isPersistent());
-        JButton save = new JButton("Save");
+        save = new JButton("Save");
+        setSaveButtonState();
 
         persistent.addActionListener(this::onPersistentChanged);
         save.addActionListener(this::onSave);

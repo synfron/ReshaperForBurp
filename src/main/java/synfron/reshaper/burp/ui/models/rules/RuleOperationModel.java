@@ -11,6 +11,7 @@ import java.util.List;
 public abstract class RuleOperationModel<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> {
     @Getter
     protected final T ruleOperation;
+    @Getter
     protected boolean validated;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
@@ -27,7 +28,7 @@ public abstract class RuleOperationModel<P extends RuleOperationModel<P, T>, T e
     protected void setValidated(boolean validated) {
         if (validated != this.validated) {
             this.validated = validated;
-            propertyChangedEvent.invoke(new PropertyChangedArgs(this, "saved", validated));
+            propertyChangedEvent.invoke(new PropertyChangedArgs(this, "validated", validated));
         }
     }
 

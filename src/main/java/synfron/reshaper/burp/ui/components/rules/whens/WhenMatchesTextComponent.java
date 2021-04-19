@@ -36,7 +36,6 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         messageValuePath = new JTextField();
         matchType = new JComboBox<>(MatchType.values());
         matchText = new JTextField();
-        JButton validate = new JButton("Validate");
 
         useMessageValue.setSelected(model.isUseMessageValue());
         messageValue.setSelectedItem(model.getMessageValue());
@@ -55,7 +54,6 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         messageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onMessageValuePathChanged));
         matchType.addActionListener(this::onMatchTypeChanged);
         matchText.getDocument().addDocumentListener(new DocumentActionListener(this::onMatchTextChanged));
-        validate.addActionListener(this::onValidate);
 
         mainContainer.add(useMessageValue, "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(

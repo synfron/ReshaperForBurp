@@ -41,7 +41,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     @SuppressWarnings("unchecked")
     private void onRuleOperationChanged(PropertyChangedArgs propertyChangedArgs) {
         T ruleOperation = (T)propertyChangedArgs.getSource();
-        if ("saved".equals(propertyChangedArgs.getName())) {
+        if ("validated".equals(propertyChangedArgs.getName())) {
             int index = operationsListModel.indexOf(ruleOperation);
             operationsListModel.set(index, ruleOperation);
             this.model.setSaved(false);

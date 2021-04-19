@@ -16,12 +16,10 @@ public class ThenDropComponent extends ThenComponent<ThenDropModel, ThenDrop> {
 
     private void initComponent() {
         dropMessage = new JCheckBox("Drop Message");
-        JButton validate = new JButton("Validate");
 
         dropMessage.setSelected(model.isDropMessage());
 
         dropMessage.addActionListener(this::onDropMessageChanged);
-        validate.addActionListener(this::onValidate);
 
         mainContainer.add(dropMessage, "wrap");
         mainContainer.add(getPaddedButton(validate));

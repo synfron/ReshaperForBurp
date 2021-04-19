@@ -41,14 +41,12 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
                 .toArray(MessageValue[]::new)
         );
         identifier = new JTextField();
-        JButton validate = new JButton("Validate");
 
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
 
         messageValue.addActionListener(this::onMessageValueChanged);
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
-        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(

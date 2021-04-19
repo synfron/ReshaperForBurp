@@ -19,14 +19,12 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
     private void initComponent() {
         runSingle = new JCheckBox("Run Single");
         ruleName = new JTextField();
-        JButton validate = new JButton("Validate");
 
         runSingle.setSelected(model.isRunSingle());
         ruleName.setText(model.getRuleName());
 
         runSingle.addActionListener(this::onRunSingleChanged);
         ruleName.getDocument().addDocumentListener(new DocumentActionListener(this::onRuleNameChanged));
-        validate.addActionListener(this::onValidate);
 
         mainContainer.add(runSingle, "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(

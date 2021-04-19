@@ -36,13 +36,11 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private Component getOtherFields() {
         JPanel container = new JPanel(new MigLayout());
 
-        JButton validate = new JButton("Validate");
         maxExecutionSeconds = new JTextField();
 
         maxExecutionSeconds.setText(model.getMaxExecutionSeconds());
 
         maxExecutionSeconds.getDocument().addDocumentListener(new DocumentActionListener(this::onMaxExecutionSecondsChanged));
-        validate.addActionListener(this::onValidate);
 
         container.add(getLabeledField("Max Execution (secs)", maxExecutionSeconds), "wrap");
         container.add(getPaddedButton(validate));

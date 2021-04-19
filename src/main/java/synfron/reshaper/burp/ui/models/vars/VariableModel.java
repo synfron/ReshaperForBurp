@@ -24,6 +24,7 @@ public class VariableModel {
     private String value = "";
     @Getter
     private boolean persistent;
+    @Getter
     private boolean saved = true;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();

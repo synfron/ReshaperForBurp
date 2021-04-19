@@ -33,7 +33,6 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         request = new JTextField();
         value = new JTextField();
         url = new JTextField();
-        JButton validate = new JButton("Validate");
 
         sendTo.setSelectedItem(model.getSendTo());
         overrideDefaults.setSelected(model.isOverrideDefaults());
@@ -52,7 +51,6 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
         value.getDocument().addDocumentListener(new DocumentActionListener(this::onValueChanged));
         url.getDocument().addDocumentListener(new DocumentActionListener(this::onUrlChanged));
-        validate.addActionListener(this::onValidate);
 
         mainContainer.add(getLabeledField("Send To", sendTo), "wrap");
         mainContainer.add(overrideDefaults, "wrap");
