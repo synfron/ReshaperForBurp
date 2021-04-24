@@ -81,15 +81,15 @@ public class RulesRegistry {
         }
     }
 
-    public void importRules(List<Rule> rules, boolean overrideDuplicates) {
+    public void importRules(List<Rule> rules, boolean overwriteDuplicates) {
         rules = ObjectUtils.defaultIfNull(rules, Collections.emptyList());
         Set<String> existingRules = this.rules.stream().map(Rule::toString).collect(Collectors.toSet());
         Set<String> newRules = rules.stream().map(Rule::toString).collect(Collectors.toSet());
         this.rules = Stream.concat(
                 this.rules.stream()
-                        .filter(rule -> !overrideDuplicates || !newRules.contains(rule.getName())),
+                        .filter(rule -> !overwriteDuplicates || !newRules.contains(rule.getName())),
                 rules.stream()
-                        .filter(rule -> overrideDuplicates || !existingRules.contains(rule.getName()))
+                        .filter(rule -> overwriteDuplicates || !existingRules.contains(rule.getName()))
                         .map(rule -> rule.withListener(rulePropertyChangedListener))
         ).collect(Collectors.toList());
         version++;

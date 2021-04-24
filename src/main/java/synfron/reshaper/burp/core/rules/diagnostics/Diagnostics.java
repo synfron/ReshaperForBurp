@@ -25,14 +25,15 @@ public class Diagnostics {
     @Getter @Setter
     private boolean enabled;
 
-    public void logCompare(When<?> when, MatchType matchType, Object matcher, Object subMatcher, Object value, boolean result) {
+    public void logCompare(When<?> when, List<? extends Pair<String,? extends Serializable>> properties, MatchType matchType, Object matcher, Object value,  boolean result) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.When, String.format(
-                "%-4sWhen %s('%s' %s '%s') - %s\n",
+                "%-4sWhen %s(%s'%s' %s '%s') - %s\n",
                 isLast(DiagnosticEntityType.When) ? toPrefix(when.isUseOrCondition()) : "",
                 when.getType().getName(),
+                properties != null && !properties.isEmpty() ? toPropertiesPhrase(properties) + ", " : "",
                 toValuePhrase(value),
                 toMatchPhrase(matchType, when.isNegate()),
-                toValuePhrase(matcher, subMatcher),
+                toValuePhrase(matcher),
                 toResultPhrase(result, when.isNegate())
         )));
     }
@@ -68,12 +69,16 @@ public class Diagnostics {
                 "%-4sThen %s(%s) %s\n",
                 "",
                 then.getType().getName(),
-                properties.stream()
-                        .filter(pair -> pair.getRight() != null)
-                        .map(pair -> String.format("%s='%s'", pair.getLeft(), toValuePhrase(pair.getRight())))
-                        .collect(Collectors.joining(" ")),
+                toPropertiesPhrase(properties),
                 toErroredPhrase(hasError)
         )));
+    }
+
+    private String toPropertiesPhrase(List<? extends Pair<String, ? extends Serializable>> properties) {
+        return properties != null ? properties.stream()
+                .filter(pair -> pair.getRight() != null)
+                .map(pair -> String.format("%s='%s'", pair.getLeft(), toValuePhrase(pair.getRight())))
+                .collect(Collectors.joining(" ")) : "";
     }
 
     public void logStart(Rule rule) {

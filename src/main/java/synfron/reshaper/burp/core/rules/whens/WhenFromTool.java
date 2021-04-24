@@ -15,7 +15,7 @@ public class WhenFromTool extends When<WhenFromTool> {
     @Override
     public boolean isMatch(EventInfo eventInfo) {
         boolean isMatch = eventInfo.getBurpTool() == tool;
-        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, MatchType.Equals, tool, null, eventInfo.getBurpTool(), isMatch);
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, null, MatchType.Equals, tool, eventInfo.getBurpTool(), isMatch);
         return isMatch;
     }
 

@@ -10,6 +10,7 @@ import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
+import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.*;
 
 import java.io.BufferedWriter;
@@ -50,6 +51,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         boolean failed = false;
         boolean complete = false;
         String output = null;
+        Integer exitCode = null;
         String input;
         String captureVariableName = null;
         StringBuilderWriter stringWriter = new StringBuilderWriter();
@@ -78,12 +80,16 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
                 });
                 complete = executor.awaitTermination(failAfterInSeconds, TimeUnit.MILLISECONDS);
                 if (!complete) {
-                    if (killAfterFailure) {
-                        process.destroyForcibly();
+                    if (killAfterFailure && process.isAlive()) {
+                        try {
+                            process.destroyForcibly().waitFor(10, TimeUnit.SECONDS);
+                        } catch (Exception e) {
+                            Log.get().withMessage("Problem encounter killing process after failure.").withException(e).logErr();
+                        }
                     }
                     executor.shutdownNow();
                 }
-                int exitCode = process.exitValue();
+                exitCode = complete || !process.isAlive() ? process.exitValue() : null;
                 failed = !complete || (failOnNonZeroExitCode && exitCode != 0);
                 if (captureOutput && (!failed || captureAfterFailure)) {
                     bufferedWriter.flush();
@@ -109,7 +115,8 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
                         Pair.of("variableName", waitForCompletion && captureOutput ? captureVariableName : null),
                         Pair.of("exceededWait", waitForCompletion ? !complete : null),
-                        Pair.of("failed", waitForCompletion ? failed : null)
+                        Pair.of("failed", waitForCompletion ? failed : null),
+                        Pair.of("exitCode", waitForCompletion ? exitCode : null)
                 ));
         }
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;

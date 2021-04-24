@@ -16,14 +16,14 @@ import java.util.List;
 
 public class SettingsManager {
 
-    public void importSettings(File file, boolean overrideDuplicates) {
+    public void importSettings(File file, boolean overwriteDuplicates) {
         try {
             ExportSettings exportSettings = Serializer.deserialize(
                     Files.readString(file.toPath()),
                     new TypeReference<>() {}
             );
-            getGlobalVariables().importVariables(exportSettings.getVariables(), overrideDuplicates);
-            getRulesRegistry().importRules(exportSettings.getRules(), overrideDuplicates);
+            getGlobalVariables().importVariables(exportSettings.getVariables(), overwriteDuplicates);
+            getRulesRegistry().importRules(exportSettings.getRules(), overwriteDuplicates);
         } catch (IOException e) {
             throw new WrappedException(e);
         }

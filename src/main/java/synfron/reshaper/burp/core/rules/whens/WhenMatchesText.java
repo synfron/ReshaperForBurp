@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.rules.whens;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
@@ -10,6 +11,8 @@ import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
+
+import java.util.Arrays;
 
 public class WhenMatchesText extends When<WhenMatchesText> {
     @Getter
@@ -68,7 +71,12 @@ public class WhenMatchesText extends When<WhenMatchesText> {
             }
         } catch (Exception ignored) {
         }
-        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, matchType, matchText, VariableString.getTextOrDefault(eventInfo, identifier, null), sourceText, isMatch);
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(
+                this, useMessageValue ? Arrays.asList(
+                        Pair.of("messageValue", messageValue),
+                        Pair.of("identifier", MessageValueHandler.hasIdentifier(messageValue) ? VariableString.getTextOrDefault(eventInfo, identifier, null) : null)
+                ) : null, matchType, matchText, sourceText, isMatch
+        );
         return isMatch;
     }
 

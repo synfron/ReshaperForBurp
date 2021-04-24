@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 
 public class SettingsTabComponent extends JPanel implements IFormComponent {
 
-    private JCheckBox overrideDuplicates;
+    private JCheckBox overwriteDuplicates;
     private DefaultTableModel exportRulesModel;
     private DefaultTableModel exportVariablesModel;
     private final SettingsManager settingsManager = BurpExtender.getConnector().getSettingsManager();
@@ -229,12 +229,12 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
                 BorderFactory.createEmptyBorder(4,4,4,4))
         );
 
-        overrideDuplicates = new JCheckBox("Override Duplicates");
+        overwriteDuplicates = new JCheckBox("Overwrite Duplicates");
         JButton importData = new JButton("Import Data");
 
         importData.addActionListener(this::onImportData);
 
-        container.add(overrideDuplicates);
+        container.add(overwriteDuplicates);
         container.add(importData);
         return container;
     }
@@ -290,7 +290,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
             JFileChooser fileChooser = createFileChooser("Import");
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
-                settingsManager.importSettings(fileChooser.getSelectedFile(), overrideDuplicates.isSelected());
+                settingsManager.importSettings(fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
                 refreshLists();
 
                 JOptionPane.showMessageDialog(this,

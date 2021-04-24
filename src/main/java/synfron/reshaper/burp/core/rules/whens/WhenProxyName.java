@@ -14,7 +14,7 @@ public class WhenProxyName extends When<WhenProxyName> {
     @Override
     public boolean isMatch(EventInfo eventInfo) {
         boolean isMatch = StringUtils.equalsIgnoreCase(eventInfo.getProxyName(), proxyName);
-        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, MatchType.Equals, proxyName, null, eventInfo.getProxyName(), isMatch);
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, null, MatchType.Equals, proxyName, eventInfo.getProxyName(), isMatch);
         return isMatch;
     }
 

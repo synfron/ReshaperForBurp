@@ -25,10 +25,10 @@ public class GlobalVariables extends Variables {
                 .collect(Collectors.toList());
     }
 
-    public void importVariables(List<Variable> variables, boolean overrideDuplicates) {
+    public void importVariables(List<Variable> variables, boolean overwriteDuplicates) {
         variables = ObjectUtils.defaultIfNull(variables, Collections.emptyList());
         variables.forEach(variable -> {
-            if (overrideDuplicates) {
+            if (overwriteDuplicates) {
                 this.variables.put(new CaseInsensitiveString(variable.getName()), variable);
             } else {
                 this.variables.computeIfAbsent(new CaseInsensitiveString(variable.getName()), name -> variable);
