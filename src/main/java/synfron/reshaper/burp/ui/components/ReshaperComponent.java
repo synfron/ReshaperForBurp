@@ -31,13 +31,10 @@ public class ReshaperComponent extends JPanel implements ITab {
     private JTabbedPane getTabs() {
         JTabbedPane tabs = new JTabbedPane();
 
-        RulesTabComponent rules = new RulesTabComponent();
-        VariablesTabComponent variables = new VariablesTabComponent();
-        SettingsTabComponent settings = new SettingsTabComponent();
-
-        tabs.addTab("Rules", rules);
-        tabs.addTab("Global Variables", variables);
-        tabs.addTab("Settings", settings);
+        tabs.addTab("Rules", new RulesTabComponent());
+        tabs.addTab("Global Variables", new VariablesTabComponent());
+        tabs.addTab("Logs", new LogsComponent());
+        tabs.addTab("Settings", new SettingsTabComponent());
         return tabs;
     }
 

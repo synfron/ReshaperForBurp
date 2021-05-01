@@ -6,8 +6,11 @@ import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.core.settings.SettingsManager;
 import synfron.reshaper.burp.core.utils.Log;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
+import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.utils.FocusActionListener;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -15,19 +18,24 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.io.File;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SettingsTabComponent extends JPanel {
+public class SettingsTabComponent extends JPanel implements IFormComponent {
 
-    private JTable exportRulesTable;
-    private JTable exportVariablesTable;
-    private JCheckBox overrideDuplicates;
+    private JCheckBox overwriteDuplicates;
     private DefaultTableModel exportRulesModel;
     private DefaultTableModel exportVariablesModel;
     private final SettingsManager settingsManager = BurpExtender.getConnector().getSettingsManager();
-    private final GeneralSettings generalSettings = settingsManager.getGeneralSettings();
+    private final GeneralSettings generalSettings = BurpExtender.getGeneralSettings();
+    private JCheckBox enableEventDiagnostics;
+    private JTextField diagnosticValueMaxLength;
+    private JCheckBox enableSanityCheckWarnings;
+    private JCheckBox logInExtenderOutput;
+    private JTextField logTabCharacterLimit;
     private JCheckBox proxy;
     private JCheckBox repeater;
     private JCheckBox intruder;
@@ -55,13 +63,43 @@ public class SettingsTabComponent extends JPanel {
                 BorderFactory.createEmptyBorder(4,4,4,4))
         );
 
-        container.add(new JLabel("Capture Traffic From:"), "wrap");
-        container.add(getCaptureTrafficOptions());
+        container.add(getMiscOptions());
+        container.add(getCaptureTrafficOptions(), "top");
+        return container;
+    }
+
+    private Component getMiscOptions() {
+        JPanel container = new JPanel(new MigLayout());
+
+        enableEventDiagnostics = new JCheckBox("Enable Event Diagnostics");
+        diagnosticValueMaxLength = new JTextField();
+        enableSanityCheckWarnings = new JCheckBox("Enable Sanity Check Warnings");
+        logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
+        logTabCharacterLimit = new JTextField();
+
+        enableEventDiagnostics.setSelected(generalSettings.isEnableEventDiagnostics());
+        diagnosticValueMaxLength.setText(Objects.toString(generalSettings.getDiagnosticValueMaxLength()));
+        enableSanityCheckWarnings.setSelected(generalSettings.isEnableSanityCheckWarnings());
+        logInExtenderOutput.setSelected(generalSettings.isLogInExtenderOutput());
+        logTabCharacterLimit.setText(Objects.toString(generalSettings.getLogTabCharacterLimit()));
+
+        enableEventDiagnostics.addActionListener(this::onEnableEventDiagnosticsChanged);
+        diagnosticValueMaxLength.addFocusListener(new FocusActionListener(this::onDiagnosticValueMaxLengthFocusChanged));
+        enableSanityCheckWarnings.addActionListener(this::onEnableSanityCheckWarningsChanged);
+        logInExtenderOutput.addActionListener(this::onLogInExtenderOutputChanged);
+        logTabCharacterLimit.addFocusListener(new FocusActionListener(this::onLogTabCharacterLimitFocusChanged));
+
+        container.add(enableEventDiagnostics, "wrap");
+        container.add(getLabeledField("Diagnostic Value Max Length", diagnosticValueMaxLength), "wrap");
+        container.add(enableSanityCheckWarnings, "wrap");
+        container.add(logInExtenderOutput, "wrap");
+        container.add(getLabeledField("Log Tab Character Limit", logTabCharacterLimit), "wrap");
         return container;
     }
 
     private Component getCaptureTrafficOptions() {
         JPanel container = new JPanel(new MigLayout());
+        container.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         proxy = new JCheckBox("Proxy");
         repeater = new JCheckBox("Repeater");
@@ -87,6 +125,7 @@ public class SettingsTabComponent extends JPanel {
         target.addActionListener(this::onTargetChanged);
         extender.addActionListener(this::onExtenderChanged);
 
+        container.add(new JLabel("Capture Traffic From:"), "wrap");
         container.add(proxy);
         container.add(repeater, "wrap");
         container.add(intruder);
@@ -95,6 +134,30 @@ public class SettingsTabComponent extends JPanel {
         container.add(target, "wrap");
         container.add(extender);
         return container;
+    }
+
+    private void onLogTabCharacterLimitFocusChanged(ActionEvent actionEvent) {
+        if (actionEvent.getID() == FocusEvent.FOCUS_LOST && TextUtils.isInt(logTabCharacterLimit.getText())) {
+            generalSettings.setLogTabCharacterLimit(Integer.parseInt(logTabCharacterLimit.getText()));
+        }
+    }
+
+    private void onLogInExtenderOutputChanged(ActionEvent actionEvent) {
+        generalSettings.setLogInExtenderOutput(logInExtenderOutput.isSelected());
+    }
+
+    private void onEnableEventDiagnosticsChanged(ActionEvent actionEvent) {
+        generalSettings.setEnableEventDiagnostics(enableEventDiagnostics.isSelected());
+    }
+
+    private void onDiagnosticValueMaxLengthFocusChanged(ActionEvent actionEvent) {
+        if (actionEvent.getID() == FocusEvent.FOCUS_LOST && TextUtils.isInt(diagnosticValueMaxLength.getText())) {
+            generalSettings.setDiagnosticValueMaxLength(Integer.parseInt(diagnosticValueMaxLength.getText()));
+        }
+    }
+
+    private void onEnableSanityCheckWarningsChanged(ActionEvent actionEvent) {
+        generalSettings.setEnableSanityCheckWarnings(enableSanityCheckWarnings.isSelected());
     }
 
     private void onProxyChanged(ActionEvent actionEvent) {
@@ -166,12 +229,12 @@ public class SettingsTabComponent extends JPanel {
                 BorderFactory.createEmptyBorder(4,4,4,4))
         );
 
-        overrideDuplicates = new JCheckBox("Override Duplicates");
+        overwriteDuplicates = new JCheckBox("Overwrite Duplicates");
         JButton importData = new JButton("Import Data");
 
         importData.addActionListener(this::onImportData);
 
-        container.add(overrideDuplicates);
+        container.add(overwriteDuplicates);
         container.add(importData);
         return container;
     }
@@ -227,7 +290,7 @@ public class SettingsTabComponent extends JPanel {
             JFileChooser fileChooser = createFileChooser("Import");
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
-                settingsManager.importSettings(fileChooser.getSelectedFile(), overrideDuplicates.isSelected());
+                settingsManager.importSettings(fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
                 refreshLists();
 
                 JOptionPane.showMessageDialog(this,
@@ -263,7 +326,7 @@ public class SettingsTabComponent extends JPanel {
     }
 
     private Component getExportRulesTable() {
-        exportRulesTable = new JTable() {
+        JTable exportRulesTable = new JTable() {
             @Override
             public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
             }
@@ -276,7 +339,7 @@ public class SettingsTabComponent extends JPanel {
     }
 
     private Component getExportVariablesTable() {
-        exportVariablesTable = new JTable() {
+        JTable exportVariablesTable = new JTable() {
             @Override
             public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
             }
@@ -292,12 +355,10 @@ public class SettingsTabComponent extends JPanel {
         return new DefaultTableModel(data, columnNames) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                switch (columnIndex) {
-                    case 0:
-                        return Boolean.class;
-                    default:
-                        return Object.class;
+                if (columnIndex == 0) {
+                    return Boolean.class;
                 }
+                return Object.class;
             }
         };
     }

@@ -17,16 +17,14 @@ public class WhenFromToolComponent extends WhenComponent<WhenFromToolModel, When
 
     private void initComponent() {
         tool = new JComboBox<>(BurpTool.values());
-        JButton save = new JButton("Save");
 
         tool.setSelectedItem(model.getTool());
 
         tool.addActionListener(this::onToolChanged);
-        save.addActionListener(this::onSave);
 
         mainContainer.add(getLabeledField("Tool", tool), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onToolChanged(ActionEvent actionEvent) {

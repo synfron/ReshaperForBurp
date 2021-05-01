@@ -17,16 +17,14 @@ public class WhenEventDirectionComponent extends WhenComponent<WhenEventDirectio
 
     private void initComponent() {
         dataDirection = new JComboBox<>(DataDirection.values());
-        JButton save = new JButton("Save");
 
         dataDirection.setSelectedItem(model.getDataDirection());
 
         dataDirection.addActionListener(this::onDataDirectionChanged);
-        save.addActionListener(this::onSave);
 
         mainContainer.add(getLabeledField("Event Direction", dataDirection), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onDataDirectionChanged(ActionEvent actionEvent) {

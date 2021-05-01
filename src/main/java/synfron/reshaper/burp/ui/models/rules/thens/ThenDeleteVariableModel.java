@@ -48,7 +48,7 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
         }
         ruleOperation.setTargetSource(targetSource);
         ruleOperation.setVariableName(VariableString.getAsVariableString(variableName));
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -57,7 +57,7 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

@@ -12,6 +12,11 @@ public class GeneralSettings {
     private boolean captureRepeater;
     private boolean captureIntruder;
     private boolean captureExtender;
+    private boolean enableEventDiagnostics;
+    private int diagnosticValueMaxLength = 200;
+    private boolean enableSanityCheckWarnings = true;
+    private boolean logInExtenderOutput = true;
+    private int logTabCharacterLimit = 1000000;
 
     public void importSettings(GeneralSettings other) {
         if (other != null) {
@@ -22,6 +27,11 @@ public class GeneralSettings {
             this.captureRepeater = other.captureRepeater;
             this.captureIntruder = other.captureIntruder;
             this.captureExtender = other.captureExtender;
+            this.enableEventDiagnostics = other.enableEventDiagnostics;
+            this.diagnosticValueMaxLength = other.diagnosticValueMaxLength;
+            this.enableSanityCheckWarnings = other.enableSanityCheckWarnings;
+            this.logInExtenderOutput = other.logInExtenderOutput;
+            this.logTabCharacterLimit = other.logTabCharacterLimit;
         }
     }
 

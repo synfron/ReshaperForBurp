@@ -43,7 +43,7 @@ public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEnt
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

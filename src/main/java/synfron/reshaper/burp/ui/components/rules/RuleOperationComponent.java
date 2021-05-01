@@ -2,7 +2,10 @@ package synfron.reshaper.burp.ui.components.rules;
 
 import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -12,48 +15,51 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> extends JScrollPane {
+public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> extends JScrollPane implements IFormComponent {
 
     @Getter
     protected final P model;
     protected final JPanel mainContainer;
+    protected final JButton validate;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     protected RuleOperationComponent(P model) {
         this.model = model;
         mainContainer = new JPanel(new MigLayout());
         setViewportView(mainContainer);
+
+        validate = new JButton("Validate");
+        setValidateButtonState();
+        validate.addActionListener(this::onValidate);
+
+        model.getPropertyChangedEvent().add(modelPropertyChangedListener);
     }
 
-    protected Component getLabeledField(String label, Component innerComponent) {
-        JPanel container = new JPanel();
-        container.setLayout(new MigLayout());
-        container.setBorder(null);
-
-        if (innerComponent instanceof JTextField) {
-            JTextField textField = (JTextField)innerComponent;
-            textField.setColumns(20);
-            textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
-            textField.setAlignmentX(LEFT_ALIGNMENT);
-            container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
-        } else if (innerComponent instanceof JComboBox<?>) {
-            container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
+    private void onModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        if ("validated".equals(propertyChangedArgs.getName())) {
+            setValidateButtonState();
         }
-
-        container.add(new JLabel(label), "wrap");
-        container.add(innerComponent);
-        return container;
     }
 
     protected Component getPaddedButton(JButton button) {
         JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         outerContainer.setAlignmentX(LEFT_ALIGNMENT);
         outerContainer.setAlignmentY(TOP_ALIGNMENT);
-
         outerContainer.add(button);
         return outerContainer;
     }
 
-    protected void onSave(ActionEvent actionEvent) {
+    private void setValidateButtonState() {
+        if (model.isValidated()) {
+            validate.setEnabled(false);
+            validate.setText("Validated");
+        } else {
+            validate.setEnabled(true);
+            validate.setText("Validate");
+        }
+    }
+
+    private void onValidate(ActionEvent actionEvent) {
         if (!model.persist()) {
             JOptionPane.showMessageDialog(this,
                     String.join("\n", model.validate()),

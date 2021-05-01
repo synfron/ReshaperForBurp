@@ -38,7 +38,7 @@ public class ThenDelayModel extends ThenModel<ThenDelayModel, ThenDelay> {
             return false;
         }
         ruleOperation.setDelay(VariableString.getAsVariableString(delay));
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -47,7 +47,7 @@ public class ThenDelayModel extends ThenModel<ThenDelayModel, ThenDelay> {
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

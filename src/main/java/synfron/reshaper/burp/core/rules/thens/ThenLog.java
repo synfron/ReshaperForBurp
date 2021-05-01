@@ -15,7 +15,15 @@ public class ThenLog extends Then<ThenLog> {
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
-        Log.get().withMessage(text.getText(eventInfo)).log();
+        boolean hasError = false;
+        try {
+            Log.get().withMessage(text.getText(eventInfo)).log();
+        } catch (Exception e) {
+            hasError = true;
+            throw e;
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, VariableString.getTextOrDefault(eventInfo, text, null));
+        }
         return RuleResponse.Continue;
     }
 

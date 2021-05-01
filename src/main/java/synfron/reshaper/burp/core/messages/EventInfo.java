@@ -6,6 +6,8 @@ import lombok.Getter;
 import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
+import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
+import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.core.vars.Variables;
 
 public class EventInfo {
@@ -34,6 +36,8 @@ public class EventInfo {
     @Getter
     private final Variables variables = new Variables();
     private boolean changed;
+    @Getter
+    private final Diagnostics diagnostics = new Diagnostics();
 
     public EventInfo(DataDirection dataDirection, IInterceptedProxyMessage proxyMessage) {
         this.burpTool = BurpTool.Proxy;
@@ -100,5 +104,28 @@ public class EventInfo {
         return changed ||
                 (httpRequestMessage != null && httpRequestMessage.isChanged()) ||
                 (httpResponseMessage != null && httpResponseMessage.isChanged());
+    }
+
+    public boolean isRequestChanged() {
+        return httpRequestMessage != null && httpRequestMessage.isChanged();
+    }
+
+    public boolean isResponseChanged() {
+        return httpResponseMessage != null && httpResponseMessage.isChanged();
+    }
+
+    public String getUrl() {
+        String url;
+        try {
+            url = ObjectUtils.getUrl(
+                    getHttpProtocol().toLowerCase(),
+                    getDestinationAddress(),
+                    getDestinationPort(),
+                    getHttpRequestMessage().getStatusLine().getUrl().getValue()
+            ).toString();
+        } catch (Exception e) {
+            url = "[Unhandled URL]";
+        }
+        return url;
     }
 }

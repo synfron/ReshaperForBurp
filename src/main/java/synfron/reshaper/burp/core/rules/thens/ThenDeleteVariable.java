@@ -19,17 +19,24 @@ public class ThenDeleteVariable extends Then<ThenDeleteVariable> {
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
-        Variables variables = null;
-        switch (targetSource)
-        {
-            case Event:
-                variables = eventInfo.getVariables();
-                break;
-            case Global:
-                variables = GlobalVariables.get();
-                break;
+        boolean hasError = false;
+        try {
+            Variables variables = null;
+            switch (targetSource) {
+                case Event:
+                    variables = eventInfo.getVariables();
+                    break;
+                case Global:
+                    variables = GlobalVariables.get();
+                    break;
+            }
+            variables.remove(variableName.getText(eventInfo));
+        } catch (Exception e) {
+            hasError = true;
+            throw e;
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, targetSource, VariableString.getTextOrDefault(eventInfo, variableName, null));
         }
-        variables.remove(variableName.getText(eventInfo));
         return RuleResponse.Continue;
     }
 

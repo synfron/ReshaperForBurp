@@ -36,21 +36,49 @@ public class Log {
         return this;
     }
 
+    public void logRaw() {
+        printOutput(message, false);
+    }
+
     public void log() {
         try {
-            BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+            printOutput(Serializer.serialize(this, true), false);
         } catch (Exception e) {
             payload = "Failed to log with original payload";
-            BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+            printOutput(Serializer.serialize(this, true), false);
         }
     }
 
     public void logErr() {
         try {
-            BurpExtender.getCallbacks().printError(Serializer.serialize(this, true));
+            printOutput(Serializer.serialize(this, true), true);
         } catch (Exception e) {
             payload = "Failed to log with original payload";
-            BurpExtender.getCallbacks().printOutput(Serializer.serialize(this, true));
+            printOutput(Serializer.serialize(this, true), true);
         }
+    }
+
+    private void printOutput(String text, boolean isError) {
+        if (BurpExtender.getGeneralSettings().isLogInExtenderOutput()) {
+            if (isError) {
+                BurpExtender.getCallbacks().printError(text);
+            } else {
+                BurpExtender.getCallbacks().printOutput(text);
+            }
+        }
+        printToDisplay(text);
+    }
+
+    private void printToDisplay(String text) {
+        BurpExtender.getLogTextEditor().setText(
+                TextUtils.stringToBytes(
+                        TextUtils.bufferAppend(
+                                TextUtils.bytesToString(BurpExtender.getLogTextEditor().getText()),
+                                text,
+                                "\n",
+                                BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
+                        )
+                )
+        );
     }
 }

@@ -33,7 +33,6 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         request = new JTextField();
         value = new JTextField();
         url = new JTextField();
-        JButton save = new JButton("Save");
 
         sendTo.setSelectedItem(model.getSendTo());
         overrideDefaults.setSelected(model.isOverrideDefaults());
@@ -52,7 +51,6 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
         value.getDocument().addDocumentListener(new DocumentActionListener(this::onValueChanged));
         url.getDocument().addDocumentListener(new DocumentActionListener(this::onUrlChanged));
-        save.addActionListener(this::onSave);
 
         mainContainer.add(getLabeledField("Send To", sendTo), "wrap");
         mainContainer.add(overrideDefaults, "wrap");
@@ -96,9 +94,12 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         mainContainer.add(withVisibilityFieldChangeDependency(
                 getLabeledField("URL", url),
                 List.of(overrideDefaults, sendTo),
-                () -> overrideDefaults.isSelected() && sendTo.getSelectedItem() == SendToOption.Spider
+                () -> overrideDefaults.isSelected() && (
+                        sendTo.getSelectedItem() == SendToOption.Spider ||
+                                sendTo.getSelectedItem() == SendToOption.Browser
+                )
         ), "wrap");
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onSendToChanged(ActionEvent actionEvent) {

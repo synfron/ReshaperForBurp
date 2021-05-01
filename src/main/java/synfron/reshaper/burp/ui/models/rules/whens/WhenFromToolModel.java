@@ -33,7 +33,7 @@ public class WhenFromToolModel extends WhenModel<WhenFromToolModel, WhenFromTool
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

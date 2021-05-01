@@ -67,4 +67,15 @@ public class TextUtils {
     public static byte[] stringToBytes(String value) {
         return BurpExtender.getCallbacks().getHelpers().stringToBytes(StringUtils.defaultString(value));
     }
+
+    public static String bufferAppend(String text1, String text2, String suffix, int maxLength) {
+        String newText;
+        int untrimmedLength = text1.length() + text2.length();
+        if (untrimmedLength > maxLength) {
+            newText = text1.substring(untrimmedLength - maxLength) + text2 + suffix;
+        } else {
+            newText = text1 + text2 + suffix;
+        }
+        return newText;
+    }
 }
