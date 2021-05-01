@@ -1,7 +1,7 @@
 # Reshaper for Burp
 Extension for Burp Suite to trigger actions and reshape HTTP request and response traffic using configurable rules
 
-![Screenshot](https://user-images.githubusercontent.com/48854453/102699312-ad0b2c80-4211-11eb-9ccc-17c86c56ad99.png)
+![Screenshot](https://user-images.githubusercontent.com/48854453/116795270-c797c100-aaa1-11eb-8353-580f7cf6e6d1.png)
 
 [Example Usage](https://synfron.github.io/ReshaperForBurp/Examples.html)
 
