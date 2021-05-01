@@ -28,14 +28,14 @@ public class VariableModel {
     private boolean saved = true;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    private IEventListener<PropertyChangedArgs> variablePropertyChanged = this::onVariableChanged;
+    private IEventListener<PropertyChangedArgs> variableChanged = this::onVariableChanged;
 
     public VariableModel() {
         saved = false;
     }
 
     public VariableModel(Variable variable) {
-        this.variable = variable.withListener(variablePropertyChanged);
+        this.variable = variable.withListener(variableChanged);
         name = variable.getName();
         value = StringUtils.defaultString(TextUtils.toString(variable.getValue()));
         persistent = variable.isPersistent();

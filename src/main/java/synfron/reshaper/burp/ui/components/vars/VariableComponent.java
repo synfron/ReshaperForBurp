@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.vars;
 
 import lombok.SneakyThrows;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -20,10 +21,11 @@ public class VariableComponent extends JPanel {
     private JTextArea variableText;
     private JCheckBox persistent;
     private JButton save;
+    private final IEventListener<PropertyChangedArgs> variablePropertyChangedListener = this::onVariablePropertyChanged;
 
     public VariableComponent(VariableModel model) {
         this.model = model;
-        model.withListener(this::onVariablePropertyChanged);
+        model.withListener(variablePropertyChangedListener);
         initComponent();
     }
 

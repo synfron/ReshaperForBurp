@@ -59,7 +59,7 @@ public class Diagnostics {
                 "",
                 then.getType().getName(),
                 toValuePhrase(values),
-                hasError ? "Errored" : ""
+                toErroredPhrase(hasError)
         )));
     }
 
@@ -72,7 +72,7 @@ public class Diagnostics {
                         .filter(pair -> pair.getRight() != null)
                         .map(pair -> String.format("%s='%s'", pair.getLeft(), toValuePhrase(pair.getRight())))
                         .collect(Collectors.joining(" ")),
-                hasError ? "Errored" : ""
+                toErroredPhrase(hasError)
         )));
     }
 
@@ -120,6 +120,10 @@ public class Diagnostics {
 
     private String toExistsPhrase(boolean negate) {
         return !negate ? "is present" : "is empty or missing";
+    }
+
+    private String toErroredPhrase(boolean hasError) {
+        return hasError ? "- ERRORED" : "";
     }
 
     private String toPrefix(boolean isOr) {

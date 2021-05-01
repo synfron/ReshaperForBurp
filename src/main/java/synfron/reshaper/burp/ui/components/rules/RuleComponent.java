@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules;
 
 import lombok.SneakyThrows;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -20,11 +21,12 @@ public class RuleComponent extends JPanel {
     private JCheckBox autoRun;
     private JTextField ruleName;
     private JButton save;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     public RuleComponent(RuleModel model) {
         this.model = model;
 
-        model.getPropertyChangedEvent().add(this::OnModelPropertyChanged);
+        model.getPropertyChangedEvent().add(modelPropertyChangedListener);
 
         initComponent();
     }
@@ -136,7 +138,7 @@ public class RuleComponent extends JPanel {
         return actionBar;
     }
 
-    private void OnModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+    private void onModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
         if ("saved".equals(propertyChangedArgs.getName())) {
             setSaveButtonState();
         }

@@ -157,7 +157,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     }
 
     private void onEnableSanityCheckWarningsChanged(ActionEvent actionEvent) {
-        generalSettings.setEnableEventDiagnostics(enableSanityCheckWarnings.isSelected());
+        generalSettings.setEnableSanityCheckWarnings(enableSanityCheckWarnings.isSelected());
     }
 
     private void onProxyChanged(ActionEvent actionEvent) {

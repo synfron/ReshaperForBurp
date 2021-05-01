@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.rules;
 
 import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.ui.components.IFormComponent;
@@ -20,6 +21,7 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
     protected final P model;
     protected final JPanel mainContainer;
     protected final JButton validate;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     protected RuleOperationComponent(P model) {
         this.model = model;
@@ -30,10 +32,10 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
         setValidateButtonState();
         validate.addActionListener(this::onValidate);
 
-        model.getPropertyChangedEvent().add(this::OnModelPropertyChanged);
+        model.getPropertyChangedEvent().add(modelPropertyChangedListener);
     }
 
-    private void OnModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+    private void onModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
         if ("validated".equals(propertyChangedArgs.getName())) {
             setValidateButtonState();
         }

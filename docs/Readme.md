@@ -49,7 +49,9 @@ Set Variable - Set a variable using another value (text, variable, or HTTP event
 
 Delete Variable - Delete a variable
 
-Send To - Send data to other Burp tools
+Send To - Send data to other Burp tools or the system default browser
+
+Run Process - Execute a command in a separate process
 
 Drop - Have Burp drop the connection
 
