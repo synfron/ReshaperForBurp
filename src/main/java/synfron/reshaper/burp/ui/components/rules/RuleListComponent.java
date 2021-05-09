@@ -7,6 +7,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
+import synfron.reshaper.burp.ui.utils.ForegroundColorListCellRenderer;
 import synfron.reshaper.burp.ui.utils.WrapLayout;
 
 import javax.swing.*;
@@ -39,6 +40,7 @@ public class RuleListComponent extends JPanel {
 
         rulesList = new JList<>(ruleListModel);
         rulesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        rulesList.setCellRenderer(new ForegroundColorListCellRenderer(this::ruleListItemColorProvider));
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(rulesList);
@@ -48,6 +50,25 @@ public class RuleListComponent extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
         add(getActionBar(), BorderLayout.PAGE_END);
+    }
+
+    private Color ruleListItemColorProvider(Object item, Color defaultColor) {
+        Color newColor = null;
+        if (item instanceof RuleModel) {
+            RuleModel model = (RuleModel)item;
+            if (!model.isEnabled()) {
+                newColor = new Color(
+                        rgbScaler(defaultColor.getRed(), 2.6),
+                        rgbScaler(defaultColor.getGreen(), 2.6),
+                        rgbScaler(defaultColor.getBlue(), 2.6)
+                );
+            }
+        }
+        return newColor;
+    }
+
+    private int rgbScaler(int value, double divisor) {
+        return (int)(value-((value-(0xFF^value))/divisor));
     }
 
     private void onSelectionChanged(ListSelectionEvent listSelectionEvent) {
