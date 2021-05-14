@@ -33,7 +33,7 @@ public class WhenEventDirectionModel extends WhenModel<WhenEventDirectionModel, 
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

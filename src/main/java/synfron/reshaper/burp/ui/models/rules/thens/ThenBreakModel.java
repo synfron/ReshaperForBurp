@@ -25,7 +25,7 @@ public class ThenBreakModel extends ThenModel<ThenBreakModel, ThenBreak> {
             return false;
         }
         ruleOperation.setBreakType(breakType);
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -34,7 +34,7 @@ public class ThenBreakModel extends ThenModel<ThenBreakModel, ThenBreak> {
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

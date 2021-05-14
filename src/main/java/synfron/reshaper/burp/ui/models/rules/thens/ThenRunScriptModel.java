@@ -48,7 +48,7 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
         }
         ruleOperation.setScript(script);
         ruleOperation.setMaxExecutionSeconds(Integer.parseInt(maxExecutionSeconds));
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -57,7 +57,7 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

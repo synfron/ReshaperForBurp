@@ -17,15 +17,13 @@ public class ThenDelayComponent extends ThenComponent<ThenDelayModel,ThenDelay> 
 
     private void initComponent() {
         delay = new JTextField();
-        JButton save = new JButton("Save");
 
         delay.setText(model.getDelay());
 
         delay.getDocument().addDocumentListener(new DocumentActionListener(this::onDelayChanged));
-        save.addActionListener(this::onSave);
 
         mainContainer.add(getLabeledField("Delay (milliseconds)", delay), "wrap");
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onDelayChanged(ActionEvent actionEvent) {

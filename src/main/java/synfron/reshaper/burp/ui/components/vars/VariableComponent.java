@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.vars;
 
 import lombok.SneakyThrows;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -19,17 +20,21 @@ public class VariableComponent extends JPanel {
     private JTextField variableName;
     private JTextArea variableText;
     private JCheckBox persistent;
+    private JButton save;
+    private final IEventListener<PropertyChangedArgs> variablePropertyChangedListener = this::onVariablePropertyChanged;
 
     public VariableComponent(VariableModel model) {
         this.model = model;
-        model.withListener(this::onVariablePropertyChanged);
+        model.withListener(variablePropertyChangedListener);
         initComponent();
     }
 
     private void onVariablePropertyChanged(PropertyChangedArgs propertyChangedArgs) {
-        if (propertyChangedArgs.getName().equals("this")) {
+        if ("this".equals(propertyChangedArgs.getName())) {
             variableText.setText(model.getValue());
             persistent.setSelected(model.isPersistent());
+        } else if ("saved".equals(propertyChangedArgs.getName())) {
+            setSaveButtonState();
         }
     }
 
@@ -39,6 +44,16 @@ public class VariableComponent extends JPanel {
         add(getVariableNameBox(), BorderLayout.PAGE_START);
         add(getVariableTextBox(), BorderLayout.CENTER);
         add(getActionBar(), BorderLayout.PAGE_END);
+    }
+
+    private void setSaveButtonState() {
+        if (model.isSaved()) {
+            save.setEnabled(false);
+            save.setText("Saved");
+        } else {
+            save.setEnabled(true);
+            save.setText("Save");
+        }
     }
 
     private Component getVariableNameBox() {
@@ -89,7 +104,8 @@ public class VariableComponent extends JPanel {
 
         persistent = new JCheckBox("Persistent");
         persistent.setSelected(model.isPersistent());
-        JButton save = new JButton("Save");
+        save = new JButton("Save");
+        setSaveButtonState();
 
         persistent.addActionListener(this::onPersistentChanged);
         save.addActionListener(this::onSave);

@@ -44,7 +44,7 @@ public class ThenRunRulesModel extends ThenModel<ThenRunRulesModel, ThenRunRules
         }
         ruleOperation.setRuleName(ruleName);
         ruleOperation.setRunSingle(runSingle);
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -53,7 +53,7 @@ public class ThenRunRulesModel extends ThenModel<ThenRunRulesModel, ThenRunRules
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

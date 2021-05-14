@@ -1,8 +1,10 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
+import synfron.reshaper.burp.core.rules.IRuleOperation;
+import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationListComponent;
-import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
+import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModel;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModelType;
 
@@ -26,7 +28,12 @@ public class WhenListComponent extends RuleOperationListComponent<WhenModel<?,?>
     }
 
     @Override
-    protected WhenModel<?, ?> getModel(RuleOperationModelType<?,?> ruleOperationModelType) {
+    protected WhenModel<?, ?> getNewModel(RuleOperationModelType<?,?> ruleOperationModelType) {
         return WhenModel.getNewModel(ruleOperationModelType);
+    }
+
+    @Override
+    protected <R extends IRuleOperation<?>> WhenModel<?, ?> getModel(R when) {
+        return WhenModel.getModel((When<?>)when);
     }
 }

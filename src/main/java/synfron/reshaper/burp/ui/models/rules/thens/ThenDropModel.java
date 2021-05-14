@@ -24,7 +24,7 @@ public class ThenDropModel extends ThenModel<ThenDropModel, ThenDrop> {
             return false;
         }
         ruleOperation.setDropMessage(dropMessage);
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -33,7 +33,7 @@ public class ThenDropModel extends ThenModel<ThenDropModel, ThenDrop> {
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

@@ -42,7 +42,6 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         replacementText = new JTextField();
         destinationMessageValueType = new JComboBox<>(MessageValueType.values());
         destinationMessageValuePath = new JTextField();
-        JButton save = new JButton("Save");
 
         useMessageValue.setSelected(model.isUseMessageValue());
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
@@ -67,7 +66,6 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         replacementText.getDocument().addDocumentListener(new DocumentActionListener(this::onReplacementTextChanged));
         destinationMessageValueType.addActionListener(this::onDestinationMessageValueTypeChanged);
         destinationMessageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationMessageValuePathChanged));
-        save.addActionListener(this::onSave);
 
         mainContainer.add(useMessageValue, "wrap");
         mainContainer.add(withVisibilityFieldChangeDependency(
@@ -109,7 +107,7 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
                 destinationMessageValueType,
                 () -> destinationMessageValueType.getSelectedItem() != MessageValueType.Text
         ), "wrap");
-        mainContainer.add(getPaddedButton(save));
+        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onUseMessageValueChanged(ActionEvent actionEvent) {

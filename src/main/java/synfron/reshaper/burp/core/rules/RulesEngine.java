@@ -20,7 +20,7 @@ public class RulesEngine {
         boolean  first = true;
         for (When<?> when : whens)
         {
-            if (!isMatch && !when.isUseOrCondition() && !first)
+            if (!isMatch && !when.isUseOrCondition())
             {
                 break;
             }
@@ -55,15 +55,18 @@ public class RulesEngine {
     public RuleResponse run(EventInfo eventInfo)
     {
         List<Rule> rules = rulesRegistry.getRules();
-
-        for (Rule rule : rules)
-        {
-            if (rule.isAutoRun()) {
-                RuleResponse thenResult = run(eventInfo, rule);
-                if (thenResult.hasFlags(RuleResponse.BreakRules)) {
-                    break;
+        try {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logStart(eventInfo);
+            for (Rule rule : rules) {
+                if (rule.isAutoRun()) {
+                    RuleResponse thenResult = run(eventInfo, rule);
+                    if (thenResult.hasFlags(RuleResponse.BreakRules)) {
+                        break;
+                    }
                 }
             }
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logEnd(eventInfo);
         }
         return RuleResponse.Continue;
     }
@@ -71,6 +74,7 @@ public class RulesEngine {
     public RuleResponse run(EventInfo eventInfo, Rule rule)
     {
         RuleResponse thenResult = RuleResponse.Continue;
+        if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logStart(rule);
         try
         {
             if (rule.isEnabled() && match(rule.getWhens(), eventInfo))
@@ -81,6 +85,8 @@ public class RulesEngine {
             Log.get().withMessage("Failure running rule").withException(e).withPayload(e.getScriptStackTrace()).logErr();
         } catch (Exception e) {
             Log.get().withException(e).withMessage("Failure running rule").withPayload(rule).logErr();
+        } finally {
+            if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logEnd(rule);
         }
         return thenResult;
     }

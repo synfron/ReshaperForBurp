@@ -240,11 +240,11 @@ Variable Name - The name of the variable to delete. Supports variable tags.
 
 ### Send To
 
-Send data to other Burp tools
+Send data to other Burp tools or the system default browser
 
 #### Fields
 
-Send To - Comparer, Intruder, Repeater, or Spider
+Send To - Comparer, Intruder, Repeater Spider, or Browser
 
 Override Defaults - Select to be able to override values to send to the given Burp tool
 
@@ -258,7 +258,35 @@ Request - Full HTTP request text. Leave empty to use default value. Only availab
 
 Value - Value to compare. Leave empty to use default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
 
-URL - Leave empty to use default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
+URL - Leave empty to use default value. Only available for if Spider or Browser, and `Override Defaults` is selected. Supports variable tags.
+
+### Run Process
+
+Execute a command in a separate process
+
+#### Fields
+
+Command - Command to execute in a separate process. Supports variable tags. Example: `cmd.exe /c dir`
+
+Stdin - Value to send to standard input. Supports variable tags.
+
+Wait for Completion - Wait for the process to exit before continuing.
+
+Fail After (milliseconds) - Flag the process as failed after waiting the specified amount of time for the process to exit. Only available if `Wait for Completion` is selected. Supports variable tags.
+
+Fail on Non-Zero Exit Code - Flag the process as failed if the process returned a non-zero exit code. Only available if `Wait for Completion` is selected.
+
+Kill After Failure - Kill the process after a wait timeout. Only available if `Wait for Completion` is selected.
+
+Break After Failure - Do not run any other Thens or Rules for this event if the process was flagged as failed. Only available if `Wait for Completion` is selected.
+
+Capture Output - Capture standard out of the process. Only available if `Wait for Completion` is selected.
+
+Capture After Failure - Capture standard out even if the process is flagged as failed. Only available if `Wait for Completion` and `Capture Output` is selected.
+
+Capture Variable Source - Global or Event scope.
+
+Capture Variable Name - The name of variable to store the captured output.
 
 ### Drop
 
@@ -372,3 +400,25 @@ Response Header (HttpResponseHeader) - Example: `max-age=604800` at identifier `
 Response Cookie (HttpResponseCookie) - Example: `2Zy8` at identifier `AID`
 
 Response Body (HttpResponseBody)
+
+## Debugging
+
+Rules can be debugged by enabling event diagnostics (*Settings > General > Enable Event Diagnostics*). This will log details about all rules that were run for each event (request or response) including the result of When constraint checks, and the values that were used in Whens and Thens.
+
+Example Diagnostic Output:
+```
+Request: http://example.com/
+	Rule: Test
+		    When Event Direction('Request' equals 'Request') - PASS
+		AND When Matches Text('example.com' contains 'example') - PASS
+		    Then Set Value(destinationMessageValue='Request Header' destinationIdentifier='special' input='Mine') 
+		    Then Highlight('orange') 
+	End Rule
+End Request
+
+Response: http://example.com/
+	Rule: Test
+		    When Event Direction('Response' equals 'Request') - FAIL
+	End Rule
+End Response
+```

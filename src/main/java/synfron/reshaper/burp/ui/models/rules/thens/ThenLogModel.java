@@ -36,7 +36,7 @@ public class ThenLogModel extends ThenModel<ThenLogModel, ThenLog> {
             return false;
         }
         ruleOperation.setText(VariableString.getAsVariableString(text));
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -45,7 +45,7 @@ public class ThenLogModel extends ThenModel<ThenLogModel, ThenLog> {
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

@@ -47,7 +47,7 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
         }
         ruleOperation.setIdentifier(VariableString.getAsVariableString(identifier));
         ruleOperation.setMessageValue(messageValue);
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -56,7 +56,7 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

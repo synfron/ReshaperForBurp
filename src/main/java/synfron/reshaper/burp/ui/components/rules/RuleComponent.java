@@ -1,6 +1,8 @@
 package synfron.reshaper.burp.ui.components.rules;
 
 import lombok.SneakyThrows;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -18,9 +20,14 @@ public class RuleComponent extends JPanel {
     private JCheckBox isEnabled;
     private JCheckBox autoRun;
     private JTextField ruleName;
+    private JButton save;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     public RuleComponent(RuleModel model) {
         this.model = model;
+
+        model.getPropertyChangedEvent().add(modelPropertyChangedListener);
+
         initComponent();
     }
 
@@ -34,6 +41,16 @@ public class RuleComponent extends JPanel {
 
     private Component getRuleOperations() {
         return new RuleOperationsContainerComponent(model);
+    }
+
+    private void setSaveButtonState() {
+        if (model.isSaved()) {
+            save.setEnabled(false);
+            save.setText("Saved");
+        } else {
+            save.setEnabled(true);
+            save.setText("Save");
+        }
     }
 
     private Component getRuleNameBox() {
@@ -100,7 +117,8 @@ public class RuleComponent extends JPanel {
 
         autoRun = new JCheckBox("Auto Run");
         isEnabled = new JCheckBox("Enabled");
-        JButton save = new JButton("Save");
+        save = new JButton("Save");
+        setSaveButtonState();
 
         autoRun.setSelected(model.isAutoRun());
         isEnabled.setSelected(model.isEnabled());
@@ -118,6 +136,12 @@ public class RuleComponent extends JPanel {
         actionBar.add(buttonSection, BorderLayout.LINE_END);
 
         return actionBar;
+    }
+
+    private void onModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        if ("saved".equals(propertyChangedArgs.getName())) {
+            setSaveButtonState();
+        }
     }
 
     private void onAutoRun(ActionEvent actionEvent) {

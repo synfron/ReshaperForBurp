@@ -11,6 +11,7 @@ import synfron.reshaper.burp.core.rules.whens.When;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Rule implements Serializable {
     @Getter
@@ -49,5 +50,14 @@ public class Rule implements Serializable {
     public Rule withListener(IEventListener<PropertyChangedArgs> listener) {
         propertyChangedEvent.add(listener);
         return this;
+    }
+
+    public Rule copy() {
+        Rule rule = new Rule();
+        rule.whens = whens.stream().map(IRuleOperation::copy).map(when -> (When<?>)when).collect(Collectors.toList());
+        rule.thens = thens.stream().map(IRuleOperation::copy).map(then -> (Then<?>)then).collect(Collectors.toList());
+        rule.autoRun = autoRun;
+        rule.enabled = false;
+        return rule;
     }
 }

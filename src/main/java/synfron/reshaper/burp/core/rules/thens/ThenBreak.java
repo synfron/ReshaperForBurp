@@ -13,6 +13,7 @@ public class ThenBreak extends Then<ThenBreak> {
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, false, breakType);
         return breakType;
     }
 

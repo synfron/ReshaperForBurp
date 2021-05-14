@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.rules;
 import lombok.Getter;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -37,9 +38,10 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         );
     }
 
+    @SuppressWarnings("unchecked")
     private void onRuleOperationChanged(PropertyChangedArgs propertyChangedArgs) {
         T ruleOperation = (T)propertyChangedArgs.getSource();
-        if ("saved".equals(propertyChangedArgs.getName())) {
+        if ("validated".equals(propertyChangedArgs.getName())) {
             int index = operationsListModel.indexOf(ruleOperation);
             operationsListModel.set(index, ruleOperation);
             this.model.setSaved(false);
@@ -95,15 +97,18 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
 
         JButton moveUp = new JButton("Move Up");
         JButton moveDown = new JButton("Move Down");
+        JButton duplicate = new JButton("Duplicate");
         JButton delete = new JButton("Delete");
 
         moveUp.addActionListener(this::onMoveUp);
         moveDown.addActionListener(this::onMoveDown);
+        duplicate.addActionListener(this::onDuplicate);
         delete.addActionListener(this::onDelete);
 
         actionBar.add(getAddOperation());
         actionBar.add(moveUp);
         actionBar.add(moveDown);
+        actionBar.add(duplicate);
         actionBar.add(delete);
 
         return actionBar;
@@ -134,7 +139,19 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private void onAdd(ActionEvent actionEvent) {
         RuleOperationModelType<?,?> ruleOperationModelType = (RuleOperationModelType<?,?>)operationSelector.getSelectedItem();
         if (ruleOperationModelType != null) {
-            T model = getModel(ruleOperationModelType);
+            T model = getNewModel(ruleOperationModelType);
+            model.getPropertyChangedEvent().add(ruleOperationChangedListener);
+            operationsListModel.addElement(model);
+            getRuleOperations().add(model);
+            operationsList.setSelectedValue(model, true);
+            this.model.setSaved(false);
+        }
+    }
+
+    private void onDuplicate(ActionEvent actionEvent) {
+        RuleOperationModel<?,?> templateModel = operationsList.getSelectedValue();
+        if (templateModel != null) {
+            T model = getModel(templateModel.getRuleOperation());
             model.getPropertyChangedEvent().add(ruleOperationChangedListener);
             operationsListModel.addElement(model);
             getRuleOperations().add(model);
@@ -176,5 +193,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
 
     protected abstract List<RuleOperationModelType<?,?>> getRuleOperationModelTypes();
 
-    protected abstract T getModel(RuleOperationModelType<?,?> ruleOperationModelType);
+    protected abstract T getNewModel(RuleOperationModelType<?,?> ruleOperationModelType);
+
+    protected abstract <R extends IRuleOperation<?>> T getModel(R then);
 }

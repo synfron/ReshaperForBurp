@@ -24,7 +24,7 @@ public class ThenHighlightModel extends ThenModel<ThenHighlightModel, ThenHighli
             return false;
         }
         ruleOperation.setColor(color);
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 
@@ -33,7 +33,7 @@ public class ThenHighlightModel extends ThenModel<ThenHighlightModel, ThenHighli
         if (validate().size() != 0) {
             return false;
         }
-        setSaved(true);
+        setValidated(true);
         return true;
     }
 

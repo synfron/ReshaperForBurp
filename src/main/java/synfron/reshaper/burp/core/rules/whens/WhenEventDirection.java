@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 
 public class WhenEventDirection extends When<WhenEventDirection> {
@@ -12,7 +13,9 @@ public class WhenEventDirection extends When<WhenEventDirection> {
 
     @Override
     public boolean isMatch(EventInfo eventInfo) {
-        return eventInfo.getDataDirection() == dataDirection;
+        boolean isMatch = (eventInfo.getDataDirection() == dataDirection) == !isNegate();
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, null, MatchType.Equals, dataDirection, eventInfo.getDataDirection(), isMatch);
+        return isMatch;
     }
 
     @Override

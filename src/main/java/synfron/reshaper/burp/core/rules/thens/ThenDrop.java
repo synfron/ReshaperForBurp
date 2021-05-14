@@ -12,6 +12,7 @@ public class ThenDrop extends Then<ThenDrop> {
 
     public RuleResponse perform(EventInfo eventInfo) {
         eventInfo.setShouldDrop(dropMessage);
+        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, false, dropMessage);
         return RuleResponse.Continue;
     }
 
