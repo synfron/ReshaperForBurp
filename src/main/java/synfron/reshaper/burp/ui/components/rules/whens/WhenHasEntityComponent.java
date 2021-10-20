@@ -4,6 +4,7 @@ import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.whens.WhenHasEntity;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenHasEntityModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -29,7 +30,7 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Identifier", identifier),
                 messageValue,
                 () -> MessageValueHandler.hasIdentifier((MessageValue)messageValue.getSelectedItem())

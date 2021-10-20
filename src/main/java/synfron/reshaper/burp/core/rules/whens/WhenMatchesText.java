@@ -52,23 +52,13 @@ public class WhenMatchesText extends When<WhenMatchesText> {
             sourceText = getPathValue(sourceText, eventInfo);
             matchText = this.matchText.getText(eventInfo);
 
-            switch (matchType) {
-                case BeginsWith:
-                    isMatch = sourceText.startsWith(matchText);
-                    break;
-                case EndsWith:
-                    isMatch = sourceText.endsWith(matchText);
-                    break;
-                case Contains:
-                    isMatch = sourceText.contains(matchText);
-                    break;
-                case Equals:
-                    isMatch = sourceText.equals(matchText);
-                    break;
-                case Regex:
-                    isMatch = TextUtils.isMatch(sourceText, matchText);
-                    break;
-            }
+            isMatch = switch (matchType) {
+                case BeginsWith -> sourceText.startsWith(matchText);
+                case EndsWith -> sourceText.endsWith(matchText);
+                case Contains -> sourceText.contains(matchText);
+                case Equals -> sourceText.equals(matchText);
+                case Regex -> TextUtils.isMatch(sourceText, matchText);
+            };
         } catch (Exception ignored) {
         }
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(
@@ -83,14 +73,9 @@ public class WhenMatchesText extends When<WhenMatchesText> {
     private String getPathValue(String value, EventInfo eventInfo) {
         if (messageValueType != MessageValueType.Text && messageValuePath != null)
         {
-            switch (messageValueType)
-            {
-                case Json:
-                    value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo));
-                    break;
-                case Html:
-                    value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo));
-                    break;
+            switch (messageValueType) {
+                case Json -> value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo));
+                case Html -> value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo));
             }
         }
         return value;

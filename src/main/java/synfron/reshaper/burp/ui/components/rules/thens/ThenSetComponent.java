@@ -5,6 +5,7 @@ import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -68,41 +69,41 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         destinationMessageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationMessageValuePathChanged));
 
         mainContainer.add(useMessageValue, "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Message Value", sourceMessageValue),
                 useMessageValue,
                 () -> useMessageValue.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Identifier", sourceIdentifier),
                 List.of(useMessageValue, sourceMessageValue),
                 () -> useMessageValue.isSelected() && MessageValueHandler.hasIdentifier((MessageValue)sourceMessageValue.getSelectedItem())
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Text", text),
                 useMessageValue,
                 () -> !useMessageValue.isSelected()
         ), "wrap");
         mainContainer.add(getLabeledField("Source Value Type", sourceMessageValueType), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Value Path", sourceMessageValuePath),
                 List.of(sourceMessageValueType),
                 () -> sourceMessageValueType.getSelectedItem() != MessageValueType.Text
         ), "wrap");
         mainContainer.add(useReplace, "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Regex Pattern", regexPattern),
                 useReplace,
                 () -> useReplace.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Regex Replacement Text", replacementText),
                 useReplace,
                 () -> useReplace.isSelected()
         ), "wrap");
         getExtendedComponents().forEach(component -> mainContainer.add(component, "wrap"));
         mainContainer.add(getLabeledField("Destination Value Type", destinationMessageValueType), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Destination Value Path", destinationMessageValuePath),
                 destinationMessageValueType,
                 () -> destinationMessageValueType.getSelectedItem() != MessageValueType.Text

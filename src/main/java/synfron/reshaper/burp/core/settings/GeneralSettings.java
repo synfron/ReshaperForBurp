@@ -36,22 +36,14 @@ public class GeneralSettings {
     }
 
     public boolean isCapture(BurpTool burpTool) {
-        switch (burpTool) {
-            case Proxy:
-                return isCaptureProxy();
-            case Repeater:
-                return isCaptureRepeater();
-            case Target:
-                return isCaptureTarget();
-            case Spider:
-                return isCaptureSpider();
-            case Scanner:
-                return isCaptureScanner();
-            case Intruder:
-                return isCaptureIntruder();
-            case Extender:
-                return isCaptureExtender();
-        }
-        return false;
+        return switch (burpTool) {
+            case Proxy -> isCaptureProxy();
+            case Repeater -> isCaptureRepeater();
+            case Target -> isCaptureTarget();
+            case Spider -> isCaptureSpider();
+            case Scanner -> isCaptureScanner();
+            case Intruder -> isCaptureIntruder();
+            case Extender -> isCaptureExtender();
+        };
     }
 }

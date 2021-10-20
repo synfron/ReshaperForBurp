@@ -40,14 +40,9 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
     {
         if (destinationMessageValueType != MessageValueType.Text) {
             String fullText = MessageValueHandler.getValue(eventInfo, destinationMessageValue, destinationIdentifier);
-            switch (destinationMessageValueType)
-            {
-                case Json:
-                    replacementText = TextUtils.setJsonValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
-                    break;
-                case Html:
-                    replacementText = TextUtils.setHtmlValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
-                    break;
+            switch (destinationMessageValueType) {
+                case Json -> replacementText = TextUtils.setJsonValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
+                case Html -> replacementText = TextUtils.setHtmlValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
             }
         }
         MessageValueHandler.setValue(eventInfo, destinationMessageValue, destinationIdentifier, replacementText);

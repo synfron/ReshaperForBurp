@@ -1,9 +1,9 @@
 package synfron.reshaper.burp.core.rules.thens;
 
+import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
@@ -13,27 +13,27 @@ import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.*;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class ThenRunProcess extends Then<ThenRunProcess> {
+public class ThenSendRequest extends Then<ThenSendRequest> {
     @Getter @Setter
-    private VariableString command;
+    private VariableString protocol;
     @Getter @Setter
-    private VariableString input;
+    private VariableString address;
+    @Getter @Setter
+    private VariableString port;
+    @Getter @Setter
+    private VariableString request;
     @Getter @Setter
     private boolean waitForCompletion;
     @Getter @Setter
     private VariableString failAfter;
     @Getter @Setter
-    private boolean killAfterFailure;
-    @Getter @Setter
-    private boolean failOnNonZeroExitCode;
+    private boolean failOnErrorStatusCode;
     @Getter @Setter
     private boolean breakAfterFailure = true;
     @Getter @Setter
@@ -51,55 +51,51 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         boolean failed = false;
         boolean complete = false;
         String output = null;
-        Integer exitCode = null;
-        String input;
+        int exitCode = 0;
         String captureVariableName = null;
-        StringBuilderWriter stringWriter = new StringBuilderWriter();
-        BufferedWriter bufferedWriter = new BufferedWriter(stringWriter);
         try {
             int failAfterInSeconds = waitForCompletion ? getFailAfter(eventInfo) : 0;
-            input = VariableString.getTextOrDefault(eventInfo, this.input, "");
             captureVariableName = getVariableName(eventInfo);
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Process process = Runtime.getRuntime().exec(command.getText(eventInfo));
-            if (StringUtils.isNotEmpty(input)) {
-                IOUtils.write(input, process.getOutputStream(), Charset.defaultCharset());
-                process.getOutputStream().close();
-            }
-            if (waitForCompletion) {
+            AtomicReference<byte[]> response = new AtomicReference<>();
                 executor.submit(() -> {
                     try {
-                        if (captureOutput) {
-                            IOUtils.copy(process.getInputStream(), bufferedWriter, Charset.defaultCharset());
-                        }
-                        process.waitFor();
-                    } catch (InterruptedException | IOException ignored) {}
-                    finally {
+                        boolean useHttps = !StringUtils.equalsIgnoreCase(VariableString.getTextOrDefault(eventInfo, protocol, eventInfo.getHttpProtocol()), "http");
+                        String address = VariableString.getTextOrDefault(eventInfo, this.address, eventInfo.getDestinationAddress());
+                        int port = VariableString.getIntOrDefault(eventInfo, this.port, eventInfo.getDestinationPort() == null ? 0 : eventInfo.getDestinationPort());
+                        byte[] request = this.request != null && !this.request.isEmpty() ?
+                                BurpExtender.getCallbacks().getHelpers().stringToBytes(this.request.getText(eventInfo)) :
+                                eventInfo.getHttpRequestMessage().getValue();
+                        byte[] responseBytes = BurpExtender.getCallbacks().makeHttpRequest(
+                                address,
+                                port > 0 ? port : (useHttps ? 443 : 80),
+                                useHttps,
+                                request
+                        );
+                        response.set(responseBytes);
+                    }
+                    catch (Exception e) {
+                        Log.get().withMessage("Failure sending request").withException(e).logErr();
+                    } finally {
                         executor.shutdown();
                     }
                 });
-                complete = executor.awaitTermination(failAfterInSeconds, TimeUnit.MILLISECONDS);
-                if (!complete) {
-                    if (killAfterFailure && process.isAlive()) {
-                        try {
-                            process.destroyForcibly().waitFor(10, TimeUnit.SECONDS);
-                        } catch (Exception e) {
-                            Log.get().withMessage("Problem encounter killing process after failure.").withException(e).logErr();
-                        }
+                if (waitForCompletion) {
+                    complete = executor.awaitTermination(failAfterInSeconds, TimeUnit.MILLISECONDS);
+                    if (complete) {
+                        executor.shutdownNow();
                     }
-                    executor.shutdownNow();
+                    byte[] responseBytes = response.get();
+                    exitCode = complete && failOnErrorStatusCode && ArrayUtils.isNotEmpty(responseBytes) ?
+                            (int)BurpExtender.getCallbacks().getHelpers().analyzeResponse(response.get()).getStatusCode() :
+                            0;
+                    failed = !complete || (failOnErrorStatusCode && (exitCode == 0 || (exitCode >= 400 && exitCode < 600)));
+                    if (captureOutput && (!failed || captureAfterFailure)) {
+                        output = BurpExtender.getCallbacks().getHelpers().bytesToString(response.get());
+                        setVariable(eventInfo, captureVariableName, output);
+                    }
                 }
-                exitCode = complete || !process.isAlive() ? process.exitValue() : null;
-                failed = !complete || (failOnNonZeroExitCode && exitCode != 0);
-                if (captureOutput && (!failed || captureAfterFailure)) {
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-                    output = stringWriter.toString();
-                    setVariable(eventInfo, captureVariableName, output);
-                }
-            }
-
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException e) {
             hasError = true;
             complete = true;
             throw new WrappedException(e);
@@ -110,7 +106,10 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         } finally {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                        Pair.of("command", VariableString.getTextOrDefault(eventInfo, command, null)),
+                        Pair.of("protocol", VariableString.getTextOrDefault(eventInfo, protocol, null)),
+                        Pair.of("address", VariableString.getTextOrDefault(eventInfo, address, null)),
+                        Pair.of("port", VariableString.getTextOrDefault(eventInfo, port, null)),
+                        Pair.of("request", VariableString.getTextOrDefault(eventInfo, request, null)),
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
                         Pair.of("variableName", waitForCompletion && captureOutput ? captureVariableName : null),
@@ -151,7 +150,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
     }
 
     @Override
-    public RuleOperationType<ThenRunProcess> getType() {
-        return ThenType.RunProcess;
+    public RuleOperationType<ThenSendRequest> getType() {
+        return ThenType.SendRequest;
     }
 }

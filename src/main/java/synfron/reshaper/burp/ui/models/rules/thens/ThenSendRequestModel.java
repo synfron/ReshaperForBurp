@@ -2,27 +2,29 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.rules.thens.ThenRunProcess;
+import synfron.reshaper.burp.core.rules.thens.ThenSendRequest;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
 
-public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunProcess> {
+public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSendRequest> {
 
     @Getter
-    private String command;
+    private String protocol;
     @Getter
-    private String input;
+    private String address;
+    @Getter
+    private String port;
+    @Getter
+    private String request;
     @Getter
     private boolean waitForCompletion;
     @Getter
     private String failAfter = "5000";
     @Getter
-    private boolean killAfterFailure;
-    @Getter
-    private boolean failOnNonZeroExitCode;
+    private boolean failOnErrorStatusCode;
     @Getter
     private boolean breakAfterFailure;
     @Getter
@@ -34,14 +36,15 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     @Getter
     private String captureVariableName;
 
-    public ThenRunProcessModel(ThenRunProcess then, Boolean isNew) {
+    public ThenSendRequestModel(ThenSendRequest then, Boolean isNew) {
         super(then, isNew);
-        command = VariableString.getFormattedString(then.getCommand(), command);
-        input = VariableString.getFormattedString(then.getInput(), input);
+        protocol = VariableString.getFormattedString(then.getProtocol(), protocol);
+        address = VariableString.getFormattedString(then.getAddress(), address);
+        port = VariableString.getFormattedString(then.getPort(), port);
+        request = VariableString.getFormattedString(then.getRequest(), request);
         waitForCompletion = then.isWaitForCompletion();
         failAfter = VariableString.getFormattedString(then.getFailAfter(), failAfter);
-        killAfterFailure = then.isKillAfterFailure();
-        failOnNonZeroExitCode = then.isFailOnNonZeroExitCode();
+        failOnErrorStatusCode = then.isFailOnErrorStatusCode();
         breakAfterFailure = then.isBreakAfterFailure();
         captureOutput = then.isCaptureOutput();
         captureAfterFailure = then.isCaptureAfterFailure();
@@ -49,14 +52,24 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         captureVariableName = VariableString.getFormattedString(then.getCaptureVariableName(), captureVariableName);
     }
 
-    public void setCommand(String command) {
-        this.command = command;
-        propertyChanged("command", command);
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+        propertyChanged("protocol", protocol);
     }
 
-    public void setInput(String input) {
-        this.input = input;
-        propertyChanged("input", input);
+    public void setAddress(String address) {
+        this.address = address;
+        propertyChanged("address", address);
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+        propertyChanged("port", port);
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+        propertyChanged("request", request);
     }
 
     public void setWaitForCompletion(boolean waitForCompletion) {
@@ -69,14 +82,9 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         propertyChanged("failAfter", failAfter);
     }
 
-    public void setKillAfterFailure(boolean killAfterFailure) {
-        this.killAfterFailure = killAfterFailure;
-        propertyChanged("killAfterFailure", killAfterFailure);
-    }
-
-    public void setFailOnNonZeroExitCode(boolean failOnNonZeroExitCode) {
-        this.failOnNonZeroExitCode = failOnNonZeroExitCode;
-        propertyChanged("failOnNonZeroExitCode", failOnNonZeroExitCode);
+    public void setFailOnErrorStatusCode(boolean failOnErrorStatusCode) {
+        this.failOnErrorStatusCode = failOnErrorStatusCode;
+        propertyChanged("failOnNonZeroExitCode", failOnErrorStatusCode);
     }
 
     public void setBreakAfterFailure(boolean breakAfterFailure) {
@@ -106,17 +114,17 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
 
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (StringUtils.isEmpty(command)) {
-            errors.add("Command is required");
+        if (StringUtils.isNotEmpty(port) && !VariableString.isPotentialInt(port)) {
+            errors.add("Port must be an integer");
         }
         if (waitForCompletion && StringUtils.isEmpty(failAfter)) {
             errors.add("Fail After is required");
-        }
-        if (waitForCompletion && !VariableString.isPotentialInt(failAfter)) {
+        } else if (waitForCompletion && !VariableString.isPotentialInt(failAfter)) {
             errors.add("Fail After must be an integer");
-        } else if (waitForCompletion && captureOutput && StringUtils.isEmpty(captureVariableName)) {
+        }
+        if (waitForCompletion && captureOutput && StringUtils.isEmpty(captureVariableName)) {
             errors.add("Capture Variable Name is required");
-        } else  if (waitForCompletion && captureOutput && !VariableString.isValidVariableName(captureVariableName)) {
+        } else if (waitForCompletion && captureOutput && !VariableString.isValidVariableName(captureVariableName)) {
             errors.add("Capture Variable Name is invalid");
         }
         return errors;
@@ -126,12 +134,13 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         if (validate().size() != 0) {
             return false;
         }
-        ruleOperation.setCommand(VariableString.getAsVariableString(command));
-        ruleOperation.setInput(VariableString.getAsVariableString(input));
+        ruleOperation.setProtocol(VariableString.getAsVariableString(protocol));
+        ruleOperation.setAddress(VariableString.getAsVariableString(address));
+        ruleOperation.setPort(VariableString.getAsVariableString(port));
+        ruleOperation.setRequest(VariableString.getAsVariableString(request));
         ruleOperation.setWaitForCompletion(waitForCompletion);
         ruleOperation.setFailAfter(VariableString.getAsVariableString(failAfter));
-        ruleOperation.setKillAfterFailure(killAfterFailure);
-        ruleOperation.setFailOnNonZeroExitCode(failOnNonZeroExitCode);
+        ruleOperation.setFailOnErrorStatusCode(failOnErrorStatusCode);
         ruleOperation.setBreakAfterFailure(breakAfterFailure);
         ruleOperation.setCaptureOutput(captureOutput);
         ruleOperation.setCaptureAfterFailure(captureAfterFailure);
@@ -151,7 +160,7 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     }
 
     @Override
-    public RuleOperationModelType<ThenRunProcessModel, ThenRunProcess> getType() {
-        return ThenModelType.RunProcess;
+    public RuleOperationModelType<ThenSendRequestModel, ThenSendRequest> getType() {
+        return ThenModelType.SendRequest;
     }
 }

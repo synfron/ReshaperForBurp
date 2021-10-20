@@ -85,12 +85,8 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         List<String> errors = super.validate();
         if (overrideDefaults) {
             switch (sendTo) {
-                case Intruder:
-                    validateIntruder(errors);
-                    break;
-                case Repeater:
-                    validateRepeater(errors);
-                    break;
+                case Intruder -> validateIntruder(errors);
+                case Repeater -> validateRepeater(errors);
             }
         }
         return errors;

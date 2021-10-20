@@ -26,7 +26,7 @@ public class VariableString implements Serializable {
     }
 
     public static boolean isValidVariableName(String name) {
-        return !Pattern.matches("\\{\\{|}}", name);
+        return StringUtils.isNotEmpty(name) && !Pattern.matches("\\{\\{|}}", name);
     }
 
     public boolean isEmpty() {
@@ -92,12 +92,12 @@ public class VariableString implements Serializable {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
         {
-            Variable value = null;
-            switch (variable.getVariableSource()) {
-                case Global: value = GlobalVariables.get().getOrDefault(variable.getName()); break;
-                case Event: value = eventInfo.getVariables().getOrDefault(variable.getName()); break;
-                case Message: value = getMessageVariable(eventInfo, variable.getName()); break;
-            }
+            Variable value = switch (variable.getVariableSource()) {
+                case Global -> GlobalVariables.get().getOrDefault(variable.getName());
+                case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
+                case Message -> getMessageVariable(eventInfo, variable.getName());
+                default -> null;
+            };
             variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
         }
         return String.format(text, variableVals.toArray());

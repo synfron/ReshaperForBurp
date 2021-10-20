@@ -90,6 +90,10 @@ public class RuleModel {
         }
     }
 
+    public void markChanged() {
+        setSaved(false);
+    }
+
     public List<String> validate() {
         List<String> errors = new ArrayList<>();
         if (StringUtils.isEmpty(name)) {

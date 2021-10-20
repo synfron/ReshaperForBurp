@@ -4,11 +4,15 @@ import burp.IHttpRequestResponse;
 import burp.IInterceptedProxyMessage;
 import lombok.Getter;
 import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.core.vars.Variables;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class EventInfo {
     @Getter
@@ -98,6 +102,19 @@ public class EventInfo {
     public void setShouldDrop(boolean shouldDrop) {
         this.shouldDrop = shouldDrop;
         changed = true;
+    }
+
+    public void setUrl(String urlStr) {
+        try {
+            URL url = new URL(urlStr);
+            setHttpProtocol(url.getProtocol());
+            setDestinationAddress(url.getHost());
+            setDestinationPort(url.getPort() > 0 ? url.getPort() : url.getDefaultPort());
+            getHttpRequestMessage().getStatusLine().setUrl(url.getFile().startsWith("/") ? url.getFile() : "/" + url.getFile());
+            getHttpRequestMessage().getHeaders().setHeader("Host", url.getAuthority());
+        } catch (MalformedURLException e) {
+            throw new WrappedException(e);
+        }
     }
 
     public boolean isChanged() {

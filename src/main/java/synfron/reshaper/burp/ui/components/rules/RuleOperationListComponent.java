@@ -44,7 +44,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         if ("validated".equals(propertyChangedArgs.getName())) {
             int index = operationsListModel.indexOf(ruleOperation);
             operationsListModel.set(index, ruleOperation);
-            this.model.setSaved(false);
+            this.model.markChanged();
         }
     }
 
@@ -132,7 +132,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         if (model != null) {
             operationsListModel.removeElement(model);
             getRuleOperations().remove(model);
-            this.model.setSaved(false);
+            this.model.markChanged();
         }
     }
 
@@ -144,7 +144,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
             operationsListModel.addElement(model);
             getRuleOperations().add(model);
             operationsList.setSelectedValue(model, true);
-            this.model.setSaved(false);
+            this.model.markChanged();
         }
     }
 
@@ -156,7 +156,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
             operationsListModel.addElement(model);
             getRuleOperations().add(model);
             operationsList.setSelectedValue(model, true);
-            this.model.setSaved(false);
+            this.model.markChanged();
         }
     }
 
@@ -169,7 +169,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
             operationsListModel.add(++index, ruleOperationModel);
             getRuleOperations().add(index, ruleOperationModel);
             operationsList.setSelectedIndex(index);
-            this.model.setSaved(false);
+            this.model.markChanged();
         }
     }
 
@@ -182,7 +182,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
             operationsListModel.add(--index, ruleOperationModel);
             getRuleOperations().add(index, ruleOperationModel);
             operationsList.setSelectedIndex(index);
-            this.model.setSaved(false);
+            this.model.markChanged();
         }
     }
 

@@ -20,71 +20,28 @@ public class WhenHasEntity extends When<WhenHasEntity> {
     {
         boolean matches = false;
         try {
-            switch (messageValue) {
-                case SourceAddress:
-                case DestinationAddress:
-                case DestinationPort:
-                case HttpProtocol:
-                    matches = true;
-                    break;
-                case HttpRequestMessage:
-                    matches = eventInfo.getHttpRequestMessage().getValue().length > 0;
-                    break;
-                case HttpRequestMethod:
-                    matches = eventInfo.getHttpRequestMessage().getStatusLine().getMethod().length() > 0;
-                    break;
-                case HttpRequestUri:
-                    matches = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getValue().length() > 0;
-                    break;
-                case HttpRequestStatusLine:
-                    matches = eventInfo.getHttpRequestMessage().getStatusLine().getValue().length() > 0;
-                    break;
-                case HttpResponseMessage:
-                    matches = eventInfo.getHttpResponseMessage().getValue().length > 0;
-                    break;
-                case HttpResponseStatusLine:
-                    matches = eventInfo.getHttpResponseMessage().getStatusLine().getValue().length() > 0;
-                    break;
-                case HttpResponseStatusCode:
-                    matches = eventInfo.getHttpResponseMessage().getStatusLine().getCode().length() > 0;
-                    break;
-                case HttpResponseStatusMessage:
-                    matches = eventInfo.getHttpResponseMessage().getStatusLine().getMessage().length() > 0;
-                    break;
-                case HttpRequestBody:
-                    matches = eventInfo.getHttpRequestMessage().getBody().hasValue();
-                    break;
-                case HttpResponseBody:
-                    matches = eventInfo.getHttpResponseMessage().getBody().hasValue();
-                    break;
-                case HttpRequestHeaders:
-                    matches = eventInfo.getHttpRequestMessage().getHeaders().getCount() > 0;
-                    break;
-                case HttpResponseHeaders:
-                    matches = eventInfo.getHttpResponseMessage().getHeaders().getCount() > 0;
-                    break;
-                case HttpRequestHeader:
-                    matches = eventInfo.getHttpRequestMessage().getHeaders().contains(identifier.getText(eventInfo));
-                    break;
-                case HttpResponseHeader:
-                    matches = eventInfo.getHttpResponseMessage().getHeaders().contains(identifier.getText(eventInfo));
-                    break;
-                case HttpRequestCookie:
-                    matches = eventInfo.getHttpRequestMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
-                    break;
-                case HttpResponseCookie:
-                    matches = eventInfo.getHttpResponseMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
-                    break;
-                case HttpRequestUriPath:
-                    matches = StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getPath());
-                    break;
-                case HttpRequestUriQueryParameters:
-                    matches = StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameters());
-                    break;
-                case HttpRequestUriQueryParameter:
-                    matches = eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo)) != null;
-                    break;
-            }
+            matches = switch (messageValue) {
+                case SourceAddress, DestinationAddress, DestinationPort, HttpProtocol -> true;
+                case HttpRequestMessage -> eventInfo.getHttpRequestMessage().getValue().length > 0;
+                case HttpRequestMethod -> eventInfo.getHttpRequestMessage().getStatusLine().getMethod().length() > 0;
+                case HttpRequestUri, Url -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getValue().length() > 0;
+                case HttpRequestStatusLine -> eventInfo.getHttpRequestMessage().getStatusLine().getValue().length() > 0;
+                case HttpResponseMessage -> eventInfo.getHttpResponseMessage().getValue().length > 0;
+                case HttpResponseStatusLine -> eventInfo.getHttpResponseMessage().getStatusLine().getValue().length() > 0;
+                case HttpResponseStatusCode -> eventInfo.getHttpResponseMessage().getStatusLine().getCode().length() > 0;
+                case HttpResponseStatusMessage -> eventInfo.getHttpResponseMessage().getStatusLine().getMessage().length() > 0;
+                case HttpRequestBody -> eventInfo.getHttpRequestMessage().getBody().hasValue();
+                case HttpResponseBody -> eventInfo.getHttpResponseMessage().getBody().hasValue();
+                case HttpRequestHeaders -> eventInfo.getHttpRequestMessage().getHeaders().getCount() > 0;
+                case HttpResponseHeaders -> eventInfo.getHttpResponseMessage().getHeaders().getCount() > 0;
+                case HttpRequestHeader -> eventInfo.getHttpRequestMessage().getHeaders().contains(identifier.getText(eventInfo));
+                case HttpResponseHeader -> eventInfo.getHttpResponseMessage().getHeaders().contains(identifier.getText(eventInfo));
+                case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
+                case HttpResponseCookie -> eventInfo.getHttpResponseMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
+                case HttpRequestUriPath -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getPath());
+                case HttpRequestUriQueryParameters -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameters());
+                case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo)) != null;
+            };
         } catch (Exception ignored) {
         }
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logHas(this, messageValue, VariableString.getTextOrDefault(eventInfo, identifier, ""), matches);

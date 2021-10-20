@@ -1,8 +1,8 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
-import synfron.reshaper.burp.core.rules.thens.ThenRunProcess;
+import synfron.reshaper.burp.core.rules.thens.ThenSendRequest;
 import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.ui.models.rules.thens.ThenRunProcessModel;
+import synfron.reshaper.burp.ui.models.rules.thens.ThenSendRequestModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -10,63 +10,69 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, ThenRunProcess> {
-    private JTextField command;
-    private JTextField input;
+public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel, ThenSendRequest> {
+    private JTextField protocol;
+    private JTextField address;
+    private JTextField port;
+    private JTextField request;
     private JCheckBox waitForCompletion;
     private JTextField failAfter;
-    private JCheckBox killAfterFailure;
-    private JCheckBox failOnNonZeroExitCode;
+    private JCheckBox failOnErrorStatusCode;
     private JCheckBox breakAfterFailure;
     private JCheckBox captureOutput;
     private JCheckBox captureAfterFailure;
     private JComboBox<VariableSource> captureVariableSource;
     private JTextField captureVariableName;
 
-    public ThenRunProcessComponent(ThenRunProcessModel then) {
+    public ThenSendRequestComponent(ThenSendRequestModel then) {
         super(then);
         initComponent();
     }
 
     private void initComponent() {
-        command = new JTextField();
-        input = new JTextField();
+        protocol = new JTextField();
+        address = new JTextField();
+        port = new JTextField();
+        request = new JTextField();
         waitForCompletion = new JCheckBox("Wait for Completion");
         failAfter = new JTextField();
-        killAfterFailure = new JCheckBox("Kill After Failure");
-        failOnNonZeroExitCode = new JCheckBox("Fail on Non-Zero Exit Code");
+        failOnErrorStatusCode = new JCheckBox("Fail on Error Status Code");
         breakAfterFailure = new JCheckBox("Break After Failure");
         captureOutput = new JCheckBox("Capture Output");
         captureAfterFailure = new JCheckBox("Capture After Failure");
         captureVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
         captureVariableName = new JTextField();
 
-        command.setText(model.getCommand());
-        input.setText(model.getInput());
+        protocol.setText(model.getProtocol());
+        address.setText(model.getAddress());
+        port.setText(model.getPort());
+        request.setText(model.getRequest());
         waitForCompletion.setSelected(model.isWaitForCompletion());
         failAfter.setText(model.getFailAfter());
-        killAfterFailure.setSelected(model.isKillAfterFailure());
-        failOnNonZeroExitCode.setSelected(model.isFailOnNonZeroExitCode());
+        failOnErrorStatusCode.setSelected(model.isFailOnErrorStatusCode());
         breakAfterFailure.setSelected(model.isBreakAfterFailure());
         captureOutput.setSelected(model.isCaptureOutput());
         captureAfterFailure.setSelected(model.isCaptureAfterFailure());
         captureVariableSource.setSelectedItem(model.getCaptureVariableSource());
         captureVariableName.setText(model.getCaptureVariableName());
 
-        command.getDocument().addDocumentListener(new DocumentActionListener(this::onCommandChanged));
-        input.getDocument().addDocumentListener(new DocumentActionListener(this::onInputChanged));
+        protocol.getDocument().addDocumentListener(new DocumentActionListener(this::onProtocolChanged));
+        address.getDocument().addDocumentListener(new DocumentActionListener(this::onAddressChanged));
+        port.getDocument().addDocumentListener(new DocumentActionListener(this::onPortChanged));
+        request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
         waitForCompletion.addActionListener(this::onWaitForCompletionChanged);
         failAfter.getDocument().addDocumentListener(new DocumentActionListener(this::onFailAfterChanged));
-        killAfterFailure.addActionListener(this::onKillAfterWaitChanged);
-        failOnNonZeroExitCode.addActionListener(this::onFailOnNonZeroExitCodeChanged);
+        failOnErrorStatusCode.addActionListener(this::onFailOnErrorStatusCodeChanged);
         breakAfterFailure.addActionListener(this::onContinueAfterFailureChanged);
         captureOutput.addActionListener(this::onCaptureOutputChanged);
         captureAfterFailure.addActionListener(this::onCaptureAfterFailureChanged);
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
 
-        mainContainer.add(getLabeledField("Command", command), "wrap");
-        mainContainer.add(getLabeledField("Stdin", input), "wrap");
+        mainContainer.add(getLabeledField("Protocol", protocol), "wrap");
+        mainContainer.add(getLabeledField("Address", address), "wrap");
+        mainContainer.add(getLabeledField("Port", port), "wrap");
+        mainContainer.add(getLabeledField("Request", request), "wrap");
         mainContainer.add(waitForCompletion, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Fail After (milliseconds)", failAfter),
@@ -74,12 +80,7 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
                 () -> waitForCompletion.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                failOnNonZeroExitCode,
-                waitForCompletion,
-                () -> waitForCompletion.isSelected()
-        ), "wrap");
-        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                killAfterFailure,
+                failOnErrorStatusCode,
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
@@ -111,12 +112,20 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         mainContainer.add(getPaddedButton(validate));
     }
 
-    private void onCommandChanged(ActionEvent actionEvent) {
-        model.setCommand(command.getText());
+    private void onRequestChanged(ActionEvent actionEvent) {
+        model.setRequest(request.getText());
     }
 
-    private void onInputChanged(ActionEvent actionEvent) {
-        model.setInput(input.getText());
+    private void onPortChanged(ActionEvent actionEvent) {
+        model.setPort(port.getText());
+    }
+
+    private void onAddressChanged(ActionEvent actionEvent) {
+        model.setAddress(address.getText());
+    }
+
+    private void onProtocolChanged(ActionEvent actionEvent) {
+        model.setProtocol(protocol.getText());
     }
 
     private void onWaitForCompletionChanged(ActionEvent actionEvent) {
@@ -127,12 +136,8 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         model.setFailAfter(failAfter.getText());
     }
 
-    private void onKillAfterWaitChanged(ActionEvent actionEvent) {
-        model.setKillAfterFailure(killAfterFailure.isSelected());
-    }
-
-    private void onFailOnNonZeroExitCodeChanged(ActionEvent actionEvent) {
-        model.setFailOnNonZeroExitCode(failOnNonZeroExitCode.isSelected());
+    private void onFailOnErrorStatusCodeChanged(ActionEvent actionEvent) {
+        model.setFailOnErrorStatusCode(failOnErrorStatusCode.isSelected());
     }
 
     private void onContinueAfterFailureChanged(ActionEvent actionEvent) {

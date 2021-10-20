@@ -4,6 +4,7 @@ import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDeleteValueModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
             MessageValue.DestinationAddress,
             MessageValue.DestinationPort,
             MessageValue.HttpProtocol,
+            MessageValue.Url,
             MessageValue.HttpRequestMessage,
             MessageValue.HttpRequestMethod,
             MessageValue.HttpResponseMessage,
@@ -49,7 +51,7 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Identifier", identifier),
                 messageValue,
                 () -> MessageValueHandler.hasIdentifier((MessageValue) messageValue.getSelectedItem())

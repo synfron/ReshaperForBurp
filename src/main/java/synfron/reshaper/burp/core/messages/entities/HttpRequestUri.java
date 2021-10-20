@@ -11,21 +11,21 @@ import synfron.reshaper.burp.core.exceptions.WrappedException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
-public class HttpRequestUrl extends HttpEntity {
+public class HttpRequestUri extends HttpEntity {
 
-    private final String url;
+    private final String uri;
     private URIBuilder uriBuilder;
     @Getter
     private boolean changed;
 
-    public HttpRequestUrl(String url) {
-        this.url = url;
+    public HttpRequestUri(String uri) {
+        this.uri = uri;
     }
 
     public void prepare() {
         if (uriBuilder == null) {
             try {
-                uriBuilder = new URIBuilder(url);
+                uriBuilder = new URIBuilder(uri);
             } catch (URISyntaxException e) {
                 throw new WrappedException(e);
             }
@@ -80,6 +80,6 @@ public class HttpRequestUrl extends HttpEntity {
     }
 
     public String getValue() {
-        return !isChanged() ? url : uriBuilder.toString();
+        return !isChanged() ? uri : uriBuilder.toString();
     }
 }

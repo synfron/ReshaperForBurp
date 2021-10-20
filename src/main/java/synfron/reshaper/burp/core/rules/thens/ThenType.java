@@ -18,6 +18,9 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenDeleteVariable> DeleteVariable = new ThenType<>("Delete Variable", ThenDeleteVariable.class);
     public static final ThenType<ThenSendTo> SendTo = new ThenType<>("Send To", ThenSendTo.class);
     public static final ThenType<ThenRunProcess> RunProcess = new ThenType<>("Run Process", ThenRunProcess.class);
+    public static final ThenType<ThenBuildRequestMessage> BuildRequestMessage = new ThenType<>("Build Request Message", ThenBuildRequestMessage.class);
+    public static final ThenType<ThenBuildResponseMessage> BuildResponseMessage = new ThenType<>("Build Response Message", ThenBuildResponseMessage.class);
+    public static final ThenType<ThenSendRequest> SendRequest = new ThenType<>("Send Request", ThenSendRequest.class);
     public static final ThenType<ThenDrop> Drop = new ThenType<>("Drop", ThenDrop.class);
 
     private ThenType(String name, Class<T> type) {
@@ -39,6 +42,9 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 DeleteVariable,
                 SendTo,
                 RunProcess,
+                BuildRequestMessage,
+                BuildResponseMessage,
+                SendRequest,
                 Drop
         );
     }
