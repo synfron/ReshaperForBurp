@@ -112,7 +112,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                         Pair.of("request", VariableString.getTextOrDefault(eventInfo, request, null)),
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
-                        Pair.of("variableName", waitForCompletion && captureOutput ? captureVariableName : null),
+                        Pair.of("captureVariableName", waitForCompletion && captureOutput ? captureVariableName : null),
                         Pair.of("exceededWait", waitForCompletion ? !complete : null),
                         Pair.of("failed", waitForCompletion ? failed : null),
                         Pair.of("exitCode", waitForCompletion ? exitCode : null)

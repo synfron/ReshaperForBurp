@@ -17,9 +17,10 @@ public class LogsComponent extends JPanel {
 
     private void initComponents() {
         setLayout(new BorderLayout());
-
-        add(textEditor.getComponent(), BorderLayout.CENTER);
-        add(getActionBar(), BorderLayout.PAGE_END);
+        if (textEditor != null) {
+            add(textEditor.getComponent(), BorderLayout.CENTER);
+            add(getActionBar(), BorderLayout.PAGE_END);
+        }
     }
 
     private Component getActionBar() {

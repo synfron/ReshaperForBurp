@@ -10,7 +10,7 @@
 <a href="#" id="tip1"></a>
 **Use a value from one HTTP message in a following HTTP message:**
 
-The following is an example of how to do this which can be modified for your use case. In the example below, we are taking the `Authorization` header from `www.example.org` requests and setting it on `www.example.com` requests.
+In the example below, we are taking the `Authorization` header from `www.example.org` requests, storing it in a variable, and setting it on `www.example.com` requests.
 
 1. Open the `Rules` tab.
 2. Create a Rule.
@@ -33,7 +33,7 @@ The following is an example of how to do this which can be modified for your use
 19. Change `Message Value` to `Destination Address`.
 20. Set `Match Text` to `www.example.com`.
 21. Add Then -> `Set Value`.
-22. Set `Text` to {% raw %}`{{global:exampleAuth}}`.{% endraw %}
+22. {% raw %}Set `Text` to `{{global:exampleAuth}}`.{% endraw %}
 23. Change `Destination Message Value` to `Request Header`.
 24. Set `Destination Identifier` to `Authorization`.
 25. At the bottom right of the window, check `Enabled` and click `Save`.
@@ -41,33 +41,23 @@ The following is an example of how to do this which can be modified for your use
 <a href="#" id="tip2"></a>
 **Redirect a request to a different server:**
 
+In the example below, we are redirecting from `www.example.org` to `www.example.com` by setting the URL and using a message variable to make sure we keep the page path.
+
 1. Open the `Rules` tab.
 2. Create or open a Rule.
 3. Set a `Rule Name` and add other Whens and Thens as needed.
 4. Add When -> `Event Direction` (if not already added).
 5. Change `Event Direction` to `Request`.
 6. Add Then -> `Set Value`.
-7. Set `Text` to the hostname of the new server.
-8. Change `Destination Message Value` to `Destination Address`.
-9. Add Then -> `Set Value`.
-10. Set `Text` to the hostname of the new server.
-11. Change `Destination Message Value` to `Request Header`.
-12. Set `Destination Identifier` to the hostname of the new server. Append `:` followed by the port if using a non-standard.
-13. If the new server protocol (HTTP vs. HTTPS) is different from the original server:
-    1. Add Then -> `Set Value`.
-    2. Set `Text` to `http` or `https` to match what the new server accepts.
-    3. Change `Destination Message Value` to `Protocol`.
-14. If the new server is listening on a different port from the original server (for example, HTTP to HTTPS typically switches from `80` to `443` and vice versa):
-    1. Add Then -> `Set Value`.
-    2. Set `Text` to the port the new server is listening on.
-    3. Change `Destination Message Value` to `Destination Port`.
-15. At the bottom right of the window, check `Enabled` and click `Save`.
+7. Set `Text` to `https://www.example.com{{message:httprequesturi}}`.
+8. Change `Destination Message Value` to `URL`.
+9. At the bottom right of the window, check `Enabled` and click `Save`.
 
 
 <a href="#" id="tip3"></a>
 **Change a value in a returned response:**
 
-The following is an example of how to do this which can be modified for your use case. In the example below, we tell the browser to allow any origin by overriding the `Access-Control-Allow-Origin` response header.
+In the example below, we tell the browser to allow any origin by overriding the `Access-Control-Allow-Origin` response header.
 
 1. Open the `Rules` tab.
 2. Create or open a Rule.
@@ -96,12 +86,14 @@ The following is an example of how to do this which can be modified for your use
 9. Add Then -> `Set Event Direction`.
 10. Change `Event Direction` to `Response`.
 11. Add Then -> `Set Value`.
-12. Set `Text` to {% raw %}`{{global:mockResponse}}`.{% endraw %}
+12. {% raw %}Set `Text` to `{{global:mockResponse}}`.{% endraw %}
 13. Change `Destination Message Value` to `Response Message`.
 14. At the bottom right of the window, check `Enabled` and click `Save`.
 
 <a href="#" id="tip5"></a>
-**Drop a request so it is not sent to an external server (Works on all supported tools: Proxy, Repeater, Intruder, Scanner, Spider, Target, Extender (other extensions)):**
+**Drop a request so that it is not sent to an external server:**
+
+The example of drop requests below works on all supported tools: Proxy, Repeater, Intruder, Scanner, Spider, Target, Extender (other extensions).
 
 1. Open the `Settings` tab.
 2. Ensure the tool is selected under `Capture Traffic From:`

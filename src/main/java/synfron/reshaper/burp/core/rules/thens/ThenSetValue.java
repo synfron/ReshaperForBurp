@@ -48,14 +48,14 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
         MessageValueHandler.setValue(eventInfo, destinationMessageValue, destinationIdentifier, replacementText);
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Arrays.asList(
                 Pair.of("sourceMessageValue", isUseMessageValue() ? getSourceMessageValue() : null),
-                Pair.of("sourceIdentifier", isUseMessageValue() && MessageValueHandler.hasIdentifier(getSourceMessageValue()) ? VariableString.getTextOrDefault(eventInfo, getSourceIdentifier(), null) : null),
+                Pair.of("sourceIdentifier", isUseMessageValue() && getSourceMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, getSourceIdentifier(), null) : null),
                 Pair.of("sourceValueType", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? getSourceMessageValueType() : null),
                 Pair.of("sourceValuePath", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, getSourceMessageValuePath(), null) : null),
                 Pair.of("sourceText", !isUseMessageValue() ? VariableString.getTextOrDefault(eventInfo, getText(), null) : null),
                 Pair.of("regexPattern", isUseReplace() ? VariableString.getTextOrDefault(eventInfo, getRegexPattern(), null) : null),
                 Pair.of("replacementText", isUseReplace() ? VariableString.getTextOrDefault(eventInfo, getReplacementText(), null) : null),
                 Pair.of("destinationMessageValue", destinationMessageValue),
-                Pair.of("destinationIdentifier",  MessageValueHandler.hasIdentifier(getDestinationMessageValue()) ? VariableString.getTextOrDefault(eventInfo, destinationIdentifier, null) : null),
+                Pair.of("destinationIdentifier",  getDestinationMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, destinationIdentifier, null) : null),
                 Pair.of("destinationValueType", destinationMessageValueType != MessageValueType.Text ? destinationMessageValueType : null),
                 Pair.of("destinationValuePath", destinationMessageValueType != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, destinationMessageValuePath, null) : null),
                 Pair.of("input", replacementText)

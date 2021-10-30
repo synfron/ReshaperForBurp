@@ -6,54 +6,65 @@ import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
-import java.util.List;
-
 public class MessageValueHandler {
-    public static boolean hasIdentifier(MessageValue messageValue) {
-        return List.of(
-                MessageValue.HttpRequestHeader,
-                MessageValue.HttpResponseHeader,
-                MessageValue.HttpRequestCookie,
-                MessageValue.HttpResponseCookie,
-                MessageValue.HttpRequestUriQueryParameter
-        ).contains(messageValue);
-    }
 
     public static String getValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier)
     {
-        String value = switch (messageValue) {
-            case HttpRequestHeaders -> eventInfo.getHttpRequestMessage().getHeaders().getText();
-            case HttpResponseHeaders -> eventInfo.getHttpResponseMessage().getHeaders().getText();
-            case HttpRequestHeader -> eventInfo.getHttpRequestMessage().getHeaders().getHeader(identifier.getText(eventInfo));
-            case HttpResponseHeader -> eventInfo.getHttpResponseMessage().getHeaders().getHeader(identifier.getText(eventInfo));
-            case HttpRequestBody -> eventInfo.getHttpRequestMessage().getBody().getText();
-            case HttpResponseBody -> eventInfo.getHttpResponseMessage().getBody().getText();
-            case HttpRequestStatusLine -> eventInfo.getHttpRequestMessage().getStatusLine().getValue();
-            case HttpResponseStatusLine -> eventInfo.getHttpResponseMessage().getStatusLine().getValue();
-            case HttpProtocol -> eventInfo.getHttpProtocol();
-            case Url -> eventInfo.getUrl();
-            case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
-            case HttpResponseCookie -> eventInfo.getHttpResponseMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
-            case SourceAddress -> eventInfo.getSourceAddress();
-            case HttpRequestUri -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getValue();
-            case HttpRequestMessage -> eventInfo.getHttpRequestMessage().getText();
-            case HttpResponseMessage -> eventInfo.getHttpResponseMessage().getText();
-            case DestinationPort -> Integer.toString(eventInfo.getDestinationPort());
-            case HttpRequestMethod -> eventInfo.getHttpRequestMessage().getStatusLine().getMethod();
-            case DestinationAddress -> eventInfo.getDestinationAddress();
-            case HttpRequestUriPath -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getPath();
-            case HttpResponseStatusCode -> eventInfo.getHttpResponseMessage().getStatusLine().getCode();
-            case HttpResponseStatusMessage -> eventInfo.getHttpResponseMessage().getStatusLine().getMessage();
-            case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo));
-            case HttpRequestUriQueryParameters -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameters();
-        };
+        String value;
+        if (messageValue.getDataDirection() == DataDirection.Request) {
+            value = getRequestValue(eventInfo, eventInfo.getHttpRequestMessage(), messageValue, identifier);
+        } else if (messageValue.getDataDirection() == DataDirection.Response) {
+            value = getResponseValue(eventInfo, eventInfo.getHttpResponseMessage(), messageValue, identifier);
+        } else {
+            value = switch (messageValue) {
+                case HttpProtocol -> eventInfo.getHttpProtocol();
+                case Url -> eventInfo.getUrl();
+                case SourceAddress -> eventInfo.getSourceAddress();
+                case DestinationPort -> Integer.toString(eventInfo.getDestinationPort());
+                case DestinationAddress -> eventInfo.getDestinationAddress();
+                default -> throw new UnsupportedOperationException(String.format("Cannot get message value '%s'", messageValue));
+            };
+        }
         return StringUtils.defaultString(value);
     }
 
+    public static String getRequestValue(EventInfo eventInfo, HttpRequestMessage requestMessage, MessageValue messageValue, VariableString identifier) {
+        return switch (messageValue) {
+            case HttpRequestHeaders -> requestMessage.getHeaders().getText();
+            case HttpRequestHeader -> requestMessage.getHeaders().getHeader(identifier.getText(eventInfo));
+            case HttpRequestBody -> requestMessage.getBody().getText();
+            case HttpRequestStatusLine -> requestMessage.getStatusLine().getValue();
+            case HttpRequestCookie -> requestMessage.getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
+            case HttpResponseCookie -> eventInfo.getHttpResponseMessage().getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
+            case HttpRequestUri -> requestMessage.getStatusLine().getUrl().getValue();
+            case HttpRequestMessage -> requestMessage.getText();
+            case HttpRequestMethod -> requestMessage.getStatusLine().getMethod();
+            case HttpRequestUriPath -> requestMessage.getStatusLine().getUrl().getPath();
+            case HttpRequestUriQueryParameter -> requestMessage.getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo));
+            case HttpRequestUriQueryParameters -> requestMessage.getStatusLine().getUrl().getQueryParameters();
+            default -> throw new UnsupportedOperationException(String.format("Cannot get message value '%s'", messageValue));
+        };
+    }
+
+    public static String getResponseValue(EventInfo eventInfo, HttpResponseMessage responseMessage, MessageValue messageValue, VariableString identifier) {
+        return switch (messageValue) {
+            case HttpResponseHeaders -> responseMessage.getHeaders().getText();
+            case HttpResponseHeader -> responseMessage.getHeaders().getHeader(identifier.getText(eventInfo));
+            case HttpResponseBody -> responseMessage.getBody().getText();
+            case HttpResponseStatusLine -> responseMessage.getStatusLine().getValue();
+            case HttpResponseCookie -> responseMessage.getHeaders().getCookies().getCookie(identifier.getText(eventInfo));
+            case HttpResponseMessage -> responseMessage.getText();
+            case HttpResponseStatusCode -> responseMessage.getStatusLine().getCode();
+            case HttpResponseStatusMessage -> responseMessage.getStatusLine().getMessage();
+            default -> throw new UnsupportedOperationException(String.format("Cannot get message value '%s'", messageValue));
+        };
+    }
+    
+
     public static void setValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier, String replacementText) {
-        if (messageValue.getDataDirection() == DataDirection.Request && messageValue != MessageValue.HttpRequestMessage) {
+        if (messageValue.getDataDirection() == DataDirection.Request && !messageValue.isTopLevel()) {
             setRequestValue(eventInfo, eventInfo.getHttpRequestMessage(), messageValue, identifier, replacementText);
-        } else if (messageValue.getDataDirection() == DataDirection.Response && messageValue != MessageValue.HttpResponseMessage) {
+        } else if (messageValue.getDataDirection() == DataDirection.Response && !messageValue.isTopLevel()) {
             setResponseValue(eventInfo, eventInfo.getHttpResponseMessage(), messageValue, identifier, replacementText);
         } else {
             switch (messageValue) {

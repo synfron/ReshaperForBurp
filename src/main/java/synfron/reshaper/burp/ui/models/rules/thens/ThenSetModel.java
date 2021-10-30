@@ -3,7 +3,6 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -108,7 +107,7 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
     @Override
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (useMessageValue && StringUtils.isEmpty(sourceIdentifier) && MessageValueHandler.hasIdentifier(sourceMessageValue)) {
+        if (useMessageValue && StringUtils.isEmpty(sourceIdentifier) && sourceMessageValue.isIdentifierRequired()) {
             errors.add("Source Identifier is required");
         }
         return errors;

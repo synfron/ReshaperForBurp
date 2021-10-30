@@ -64,7 +64,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(
                 this, useMessageValue ? Arrays.asList(
                         Pair.of("messageValue", messageValue),
-                        Pair.of("identifier", MessageValueHandler.hasIdentifier(messageValue) ? VariableString.getTextOrDefault(eventInfo, identifier, null) : null)
+                        Pair.of("identifier", messageValue.isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, identifier, null) : null)
                 ) : null, matchType, matchText, sourceText, isMatch
         );
         return isMatch;

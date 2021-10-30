@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
@@ -65,7 +64,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Identifier", identifier),
                 List.of(useMessageValue, messageValue),
-                () -> useMessageValue.isSelected() && MessageValueHandler.hasIdentifier((MessageValue) messageValue.getSelectedItem())
+                () -> useMessageValue.isSelected() && ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Text", sourceText),

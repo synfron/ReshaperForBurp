@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.thens.ThenSetValue;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetValueModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
@@ -37,7 +36,7 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
                 ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                         getLabeledField("Destination Identifier", destinationIdentifier),
                         destinationMessageValue,
-                        () -> MessageValueHandler.hasIdentifier((MessageValue)destinationMessageValue.getSelectedItem())
+                        () -> ((MessageValue)destinationMessageValue.getSelectedItem()).isIdentifierRequired()
                 )
         );
     }

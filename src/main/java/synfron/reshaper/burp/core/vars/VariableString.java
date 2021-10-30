@@ -36,12 +36,24 @@ public class VariableString implements Serializable {
     public String getFormattedString()
     {
         return String.format(text, variables.stream().map(variable ->
-                String.format("{{%s:%s}}", variable.getVariableSource().toString().toLowerCase(), variable.getName())
+                VariableString.getFormattedString(variable.getVariableSource(), variable.getName())
         ).toArray());
     }
 
     public static String getFormattedString(VariableString variableString, String defaultValue) {
         return variableString != null ? variableString.getFormattedString() : defaultValue;
+    }
+
+    public static String getFormattedString(VariableSource variableSource, String variableName) {
+        return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), variableName);
+    }
+
+    public static String getFormattedString(MessageValue messageValue, String identifier) {
+        return String.format(
+                "{{message:%s%s}}",
+                messageValue.name().toLowerCase(),
+                messageValue.isIdentifierRequired() ? ":" + StringUtils.defaultString(identifier) : ""
+        );
     }
     
     public static VariableString getAsVariableString(String str) {
