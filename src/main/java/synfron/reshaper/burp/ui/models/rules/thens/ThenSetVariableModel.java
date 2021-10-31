@@ -29,7 +29,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
 
     public void setVariableName(String variableName) {
         this.variableName = variableName;
-        propertyChanged("variableName", variableName);
+        propertyChanged("destinationVariableName", variableName);
     }
 
     public List<String> validate() {

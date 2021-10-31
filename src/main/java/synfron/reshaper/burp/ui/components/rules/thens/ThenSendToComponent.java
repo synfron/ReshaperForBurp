@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 import synfron.reshaper.burp.core.rules.thens.ThenSendTo;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSendToModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -54,7 +55,7 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
 
         mainContainer.add(getLabeledField("Send To", sendTo), "wrap");
         mainContainer.add(overrideDefaults, "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Host", host),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
@@ -62,7 +63,7 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                             sendTo.getSelectedItem() == SendToOption.Repeater
                 )
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Port", port),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
@@ -70,7 +71,7 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                                 sendTo.getSelectedItem() == SendToOption.Repeater
                 )
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Protocol", protocol),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
@@ -78,7 +79,7 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                                 sendTo.getSelectedItem() == SendToOption.Repeater
                 )
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Request", request),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
@@ -86,12 +87,12 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                                 sendTo.getSelectedItem() == SendToOption.Repeater
                 )
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Value", value),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && sendTo.getSelectedItem() == SendToOption.Comparer
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("URL", url),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (

@@ -181,6 +181,8 @@ Regex Pattern - The replacement value to use in the Regex replace. Only availabl
 
 Destination Message Value - The HTTP event entity to set the value of.
 
+Destination Identifier - The property of the HTTP entity to set the value of. Only available for certain Message Values (e.g. request header). Supports variable tags.
+
 Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
 
 Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the HTTP event entity. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
@@ -288,6 +290,76 @@ Capture Variable Source - Global or Event scope.
 
 Capture Variable Name - The name of variable to store the captured output.
 
+### Build HTTP Message
+
+Build an HTTP request or response message and store the full text in a variable. The actual request or response message of the event is not changed.
+
+#### Fields
+
+Starter HTTP Message - Text to use as the starting template for the HTTP message. Supports variable tags.
+
+Message Value Setters - Set parts of the HTTP message.
+
+Source Text - The text to set in the message. Supports variable tags.
+
+Destination Message Value - The HTTP message entity to set the value of.
+
+Destination Identifier - The property of the HTTP message to set the value of. Only available for certain Message Values (e.g. request header). Supports variable tags.
+
+Destination Variable Source - Global or Event scope.
+
+Destination Variable Name - The name of the variable to hold the built HTTP message. Supports variable tags.
+
+### Parse HTTP Message
+
+Extract values from an HTTP request or response message and store the values in variable.
+
+#### Fields
+
+HTTP Message - Text to use as the HTTP message. Supports variable tags.
+
+Message Value Getters - Get parts of the HTTP message.
+
+Source Text - The text to set in the message. Supports variable tags.
+
+Source Message Value - The HTTP message entity to extract a value from.
+
+Source Identifier - The property of the HTTP entity to extract a value from. Only available for certain Message Values (e.g. request header). Supports variable tags.
+
+Destination Variable Source - Global or Event scope.
+
+Destination Variable Name - The name of the variable to hold the built HTTP message value. Supports variable tags.
+
+### Send Request
+
+Send a separate HTTP request.
+
+#### Fields
+
+Protocol - `http` or `https`
+
+Address - Host name without port. Example: `www.example.com`
+
+Port - Example: `80`
+
+Request - The HTTP request message to send.
+
+Wait for Completion - Wait for a response before continuing.
+
+Fail After (milliseconds) - Flag the request as failed after waiting the specified amount of time for the response. Only available if `Wait for Completion` is selected. Supports variable tags.
+
+Fail on Error Status Code - Flag the request as failed if the response returned a with a 4xx or 5xx HTTP status code. Only available if `Wait for Completion` is selected.
+
+Break After Failure - Do not run any other Thens or Rules for this event if the request was flagged as failed. Only available if `Wait for Completion` is selected.
+
+Capture Output - Capture the HTTP response message. Only available if `Wait for Completion` is selected.
+
+Capture After Failure - Capture the HTTP response message even if the request is flagged as failed. Only available if `Wait for Completion` and `Capture Output` is selected.
+
+Capture Variable Source - Global or Event scope.
+
+Capture Variable Name - The name of variable to store the response message.
+
 ### Drop
 
 Have Burp drop the connection
@@ -302,11 +374,13 @@ Drop Message - If selected, Burp will be told to drop the connection.
 
 Source Address (SourceAddress) - Example: `127.0.0.1`
 
-Destination Address (DestinationAddress) - Example: `www.example.com`
+Destination Address (DestinationAddress) - Host name without port. Example: `www.example.com`
 
 Destination Port (DestinationPort) - Example: `80`
 
-Protocol (HttpProtocol) - http or https
+Protocol (HttpProtocol) - `http` or `https`
+
+URL (URL) - Example: `http://www.example.com/index.html?query=test`
 
 Request Message (HttpRequestMessage) - Example: 
 ```

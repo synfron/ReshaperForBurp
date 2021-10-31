@@ -1,11 +1,11 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenMatchesTextModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -56,23 +56,23 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         matchText.getDocument().addDocumentListener(new DocumentActionListener(this::onMatchTextChanged));
 
         mainContainer.add(useMessageValue, "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Message Value", messageValue),
                 useMessageValue,
                 () -> useMessageValue.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Identifier", identifier),
                 List.of(useMessageValue, messageValue),
-                () -> useMessageValue.isSelected() && MessageValueHandler.hasIdentifier((MessageValue) messageValue.getSelectedItem())
+                () -> useMessageValue.isSelected() && ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Text", sourceText),
                 useMessageValue,
                 () -> !useMessageValue.isSelected()
         ), "wrap");
         mainContainer.add(getLabeledField("Source Value Type", messageValueType), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Value Path", messageValuePath),
                 List.of(useMessageValue, messageValueType),
                 () -> messageValueType.getSelectedItem() != MessageValueType.Text

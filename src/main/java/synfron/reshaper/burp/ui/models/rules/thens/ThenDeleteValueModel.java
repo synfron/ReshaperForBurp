@@ -3,7 +3,6 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -35,7 +34,7 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
 
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (StringUtils.isEmpty(identifier) && MessageValueHandler.hasIdentifier(messageValue)) {
+        if (StringUtils.isEmpty(identifier) && messageValue.isIdentifierRequired()) {
             errors.add("Identifier is required");
         }
         return errors;

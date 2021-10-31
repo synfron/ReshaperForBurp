@@ -85,14 +85,13 @@ public class VariableListComponent extends JPanel {
     private void onNewVariableModelChanged(PropertyChangedArgs propertyChangedArgs) {
         VariableModel model = (VariableModel)propertyChangedArgs.getSource();
         switch (propertyChangedArgs.getName()) {
-            case "saved": {
-                if ((boolean)propertyChangedArgs.getValue()) {
+            case "saved" -> {
+                if ((boolean) propertyChangedArgs.getValue()) {
                     variableListModel.removeElement(model);
                     defaultSelect();
                 }
-                break;
             }
-            case "name": {
+            case "name" -> {
                 int index = variableListModel.indexOf(model);
                 variableListModel.set(index, model);
             }
@@ -120,23 +119,22 @@ public class VariableListComponent extends JPanel {
         SwingUtilities.invokeLater(() -> {
             Variable item = (Variable) collectionChangedArgs.getItem();
             switch (collectionChangedArgs.getAction()) {
-                case Add:
+                case Add -> {
                     variableListModel.addElement(new VariableModel(item).withListener(variableModelChangedListener));
                     defaultSelect();
-                    break;
-                case Remove:
+                }
+                case Remove -> {
                     variableListModel.removeElement(new VariableModel(item));
                     defaultSelect();
-                    break;
-                case Update: {
+                }
+                case Update -> {
                     int index = variableListModel.indexOf(new VariableModel(item));
                     if (index >= 0) {
                         VariableModel model = variableListModel.get(index);
                         variableListModel.set(index, model);
                     }
-                    break;
                 }
-                case Reset: {
+                case Reset -> {
                     List<VariableModel> currentModels = Collections.list(variableListModel.elements());
                     Map<Variable, VariableModel> variableModelMap = currentModels.stream()
                             .filter(variableModel -> variableModel.getVariable() != null)
@@ -146,14 +144,13 @@ public class VariableListComponent extends JPanel {
                     variableListModel.clear();
                     variableListModel.addAll(Stream.concat(
                             GlobalVariables.get().getValues().stream()
-                            .map(variable -> variableModelMap.containsKey(variable) ?
-                                    variableModelMap.get(variable) :
-                                    new VariableModel(variable).withListener(variableModelChangedListener)
-                            ),
+                                    .map(variable -> variableModelMap.containsKey(variable) ?
+                                            variableModelMap.get(variable) :
+                                            new VariableModel(variable).withListener(variableModelChangedListener)
+                                    ),
                             draftModels
                     ).collect(Collectors.toList()));
                     defaultSelect();
-                    break;
                 }
             }
         });
@@ -162,8 +159,7 @@ public class VariableListComponent extends JPanel {
     private void onVariableModelChanged(PropertyChangedArgs propertyChangedArgs) {
         VariableModel model = (VariableModel)propertyChangedArgs.getSource();
         switch (propertyChangedArgs.getName()) {
-            case "saved":
-            case "name": {
+            case "saved", "name" -> {
                 int index = variableListModel.indexOf(model);
                 variableListModel.set(index, model);
             }

@@ -26,7 +26,7 @@ public class VariableString implements Serializable {
     }
 
     public static boolean isValidVariableName(String name) {
-        return !Pattern.matches("\\{\\{|}}", name);
+        return StringUtils.isNotEmpty(name) && !Pattern.matches("\\{\\{|}}", name);
     }
 
     public boolean isEmpty() {
@@ -36,12 +36,24 @@ public class VariableString implements Serializable {
     public String getFormattedString()
     {
         return String.format(text, variables.stream().map(variable ->
-                String.format("{{%s:%s}}", variable.getVariableSource().toString().toLowerCase(), variable.getName())
+                VariableString.getFormattedString(variable.getVariableSource(), variable.getName())
         ).toArray());
     }
 
     public static String getFormattedString(VariableString variableString, String defaultValue) {
         return variableString != null ? variableString.getFormattedString() : defaultValue;
+    }
+
+    public static String getFormattedString(VariableSource variableSource, String variableName) {
+        return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), variableName);
+    }
+
+    public static String getFormattedString(MessageValue messageValue, String identifier) {
+        return String.format(
+                "{{message:%s%s}}",
+                messageValue.name().toLowerCase(),
+                messageValue.isIdentifierRequired() ? ":" + StringUtils.defaultString(identifier) : ""
+        );
     }
     
     public static VariableString getAsVariableString(String str) {
@@ -92,12 +104,12 @@ public class VariableString implements Serializable {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
         {
-            Variable value = null;
-            switch (variable.getVariableSource()) {
-                case Global: value = GlobalVariables.get().getOrDefault(variable.getName()); break;
-                case Event: value = eventInfo.getVariables().getOrDefault(variable.getName()); break;
-                case Message: value = getMessageVariable(eventInfo, variable.getName()); break;
-            }
+            Variable value = switch (variable.getVariableSource()) {
+                case Global -> GlobalVariables.get().getOrDefault(variable.getName());
+                case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
+                case Message -> getMessageVariable(eventInfo, variable.getName());
+                default -> null;
+            };
             variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
         }
         return String.format(text, variableVals.toArray());

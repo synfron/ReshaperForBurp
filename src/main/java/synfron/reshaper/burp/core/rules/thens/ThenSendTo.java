@@ -46,21 +46,11 @@ public class ThenSendTo extends Then<ThenSendTo> {
     public RuleResponse perform(EventInfo eventInfo)
     {
         switch (sendTo) {
-            case Comparer:
-                sendToComparer(eventInfo);
-                break;
-            case Intruder:
-                sendToIntruder(eventInfo);
-                break;
-            case Repeater:
-                sendToRepeater(eventInfo);
-                break;
-            case Spider:
-                sendToSpider(eventInfo);
-                break;
-            case Browser:
-                sendToBrowser(eventInfo);
-                break;
+            case Comparer -> sendToComparer(eventInfo);
+            case Intruder -> sendToIntruder(eventInfo);
+            case Repeater -> sendToRepeater(eventInfo);
+            case Spider -> sendToSpider(eventInfo);
+            case Browser -> sendToBrowser(eventInfo);
         }
         return RuleResponse.Continue;
     }

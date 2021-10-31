@@ -86,7 +86,7 @@ public class Diagnostics {
     }
 
     public void logEnd(Rule rule) {
-        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndRule, String.format("End Rule\n")));
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndRule, "End Rule\n"));
     }
 
     public void logStart(EventInfo eventInfo) {
@@ -113,7 +113,7 @@ public class Diagnostics {
                     }
                     lastEntity = record.getEntityType();
                 }
-                buffer.append("\t".repeat(indent) + record.getLog());
+                buffer.append("\t".repeat(indent)).append(record.getLog());
             }
         }
         return buffer.toString();
@@ -143,35 +143,21 @@ public class Diagnostics {
 
     private String toMatchPhrase(MatchType matchType, boolean negated) {
         if (!negated) {
-            switch (matchType) {
-                case Equals:
-                    return "equals";
-                case Contains:
-                    return "contains";
-                case EndsWith:
-                    return "ends with";
-                case BeginsWith:
-                    return "begins with";
-                case Regex:
-                    return "is matched by";
-                default:
-                    return "does " + matchType.toString().toLowerCase();
-            }
+            return switch (matchType) {
+                case Equals -> "equals";
+                case Contains -> "contains";
+                case EndsWith -> "ends with";
+                case BeginsWith -> "begins with";
+                case Regex -> "is matched by";
+            };
         } else {
-            switch (matchType) {
-                case Equals:
-                    return "does not equal";
-                case Contains:
-                    return "does not contain";
-                case EndsWith:
-                    return "does not end with";
-                case BeginsWith:
-                    return "does not begin with";
-                case Regex:
-                    return "is not matched by";
-                default:
-                    return "not " + matchType.toString().toLowerCase();
-            }
+            return switch (matchType) {
+                case Equals -> "does not equal";
+                case Contains -> "does not contain";
+                case EndsWith -> "does not end with";
+                case BeginsWith -> "does not begin with";
+                case Regex -> "is not matched by";
+            };
         }
     }
 

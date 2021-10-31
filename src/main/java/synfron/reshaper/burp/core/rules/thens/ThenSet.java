@@ -50,15 +50,11 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
         }
         if (sourceMessageValueType != MessageValueType.Text && sourceMessageValuePath != null)
         {
-            switch (sourceMessageValueType)
-            {
-                case Json:
-                    text = StringUtils.defaultString(TextUtils.getJsonValue(text, sourceMessageValuePath.getText(eventInfo)));
-                    break;
-                case Html:
-                    text = StringUtils.defaultString(TextUtils.getHtmlValue(text, sourceMessageValuePath.getText(eventInfo)));
-                    break;
-            }
+            text = switch (sourceMessageValueType) {
+                case Json -> StringUtils.defaultString(TextUtils.getJsonValue(text, sourceMessageValuePath.getText(eventInfo)));
+                case Html -> StringUtils.defaultString(TextUtils.getHtmlValue(text, sourceMessageValuePath.getText(eventInfo)));
+                default -> text;
+            };
         }
 
         if (useReplace && replacementText != null)

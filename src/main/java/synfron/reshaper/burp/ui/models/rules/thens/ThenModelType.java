@@ -20,6 +20,9 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenDeleteVariableModel, ThenDeleteVariable> DeleteVariable = new ThenModelType<>("Delete Variable", ThenDeleteVariableModel.class, ThenType.DeleteVariable);
     public static final ThenModelType<ThenSendToModel, ThenSendTo> SendTo = new ThenModelType<>("Send To", ThenSendToModel.class, ThenType.SendTo);
     public static final ThenModelType<ThenRunProcessModel, ThenRunProcess> RunProcess = new ThenModelType<>("Run Process", ThenRunProcessModel.class, ThenType.RunProcess);
+    public static final ThenModelType<ThenBuildHttpMessageModel, ThenBuildHttpMessage> BuildHttpMessage = new ThenModelType<>("Build HTTP Message", ThenBuildHttpMessageModel.class, ThenType.BuildHttpMessage);
+    public static final ThenModelType<ThenParseHttpMessageModel, ThenParseHttpMessage> ParseHttpMessage = new ThenModelType<>("Parse HTTP Message", ThenParseHttpMessageModel.class, ThenType.ParseHttpMessage);
+    public static final ThenModelType<ThenSendRequestModel, ThenSendRequest> SendRequest = new ThenModelType<>("Send Request", ThenSendRequestModel.class, ThenType.SendRequest);
     public static final ThenModelType<ThenDropModel, ThenDrop> Drop = new ThenModelType<>("Drop", ThenDropModel.class, ThenType.Drop);
 
     private ThenModelType(String name, Class<P> type, RuleOperationType<T> ruleOperationType) {
@@ -41,6 +44,9 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
                 DeleteVariable,
                 SendTo,
                 RunProcess,
+                BuildHttpMessage,
+                ParseHttpMessage,
+                SendRequest,
                 Drop
         );
     }

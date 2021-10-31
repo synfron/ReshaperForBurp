@@ -108,13 +108,15 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(command)) {
             errors.add("Command is required");
-        } else if (waitForCompletion && StringUtils.isEmpty(failAfter)) {
+        }
+        if (waitForCompletion && StringUtils.isEmpty(failAfter)) {
             errors.add("Fail After is required");
-        } else if (waitForCompletion && !VariableString.isPotentialInt(failAfter)) {
+        }
+        if (waitForCompletion && !VariableString.isPotentialInt(failAfter)) {
             errors.add("Fail After must be an integer");
         } else if (waitForCompletion && captureOutput && StringUtils.isEmpty(captureVariableName)) {
             errors.add("Capture Variable Name is required");
-        } else if (waitForCompletion && captureOutput && !VariableString.isValidVariableName(captureVariableName)) {
+        } else  if (waitForCompletion && captureOutput && !VariableString.isValidVariableName(captureVariableName)) {
             errors.add("Capture Variable Name is invalid");
         }
         return errors;
