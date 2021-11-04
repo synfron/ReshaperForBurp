@@ -74,5 +74,9 @@ Contributions are encouraged. Issues and Pull Requests welcome. Also help us spr
 
 Primary Developer: Daquanne Dwight
 
+## Support
+
+For help with how to use Reshaper for a particular need, to report a bug, or to make a suggestion, create an issue in GitHub or email support[at]synfron.com.
+
 ## License
 MIT License. See [LICENSE](https://github.com/synfron/ReshaperForBurp/blob/master/LICENSE)
