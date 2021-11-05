@@ -26,6 +26,9 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.DeleteVariable, ThenDeleteVariableComponent.class);
         componentMap.put(ThenModelType.SendTo, ThenSendToComponent.class);
         componentMap.put(ThenModelType.RunProcess, ThenRunProcessComponent.class);
+        componentMap.put(ThenModelType.BuildHttpMessage, ThenBuildHttpMessageComponent.class);
+        componentMap.put(ThenModelType.ParseHttpMessage, ThenParseHttpMessageComponent.class);
+        componentMap.put(ThenModelType.SendRequest, ThenSendRequestComponent.class);
         componentMap.put(ThenModelType.Drop, ThenDropComponent.class);
     }
 

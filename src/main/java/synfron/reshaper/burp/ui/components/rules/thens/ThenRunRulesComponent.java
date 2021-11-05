@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.rules.thens.ThenRunRules;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenRunRulesModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -27,7 +28,7 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
         ruleName.getDocument().addDocumentListener(new DocumentActionListener(this::onRuleNameChanged));
 
         mainContainer.add(runSingle, "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Rule Name", ruleName),
                 runSingle,
                 () -> runSingle.isSelected()

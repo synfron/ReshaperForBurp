@@ -3,7 +3,6 @@ package synfron.reshaper.burp.ui.models.rules.whens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
@@ -86,7 +85,7 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     @Override
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (useMessageValue && StringUtils.isEmpty(identifier) && MessageValueHandler.hasIdentifier(messageValue)) {
+        if (useMessageValue && StringUtils.isEmpty(identifier) && messageValue.isIdentifierRequired()) {
             errors.add("Identifier is required");
         }
         return errors;

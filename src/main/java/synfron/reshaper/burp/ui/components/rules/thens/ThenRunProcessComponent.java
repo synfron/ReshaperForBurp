@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 import synfron.reshaper.burp.core.rules.thens.ThenRunProcess;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenRunProcessModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -67,42 +68,42 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         mainContainer.add(getLabeledField("Command", command), "wrap");
         mainContainer.add(getLabeledField("Stdin", input), "wrap");
         mainContainer.add(waitForCompletion, "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Fail After (milliseconds)", failAfter),
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 failOnNonZeroExitCode,
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 killAfterFailure,
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 breakAfterFailure,
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 captureOutput,
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 captureAfterFailure,
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Capture Variable Source", captureVariableSource),
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");
-        mainContainer.add(withVisibilityFieldChangeDependency(
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Capture Variable Name", captureVariableName),
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()

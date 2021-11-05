@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
@@ -34,35 +33,25 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> {
 
     private void setValue(EventInfo eventInfo, String replacementText)
     {
-        Variables variables = null;
-        switch (targetSource)
-        {
-            case Event:
-                variables = eventInfo.getVariables();
-                break;
-            case Global:
-                variables = GlobalVariables.get();
-                break;
-        }
+        Variables variables = switch (targetSource) {
+            case Event -> eventInfo.getVariables();
+            case Global -> GlobalVariables.get();
+            default -> null;
+        };
         if (variables != null)
         {
             Variable variable = variables.add(variableName.getText(eventInfo));
             if (destinationMessageValuePath != null && destinationMessageValueType != MessageValueType.Text && variable.getValue() != null)
             {
-                switch (destinationMessageValueType)
-                {
-                    case Json:
-                        replacementText = TextUtils.setJsonValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
-                        break;
-                    case Html:
-                        replacementText = TextUtils.setHtmlValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
-                        break;
+                switch (destinationMessageValueType) {
+                    case Json -> replacementText = TextUtils.setJsonValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
+                    case Html -> replacementText = TextUtils.setHtmlValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
                 }
             }
             variable.setValue(replacementText);
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Arrays.asList(
                     Pair.of("sourceMessageValue", isUseMessageValue() ? getSourceMessageValue() : null),
-                    Pair.of("sourceIdentifier", isUseMessageValue() && MessageValueHandler.hasIdentifier(getSourceMessageValue()) ? VariableString.getTextOrDefault(eventInfo, getSourceIdentifier(), null) : null),
+                    Pair.of("sourceIdentifier", isUseMessageValue() && getSourceMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, getSourceIdentifier(), null) : null),
                     Pair.of("sourceValueType", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? getSourceMessageValueType() : null),
                     Pair.of("sourceValuePath", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, getSourceMessageValuePath(), null) : null),
                     Pair.of("sourceText", !isUseMessageValue() ? VariableString.getTextOrDefault(eventInfo, getText(), null) : null),

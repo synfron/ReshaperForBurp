@@ -21,7 +21,11 @@ import synfron.reshaper.burp.core.rules.RuleResponse;
         @JsonSubTypes.Type(value = ThenSendTo.class),
         @JsonSubTypes.Type(value = ThenSetEventDirection.class),
         @JsonSubTypes.Type(value = ThenSetValue.class),
-        @JsonSubTypes.Type(value = ThenSetVariable.class)
+        @JsonSubTypes.Type(value = ThenSetVariable.class),
+        @JsonSubTypes.Type(value = ThenRunProcess.class),
+        @JsonSubTypes.Type(value = ThenBuildHttpMessage.class),
+        @JsonSubTypes.Type(value = ThenParseHttpMessage.class),
+        @JsonSubTypes.Type(value = ThenSendRequest.class)
 })
 public abstract class Then<T extends Then<T>> implements IRuleOperation<T> {
     public abstract RuleResponse perform(EventInfo eventInfo);

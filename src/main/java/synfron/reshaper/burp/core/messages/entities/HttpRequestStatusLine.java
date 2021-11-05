@@ -10,7 +10,7 @@ public class HttpRequestStatusLine extends HttpEntity {
     private final String statusLine;
     private boolean parsed;
     private boolean changed;
-    private HttpRequestUrl url;
+    private HttpRequestUri url;
     private String method;
     private String version;
 
@@ -22,20 +22,20 @@ public class HttpRequestStatusLine extends HttpEntity {
         if (!parsed) {
             String[] lineParts = statusLine.split(" ", 3);
             method = CollectionUtils.elementAtOrDefault(lineParts, 0, "");
-            url = new HttpRequestUrl(CollectionUtils.elementAtOrDefault(lineParts, 1, ""));
+            url = new HttpRequestUri(CollectionUtils.elementAtOrDefault(lineParts, 1, ""));
             version = CollectionUtils.elementAtOrDefault(lineParts, 2, "");;
             parsed = true;
         }
     }
 
-    public HttpRequestUrl getUrl() {
+    public HttpRequestUri getUrl() {
         prepare();
         return url;
     }
 
     public void setUrl(String url) {
         prepare();
-        this.url = new HttpRequestUrl(url);
+        this.url = new HttpRequestUri(url);
         changed = true;
     }
 

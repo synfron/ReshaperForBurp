@@ -15,7 +15,7 @@ public class ThenSetEventDirectionModel extends ThenModel<ThenSetEventDirectionM
         dataDirection = then.getDataDirection();
     }
 
-    public void setSetDataDirection(DataDirection dataDirection) {
+    public void setDataDirection(DataDirection dataDirection) {
         this.dataDirection = dataDirection;
         propertyChanged("dataDirection", dataDirection);
     }

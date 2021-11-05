@@ -35,7 +35,7 @@ Log - Log message to the Burp extension console
 
 Highlight - Highlight the request/response line in the HTTP history
 
-Run Rules - Run a specific rule or all auto-run rules.
+Run Rules - Run a specific rule or all auto-run rules
 
 Run Script - Execute a JavaScript script
 
@@ -52,6 +52,12 @@ Delete Variable - Delete a variable
 Send To - Send data to other Burp tools or the system default browser
 
 Run Process - Execute a command in a separate process
+
+Build HTTP Message - Build an HTTP request or response message and store the full text in a variable
+
+Parse HTTP Message - Extract values from an HTTP request or response message and store the values in variable
+
+Send Request - Send a separate HTTP request
 
 Drop - Have Burp drop the connection
 

@@ -113,7 +113,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
                         Pair.of("command", VariableString.getTextOrDefault(eventInfo, command, null)),
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
-                        Pair.of("variableName", waitForCompletion && captureOutput ? captureVariableName : null),
+                        Pair.of("captureVariableName", waitForCompletion && captureOutput ? captureVariableName : null),
                         Pair.of("exceededWait", waitForCompletion ? !complete : null),
                         Pair.of("failed", waitForCompletion ? failed : null),
                         Pair.of("exitCode", waitForCompletion ? exitCode : null)
@@ -123,16 +123,11 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
     }
 
     private void setVariable(EventInfo eventInfo, String variableName, String value) {
-        Variables variables = null;
-        switch (captureVariableSource)
-        {
-            case Event:
-                variables = eventInfo.getVariables();
-                break;
-            case Global:
-                variables = GlobalVariables.get();
-                break;
-        }
+        Variables variables = switch (captureVariableSource) {
+            case Event -> eventInfo.getVariables();
+            case Global -> GlobalVariables.get();
+            default -> null;
+        };
         if (variables != null) {
             Variable variable = variables.add(variableName);
             variable.setValue(value);

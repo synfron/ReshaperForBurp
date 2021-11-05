@@ -3,7 +3,6 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.thens.ThenSetValue;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -37,7 +36,7 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     @Override
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (StringUtils.isEmpty(destinationIdentifier) && MessageValueHandler.hasIdentifier(destinationMessageValue)) {
+        if (StringUtils.isEmpty(destinationIdentifier) && destinationMessageValue.isIdentifierRequired()) {
             errors.add("Destination Identifier is required");
         }
         return errors;

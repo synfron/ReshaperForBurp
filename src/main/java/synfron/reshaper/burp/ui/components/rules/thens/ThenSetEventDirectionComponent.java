@@ -27,6 +27,6 @@ public class ThenSetEventDirectionComponent extends ThenComponent<ThenSetEventDi
     }
 
     private void onSetEventDirectionChanged(ActionEvent actionEvent) {
-        model.setSetDataDirection((DataDirection) dataDirection.getSelectedItem());
+        model.setDataDirection((DataDirection) dataDirection.getSelectedItem());
     }
 }
