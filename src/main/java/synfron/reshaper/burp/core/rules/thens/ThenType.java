@@ -9,6 +9,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenDelay> Delay = new ThenType<>("Delay", ThenDelay.class);
     public static final ThenType<ThenLog> Log = new ThenType<>("Log", ThenLog.class);
     public static final ThenType<ThenHighlight> Highlight = new ThenType<>("Highlight", ThenHighlight.class);
+    public static final ThenType<ThenComment> Comment = new ThenType<>("Comment", ThenComment.class);
     public static final ThenType<ThenRunRules> RunRules = new ThenType<>("Run Rules", ThenRunRules.class);
     public static final ThenType<ThenRunScript> RunScript = new ThenType<>("Run Script", ThenRunScript.class);
     public static final ThenType<ThenSetEventDirection> SetEventDirection = new ThenType<>("Set Event Direction", ThenSetEventDirection.class);
@@ -33,6 +34,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 Delay,
                 Log,
                 Highlight,
+                Comment,
                 RunRules,
                 RunScript,
                 SetEventDirection,

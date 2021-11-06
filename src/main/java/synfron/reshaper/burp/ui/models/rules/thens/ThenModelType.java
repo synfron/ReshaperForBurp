@@ -11,6 +11,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenDelayModel, ThenDelay> Delay = new ThenModelType<>("Delay", ThenDelayModel.class, ThenType.Delay);
     public static final ThenModelType<ThenLogModel, ThenLog> Log = new ThenModelType<>("Log", ThenLogModel.class, ThenType.Log);
     public static final ThenModelType<ThenHighlightModel, ThenHighlight> Highlight = new ThenModelType<>("Highlight", ThenHighlightModel.class, ThenType.Highlight);
+    public static final ThenModelType<ThenCommentModel, ThenComment> Comment = new ThenModelType<>("Comment", ThenCommentModel.class, ThenType.Comment);
     public static final ThenModelType<ThenRunRulesModel, ThenRunRules> RunRules = new ThenModelType<>("Run Rules", ThenRunRulesModel.class, ThenType.RunRules);
     public static final ThenModelType<ThenRunScriptModel, ThenRunScript> RunScript = new ThenModelType<>("Run Script", ThenRunScriptModel.class, ThenType.RunScript);
     public static final ThenModelType<ThenSetEventDirectionModel, ThenSetEventDirection> SetEventDirection = new ThenModelType<>("Set Event Direction", ThenSetEventDirectionModel.class, ThenType.SetEventDirection);
@@ -35,6 +36,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
                 Delay,
                 Log,
                 Highlight,
+                Comment,
                 RunRules,
                 RunScript,
                 SetEventDirection,
