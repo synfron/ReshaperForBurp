@@ -3,7 +3,7 @@
 Extra Javascript library APIs usable in `ThenRunScript` scripts.
 
 * auto-gen TOC:
-  {:toc}
+{:toc}
 
 ## Reshaper.
 
@@ -89,6 +89,12 @@ Highlight
 ```
 {
     color: "None" | "Red" | "Orange" | "Yellow" | "Green" | "Cyan" | "Blue" | "Pink" | "Magenta" | "Gray"
+}
+```
+Comment
+```
+{
+    text: string
 }
 ```
 Log

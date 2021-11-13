@@ -95,6 +95,14 @@ Highlight the request/response line in the HTTP history
 
 Color - The color used to highlight the request/response line.
 
+### Comment
+
+Add a comment to the request/response line in the HTTP history
+
+#### Fields
+
+Text - The text of the comment. Supports variable tags.
+
 ### Run Rules
 
 Run a specific rule or all auto-run rules.

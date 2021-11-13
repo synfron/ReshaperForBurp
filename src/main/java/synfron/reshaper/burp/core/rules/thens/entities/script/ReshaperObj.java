@@ -102,6 +102,7 @@ public class ReshaperObj {
             String adjustedThenTypeName = StringUtils.prependIfMissing(thenType, "Then");
             Stream<ThenType<?>> supportedThenTypes = Stream.of(
                     ThenType.Highlight,
+                    ThenType.Comment,
                     ThenType.BuildHttpMessage,
                     ThenType.DeleteValue,
                     ThenType.DeleteVariable,
