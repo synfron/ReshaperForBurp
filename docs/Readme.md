@@ -35,6 +35,8 @@ Log - Log message to the Burp extension console
 
 Highlight - Highlight the request/response line in the HTTP history
 
+Comment - Add a comment to the request/response line in the HTTP history
+
 Run Rules - Run a specific rule or all auto-run rules
 
 Run Script - Execute a JavaScript script

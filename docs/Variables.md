@@ -16,7 +16,7 @@ Event Variable Tag: `{{event:MyVariableName}}`
 
 Global Variable Tag: `{{global:MyVariableName}}`
 
-Message Variable Tag: `{{message:messageValueName}}` or `{{message:messageValueName:identifier}}` (e.g. `{{message:httprequesturi}}`, `{{message:httprequestheader:Host}}`). See [Message Values](Rules.html#message-values)
+Message Variable Tag: `{{message:messageValueKey}}` or `{{message:messageValueKey:identifier}}` (e.g. `{{message:httprequesturi}}`, `{{message:httprequestheader:Host}}`). See [Message Values](MessageValues.html#)
 
 For example, if Global variable named `firstName` has the value `John` and variable named `lastName` has the value `Smith`. A field with the value `{{global:firstName}}'s full name is {{global:firstName}} {{global:lastName}}` will be read as `John's full name is John Smith`.
 {% endraw %}
