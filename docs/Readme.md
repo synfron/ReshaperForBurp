@@ -35,6 +35,8 @@ Log - Log message to the Burp extension console
 
 Highlight - Highlight the request/response line in the HTTP history
 
+Comment - Add a comment to the request/response line in the HTTP history
+
 Run Rules - Run a specific rule or all auto-run rules
 
 Run Script - Execute a JavaScript script
@@ -73,6 +75,10 @@ Share values across different rules while processing the same event or all event
 Contributions are encouraged. Issues and Pull Requests welcome. Also help us spread the word.
 
 Primary Developer: Daquanne Dwight
+
+## Support
+
+For help with how to use Reshaper for a particular need, to report a bug, or to make a suggestion, create an issue in GitHub or email support[at]synfron.com.
 
 ## License
 MIT License. See [LICENSE](https://github.com/synfron/ReshaperForBurp/blob/master/LICENSE)

@@ -25,7 +25,7 @@ If the HTTP event contains a certain entity
 
 Message Value - The HTTP event entity to check
 
-Identifier - The property of the HTTP entity to check. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Identifier - The property of the HTTP entity to check. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 ### Matches Text
 
@@ -33,11 +33,11 @@ If a value (text, variable, or HTTP event entity) matches a value
 
 #### Fields
 
-Use Message Value - Match on a Message Value (HTTP event entity). Otherwise, use the specified text.
+Use Message Value - Match on a [Message Value](MessageValues.html) (HTTP event entity). Otherwise, use the specified text.
 
 Source Message Value - The HTTP event entity to check. Only available if `Use Message Value` is selected.
 
-Source Identifier - The property of the HTTP entity to check. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Source Identifier - The property of the HTTP entity to check. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Source Text - The text to use as the value to check. Only available if `Use Message Value` is not selected. Supports variable tags.
 
@@ -95,6 +95,14 @@ Highlight the request/response line in the HTTP history
 
 Color - The color used to highlight the request/response line.
 
+### Comment
+
+Add a comment to the request/response line in the HTTP history
+
+#### Fields
+
+Text - The text of the comment. Supports variable tags.
+
 ### Run Rules
 
 Run a specific rule or all auto-run rules.
@@ -109,35 +117,7 @@ Run Name - The name of the Rule to run. Only available if `Run Single` is select
 
 Execute a JavaScript script
 
-The engine supports up to partial ES6/ES2015.
-
-#### Extended Library
-
-Scripts have access to certain Reshaper specific functions.
-
-Reshaper.
-
-&nbsp;&nbsp;&nbsp;&nbsp;event.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessageValueKeys()
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessageValue(messageValueKey, messageValueIdentifier)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setMessageValue(messageValueKey, messageValueIdentifier, value)
-
-&nbsp;&nbsp;&nbsp;&nbsp;variables.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getGlobalVariable(name)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getEventVariable(name)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setGlobalVariable(name, value)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setEventVariable(name, value)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;deleteGlobalVariable(name)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;deleteEventVariable(name)
+The engine supports up to partial ES6/ES2015. Scripts have access to certain Reshaper specific functions. See [Scripting Library](ScriptingLibrary.html)
 
 #### Fields
 
@@ -161,11 +141,11 @@ Set the value of an HTTP event using another value (text, variable, or HTTP even
 
 #### Fields
 
-Use Message Value - Use Message Value (HTTP event entity) as the source value. Otherwise, use the specified text.
+Use Message Value - Use [Message Value](MessageValues.html) (HTTP event entity) as the source value. Otherwise, use the specified text.
 
 Source Message Value - The HTTP event entity to get the source value from. Only available if `Use Message Value` is selected.
 
-Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
@@ -181,7 +161,7 @@ Regex Pattern - The replacement value to use in the Regex replace. Only availabl
 
 Destination Message Value - The HTTP event entity to set the value of.
 
-Destination Identifier - The property of the HTTP entity to set the value of. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Destination Identifier - The property of the HTTP entity to set the value of. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
 
@@ -196,7 +176,7 @@ Remove an HTTP message entity
 
 Message Value - The HTTP event entity to delete.
 
-Identifier - The property of the HTTP entity to delete. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Identifier - The property of the HTTP entity to delete. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 ### Set Variable
 
@@ -204,11 +184,11 @@ Set a variable using another value (text, variable, or HTTP event entity)
 
 #### Fields
 
-Use Message Value - Use Message Value (HTTP event entity) as the source value. Otherwise, use the specified text.
+Use Message Value - Use [Message Value](MessageValues.html) (HTTP event entity) as the source value. Otherwise, use the specified text.
 
 Source Message Value - The HTTP event entity to get the source value from. Only available if `Use Message Value` is selected.
 
-Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
@@ -304,7 +284,7 @@ Source Text - The text to set in the message. Supports variable tags.
 
 Destination Message Value - The HTTP message entity to set the value of.
 
-Destination Identifier - The property of the HTTP message to set the value of. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Destination Identifier - The property of the HTTP message to set the value of. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Destination Variable Source - Global or Event scope.
 
@@ -324,7 +304,7 @@ Source Text - The text to set in the message. Supports variable tags.
 
 Source Message Value - The HTTP message entity to extract a value from.
 
-Source Identifier - The property of the HTTP entity to extract a value from. Only available for certain Message Values (e.g. request header). Supports variable tags.
+Source Identifier - The property of the HTTP entity to extract a value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Destination Variable Source - Global or Event scope.
 
@@ -367,113 +347,6 @@ Have Burp drop the connection
 #### Fields
 
 Drop Message - If selected, Burp will be told to drop the connection.
-
-## Message Values
-
-*Friendly Name (Name Used in Variables)*
-
-Source Address (SourceAddress) - Example: `127.0.0.1`
-
-Destination Address (DestinationAddress) - Host name without port. Example: `www.example.com`
-
-Destination Port (DestinationPort) - Example: `80`
-
-Protocol (HttpProtocol) - `http` or `https`
-
-URL (URL) - Example: `http://www.example.com/index.html?query=test`
-
-Request Message (HttpRequestMessage) - Example: 
-```
-GET / HTTP/1.1
-Host: www.example.com
-User-Agent: Mozilla/5.0 Firefox/78.0
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
-Accept-Language: en-US,en;q=0.5
-Accept-Encoding: gzip, deflate
-Connection: close
-Upgrade-Insecure-Requests: 1
-Pragma: no-cache
-Cache-Control: no-cache
-```
-
-Request Status Line (HttpRequestStatusLine) - Example: `GET /path/to/page/index.html?claim=reset&type=plain HTTP/1.1`
-
-Request Method (HttpRequestMethod) - Example: `GET`
-
-Request URI (HttpRequestUri) - Example: `/path/to/page/index.html?claim=reset&type=plain`
-
-Request URI Path (HttpRequestUriPath) - Example: `/path/to/page/index.html` from `/path/to/page/index.html?claim=reset&type=plain`
-
-Request URI Query Parameters (HttpRequestUriQueryParameters) - Example: `claim=reset&type=plain` from `/path/to/page/index.html?claim=reset&type=plain`
-
-Request URI Query Parameter (HttpRequestUriQueryParameter) - Example: `plain` at identifier `type` from `/path/to/page/index.html?claim=reset&type=plain`
-
-Request Headers (HttpRequestHeaders) -  Example: 
-```
-Host: www.example.com
-User-Agent: Mozilla/5.0 Firefox/78.0
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
-Accept-Language: en-US,en;q=0.5
-Accept-Encoding: gzip, deflate
-Cookie: Preferences=local; AID=2Zy8
-Connection: close
-Upgrade-Insecure-Requests: 1
-Pragma: no-cache
-Cache-Control: no-cache
-```
-
-Request Header (HttpRequestHeader) - Example: `gzip, deflate` at identifier `Accept-Encoding`
-
-Request Cookie (HttpRequestCookie) - Example: `2Zy8` at identifier `AID`
-
-Request Body (HttpRequestBody)
-
-Response Message (HttpResponseMessage) - Example:
-```
-HTTP/1.1 404 Not Found
-Accept-Ranges: bytes
-Age: 354581
-Cache-Control: max-age=604800
-Content-Type: text/html; charset=UTF-8
-Date: Mon, 07 Dec 2020 07:30:13 GMT
-Expires: Mon, 14 Dec 2020 07:30:13 GMT
-Last-Modified: Thu, 03 Dec 2020 05:00:32 GMT
-Server: ECS (ord/5739)
-Vary: Accept-Encoding
-X-Cache: 404-HIT
-Content-Length: 1256
-Connection: close
-```
-
-Response Status Line (HttpResponseStatusLine) - Example: `HTTP/1.1 404 Not Found`
-
-Response Status Code (HttpResponseStatusCode) - Example: `404`
-
-Response Status Message (HttpResponseStatusMessage) - Example: `Not Found`
-
-Response Headers (HttpResponseHeaders) - Example:
-```
-HTTP/1.1 404 Not Found
-Accept-Ranges: bytes
-Age: 354581
-Cache-Control: max-age=604800
-Content-Type: text/html; charset=UTF-8
-Date: Mon, 07 Dec 2020 07:30:13 GMT
-Set-Cookie: AID=2Zy8
-Expires: Mon, 14 Dec 2020 07:30:13 GMT
-Last-Modified: Thu, 03 Dec 2020 05:00:32 GMT
-Server: ECS (ord/5739)
-Vary: Accept-Encoding
-X-Cache: 404-HIT
-Content-Length: 1256
-Connection: close
-```
-
-Response Header (HttpResponseHeader) - Example: `max-age=604800` at identifier `Cache-Control`
-
-Response Cookie (HttpResponseCookie) - Example: `2Zy8` at identifier `AID`
-
-Response Body (HttpResponseBody)
 
 ## Debugging
 

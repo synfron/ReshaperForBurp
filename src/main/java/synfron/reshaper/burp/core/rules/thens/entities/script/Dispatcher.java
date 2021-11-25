@@ -20,6 +20,7 @@ public class Dispatcher {
     private static final ThreadLocal<Dispatcher> current = new ThreadLocal<>();
     private final AtomicInteger numTasks = new AtomicInteger(0);
     private ScheduledExecutorService executor;
+    @Getter
     private Context context;
     private boolean contextExited = false;
     private Exception firstException;
@@ -49,7 +50,7 @@ public class Dispatcher {
         return () -> {
             setCurrent();
             try {
-                consumer.accept(getContext());
+                consumer.accept(getOrCreateContext());
             } catch (Exception e) {
                 if (shutdownOnException) {
                     setFirstException(e);
@@ -115,7 +116,7 @@ public class Dispatcher {
         }
     }
 
-    private Context getContext() {
+    private Context getOrCreateContext() {
         if (this.context == null) {
             this.context = Context.enter();
         }
