@@ -103,6 +103,22 @@ Add a comment to the request/response line in the HTTP history
 
 Text - The text of the comment. Supports variable tags.
 
+### Prompt
+
+Get text via a prompt dialog.
+
+#### Fields
+
+Description - The description text to display in the prompt above the text entry field. Supports variable tags.
+
+Fail After (milliseconds) - Flag the request as failed after waiting the specified amount of time for the response. Only available if `Wait for Completion` is selected. Supports variable tags.
+
+Break After Failure - Do not run any other Thens or Rules for this event if the request was flagged as failed. Only available if `Wait for Completion` is selected.
+
+Capture Variable Source - Global or Event scope.
+
+Capture Variable Name - The name of variable to store the response message. Supports variable tags.
+
 ### Run Rules
 
 Run a specific rule or all auto-run rules.
@@ -220,6 +236,18 @@ Variable Source - Global or Event scope.
 
 Variable Name - The name of the variable to delete. Supports variable tags.
 
+### Save File
+
+Save text to a file.
+
+#### Fields
+
+File Path - File path of the file, include file name. Supports variable tags.
+
+Text - The text to save. Supports variable tags.
+
+Encoding - The charset/encoding of the file (e.g. utf-8). Supports variable tags.
+
 ### Send To
 
 Send data to other Burp tools or the system default browser
@@ -268,7 +296,7 @@ Capture After Failure - Capture standard out even if the process is flagged as f
 
 Capture Variable Source - Global or Event scope.
 
-Capture Variable Name - The name of variable to store the captured output.
+Capture Variable Name - The name of variable to store the captured output. Supports variable tags.
 
 ### Build HTTP Message
 
@@ -316,13 +344,13 @@ Send a separate HTTP request.
 
 #### Fields
 
-Protocol - `http` or `https`
+Protocol - `http` or `https`. Supports variable tags.
 
-Address - Host name without port. Example: `www.example.com`
+Address - Host name without port. Example: `www.example.com`. Supports variable tags.
 
-Port - Example: `80`
+Port - Example: `80`. Supports variable tags.
 
-Request - The HTTP request message to send.
+Request - The HTTP request message to send. Supports variable tags.
 
 Wait for Completion - Wait for a response before continuing.
 
@@ -338,7 +366,7 @@ Capture After Failure - Capture the HTTP response message even if the request is
 
 Capture Variable Source - Global or Event scope.
 
-Capture Variable Name - The name of variable to store the response message.
+Capture Variable Name - The name of variable to store the response message. Supports variable tags.
 
 ### Drop
 

@@ -12,11 +12,18 @@ Message variables correspond to message values (e.g. Request URI).
 
 Variables can be read by Whens and Thens when a variable tag is specified in supporting text fields.
 {% raw %}
-Event Variable Tag: `{{event:MyVariableName}}`
 
-Global Variable Tag: `{{global:MyVariableName}}`
+**Event Variable Tag:** `{{event:MyVariableName}}`
 
-Message Variable Tag: `{{message:messageValueKey}}` or `{{message:messageValueKey:identifier}}` (e.g. `{{message:httprequesturi}}`, `{{message:httprequestheader:Host}}`). See [Message Values](MessageValues.html#)
+**Global Variable Tag:** `{{global:MyVariableName}}`
 
 For example, if Global variable named `firstName` has the value `John` and variable named `lastName` has the value `Smith`. A field with the value `{{global:firstName}}'s full name is {{global:firstName}} {{global:lastName}}` will be read as `John's full name is John Smith`.
+
+**Message Variable Tag:** `{{message:messageValueKey}}` or `{{message:messageValueKey:identifier}}` (e.g. `{{message:httprequesturi}}`, `{{message:httprequestheader:Host}}`). See [Message Values](MessageValues.html#)
+
+**File Variable Tag:** `{{file:encoding:filePath}}`. Example: `{{file:utf-8:~/Documents/file.txt}}`
+
+**Special Character Tag:** `{{s:escapeSequenceCharacters}}`. Examples: `{{s:n}}` (new line), `{{s:u00A9}}` (Copyright symbol)
+
+
 {% endraw %}
