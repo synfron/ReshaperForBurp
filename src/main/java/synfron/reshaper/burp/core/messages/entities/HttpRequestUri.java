@@ -54,7 +54,7 @@ public class HttpRequestUri extends HttpEntity {
     public void setQueryParameter(String name, String value) {
         if (value != null) {
             prepare();
-            uriBuilder.addParameter(name, value);
+            uriBuilder.setParameter(name, value);
             changed = true;
         } else {
             deleteParameter(name);
