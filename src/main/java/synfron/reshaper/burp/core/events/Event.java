@@ -8,7 +8,7 @@ import java.util.List;
 public class Event<A> {
     private List<WeakReference<IEventListener<A>>> listeners;
 
-    public void remove(IEventListener<A> listener) {
+    public synchronized void remove(IEventListener<A> listener) {
         if (listeners != null) {
             listeners.remove(listener);
             if (listeners.size() == 0) {
@@ -17,11 +17,11 @@ public class Event<A> {
         }
     }
 
-    public void add(IEventListener<A> listener) {
+    public synchronized void add(IEventListener<A> listener) {
         getListeners().add(new WeakReference(listener));
     }
 
-    public void invoke(A args) {
+    public synchronized void invoke(A args) {
         if (listeners != null) {
             Iterator<WeakReference<IEventListener<A>>> iterator = listeners.iterator();
             while (iterator.hasNext()) {

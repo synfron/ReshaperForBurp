@@ -4,7 +4,6 @@ import synfron.reshaper.burp.core.events.Event;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.MessageArgs;
 import synfron.reshaper.burp.core.events.MessageEvent;
-import synfron.reshaper.burp.core.exceptions.WrappedException;
 
 import java.util.concurrent.*;
 import java.util.function.Predicate;

@@ -7,11 +7,12 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MessagePrompter {
-    private static Map<String, JDialog> dialogMap = new HashMap<>();
+    private static Map<String, JDialog> dialogMap = new ConcurrentHashMap<>();
 
     public static void createTextAreaDialog(String id, String title, String description, Consumer<String> valueHandler) {
         JPanel container = new JPanel(new BorderLayout());
@@ -31,8 +32,10 @@ public class MessagePrompter {
         dialogMap.put(id, dialog);
 
         optionPane.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, event -> {
-            if ((int)optionPane.getValue() == JOptionPane.OK_OPTION) {
+            if (optionPane.getValue() != null && (int)optionPane.getValue() == JOptionPane.OK_OPTION) {
                 valueHandler.accept(inputText.getText());
+            } else {
+                valueHandler.accept(null);
             }
         });
 

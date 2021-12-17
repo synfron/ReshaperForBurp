@@ -55,7 +55,11 @@ public class ThenPrompt extends Then<ThenPrompt> {
             BurpExtender.getMessageEvent().invoke(new MessageArgs(this, requestMessage));
             if (messageWaiter.waitForMessage(failAfterInMilliseconds, TimeUnit.MILLISECONDS)) {
                 output = messageWaiter.getMessage().getResponse();
-                setVariable(eventInfo, captureVariableName, output);
+                if (output != null) {
+                    setVariable(eventInfo, captureVariableName, output);
+                } else {
+                    failed = true;
+                }
                 complete = true;
             } else {
                 BurpExtender.getMessageEvent().invoke(new MessageArgs(this, new PromptCancelMessage(requestMessage.getMessageId())));
