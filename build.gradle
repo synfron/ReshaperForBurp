@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.synfron.reshaper.burp'
-version '1.4.0-next'
+version '1.4.0-next-2'
 
 targetCompatibility = '15'
 sourceCompatibility = '15'
