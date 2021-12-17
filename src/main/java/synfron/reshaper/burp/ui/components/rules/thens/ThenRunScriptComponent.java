@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, ThenRunScript> {
-    private JTextArea script;
+    private JTextPane script;
     private JTextField maxExecutionSeconds;
 
     public ThenRunScriptComponent(ThenRunScriptModel then) {
@@ -21,7 +21,7 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private void initComponent() {
         mainContainer.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane();
-        script = new JTextArea();
+        script = new JTextPane();
         scrollPane.setViewportView(script);
 
         script.setText(model.getScript());

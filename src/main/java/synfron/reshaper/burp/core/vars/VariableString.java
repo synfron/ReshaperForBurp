@@ -2,14 +2,19 @@ package synfron.reshaper.burp.core.vars;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -108,11 +113,42 @@ public class VariableString implements Serializable {
                 case Global -> GlobalVariables.get().getOrDefault(variable.getName());
                 case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
                 case Message -> getMessageVariable(eventInfo, variable.getName());
+                case File -> getFileText(eventInfo, variable.getName());
+                case S -> getSpecialChar(eventInfo, variable.getName());
                 default -> null;
             };
             variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
         }
         return String.format(text, variableVals.toArray());
+    }
+
+    private Variable getFileText(EventInfo eventInfo, String variableName) {
+        Variable variable = null;
+        try {
+            String[] variableNameParts = variableName.split(":", 2);
+            String value = FileUtils.readFileToString(new File(variableNameParts[1]), variableNameParts[0]);
+            variable = new Variable(variableName);
+            variable.setValue(value);
+        } catch (Exception e) {
+            if (eventInfo.getDiagnostics().isEnabled()) {
+                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getFormattedString(VariableSource.S, variableName))).withException(e).logErr();
+            }
+        }
+        return variable;
+    }
+
+    private Variable getSpecialChar(EventInfo eventInfo, String variableName) {
+            Variable variable = null;
+            try {
+                String value = StringEscapeUtils.unescapeJava("\\" + variableName);
+                variable = new Variable(variableName);
+                variable.setValue(value);
+            } catch (Exception e) {
+                if (eventInfo.getDiagnostics().isEnabled()) {
+                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getFormattedString(VariableSource.S, variableName))).withException(e).logErr();
+                }
+            }
+            return variable;
     }
 
     private Variable getMessageVariable(EventInfo eventInfo, String variableName) {
