@@ -78,4 +78,28 @@ public class TextUtils {
         }
         return newText;
     }
+
+    public static String parseSpecialChars(String text) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int charIndex = 0; charIndex < text.length(); charIndex++) {
+            char chr = text.charAt(charIndex);
+            switch (chr) {
+                case 'n' -> stringBuilder.append('\n');
+                case 't' -> stringBuilder.append('\t');
+                case 'r' -> stringBuilder.append('\r');
+                case 'b' -> stringBuilder.append('\b');
+                case 'f' -> stringBuilder.append('\f');
+                case 'x' -> {
+                    stringBuilder.append((char)Integer.parseInt(text.substring(charIndex + 1, charIndex + 3), 16));
+                    charIndex += 2;
+                }
+                case 'u' -> {
+                    stringBuilder.append((char)Integer.parseInt(text.substring(charIndex + 1, charIndex + 5), 16));
+                    charIndex += 4;
+                }
+                default -> stringBuilder.append(chr);
+            }
+        }
+        return stringBuilder.toString();
+    }
 }

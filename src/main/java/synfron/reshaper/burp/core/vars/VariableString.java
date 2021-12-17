@@ -74,13 +74,10 @@ public class VariableString implements Serializable {
         if (requiresParsing)
         {
             List<VariableSourceEntry> variableSourceEntries = new ArrayList<>();
-            Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", Arrays.stream(VariableSource.values())
-                    .map(value -> value.toString().toLowerCase())
-                    .collect(Collectors.joining("|"))
-            ));
+            Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
             str = pattern.matcher(str).replaceAll(match -> {
                 variableSourceEntries.add(
-                        new VariableSourceEntry(EnumUtils.getEnumIgnoreCase(VariableSource.class, match.group(1)), match.group(2))
+                        new VariableSourceEntry(VariableSource.get(match.group(1)), match.group(2))
                 );
                 return "%s";
             });
@@ -114,7 +111,7 @@ public class VariableString implements Serializable {
                 case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
                 case Message -> getMessageVariable(eventInfo, variable.getName());
                 case File -> getFileText(eventInfo, variable.getName());
-                case S -> getSpecialChar(eventInfo, variable.getName());
+                case Special -> getSpecialChar(eventInfo, variable.getName());
                 default -> null;
             };
             variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
@@ -131,21 +128,21 @@ public class VariableString implements Serializable {
             variable.setValue(value);
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) {
-                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getFormattedString(VariableSource.S, variableName))).withException(e).logErr();
+                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getFormattedString(VariableSource.Special, variableName))).withException(e).logErr();
             }
         }
         return variable;
     }
 
-    private Variable getSpecialChar(EventInfo eventInfo, String variableName) {
+    private Variable getSpecialChar(EventInfo eventInfo, String sequences) {
             Variable variable = null;
             try {
-                String value = StringEscapeUtils.unescapeJava("\\" + variableName);
-                variable = new Variable(variableName);
+                String value = TextUtils.parseSpecialChars(sequences);
+                variable = new Variable(sequences);
                 variable.setValue(value);
             } catch (Exception e) {
                 if (eventInfo.getDiagnostics().isEnabled()) {
-                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getFormattedString(VariableSource.S, variableName))).withException(e).logErr();
+                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getFormattedString(VariableSource.Special, sequences))).withException(e).logErr();
                 }
             }
             return variable;
