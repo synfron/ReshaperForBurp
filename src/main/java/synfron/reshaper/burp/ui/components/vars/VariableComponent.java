@@ -18,7 +18,7 @@ import java.util.Map;
 public class VariableComponent extends JPanel {
     private final VariableModel model;
     private JTextField variableName;
-    private JTextArea variableText;
+    private JTextPane variableText;
     private JCheckBox persistent;
     private JButton save;
     private final IEventListener<PropertyChangedArgs> variablePropertyChangedListener = this::onVariablePropertyChanged;
@@ -79,7 +79,7 @@ public class VariableComponent extends JPanel {
         JPanel container = new JPanel(new BorderLayout());
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        variableText = new JTextArea();
+        variableText = new JTextPane();
         variableText.setText(model.getValue());
 
         JScrollPane scrollPane = new JScrollPane();
@@ -120,7 +120,7 @@ public class VariableComponent extends JPanel {
     }
 
     private Component getGitHubLink() {
-        JLabel githubLink = new JLabel("View on GitHub");
+        JLabel githubLink = new JLabel("Help");
         githubLink.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         Font font = githubLink.getFont();
         Map attributes = font.getAttributes();
@@ -133,7 +133,7 @@ public class VariableComponent extends JPanel {
             @SneakyThrows
             @Override
             public void mouseClicked(MouseEvent e) {
-                Desktop.getDesktop().browse(new URI("https://github.com/synfron/ReshaperForBurp"));
+                Desktop.getDesktop().browse(new URI("https://synfron.github.io/ReshaperForBurp"));
             }
 
             @Override

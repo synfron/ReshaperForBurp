@@ -27,7 +27,7 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
     public ThenParseHttpMessageModel(ThenParseHttpMessage then, Boolean isNew) {
         super(then, isNew);
         this.dataDirection = then.getDataDirection();
-        this.httpMessage = VariableString.getFormattedString(then.getHttpMessage(), httpMessage);
+        this.httpMessage = VariableString.getTag(then.getHttpMessage(), httpMessage);
         this.messageValueGetters = then.getMessageValueGetters().stream()
                 .map(messageValueGetter -> new MessageValueGetterModel(messageValueGetter).withListener(messageValueGetterChangedListener))
                 .collect(Collectors.toList());

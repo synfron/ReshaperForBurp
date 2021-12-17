@@ -65,11 +65,11 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
 
-        mainContainer.add(getLabeledField("Command", command), "wrap");
+        mainContainer.add(getLabeledField("Command *", command), "wrap");
         mainContainer.add(getLabeledField("Stdin", input), "wrap");
         mainContainer.add(waitForCompletion, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Fail After (milliseconds)", failAfter),
+                getLabeledField("Fail After (milliseconds) *", failAfter),
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
@@ -104,7 +104,7 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Capture Variable Name", captureVariableName),
+                getLabeledField("Capture Variable Name *", captureVariableName),
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");

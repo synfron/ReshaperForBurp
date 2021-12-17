@@ -74,7 +74,7 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
                 () -> useMessageValue.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Source Identifier", sourceIdentifier),
+                getLabeledField("Source Identifier *", sourceIdentifier),
                 List.of(useMessageValue, sourceMessageValue),
                 () -> useMessageValue.isSelected() && ((MessageValue)sourceMessageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");

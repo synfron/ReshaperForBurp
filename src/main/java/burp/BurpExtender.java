@@ -2,9 +2,11 @@ package burp;
 
 import lombok.Getter;
 import synfron.reshaper.burp.core.Connector;
+import synfron.reshaper.burp.core.events.MessageEvent;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.ui.components.ReshaperComponent;
+import synfron.reshaper.burp.ui.utils.UiMessageHandler;
 
 public class BurpExtender implements IBurpExtender {
 
@@ -16,6 +18,9 @@ public class BurpExtender implements IBurpExtender {
     private static ITextEditor logTextEditor;
     @Getter
     private static final GeneralSettings generalSettings = new GeneralSettings();
+    @Getter
+    private static final MessageEvent messageEvent = new MessageEvent();
+    private static UiMessageHandler uiMessageHandler = new UiMessageHandler(messageEvent);
 
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {

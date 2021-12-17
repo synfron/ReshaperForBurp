@@ -3,12 +3,11 @@ package synfron.reshaper.burp.core.messages.entities;
 import synfron.reshaper.burp.core.utils.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public abstract class HttpHeaders extends HttpEntity {
     protected final List<String> headerLines;
-    protected LinkedHashMap<CaseInsensitiveString, IValue<String>> headers;
+    protected ListMap<CaseInsensitiveString, IValue<String>> headers;
     private HttpCookies cookies;
     private final String cookieHeaderName;
     private boolean changed;
@@ -35,18 +34,18 @@ public abstract class HttpHeaders extends HttpEntity {
     public void setHeader(String name, String value) {
         if (value == null) {
             deleteHeader(name);
-        } else if (name.toLowerCase().equals(cookieHeaderName.toLowerCase())) {
+        } else if (name.equalsIgnoreCase(cookieHeaderName)) {
             cookies = new HttpCookies(value);
-            getHeaders().put(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()));
+            getHeaders().setLast(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()));
         } else {
-            getHeaders().put(new CaseInsensitiveString(name), new Value<>(value));
+            getHeaders().setLast(new CaseInsensitiveString(name), new Value<>(value));
         }
         changed = true;
     }
 
     public void deleteHeader(String name) {
         getHeaders().remove(new CaseInsensitiveString(name));
-        if (name.toLowerCase().equals(cookieHeaderName.toLowerCase())) {
+        if (name.equalsIgnoreCase(cookieHeaderName)) {
             cookies = null;
         }
         changed = true;
@@ -57,23 +56,23 @@ public abstract class HttpHeaders extends HttpEntity {
         return cookies != null ? cookies : new HttpCookies("").withPropertyAddedListener(cookies -> {
             if (this.cookies == null) {
                 this.cookies = cookies;
-                headers.put(new CaseInsensitiveString(cookieHeaderName), new Mapped<>(() -> this.cookies.getValue()));
+                headers.setLast(new CaseInsensitiveString(cookieHeaderName), new Mapped<>(() -> this.cookies.getValue()));
             }
         });
     }
 
-    private LinkedHashMap<CaseInsensitiveString, IValue<String>> getHeaders() {
+    private ListMap<CaseInsensitiveString, IValue<String>> getHeaders() {
         if (headers == null) {
-            headers = new LinkedHashMap<>();
+            headers = new ListMap<>();
             for (String headerLine : headerLines) {
                 if (headerLine.length() > 0) {
                     String[] headerParts = headerLine.split(":", 2);
                     String headerValue = CollectionUtils.elementAtOrDefault(headerParts, 1, "").stripLeading();
-                    if (headerParts[0].toLowerCase().equals(cookieHeaderName.toLowerCase())) {
+                    if (headerParts[0].equalsIgnoreCase(cookieHeaderName)) {
                         cookies = new HttpCookies(headerParts[1].trim());
-                        headers.put(new CaseInsensitiveString(headerParts[0]), new Mapped<>(() -> this.cookies.getValue()));
+                        headers.add(new CaseInsensitiveString(headerParts[0]), new Mapped<>(() -> this.cookies.getValue()));
                     } else {
-                        headers.put(new CaseInsensitiveString(headerParts[0]), new Value<>(headerValue.trim()));
+                        headers.add(new CaseInsensitiveString(headerParts[0]), new Value<>(headerValue.trim()));
                     }
                 }
             }

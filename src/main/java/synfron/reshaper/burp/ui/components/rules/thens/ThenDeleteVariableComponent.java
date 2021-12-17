@@ -28,7 +28,7 @@ public class ThenDeleteVariableComponent extends ThenComponent<ThenDeleteVariabl
         variableName.getDocument().addDocumentListener(new DocumentActionListener(this::onVariableNameChanged));
 
         mainContainer.add(getLabeledField("Variable Source", targetSource), "wrap");
-        mainContainer.add(getLabeledField("Variable Name", variableName), "wrap");
+        mainContainer.add(getLabeledField("Variable Name *", variableName), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

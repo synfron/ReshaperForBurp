@@ -5,14 +5,14 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.utils.CaseInsensitiveString;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.ListMap;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class HttpCookies extends HttpEntity {
-    private LinkedHashMap<CaseInsensitiveString, String> cookies;
+    private ListMap<CaseInsensitiveString, String> cookies;
     private final String headerValue;
     @Getter
     private boolean changed;
@@ -29,7 +29,7 @@ public class HttpCookies extends HttpEntity {
 
     public void setCookie(String name, String value) {
         if (value != null) {
-            getCookies().put(new CaseInsensitiveString(name), value);
+            getCookies().setLast(new CaseInsensitiveString(name), value);
             changed = true;
             propertyAdded();
         } else {
@@ -51,14 +51,14 @@ public class HttpCookies extends HttpEntity {
         return getCount() > 0 && getCookies().containsKey(new CaseInsensitiveString(name));
     }
 
-    private LinkedHashMap<CaseInsensitiveString, String> getCookies() {
+    private ListMap<CaseInsensitiveString, String> getCookies() {
         if (cookies == null) {
-            cookies = new LinkedHashMap<>();
+            cookies = new ListMap<>();
             if (StringUtils.isNotEmpty(headerValue)) {
                 String[] cookieEntries = headerValue.split(";");
                 for (String cookieEntry : cookieEntries) {
                     String[] cookieEntryParts = cookieEntry.split("=", 2);
-                    cookies.put(
+                    cookies.add(
                             new CaseInsensitiveString(cookieEntryParts[0].trim()),
                             CollectionUtils.elementAtOrDefault(cookieEntryParts, 1, "").stripLeading()
                     );

@@ -1,15 +1,19 @@
 package synfron.reshaper.burp.core.vars;
 
+import burp.BurpExtender;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -33,22 +37,22 @@ public class VariableString implements Serializable {
         return StringUtils.isEmpty(text);
     }
 
-    public String getFormattedString()
+    public String getTag()
     {
         return String.format(text, variables.stream().map(variable ->
-                VariableString.getFormattedString(variable.getVariableSource(), variable.getName())
+                variable.getTag() != null ? variable.getTag() : VariableString.getTag(variable.getVariableSource(), variable.getName())
         ).toArray());
     }
 
-    public static String getFormattedString(VariableString variableString, String defaultValue) {
-        return variableString != null ? variableString.getFormattedString() : defaultValue;
+    public static String getTag(VariableString variableString, String defaultValue) {
+        return variableString != null ? variableString.getTag() : defaultValue;
     }
 
-    public static String getFormattedString(VariableSource variableSource, String variableName) {
+    public static String getTag(VariableSource variableSource, String variableName) {
         return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), variableName);
     }
 
-    public static String getFormattedString(MessageValue messageValue, String identifier) {
+    public static String getTag(MessageValue messageValue, String identifier) {
         return String.format(
                 "{{message:%s%s}}",
                 messageValue.name().toLowerCase(),
@@ -69,13 +73,14 @@ public class VariableString implements Serializable {
         if (requiresParsing)
         {
             List<VariableSourceEntry> variableSourceEntries = new ArrayList<>();
-            Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", Arrays.stream(VariableSource.values())
-                    .map(value -> value.toString().toLowerCase())
-                    .collect(Collectors.joining("|"))
-            ));
+            Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
             str = pattern.matcher(str).replaceAll(match -> {
+                VariableSource variableSource = VariableSource.get(match.group(1));
+                String entryName = variableSource == VariableSource.Special ?
+                        getSpecialChar(match.group(2)) :
+                        match.group(2);
                 variableSourceEntries.add(
-                        new VariableSourceEntry(EnumUtils.getEnumIgnoreCase(VariableSource.class, match.group(1)), match.group(2))
+                        new VariableSourceEntry(VariableSource.get(match.group(1)), entryName, match.group(0))
                 );
                 return "%s";
             });
@@ -104,30 +109,63 @@ public class VariableString implements Serializable {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
         {
-            Variable value = switch (variable.getVariableSource()) {
-                case Global -> GlobalVariables.get().getOrDefault(variable.getName());
-                case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
-                case Message -> getMessageVariable(eventInfo, variable.getName());
-                default -> null;
-            };
-            variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
+            VariableSource variableSource = variable.getVariableSource();
+            if (variableSource != null) {
+                if (variableSource.isAccessor()) {
+                    String value = switch (variable.getVariableSource()) {
+                        case Message -> getMessageVariable(eventInfo, variable.getName());
+                        case File -> getFileText(eventInfo, variable.getName());
+                        case Special -> variable.getName();
+                        default -> null;
+                    };
+                    variableVals.add(value);
+                } else {
+                    Variable value = switch (variable.getVariableSource()) {
+                        case Global -> GlobalVariables.get().getOrDefault(variable.getName());
+                        case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
+                        default -> null;
+                    };
+                    variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
+                }
+            }
         }
         return String.format(text, variableVals.toArray());
     }
 
-    private Variable getMessageVariable(EventInfo eventInfo, String variableName) {
-        Variable variable = null;
-        String[] variableNameParts = variableName.split(":", 2);
+    private String getFileText(EventInfo eventInfo, String locator) {
+        try {
+            String[] variableNameParts = locator.split(":", 2);
+            return FileUtils.readFileToString(new File(variableNameParts[1]), variableNameParts[0]);
+        } catch (Exception e) {
+            if (eventInfo.getDiagnostics().isEnabled()) {
+                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getTag(VariableSource.Special, locator))).withException(e).logErr();
+            }
+        }
+        return null;
+    }
+
+    private static String getSpecialChar(String sequences) {
+            try {
+                return TextUtils.parseSpecialChars(sequences);
+            } catch (Exception e) {
+                if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
+                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getTag(VariableSource.Special, sequences))).withException(e).logErr();
+                }
+            }
+            return null;
+    }
+
+    private String getMessageVariable(EventInfo eventInfo, String locator) {
+        String[] variableNameParts = locator.split(":", 2);
         MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
         String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
         if (messageValue != null) {
             String value = StringUtils.defaultString(
                     MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false))
             );
-            variable = new Variable(messageValue.name());
-            variable.setValue(value);
+            return value;
         }
-        return variable;
+        return null;
     }
 
     public static String getTextOrDefault(EventInfo eventInfo, VariableString variableString, String defaultValue) {

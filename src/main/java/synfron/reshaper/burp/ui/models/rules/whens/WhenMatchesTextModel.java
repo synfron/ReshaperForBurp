@@ -32,12 +32,12 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
 
     public WhenMatchesTextModel(WhenMatchesText when, Boolean isNew) {
         super(when, isNew);
-        sourceText = VariableString.getFormattedString(when.getSourceText(), sourceText);
-        matchText = VariableString.getFormattedString(when.getMatchText(), matchText);
+        sourceText = VariableString.getTag(when.getSourceText(), sourceText);
+        matchText = VariableString.getTag(when.getMatchText(), matchText);
         messageValue = when.getMessageValue();
-        identifier = VariableString.getFormattedString(when.getIdentifier(), identifier);
+        identifier = VariableString.getTag(when.getIdentifier(), identifier);
         messageValueType = when.getMessageValueType();
-        messageValuePath = VariableString.getFormattedString(when.getMessageValuePath(), messageValuePath);
+        messageValuePath = VariableString.getTag(when.getMessageValuePath(), messageValuePath);
         matchType = when.getMatchType();
         useMessageValue = when.isUseMessageValue();
     }
@@ -86,7 +86,7 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     public List<String> validate() {
         List<String> errors = super.validate();
         if (useMessageValue && StringUtils.isEmpty(identifier) && messageValue.isIdentifierRequired()) {
-            errors.add("Identifier is required");
+            errors.add("Source Identifier is required");
         }
         return errors;
     }

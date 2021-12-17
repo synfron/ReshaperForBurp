@@ -37,6 +37,8 @@ Highlight - Highlight the request/response line in the HTTP history
 
 Comment - Add a comment to the request/response line in the HTTP history
 
+Prompt - Get text via a prompt dialog
+
 Run Rules - Run a specific rule or all auto-run rules
 
 Run Script - Execute a JavaScript script
@@ -50,6 +52,8 @@ Delete Value - Remove an HTTP message entity
 Set Variable - Set a variable using another value (text, variable, or HTTP event entity)
 
 Delete Variable - Delete a variable
+
+Save File - Save text to a file
 
 Send To - Send data to other Burp tools or the system default browser
 

@@ -51,7 +51,7 @@ public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMe
         mainContainer.add(getLabeledField("Message Value Setters", getMessageValueSetterList()), "wrap");
         mainContainer.add(getPaddedButton(addSetter), "wrap");
         mainContainer.add(getLabeledField("Destination Variable Source", destinationVariableSource), "wrap");
-        mainContainer.add(getLabeledField("Destination Variable Name", destinationVariableName), "wrap");
+        mainContainer.add(getLabeledField("Destination Variable Name *", destinationVariableName), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

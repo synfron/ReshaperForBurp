@@ -51,7 +51,7 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Identifier", identifier),
+                getLabeledField("Identifier *", identifier),
                 messageValue,
                 () -> ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");

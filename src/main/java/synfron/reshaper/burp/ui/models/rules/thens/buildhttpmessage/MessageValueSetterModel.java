@@ -30,9 +30,9 @@ public class MessageValueSetterModel {
 
     public MessageValueSetterModel(MessageValueSetter messageValueSetter) {
         this.messageValueSetter = messageValueSetter;
-        sourceText = VariableString.getFormattedString(messageValueSetter.getSourceText(), sourceText);
+        sourceText = VariableString.getTag(messageValueSetter.getSourceText(), sourceText);
         destinationMessageValue = messageValueSetter.getDestinationMessageValue();
-        destinationIdentifier = VariableString.getFormattedString(messageValueSetter.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifier = VariableString.getTag(messageValueSetter.getDestinationIdentifier(), destinationIdentifier);
     }
 
     public void setDestinationMessageValue(MessageValue destinationMessageValue) {
@@ -75,7 +75,7 @@ public class MessageValueSetterModel {
     public List<String> validate() {
         List<String> errors = new ArrayList<>();
         if (StringUtils.isEmpty(destinationIdentifier) && destinationMessageValue.isIdentifierRequired()) {
-            errors.add("Identifier is required");
+            errors.add("Destination Identifier is required");
         }
         return errors;
     }
