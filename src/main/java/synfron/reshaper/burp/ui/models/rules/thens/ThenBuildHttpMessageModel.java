@@ -33,12 +33,12 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     public ThenBuildHttpMessageModel(ThenBuildHttpMessage then, Boolean isNew) {
         super(then, isNew);
         this.dataDirection = then.getDataDirection();
-        this.starterHttpMessage = VariableString.getFormattedString(then.getStarterHttpMessage(), starterHttpMessage);
+        this.starterHttpMessage = VariableString.getTag(then.getStarterHttpMessage(), starterHttpMessage);
         this.messageValueSetters = then.getMessageValueSetters().stream()
                 .map(messageValueSetter -> new MessageValueSetterModel(messageValueSetter).withListener(messageValueSetterChangedListener))
                 .collect(Collectors.toList());
         this.destinationVariableSource = then.getDestinationVariableSource();
-        this.DestinationVariableName = VariableString.getFormattedString(then.getDestinationVariableName(), DestinationVariableName);
+        this.DestinationVariableName = VariableString.getTag(then.getDestinationVariableName(), DestinationVariableName);
     }
 
     public MessageValueSetterModel addMessageValueSetter() {

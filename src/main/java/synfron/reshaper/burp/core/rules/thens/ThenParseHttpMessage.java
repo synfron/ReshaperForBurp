@@ -85,7 +85,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
             variable = variables.add(variableName);
             variable.setValue(value);
         }
-        return Pair.of(VariableString.getFormattedString(variableSource, variableName), value);
+        return Pair.of(VariableString.getTag(variableSource, variableName), value);
     }
 
     @Override

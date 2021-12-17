@@ -38,15 +38,15 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
         super(then, isNew);
         useMessageValue = then.isUseMessageValue();
         sourceMessageValue = then.getSourceMessageValue();
-        sourceIdentifier = VariableString.getFormattedString(then.getSourceIdentifier(), sourceIdentifier);
+        sourceIdentifier = VariableString.getTag(then.getSourceIdentifier(), sourceIdentifier);
         sourceMessageValueType = then.getSourceMessageValueType();
-        sourceMessageValuePath = VariableString.getFormattedString(then.getSourceMessageValuePath(), sourceMessageValuePath);
+        sourceMessageValuePath = VariableString.getTag(then.getSourceMessageValuePath(), sourceMessageValuePath);
         useReplace = then.isUseReplace();
-        regexPattern = VariableString.getFormattedString(then.getRegexPattern(), regexPattern);
-        text = VariableString.getFormattedString(then.getText(), text);
-        replacementText = VariableString.getFormattedString(then.getReplacementText(), replacementText);
+        regexPattern = VariableString.getTag(then.getRegexPattern(), regexPattern);
+        text = VariableString.getTag(then.getText(), text);
+        replacementText = VariableString.getTag(then.getReplacementText(), replacementText);
         destinationMessageValueType = then.getDestinationMessageValueType();
-        destinationMessageValuePath = VariableString.getFormattedString(then.getDestinationMessageValuePath(), destinationMessageValuePath);
+        destinationMessageValuePath = VariableString.getTag(then.getDestinationMessageValuePath(), destinationMessageValuePath);
     }
 
     public void setUseMessageValue(boolean useMessageValue) {

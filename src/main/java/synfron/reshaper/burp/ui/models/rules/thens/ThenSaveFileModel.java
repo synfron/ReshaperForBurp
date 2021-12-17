@@ -1,10 +1,8 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
-import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -21,9 +19,9 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
 
     public ThenSaveFileModel(ThenSaveFile then, Boolean isNew) {
         super(then, isNew);
-        filePath = VariableString.getFormattedString(then.getFilePath(), filePath);
-        text = VariableString.getFormattedString(then.getText(), text);
-        encoding = VariableString.getFormattedString(then.getEncoding(), encoding);
+        filePath = VariableString.getTag(then.getFilePath(), filePath);
+        text = VariableString.getTag(then.getText(), text);
+        encoding = VariableString.getTag(then.getEncoding(), encoding);
     }
 
     public void setFilePath(String filePath) {

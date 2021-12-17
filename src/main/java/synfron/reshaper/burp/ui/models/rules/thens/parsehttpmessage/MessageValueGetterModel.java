@@ -34,9 +34,9 @@ public class MessageValueGetterModel {
     public MessageValueGetterModel(MessageValueGetter messageValueGetter) {
         this.messageValueGetter = messageValueGetter;
         sourceMessageValue = messageValueGetter.getSourceMessageValue();
-        sourceIdentifier = VariableString.getFormattedString(messageValueGetter.getSourceIdentifier(), sourceIdentifier);
+        sourceIdentifier = VariableString.getTag(messageValueGetter.getSourceIdentifier(), sourceIdentifier);
         destinationVariableSource = messageValueGetter.getDestinationVariableSource();
-        destinationVariableName = VariableString.getFormattedString(messageValueGetter.getDestinationVariableName(), destinationVariableName);
+        destinationVariableName = VariableString.getTag(messageValueGetter.getDestinationVariableName(), destinationVariableName);
     }
 
     public void setSourceMessageValue(MessageValue sourceMessageValue) {

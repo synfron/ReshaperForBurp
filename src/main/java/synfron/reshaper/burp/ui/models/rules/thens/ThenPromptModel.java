@@ -26,12 +26,12 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
 
     public ThenPromptModel(ThenPrompt then, Boolean isNew) {
         super(then, isNew);
-        description = VariableString.getFormattedString(then.getDescription(), description);
-        starterText = VariableString.getFormattedString(then.getStarterText(), starterText);
-        failAfter = VariableString.getFormattedString(then.getFailAfter(), failAfter);
+        description = VariableString.getTag(then.getDescription(), description);
+        starterText = VariableString.getTag(then.getStarterText(), starterText);
+        failAfter = VariableString.getTag(then.getFailAfter(), failAfter);
         breakAfterFailure = then.isBreakAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
-        captureVariableName = VariableString.getFormattedString(then.getCaptureVariableName(), captureVariableName);
+        captureVariableName = VariableString.getTag(then.getCaptureVariableName(), captureVariableName);
     }
 
     public void setDescription(String description) {

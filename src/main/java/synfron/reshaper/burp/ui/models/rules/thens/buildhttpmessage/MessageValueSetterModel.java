@@ -30,9 +30,9 @@ public class MessageValueSetterModel {
 
     public MessageValueSetterModel(MessageValueSetter messageValueSetter) {
         this.messageValueSetter = messageValueSetter;
-        sourceText = VariableString.getFormattedString(messageValueSetter.getSourceText(), sourceText);
+        sourceText = VariableString.getTag(messageValueSetter.getSourceText(), sourceText);
         destinationMessageValue = messageValueSetter.getDestinationMessageValue();
-        destinationIdentifier = VariableString.getFormattedString(messageValueSetter.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifier = VariableString.getTag(messageValueSetter.getDestinationIdentifier(), destinationIdentifier);
     }
 
     public void setDestinationMessageValue(MessageValue destinationMessageValue) {

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
@@ -14,7 +13,6 @@ import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -38,22 +36,22 @@ public class VariableString implements Serializable {
         return StringUtils.isEmpty(text);
     }
 
-    public String getFormattedString()
+    public String getTag()
     {
         return String.format(text, variables.stream().map(variable ->
-                VariableString.getFormattedString(variable.getVariableSource(), variable.getName())
+                variable.getTag() != null ? variable.getTag() : VariableString.getTag(variable.getVariableSource(), variable.getName())
         ).toArray());
     }
 
-    public static String getFormattedString(VariableString variableString, String defaultValue) {
-        return variableString != null ? variableString.getFormattedString() : defaultValue;
+    public static String getTag(VariableString variableString, String defaultValue) {
+        return variableString != null ? variableString.getTag() : defaultValue;
     }
 
-    public static String getFormattedString(VariableSource variableSource, String variableName) {
+    public static String getTag(VariableSource variableSource, String variableName) {
         return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), variableName);
     }
 
-    public static String getFormattedString(MessageValue messageValue, String identifier) {
+    public static String getTag(MessageValue messageValue, String identifier) {
         return String.format(
                 "{{message:%s%s}}",
                 messageValue.name().toLowerCase(),
@@ -77,7 +75,7 @@ public class VariableString implements Serializable {
             Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
             str = pattern.matcher(str).replaceAll(match -> {
                 variableSourceEntries.add(
-                        new VariableSourceEntry(VariableSource.get(match.group(1)), match.group(2))
+                        new VariableSourceEntry(VariableSource.get(match.group(1)), match.group(2), match.group(0))
                 );
                 return "%s";
             });
@@ -128,7 +126,7 @@ public class VariableString implements Serializable {
             variable.setValue(value);
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) {
-                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getFormattedString(VariableSource.Special, variableName))).withException(e).logErr();
+                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getTag(VariableSource.Special, variableName))).withException(e).logErr();
             }
         }
         return variable;
@@ -142,7 +140,7 @@ public class VariableString implements Serializable {
                 variable.setValue(value);
             } catch (Exception e) {
                 if (eventInfo.getDiagnostics().isEnabled()) {
-                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getFormattedString(VariableSource.Special, sequences))).withException(e).logErr();
+                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getTag(VariableSource.Special, sequences))).withException(e).logErr();
                 }
             }
             return variable;
