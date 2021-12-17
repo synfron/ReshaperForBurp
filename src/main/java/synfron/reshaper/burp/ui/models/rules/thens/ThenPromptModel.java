@@ -14,6 +14,8 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
     @Getter
     private String description;
     @Getter
+    private String starterText;
+    @Getter
     private String failAfter = "30000";
     @Getter
     private boolean breakAfterFailure;
@@ -25,6 +27,7 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
     public ThenPromptModel(ThenPrompt then, Boolean isNew) {
         super(then, isNew);
         description = VariableString.getFormattedString(then.getDescription(), description);
+        starterText = VariableString.getFormattedString(then.getStarterText(), starterText);
         failAfter = VariableString.getFormattedString(then.getFailAfter(), failAfter);
         breakAfterFailure = then.isBreakAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
@@ -33,7 +36,12 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
 
     public void setDescription(String description) {
         this.description = description;
-        propertyChanged("protocol", description);
+        propertyChanged("description", description);
+    }
+
+    public void setStarterText(String starterText) {
+        this.starterText = starterText;
+        propertyChanged("starterText", starterText);
     }
 
     public void setFailAfter(String failAfter) {
@@ -79,6 +87,7 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
             return false;
         }
         ruleOperation.setDescription(VariableString.getAsVariableString(description));
+        ruleOperation.setStarterText(VariableString.getAsVariableString(starterText));
         ruleOperation.setFailAfter(VariableString.getAsVariableString(failAfter));
         ruleOperation.setBreakAfterFailure(breakAfterFailure);
         ruleOperation.setCaptureVariableSource(captureVariableSource);

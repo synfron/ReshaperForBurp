@@ -3,8 +3,6 @@ package synfron.reshaper.burp.core.rules.thens;
 import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.events.MessageArgs;
 import synfron.reshaper.burp.core.events.message.*;
@@ -12,19 +10,17 @@ import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.*;
 
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ThenPrompt extends Then<ThenPrompt> {
     @Getter @Setter
     private VariableString description;
+    @Getter @Setter
+    private VariableString starterText;
     @Getter @Setter
     private VariableString failAfter;
     @Getter @Setter
@@ -42,11 +38,13 @@ public class ThenPrompt extends Then<ThenPrompt> {
         String output = null;
         String captureVariableName = null;
         String description = null;
+        String starterText = null;
         try {
             int failAfterInMilliseconds = this.failAfter.getInt(eventInfo);
             captureVariableName = this.captureVariableName.getText(eventInfo);
             description = this.description.getText(eventInfo);
-            PromptRequestMessage requestMessage = new PromptRequestMessage(UUID.randomUUID().toString(), description);
+            starterText = VariableString.getTextOrDefault(eventInfo, this.starterText, "");
+            PromptRequestMessage requestMessage = new PromptRequestMessage(UUID.randomUUID().toString(), description, starterText);
             MessageWaiter<PromptResponseMessage> messageWaiter = new MessageWaiter<>(
                     BurpExtender.getMessageEvent(),
                     MessageType.PromptResponse,
@@ -77,6 +75,7 @@ public class ThenPrompt extends Then<ThenPrompt> {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
                         Pair.of("description", description),
+                        Pair.of("starterText", starterText),
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", captureVariableSource),
                         Pair.of("captureVariableName", captureVariableName),

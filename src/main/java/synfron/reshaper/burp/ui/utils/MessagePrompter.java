@@ -14,12 +14,13 @@ import java.util.function.Supplier;
 public class MessagePrompter {
     private static Map<String, JDialog> dialogMap = new ConcurrentHashMap<>();
 
-    public static void createTextAreaDialog(String id, String title, String description, Consumer<String> valueHandler) {
+    public static void createTextAreaDialog(String id, String title, String description, String text, Consumer<String> valueHandler) {
         JPanel container = new JPanel(new BorderLayout());
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new EmptyBorder(10,0,0,0));
         JTextPane inputText = new JTextPane();
+        inputText.setText(text);
         scrollPane.setViewportView(inputText);
         scrollPane.setPreferredSize(new Dimension(320, 160));
 

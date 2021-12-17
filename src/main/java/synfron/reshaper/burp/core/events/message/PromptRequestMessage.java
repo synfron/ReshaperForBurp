@@ -6,10 +6,13 @@ public class PromptRequestMessage extends Message {
 
     @Getter
     private final String description;
+    @Getter
+    private final String text;
 
-    public PromptRequestMessage(String messageId, String description) {
+    public PromptRequestMessage(String messageId, String description, String text) {
         super(messageId);
         this.description = description;
+        this.text = text;
     }
 
     @Override

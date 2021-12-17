@@ -3,7 +3,6 @@ package synfron.reshaper.burp.ui.utils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.MessageArgs;
 import synfron.reshaper.burp.core.events.MessageEvent;
-import synfron.reshaper.burp.core.events.message.Message;
 import synfron.reshaper.burp.core.events.message.PromptRequestMessage;
 import synfron.reshaper.burp.core.events.message.PromptResponseMessage;
 
@@ -24,6 +23,7 @@ public class UiMessageHandler {
                         message.getMessageId(),
                         "Prompt",
                         message.getDescription(),
+                        message.getText(),
                         value -> messageEvent.invoke(new MessageArgs(this, new PromptResponseMessage(
                                 message.getMessageId(),
                                 value

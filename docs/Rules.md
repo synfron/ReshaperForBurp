@@ -109,7 +109,9 @@ Get text via a prompt dialog.
 
 #### Fields
 
-Description - The description text to display in the prompt above the text entry field. Supports variable tags.
+Description - Description text to display in the prompt above the text entry field. Supports variable tags.
+
+Starter Text - Initial text in the text entry field. Supports variable tags.
 
 Fail After (milliseconds) - Flag the request as failed after waiting the specified amount of time for the response. Only available if `Wait for Completion` is selected. Supports variable tags.
 
