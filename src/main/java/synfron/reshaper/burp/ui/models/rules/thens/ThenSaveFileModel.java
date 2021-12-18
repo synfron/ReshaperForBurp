@@ -2,7 +2,9 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
+import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -16,12 +18,15 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
     private String text;
     @Getter
     private String encoding;
+    @Getter
+    private FileExistsAction fileExistsAction;
 
     public ThenSaveFileModel(ThenSaveFile then, Boolean isNew) {
         super(then, isNew);
         filePath = VariableString.getTag(then.getFilePath(), filePath);
         text = VariableString.getTag(then.getText(), text);
         encoding = VariableString.getTag(then.getEncoding(), encoding);
+        fileExistsAction = then.getFileExistsAction();
     }
 
     public void setFilePath(String filePath) {
@@ -39,6 +44,11 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
         propertyChanged("encoding", encoding);
     }
 
+    public void setFileExistsAction(FileExistsAction fileExistsAction) {
+        this.fileExistsAction = fileExistsAction;
+        propertyChanged("fileExistsAction", fileExistsAction);
+    }
+
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(filePath)) {
@@ -54,6 +64,7 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
         ruleOperation.setFilePath(VariableString.getAsVariableString(filePath));
         ruleOperation.setText(VariableString.getAsVariableString(text));
         ruleOperation.setEncoding(VariableString.getAsVariableString(encoding));
+        ruleOperation.setFileExistsAction(fileExistsAction);
         setValidated(true);
         return true;
     }
