@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.core.vars;
 
+import burp.BurpExtender;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FileUtils;
@@ -74,8 +75,12 @@ public class VariableString implements Serializable {
             List<VariableSourceEntry> variableSourceEntries = new ArrayList<>();
             Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
             str = pattern.matcher(str).replaceAll(match -> {
+                VariableSource variableSource = VariableSource.get(match.group(1));
+                String entryName = variableSource == VariableSource.Special ?
+                        getSpecialChar(match.group(2)) :
+                        match.group(2);
                 variableSourceEntries.add(
-                        new VariableSourceEntry(VariableSource.get(match.group(1)), match.group(2), match.group(0))
+                        new VariableSourceEntry(VariableSource.get(match.group(1)), entryName, match.group(0))
                 );
                 return "%s";
             });
@@ -104,61 +109,63 @@ public class VariableString implements Serializable {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
         {
-            Variable value = switch (variable.getVariableSource()) {
-                case Global -> GlobalVariables.get().getOrDefault(variable.getName());
-                case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
-                case Message -> getMessageVariable(eventInfo, variable.getName());
-                case File -> getFileText(eventInfo, variable.getName());
-                case Special -> getSpecialChar(eventInfo, variable.getName());
-                default -> null;
-            };
-            variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
+            VariableSource variableSource = variable.getVariableSource();
+            if (variableSource != null) {
+                if (variableSource.isAccessor()) {
+                    String value = switch (variable.getVariableSource()) {
+                        case Message -> getMessageVariable(eventInfo, variable.getName());
+                        case File -> getFileText(eventInfo, variable.getName());
+                        case Special -> variable.getName();
+                        default -> null;
+                    };
+                    variableVals.add(value);
+                } else {
+                    Variable value = switch (variable.getVariableSource()) {
+                        case Global -> GlobalVariables.get().getOrDefault(variable.getName());
+                        case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
+                        default -> null;
+                    };
+                    variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
+                }
+            }
         }
         return String.format(text, variableVals.toArray());
     }
 
-    private Variable getFileText(EventInfo eventInfo, String variableName) {
-        Variable variable = null;
+    private String getFileText(EventInfo eventInfo, String locator) {
         try {
-            String[] variableNameParts = variableName.split(":", 2);
-            String value = FileUtils.readFileToString(new File(variableNameParts[1]), variableNameParts[0]);
-            variable = new Variable(variableName);
-            variable.setValue(value);
+            String[] variableNameParts = locator.split(":", 2);
+            return FileUtils.readFileToString(new File(variableNameParts[1]), variableNameParts[0]);
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) {
-                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getTag(VariableSource.Special, variableName))).withException(e).logErr();
+                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getTag(VariableSource.Special, locator))).withException(e).logErr();
             }
         }
-        return variable;
+        return null;
     }
 
-    private Variable getSpecialChar(EventInfo eventInfo, String sequences) {
-            Variable variable = null;
+    private static String getSpecialChar(String sequences) {
             try {
-                String value = TextUtils.parseSpecialChars(sequences);
-                variable = new Variable(sequences);
-                variable.setValue(value);
+                return TextUtils.parseSpecialChars(sequences);
             } catch (Exception e) {
-                if (eventInfo.getDiagnostics().isEnabled()) {
+                if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
                     Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getTag(VariableSource.Special, sequences))).withException(e).logErr();
                 }
             }
-            return variable;
+            return null;
     }
 
-    private Variable getMessageVariable(EventInfo eventInfo, String variableName) {
-        Variable variable = null;
-        String[] variableNameParts = variableName.split(":", 2);
+    private String getMessageVariable(EventInfo eventInfo, String locator) {
+        String[] variableNameParts = locator.split(":", 2);
         MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
         String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
         if (messageValue != null) {
             String value = StringUtils.defaultString(
                     MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false))
             );
-            variable = new Variable(messageValue.name());
-            variable.setValue(value);
+            return value;
         }
-        return variable;
+        return null;
     }
 
     public static String getTextOrDefault(EventInfo eventInfo, VariableString variableString, String defaultValue) {

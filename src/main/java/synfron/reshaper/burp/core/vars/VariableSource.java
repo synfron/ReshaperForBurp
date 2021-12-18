@@ -7,18 +7,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Getter
 public enum VariableSource {
-    Event("e"),
-    Global("g"),
-    Message("m"),
-    File("f"),
-    Special("s");
+    Event("e", false),
+    Global("g", false),
+    Message("m", true),
+    File("f", true),
+    Special("s", true);
 
-    @Getter
     private final String shortName;
+    private final boolean accessor;
 
-    VariableSource(String shortName) {
+    VariableSource(String shortName, boolean accessor) {
         this.shortName = shortName;
+        this.accessor = accessor;
     }
 
     public static List<String> getSupportedNames() {
