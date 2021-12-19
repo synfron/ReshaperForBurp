@@ -38,7 +38,7 @@ public class ThenSaveFileComponent extends ThenComponent<ThenSaveFileModel, Then
         encoding.getDocument().addDocumentListener(new DocumentActionListener(this::onEncodingChanged));
         fileExistsAction.addActionListener(this::onFileExistsActionChanged);
 
-        mainContainer.add(getLabeledField("File Path", filePath), "wrap");
+        mainContainer.add(getLabeledField("File Path *", filePath), "wrap");
         mainContainer.add(getLabeledField("Text", text), "wrap");
         mainContainer.add(getLabeledField("Encoding", encoding), "wrap");
         mainContainer.add(getLabeledField("File Exists Action", fileExistsAction), "wrap");

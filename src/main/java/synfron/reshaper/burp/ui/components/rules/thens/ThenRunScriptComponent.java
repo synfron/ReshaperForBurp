@@ -28,7 +28,7 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
 
         script.getDocument().addDocumentListener(new DocumentActionListener(this::onScriptChanged));
 
-        mainContainer.add(new JLabel("Script"), BorderLayout.PAGE_START);
+        mainContainer.add(new JLabel("Script *"), BorderLayout.PAGE_START);
         mainContainer.add(scrollPane, BorderLayout.CENTER);
         mainContainer.add(getOtherFields(), BorderLayout.PAGE_END);
     }
@@ -42,7 +42,7 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
 
         maxExecutionSeconds.getDocument().addDocumentListener(new DocumentActionListener(this::onMaxExecutionSecondsChanged));
 
-        container.add(getLabeledField("Max Execution (secs)", maxExecutionSeconds), "wrap");
+        container.add(getLabeledField("Max Execution (secs) *", maxExecutionSeconds), "wrap");
         container.add(getPaddedButton(validate));
         return container;
     }

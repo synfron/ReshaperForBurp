@@ -43,12 +43,12 @@ public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenProm
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
 
-        mainContainer.add(getLabeledField("Description", description), "wrap");
+        mainContainer.add(getLabeledField("Description *", description), "wrap");
         mainContainer.add(getLabeledField("Starter Text", starterText), "wrap");
-        mainContainer.add(getLabeledField("Fail After (milliseconds)", failAfter), "wrap");
+        mainContainer.add(getLabeledField("Fail After (milliseconds) *", failAfter), "wrap");
         mainContainer.add(breakAfterFailure, "wrap");
         mainContainer.add(getLabeledField("Capture Variable Source", captureVariableSource), "wrap");
-        mainContainer.add(getLabeledField("Capture Variable Name", captureVariableName), "wrap");
+        mainContainer.add(getLabeledField("Capture Variable Name *", captureVariableName), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

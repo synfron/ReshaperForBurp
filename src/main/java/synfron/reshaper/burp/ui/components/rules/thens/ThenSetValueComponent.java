@@ -34,7 +34,7 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
         return List.of(
                 getLabeledField("Destination Message Value", destinationMessageValue),
                 ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                        getLabeledField("Destination Identifier", destinationIdentifier),
+                        getLabeledField("Destination Identifier *", destinationIdentifier),
                         destinationMessageValue,
                         () -> ((MessageValue)destinationMessageValue.getSelectedItem()).isIdentifierRequired()
                 )

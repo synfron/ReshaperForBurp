@@ -83,9 +83,9 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(DestinationVariableName)) {
-            errors.add("Variable Name is required");
+            errors.add("Destination Variable Name is required");
         } else if (!VariableString.isValidVariableName(DestinationVariableName)) {
-            errors.add("Variable Name is invalid");
+            errors.add("Destination Variable Name is invalid");
         }
         messageValueSetters.forEach(messageValueSetter -> errors.addAll(messageValueSetter.validate()));
         return errors;

@@ -29,7 +29,7 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
         mainContainer.add(runSingle, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Rule Name", ruleName),
+                getLabeledField("Rule Name *", ruleName),
                 runSingle,
                 () -> runSingle.isSelected()
         ), "wrap");

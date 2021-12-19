@@ -86,7 +86,7 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     public List<String> validate() {
         List<String> errors = super.validate();
         if (useMessageValue && StringUtils.isEmpty(identifier) && messageValue.isIdentifierRequired()) {
-            errors.add("Identifier is required");
+            errors.add("Source Identifier is required");
         }
         return errors;
     }

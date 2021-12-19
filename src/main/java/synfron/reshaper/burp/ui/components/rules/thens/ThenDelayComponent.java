@@ -22,7 +22,7 @@ public class ThenDelayComponent extends ThenComponent<ThenDelayModel,ThenDelay> 
 
         delay.getDocument().addDocumentListener(new DocumentActionListener(this::onDelayChanged));
 
-        mainContainer.add(getLabeledField("Delay (milliseconds)", delay), "wrap");
+        mainContainer.add(getLabeledField("Delay (milliseconds) *", delay), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

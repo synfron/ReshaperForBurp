@@ -250,6 +250,8 @@ Text - The text to save. Supports variable tags.
 
 Encoding - The charset/encoding of the file (e.g. utf-8). Supports variable tags.
 
+File Exists Action - Action to do if the file already exist: None (Don't write), Overwrite, Append
+
 ### Send To
 
 Send data to other Burp tools or the system default browser

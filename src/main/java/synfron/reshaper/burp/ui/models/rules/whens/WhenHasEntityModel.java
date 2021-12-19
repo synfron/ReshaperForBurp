@@ -1,10 +1,13 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.whens.WhenHasEntity;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
+
+import java.util.List;
 
 public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEntity> {
 
@@ -27,6 +30,15 @@ public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEnt
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
         propertyChanged("identifier", identifier);
+    }
+
+    @Override
+    public List<String> validate() {
+        List<String> errors = super.validate();
+        if (StringUtils.isEmpty(identifier) && messageValue.isIdentifierRequired()) {
+            errors.add("Identifier is required");
+        }
+        return errors;
     }
 
     public boolean persist() {

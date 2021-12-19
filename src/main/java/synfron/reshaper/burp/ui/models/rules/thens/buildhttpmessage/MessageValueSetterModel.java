@@ -75,7 +75,7 @@ public class MessageValueSetterModel {
     public List<String> validate() {
         List<String> errors = new ArrayList<>();
         if (StringUtils.isEmpty(destinationIdentifier) && destinationMessageValue.isIdentifierRequired()) {
-            errors.add("Identifier is required");
+            errors.add("Destination Identifier is required");
         }
         return errors;
     }
