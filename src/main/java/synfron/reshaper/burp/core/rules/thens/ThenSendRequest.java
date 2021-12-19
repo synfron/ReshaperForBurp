@@ -54,47 +54,46 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
         int exitCode = 0;
         String captureVariableName = null;
         try {
-            int failAfterInSeconds = waitForCompletion ? getFailAfter(eventInfo) : 0;
+            int failAfterInMilliseconds = waitForCompletion ? getFailAfter(eventInfo) : 0;
             captureVariableName = getVariableName(eventInfo);
             ExecutorService executor = Executors.newSingleThreadExecutor();
             AtomicReference<byte[]> response = new AtomicReference<>();
-                executor.submit(() -> {
-                    try {
-                        boolean useHttps = !StringUtils.equalsIgnoreCase(VariableString.getTextOrDefault(eventInfo, protocol, eventInfo.getHttpProtocol()), "http");
-                        String address = VariableString.getTextOrDefault(eventInfo, this.address, eventInfo.getDestinationAddress());
-                        int port = VariableString.getIntOrDefault(eventInfo, this.port, eventInfo.getDestinationPort() == null ? 0 : eventInfo.getDestinationPort());
-                        byte[] request = this.request != null && !this.request.isEmpty() ?
-                                BurpExtender.getCallbacks().getHelpers().stringToBytes(this.request.getText(eventInfo)) :
-                                eventInfo.getHttpRequestMessage().getValue();
-                        byte[] responseBytes = BurpExtender.getCallbacks().makeHttpRequest(
-                                address,
-                                port > 0 ? port : (useHttps ? 443 : 80),
-                                useHttps,
-                                request
-                        );
-                        response.set(responseBytes);
-                    }
-                    catch (Exception e) {
-                        Log.get().withMessage("Failure sending request").withException(e).logErr();
-                    } finally {
-                        executor.shutdown();
-                    }
-                });
-                if (waitForCompletion) {
-                    complete = executor.awaitTermination(failAfterInSeconds, TimeUnit.MILLISECONDS);
-                    if (complete) {
-                        executor.shutdownNow();
-                    }
-                    byte[] responseBytes = response.get();
-                    exitCode = complete && failOnErrorStatusCode && ArrayUtils.isNotEmpty(responseBytes) ?
-                            (int)BurpExtender.getCallbacks().getHelpers().analyzeResponse(response.get()).getStatusCode() :
-                            0;
-                    failed = !complete || (failOnErrorStatusCode && (exitCode == 0 || (exitCode >= 400 && exitCode < 600)));
-                    if (captureOutput && (!failed || captureAfterFailure)) {
-                        output = BurpExtender.getCallbacks().getHelpers().bytesToString(response.get());
-                        setVariable(eventInfo, captureVariableName, output);
-                    }
+            executor.submit(() -> {
+                try {
+                    boolean useHttps = !StringUtils.equalsIgnoreCase(VariableString.getTextOrDefault(eventInfo, protocol, eventInfo.getHttpProtocol()), "http");
+                    String address = VariableString.getTextOrDefault(eventInfo, this.address, eventInfo.getDestinationAddress());
+                    int port = VariableString.getIntOrDefault(eventInfo, this.port, eventInfo.getDestinationPort() == null ? 0 : eventInfo.getDestinationPort());
+                    byte[] request = this.request != null && !this.request.isEmpty() ?
+                            BurpExtender.getCallbacks().getHelpers().stringToBytes(this.request.getText(eventInfo)) :
+                            eventInfo.getHttpRequestMessage().getValue();
+                    byte[] responseBytes = BurpExtender.getCallbacks().makeHttpRequest(
+                            address,
+                            port > 0 ? port : (useHttps ? 443 : 80),
+                            useHttps,
+                            request
+                    );
+                    response.set(responseBytes);
+                } catch (Exception e) {
+                    Log.get().withMessage("Failure sending request").withException(e).logErr();
+                } finally {
+                    executor.shutdown();
                 }
+            });
+            if (waitForCompletion) {
+                complete = executor.awaitTermination(failAfterInMilliseconds, TimeUnit.MILLISECONDS);
+                if (complete) {
+                    executor.shutdownNow();
+                }
+                byte[] responseBytes = response.get();
+                exitCode = complete && failOnErrorStatusCode && ArrayUtils.isNotEmpty(responseBytes) ?
+                        (int) BurpExtender.getCallbacks().getHelpers().analyzeResponse(response.get()).getStatusCode() :
+                        0;
+                failed = !complete || (failOnErrorStatusCode && (exitCode == 0 || (exitCode >= 400 && exitCode < 600)));
+                if (captureOutput && (!failed || captureAfterFailure)) {
+                    output = BurpExtender.getCallbacks().getHelpers().bytesToString(response.get());
+                    setVariable(eventInfo, captureVariableName, output);
+                }
+            }
         } catch (InterruptedException e) {
             hasError = true;
             complete = true;

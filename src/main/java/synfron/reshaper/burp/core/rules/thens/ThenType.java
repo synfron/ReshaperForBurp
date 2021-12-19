@@ -10,6 +10,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenLog> Log = new ThenType<>("Log", ThenLog.class);
     public static final ThenType<ThenHighlight> Highlight = new ThenType<>("Highlight", ThenHighlight.class);
     public static final ThenType<ThenComment> Comment = new ThenType<>("Comment", ThenComment.class);
+    public static final ThenType<ThenPrompt> Prompt = new ThenType<>("Prompt", ThenPrompt.class);
     public static final ThenType<ThenRunRules> RunRules = new ThenType<>("Run Rules", ThenRunRules.class);
     public static final ThenType<ThenRunScript> RunScript = new ThenType<>("Run Script", ThenRunScript.class);
     public static final ThenType<ThenSetEventDirection> SetEventDirection = new ThenType<>("Set Event Direction", ThenSetEventDirection.class);
@@ -17,6 +18,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenDeleteValue> DeleteValue = new ThenType<>("Delete Value", ThenDeleteValue.class);
     public static final ThenType<ThenSetVariable> SetVariable = new ThenType<>("Set Variable", ThenSetVariable.class);
     public static final ThenType<ThenDeleteVariable> DeleteVariable = new ThenType<>("Delete Variable", ThenDeleteVariable.class);
+    public static final ThenType<ThenSaveFile> SaveFile = new ThenType<>("Save File", ThenSaveFile.class);
     public static final ThenType<ThenSendTo> SendTo = new ThenType<>("Send To", ThenSendTo.class);
     public static final ThenType<ThenRunProcess> RunProcess = new ThenType<>("Run Process", ThenRunProcess.class);
     public static final ThenType<ThenBuildHttpMessage> BuildHttpMessage = new ThenType<>("Build HTTP Message", ThenBuildHttpMessage.class);
@@ -35,6 +37,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 Log,
                 Highlight,
                 Comment,
+                Prompt,
                 RunRules,
                 RunScript,
                 SetEventDirection,
@@ -42,6 +45,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 DeleteValue,
                 SetVariable,
                 DeleteVariable,
+                SaveFile,
                 SendTo,
                 RunProcess,
                 ParseHttpMessage,

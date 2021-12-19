@@ -57,7 +57,7 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
         add(getLabeledField("Source Text", sourceText), "wrap");
         add(getLabeledField("Destination Message Value", destinationMessageValue), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Destination Identifier", destinationIdentifier),
+                getLabeledField("Destination Identifier *", destinationIdentifier),
                 List.of(destinationMessageValue),
                 () -> ((MessageValue) destinationMessageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");

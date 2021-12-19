@@ -19,7 +19,7 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
     public ThenDeleteValueModel(ThenDeleteValue then, Boolean isNew) {
         super(then, isNew);
         messageValue = then.getMessageValue();
-        identifier = VariableString.getFormattedString(then.getIdentifier(), identifier);
+        identifier = VariableString.getTag(then.getIdentifier(), identifier);
     }
 
     public void setMessageValue(MessageValue messageValue) {

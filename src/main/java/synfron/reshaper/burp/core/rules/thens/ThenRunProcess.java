@@ -57,7 +57,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         StringBuilderWriter stringWriter = new StringBuilderWriter();
         BufferedWriter bufferedWriter = new BufferedWriter(stringWriter);
         try {
-            int failAfterInSeconds = waitForCompletion ? getFailAfter(eventInfo) : 0;
+            int failAfterInMilliseconds = waitForCompletion ? getFailAfter(eventInfo) : 0;
             input = VariableString.getTextOrDefault(eventInfo, this.input, "");
             captureVariableName = getVariableName(eventInfo);
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -78,7 +78,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
                         executor.shutdown();
                     }
                 });
-                complete = executor.awaitTermination(failAfterInSeconds, TimeUnit.MILLISECONDS);
+                complete = executor.awaitTermination(failAfterInMilliseconds, TimeUnit.MILLISECONDS);
                 if (!complete) {
                     if (killAfterFailure && process.isAlive()) {
                         try {

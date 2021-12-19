@@ -75,7 +75,7 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         mainContainer.add(getLabeledField("Request", request), "wrap");
         mainContainer.add(waitForCompletion, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Fail After (milliseconds)", failAfter),
+                getLabeledField("Fail After (milliseconds) *", failAfter),
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
@@ -105,7 +105,7 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Capture Variable Name", captureVariableName),
+                getLabeledField("Capture Variable Name *", captureVariableName),
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");

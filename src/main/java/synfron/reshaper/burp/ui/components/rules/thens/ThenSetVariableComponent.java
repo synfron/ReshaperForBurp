@@ -32,7 +32,7 @@ public class ThenSetVariableComponent extends ThenSetComponent<ThenSetVariableMo
 
         return List.of(
                 getLabeledField("Destination Variable Source", targetSource),
-                getLabeledField("Destination Variable Name", variableName)
+                getLabeledField("Destination Variable Name *", variableName)
         );
     }
 

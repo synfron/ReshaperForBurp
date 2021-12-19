@@ -15,7 +15,7 @@ public class ThenDelayModel extends ThenModel<ThenDelayModel, ThenDelay> {
 
     public ThenDelayModel(ThenDelay then, Boolean isNew) {
         super(then, isNew);
-        delay = VariableString.getFormattedString(then.getDelay(), delay);
+        delay = VariableString.getTag(then.getDelay(), delay);
     }
 
     public void setDelay(String delay) {

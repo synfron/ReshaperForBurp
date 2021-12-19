@@ -62,7 +62,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
                 () -> useMessageValue.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Source Identifier", identifier),
+                getLabeledField("Source Identifier *", identifier),
                 List.of(useMessageValue, messageValue),
                 () -> useMessageValue.isSelected() && ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");

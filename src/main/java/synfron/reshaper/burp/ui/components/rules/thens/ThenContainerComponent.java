@@ -18,6 +18,7 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.Log, ThenLogComponent.class);
         componentMap.put(ThenModelType.Highlight, ThenHighlightComponent.class);
         componentMap.put(ThenModelType.Comment, ThenCommentComponent.class);
+        componentMap.put(ThenModelType.Prompt, ThenPromptComponent.class);
         componentMap.put(ThenModelType.RunRules, ThenRunRulesComponent.class);
         componentMap.put(ThenModelType.RunScript, ThenRunScriptComponent.class);
         componentMap.put(ThenModelType.SetEventDirection, ThenSetEventDirectionComponent.class);
@@ -25,6 +26,7 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.DeleteValue, ThenDeleteValueComponent.class);
         componentMap.put(ThenModelType.SetVariable, ThenSetVariableComponent.class);
         componentMap.put(ThenModelType.DeleteVariable, ThenDeleteVariableComponent.class);
+        componentMap.put(ThenModelType.SaveFile, ThenSaveFileComponent.class);
         componentMap.put(ThenModelType.SendTo, ThenSendToComponent.class);
         componentMap.put(ThenModelType.RunProcess, ThenRunProcessComponent.class);
         componentMap.put(ThenModelType.BuildHttpMessage, ThenBuildHttpMessageComponent.class);

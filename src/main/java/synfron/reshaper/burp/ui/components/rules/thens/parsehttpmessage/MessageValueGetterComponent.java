@@ -59,12 +59,12 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
 
         add(getLabeledField("Message Value", sourceMessageValue), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Identifier", sourceIdentifier),
+                getLabeledField("Identifier *", sourceIdentifier),
                 List.of(sourceMessageValue),
                 () -> ((MessageValue) sourceMessageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
         add(getLabeledField("Destination Variable Source", destinationVariableSource), "wrap");
-        add(getLabeledField("Destination Variable Name", destinationVariableName), "wrap");
+        add(getLabeledField("Destination Variable Name *", destinationVariableName), "wrap");
         if (deletable) {
             JButton delete = new JButton("Delete");
             delete.addActionListener(this::onDelete);

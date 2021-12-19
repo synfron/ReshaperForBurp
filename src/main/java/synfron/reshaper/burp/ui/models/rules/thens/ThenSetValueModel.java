@@ -19,7 +19,7 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     public ThenSetValueModel(ThenSetValue then, Boolean isNew) {
         super(then, isNew);
         destinationMessageValue = then.getDestinationMessageValue();
-        destinationIdentifier = VariableString.getFormattedString(then.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifier = VariableString.getTag(then.getDestinationIdentifier(), destinationIdentifier);
     }
 
     public void setDestinationMessageValue(MessageValue destinationMessageValue) {

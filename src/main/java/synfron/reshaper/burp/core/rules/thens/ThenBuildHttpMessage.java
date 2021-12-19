@@ -51,7 +51,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
                             Pair.of("destinationVariableName", VariableString.getTextOrDefault(eventInfo, destinationVariableName, null))
                     ),
                     messageValueSetters.stream().map(messageValueSetter -> Pair.of(
-                            VariableString.getFormattedString(
+                            VariableString.getTag(
                                     messageValueSetter.getDestinationMessageValue(), VariableString.getTextOrDefault(
                                             eventInfo, messageValueSetter.getDestinationIdentifier(), null
                                     )),
