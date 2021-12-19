@@ -120,7 +120,7 @@ public class VariableComponent extends JPanel {
     }
 
     private Component getGitHubLink() {
-        JLabel githubLink = new JLabel("View on GitHub");
+        JLabel githubLink = new JLabel("Help");
         githubLink.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         Font font = githubLink.getFont();
         Map attributes = font.getAttributes();
@@ -133,7 +133,7 @@ public class VariableComponent extends JPanel {
             @SneakyThrows
             @Override
             public void mouseClicked(MouseEvent e) {
-                Desktop.getDesktop().browse(new URI("https://github.com/synfron/ReshaperForBurp"));
+                Desktop.getDesktop().browse(new URI("https://synfron.github.io/ReshaperForBurp"));
             }
 
             @Override
