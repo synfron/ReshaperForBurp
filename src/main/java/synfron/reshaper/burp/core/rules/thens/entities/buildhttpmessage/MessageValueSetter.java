@@ -5,8 +5,10 @@ import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.vars.VariableString;
 
+import java.io.Serializable;
+
 @Data
-public class MessageValueSetter {
+public class MessageValueSetter implements Serializable {
     private MessageValue destinationMessageValue;
     private VariableString destinationIdentifier;
     private VariableString sourceText;
