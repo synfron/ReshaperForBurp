@@ -45,6 +45,11 @@ public class Serializer {
         return objectMapper;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T copy(T source) {
+        return deserialize(serialize(source, false), (Class<T>)source.getClass());
+    }
+
     public static String serialize(Object value, boolean prettyPrint) {
         try  {
             return (prettyPrint ?
