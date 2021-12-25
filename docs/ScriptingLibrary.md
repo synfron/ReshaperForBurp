@@ -7,7 +7,7 @@ Extra Javascript library APIs usable in `ThenRunScript` scripts.
 
 ## Reshaper.
 
-### events.
+### event.
 
 #### getMessageValue(messageValueKey, messageValueIdentifier)
 
