@@ -3,9 +3,7 @@ package synfron.reshaper.burp.core.messages.entities;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.utils.CaseInsensitiveString;
-import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.core.utils.ListMap;
+import synfron.reshaper.burp.core.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +25,23 @@ public class HttpCookies extends HttpEntity {
         return headerValue != null && headerValue.length() == 0 ? 0 : getCookies().size();
     }
 
-    public void setCookie(String name, String value) {
+    public void setCookie(String name, String value, SetItemPlacement itemPlacement) {
         if (value != null) {
             getCookies().setLast(new CaseInsensitiveString(name), value);
             changed = true;
             propertyAdded();
         } else {
-            deleteCookie(name);
+            deleteCookie(name, IItemPlacement.toDelete(itemPlacement));
         }
     }
 
-    public void deleteCookie(String name) {
-        getCookies().remove(new CaseInsensitiveString(name));
+    public void deleteCookie(String name, DeleteItemPlacement itemPlacement) {
+        getCookies().remove(new CaseInsensitiveString(name), itemPlacement);
         changed = true;
     }
 
-    public String getCookie(String name) {
-        return getCookies().get(new CaseInsensitiveString(name));
+    public String getCookie(String name, GetItemPlacement itemPlacement) {
+        return getCookies().get(new CaseInsensitiveString(name), itemPlacement);
     }
 
     public boolean contains(String name)
@@ -74,7 +72,7 @@ public class HttpCookies extends HttpEntity {
         }
 
         List<String> cookieEntries = new ArrayList<>();
-        for (var cookieEntry : getCookies().entrySet()) {
+        for (var cookieEntry : getCookies().entries()) {
             cookieEntries.add(cookieEntry.getValue().equals("") ?
                     cookieEntry.getKey().getValue() :
                     String.format("%s=%s", cookieEntry.getKey(), cookieEntry.getValue())

@@ -2,6 +2,8 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
+import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDeleteValueModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -16,6 +18,7 @@ import java.util.Set;
 public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel, ThenDeleteValue> {
     protected JComboBox<MessageValue> messageValue;
     protected JTextField identifier;
+    protected JComboBox<DeleteItemPlacement> identifierPlacement;
     private final Set<MessageValue> excludedMessageValues = new HashSet<>(List.of(
             MessageValue.DestinationAddress,
             MessageValue.DestinationPort,
@@ -42,16 +45,24 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
                 .toArray(MessageValue[]::new)
         );
         identifier = new JTextField();
+        identifierPlacement = new JComboBox<>(DeleteItemPlacement.values());
 
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
+        identifierPlacement.setSelectedItem(model.getIdentifierPlacement());
 
         messageValue.addActionListener(this::onMessageValueChanged);
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
+        identifierPlacement.addActionListener(this::onIdentifierPlacementChanged);
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Identifier *", identifier),
+                messageValue,
+                () -> ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Identifier Placement", identifierPlacement),
                 messageValue,
                 () -> ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
@@ -64,5 +75,9 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
 
     private void onIdentifierChanged(ActionEvent actionEvent) {
         model.setIdentifier(identifier.getText());
+    }
+
+    private void onIdentifierPlacementChanged(ActionEvent actionEvent) {
+        model.setIdentifierPlacement((DeleteItemPlacement) identifierPlacement.getSelectedItem());
     }
 }

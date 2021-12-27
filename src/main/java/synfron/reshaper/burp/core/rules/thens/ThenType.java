@@ -1,9 +1,11 @@
 package synfron.reshaper.burp.core.rules.thens;
 
+import lombok.EqualsAndHashCode;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenBreak> Break = new ThenType<>("Break", ThenBreak.class);
     public static final ThenType<ThenDelay> Delay = new ThenType<>("Delay", ThenDelay.class);
@@ -25,6 +27,10 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenParseHttpMessage> ParseHttpMessage = new ThenType<>("Parse HTTP Message", ThenParseHttpMessage.class);
     public static final ThenType<ThenSendRequest> SendRequest = new ThenType<>("Send Request", ThenSendRequest.class);
     public static final ThenType<ThenDrop> Drop = new ThenType<>("Drop", ThenDrop.class);
+
+    private ThenType() {
+        this(null, null);
+    }
 
     private ThenType(String name, Class<T> type) {
         super(name, type);

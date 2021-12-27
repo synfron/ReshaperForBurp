@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.thens.Then;
@@ -18,14 +18,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Diagnostics {
+public class Diagnostics implements IDiagnostics {
     private Integer diagnosticValueMaxLength;
 
     private List<DiagnosticRecord> records;
     @Getter @Setter
     private boolean enabled;
 
-    public void logCompare(When<?> when, List<? extends Pair<String,? extends Serializable>> properties, MatchType matchType, Object matcher, Object value,  boolean result) {
+    @Override
+    public void logCompare(When<?> when, List<? extends Pair<String, ? extends Serializable>> properties, MatchType matchType, Object matcher, Object value, boolean result) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.When, String.format(
                 "%-4sWhen %s(%s'%s' %s '%s') - %s\n",
                 isLast(DiagnosticEntityType.When) ? toPrefix(when.isUseOrCondition()) : "",
@@ -38,6 +39,7 @@ public class Diagnostics {
         )));
     }
 
+    @Override
     public void logHas(When<?> when, Object value, Object subValue, boolean result) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.When, String.format(
                 "%-4sWhen %s('%s' %s) - %s\n",
@@ -54,6 +56,7 @@ public class Diagnostics {
         return records.size() > 0 && records.get(records.size() - 1).getEntityType() == entityType;
     }
 
+    @Override
     public void logValue(Then<?> then, boolean hasError, Object... values) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.Then, String.format(
                 "%-4sThen %s('%s') %s\n",
@@ -64,7 +67,8 @@ public class Diagnostics {
         )));
     }
 
-    public void logProperties(Then<?> then, boolean hasError, List<? extends Pair<String,? extends Serializable>> properties) {
+    @Override
+    public void logProperties(Then<?> then, boolean hasError, List<? extends Pair<String, ? extends Serializable>> properties) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.Then, String.format(
                 "%-4sThen %s(%s) %s\n",
                 "",
@@ -81,22 +85,27 @@ public class Diagnostics {
                 .collect(Collectors.joining(" ")) : "";
     }
 
+    @Override
     public void logStart(Rule rule) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.StartRule, String.format("Rule: %s\n", rule.getName())));
     }
 
+    @Override
     public void logEnd(Rule rule) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndRule, "End Rule\n"));
     }
 
-    public void logStart(EventInfo eventInfo) {
+    @Override
+    public void logStart(IEventInfo eventInfo) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.StartEvent, String.format("%s: %s\n", eventInfo.getDataDirection(), eventInfo.getUrl())));
     }
 
-    public void logEnd(EventInfo eventInfo) {
+    @Override
+    public void logEnd(IEventInfo eventInfo) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndEvent, String.format("End %s\n", eventInfo.getDataDirection().toString())));
     }
 
+    @Override
     public String getLogs() {
         StringBuilder buffer = new StringBuilder();
         if (records != null) {

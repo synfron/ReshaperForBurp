@@ -7,6 +7,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage.MessageValueGetter;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -21,6 +22,8 @@ public class MessageValueGetterModel {
     @Getter
     private String sourceIdentifier = "";
     @Getter
+    private GetItemPlacement sourceIdentifierPlacement;
+    @Getter
     private VariableSource destinationVariableSource;
     @Getter
     private String destinationVariableName;
@@ -34,9 +37,10 @@ public class MessageValueGetterModel {
     public MessageValueGetterModel(MessageValueGetter messageValueGetter) {
         this.messageValueGetter = messageValueGetter;
         sourceMessageValue = messageValueGetter.getSourceMessageValue();
-        sourceIdentifier = VariableString.getTag(messageValueGetter.getSourceIdentifier(), sourceIdentifier);
+        sourceIdentifier = VariableString.toString(messageValueGetter.getSourceIdentifier(), sourceIdentifier);
+        sourceIdentifierPlacement = messageValueGetter.getSourceIdentifierPlacement();
         destinationVariableSource = messageValueGetter.getDestinationVariableSource();
-        destinationVariableName = VariableString.getTag(messageValueGetter.getDestinationVariableName(), destinationVariableName);
+        destinationVariableName = VariableString.toString(messageValueGetter.getDestinationVariableName(), destinationVariableName);
     }
 
     public void setSourceMessageValue(MessageValue sourceMessageValue) {
@@ -47,6 +51,11 @@ public class MessageValueGetterModel {
     public void setSourceIdentifier(String sourceIdentifier) {
         this.sourceIdentifier = sourceIdentifier;
         propertyChanged("sourceIdentifier", sourceIdentifier);
+    }
+
+    public void setSourceIdentifierPlacement(GetItemPlacement sourceIdentifierPlacement) {
+        this.sourceIdentifierPlacement = sourceIdentifierPlacement;
+        propertyChanged("sourceIdentifierPlacement", sourceIdentifierPlacement);
     }
 
     public void setDestinationVariableSource(VariableSource destinationVariableSource) {
@@ -100,6 +109,7 @@ public class MessageValueGetterModel {
         }
         messageValueGetter.setSourceMessageValue(sourceMessageValue);
         messageValueGetter.setSourceIdentifier(VariableString.getAsVariableString(sourceIdentifier));
+        messageValueGetter.setSourceIdentifierPlacement(sourceIdentifierPlacement);
         messageValueGetter.setDestinationVariableSource(destinationVariableSource);
         messageValueGetter.setDestinationVariableName(VariableString.getAsVariableString(destinationVariableName));
         return true;

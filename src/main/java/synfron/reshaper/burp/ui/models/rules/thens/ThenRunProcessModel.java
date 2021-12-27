@@ -36,17 +36,17 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
 
     public ThenRunProcessModel(ThenRunProcess then, Boolean isNew) {
         super(then, isNew);
-        command = VariableString.getTag(then.getCommand(), command);
-        input = VariableString.getTag(then.getInput(), input);
+        command = VariableString.toString(then.getCommand(), command);
+        input = VariableString.toString(then.getInput(), input);
         waitForCompletion = then.isWaitForCompletion();
-        failAfter = VariableString.getTag(then.getFailAfter(), failAfter);
+        failAfter = VariableString.toString(then.getFailAfter(), failAfter);
         killAfterFailure = then.isKillAfterFailure();
         failOnNonZeroExitCode = then.isFailOnNonZeroExitCode();
         breakAfterFailure = then.isBreakAfterFailure();
         captureOutput = then.isCaptureOutput();
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
-        captureVariableName = VariableString.getTag(then.getCaptureVariableName(), captureVariableName);
+        captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
     }
 
     public void setCommand(String command) {

@@ -17,8 +17,8 @@ public abstract class HttpHeaders extends HttpEntity {
         this.cookieHeaderName = cookieHeaderName;
     }
 
-    public String getHeader(String name) {
-        IValue<String> value = getHeaders().get(new CaseInsensitiveString(name));
+    public String getHeader(String name, GetItemPlacement itemPlacement) {
+        IValue<String> value = getHeaders().get(new CaseInsensitiveString(name), itemPlacement);
         return value != null ? value.getValue() : null;
     }
 
@@ -31,20 +31,20 @@ public abstract class HttpHeaders extends HttpEntity {
         return !isChanged() ? headerLines.size() : getHeaders().size();
     }
 
-    public void setHeader(String name, String value) {
+    public void setHeader(String name, String value, SetItemPlacement itemPlacement) {
         if (value == null) {
-            deleteHeader(name);
+            deleteHeader(name, IItemPlacement.toDelete(itemPlacement));
         } else if (name.equalsIgnoreCase(cookieHeaderName)) {
             cookies = new HttpCookies(value);
-            getHeaders().setLast(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()));
+            getHeaders().set(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()), itemPlacement);
         } else {
-            getHeaders().setLast(new CaseInsensitiveString(name), new Value<>(value));
+            getHeaders().set(new CaseInsensitiveString(name), new Value<>(value), itemPlacement);
         }
         changed = true;
     }
 
-    public void deleteHeader(String name) {
-        getHeaders().remove(new CaseInsensitiveString(name));
+    public void deleteHeader(String name, DeleteItemPlacement itemPlacement) {
+        getHeaders().remove(new CaseInsensitiveString(name), itemPlacement);
         if (name.equalsIgnoreCase(cookieHeaderName)) {
             cookies = null;
         }
@@ -91,7 +91,7 @@ public abstract class HttpHeaders extends HttpEntity {
         }
 
         List<String> headerLines = new ArrayList<>();
-        for (var headerEntry : getHeaders().entrySet()) {
+        for (var headerEntry : getHeaders().entries()) {
             headerLines.add(String.format("%s: %s", headerEntry.getKey(), headerEntry.getValue()));
         }
         return headerLines;

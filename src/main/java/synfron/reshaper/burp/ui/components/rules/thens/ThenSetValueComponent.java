@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenSetValue;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetValueModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -15,6 +16,7 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
 
     private JComboBox<MessageValue> destinationMessageValue;
     private JTextField destinationIdentifier;
+    private JComboBox<SetItemPlacement> destinationIdentifierPlacement;
 
     public ThenSetValueComponent(ThenSetValueModel then) {
         super(then);
@@ -24,17 +26,25 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
     protected List<Component> getExtendedComponents() {
         destinationMessageValue = new JComboBox<>(MessageValue.values());
         destinationIdentifier = new JTextField();
+        destinationIdentifierPlacement = new JComboBox<>(SetItemPlacement.values());
 
         destinationMessageValue.setSelectedItem(model.getDestinationMessageValue());
         destinationIdentifier.setText(model.getDestinationIdentifier());
+        destinationIdentifierPlacement.setSelectedItem(model.getDestinationIdentifierPlacement());
 
         destinationMessageValue.addActionListener(this::onDestinationMessageValueChanged);
         destinationIdentifier.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationIdentifierChanged));
+        destinationIdentifierPlacement.addActionListener(this::onDestinationIdentifierPlacementChanged);
 
         return List.of(
                 getLabeledField("Destination Message Value", destinationMessageValue),
                 ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                         getLabeledField("Destination Identifier *", destinationIdentifier),
+                        destinationMessageValue,
+                        () -> ((MessageValue)destinationMessageValue.getSelectedItem()).isIdentifierRequired()
+                ),
+                ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                        getLabeledField("Destination Identifier Placement", destinationIdentifierPlacement),
                         destinationMessageValue,
                         () -> ((MessageValue)destinationMessageValue.getSelectedItem()).isIdentifierRequired()
                 )
@@ -47,5 +57,9 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
 
     private void onDestinationIdentifierChanged(ActionEvent actionEvent) {
         model.setDestinationIdentifier(destinationIdentifier.getText());
+    }
+
+    private void onDestinationIdentifierPlacementChanged(ActionEvent actionEvent) {
+        model.setDestinationIdentifierPlacement((SetItemPlacement) destinationIdentifierPlacement.getSelectedItem());
     }
 }
