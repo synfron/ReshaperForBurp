@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
@@ -43,7 +43,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
     @Getter @Setter
     private VariableString url;
 
-    public RuleResponse perform(EventInfo eventInfo)
+    public RuleResponse perform(IEventInfo eventInfo)
     {
         switch (sendTo) {
             case Comparer -> sendToComparer(eventInfo);
@@ -55,7 +55,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         return RuleResponse.Continue;
     }
 
-    private void sendToIntruder(EventInfo eventInfo) {
+    private void sendToIntruder(IEventInfo eventInfo) {
         String host = null;
         int port = 0;
         boolean isHttps = false;
@@ -96,7 +96,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToRepeater(EventInfo eventInfo) {
+    private void sendToRepeater(IEventInfo eventInfo) {
         String host = null;
         int port = 0;
         boolean isHttps = false;
@@ -137,7 +137,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToComparer(EventInfo eventInfo) {
+    private void sendToComparer(IEventInfo eventInfo) {
         byte[] data = null;
         boolean hasError = false;
         try {
@@ -163,7 +163,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToSpider(EventInfo eventInfo) {
+    private void sendToSpider(IEventInfo eventInfo) {
         URL url = null;
         boolean hasError = false;
         try {
@@ -192,7 +192,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToBrowser(EventInfo eventInfo) {
+    private void sendToBrowser(IEventInfo eventInfo) {
         URL url = null;
         boolean hasError = false;
         try {

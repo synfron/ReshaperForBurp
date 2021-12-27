@@ -7,7 +7,7 @@ import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
@@ -46,7 +46,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
     private VariableString captureVariableName;
 
     @Override
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = false;
         boolean failed = false;
         boolean complete = false;
@@ -122,7 +122,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
     }
 
-    private void setVariable(EventInfo eventInfo, String variableName, String value) {
+    private void setVariable(IEventInfo eventInfo, String variableName, String value) {
         Variables variables = switch (captureVariableSource) {
             case Event -> eventInfo.getVariables();
             case Global -> GlobalVariables.get();
@@ -134,7 +134,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         }
     }
 
-    private String getVariableName(EventInfo eventInfo) {
+    private String getVariableName(IEventInfo eventInfo) {
         String captureVariableName = null;
         if (captureOutput && StringUtils.isEmpty(captureVariableName = this.captureVariableName.getText(eventInfo))) {
             throw new IllegalArgumentException("Invalid variable name");
@@ -142,7 +142,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         return captureVariableName;
     }
 
-    private int getFailAfter(EventInfo eventInfo) {
+    private int getFailAfter(IEventInfo eventInfo) {
         int failAfter = 0;
         if (waitForCompletion && (failAfter = this.failAfter.getInt(eventInfo)) <= 0) {
             throw new IllegalArgumentException("Invalid wait limit value");

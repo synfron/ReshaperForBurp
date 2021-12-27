@@ -1,21 +1,23 @@
 package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,8 +25,12 @@ public class VariableString implements Serializable {
     private final String text;
     private final List<VariableSourceEntry> variables;
 
-    @JsonCreator
-    public VariableString(@JsonProperty("text") String text, @JsonProperty("variables") List<VariableSourceEntry> variables) {
+    private VariableString() {
+        text = "";
+        variables = Collections.emptyList();
+    }
+
+    public VariableString(String text, List<VariableSourceEntry> variables) {
         this.text = text;
         this.variables = variables;
     }
@@ -37,29 +43,14 @@ public class VariableString implements Serializable {
         return StringUtils.isEmpty(text);
     }
 
-    public String getTag()
+    public String toString()
     {
-        return String.format(text, variables.stream().map(variable ->
-                variable.getTag() != null ? variable.getTag() : VariableString.getTag(variable.getVariableSource(), variable.getName())
-        ).toArray());
+        return String.format(text, variables.stream().map(VariableSourceEntry::getTag).toArray());
     }
 
-    public static String getTag(VariableString variableString, String defaultValue) {
-        return variableString != null ? variableString.getTag() : defaultValue;
+    public static String toString(VariableString variableString, String defaultValue) {
+        return variableString != null ? variableString.toString() : defaultValue;
     }
-
-    public static String getTag(VariableSource variableSource, String variableName) {
-        return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), variableName);
-    }
-
-    public static String getTag(MessageValue messageValue, String identifier) {
-        return String.format(
-                "{{message:%s%s}}",
-                messageValue.name().toLowerCase(),
-                messageValue.isIdentifierRequired() ? ":" + StringUtils.defaultString(identifier) : ""
-        );
-    }
-    
     public static VariableString getAsVariableString(String str) {
         return getAsVariableString(str, true);
     }
@@ -92,7 +83,7 @@ public class VariableString implements Serializable {
         }
     }
 
-    public Integer getInt(EventInfo eventInfo)
+    public Integer getInt(IEventInfo eventInfo)
     {
         String text = getText(eventInfo);
         Integer nullableValue = null;
@@ -104,7 +95,7 @@ public class VariableString implements Serializable {
         return nullableValue;
     }
 
-    public String getText(EventInfo eventInfo)
+    public String getText(IEventInfo eventInfo)
     {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
@@ -132,13 +123,13 @@ public class VariableString implements Serializable {
         return String.format(text, variableVals.toArray());
     }
 
-    private String getFileText(EventInfo eventInfo, String locator) {
+    private String getFileText(IEventInfo eventInfo, String locator) {
         try {
             String[] variableNameParts = locator.split(":", 2);
             return FileUtils.readFileToString(new File(variableNameParts[1]), variableNameParts[0]);
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) {
-                Log.get().withMessage(String.format("Error reading file with variable tag: %s", getTag(VariableSource.Special, locator))).withException(e).logErr();
+                Log.get().withMessage(String.format("Error reading file with variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, locator))).withException(e).logErr();
             }
         }
         return null;
@@ -149,36 +140,36 @@ public class VariableString implements Serializable {
                 return TextUtils.parseSpecialChars(sequences);
             } catch (Exception e) {
                 if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
-                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", getTag(VariableSource.Special, sequences))).withException(e).logErr();
+                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, sequences))).withException(e).logErr();
                 }
             }
             return null;
     }
 
-    private String getMessageVariable(EventInfo eventInfo, String locator) {
+    private String getMessageVariable(IEventInfo eventInfo, String locator) {
         String[] variableNameParts = locator.split(":", 2);
         MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
         String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
         if (messageValue != null) {
             String value = StringUtils.defaultString(
-                    MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false))
+                    MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false), GetItemPlacement.Last)
             );
             return value;
         }
         return null;
     }
 
-    public static String getTextOrDefault(EventInfo eventInfo, VariableString variableString, String defaultValue) {
+    public static String getTextOrDefault(IEventInfo eventInfo, VariableString variableString, String defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 StringUtils.defaultIfEmpty(variableString.getText(eventInfo), defaultValue) :
                 defaultValue;
     }
 
-    public static String getText(EventInfo eventInfo, VariableString variableString) {
+    public static String getText(IEventInfo eventInfo, VariableString variableString) {
         return variableString != null ? variableString.getText(eventInfo) : null;
     }
 
-    public static int getIntOrDefault(EventInfo eventInfo, VariableString variableString, int defaultValue) {
+    public static int getIntOrDefault(IEventInfo eventInfo, VariableString variableString, int defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 variableString.getInt(eventInfo) :
                 defaultValue;

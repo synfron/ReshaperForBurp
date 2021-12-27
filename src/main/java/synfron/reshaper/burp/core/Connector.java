@@ -6,6 +6,7 @@ import net.jodah.expiringmap.ExpiringMap;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RulesEngine;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.core.settings.SettingsManager;
@@ -30,7 +31,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
     @Getter
     private final RulesEngine rulesEngine = new RulesEngine();
     private ServerSocket serverSocket;
-    private final Map<Integer, EventInfo> continuationMap = ExpiringMap.builder()
+    private final Map<Integer, IEventInfo> continuationMap = ExpiringMap.builder()
             .expiration(30, TimeUnit.SECONDS).build();
     @Getter
     private final SettingsManager settingsManager = new SettingsManager();
@@ -71,7 +72,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedReader.readLine();
                 int reshaperId = getReshaperId(bufferedReader.readLine());
-                EventInfo eventInfo = continuationMap.remove(reshaperId);
+                IEventInfo eventInfo = continuationMap.remove(reshaperId);
                 if (eventInfo.isShouldDrop()) {
                     close(socket);
                 }
@@ -121,14 +122,14 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
         }
     }
 
-    private EventInfo asEventInfo(boolean messageIsRequest, IInterceptedProxyMessage message) {
-        EventInfo eventInfo = new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, message);
+    private IEventInfo asEventInfo(boolean messageIsRequest, IInterceptedProxyMessage message) {
+        IEventInfo eventInfo = new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, message);
         eventInfo.getDiagnostics().setEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
         return eventInfo;
     }
 
-    private EventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, IHttpRequestResponse requestResponse) {
-        EventInfo eventInfo = new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, burpTool, requestResponse);
+    private IEventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, IHttpRequestResponse requestResponse) {
+        IEventInfo eventInfo = new EventInfo(messageIsRequest ? DataDirection.Request : DataDirection.Response, burpTool, requestResponse);
         eventInfo.getDiagnostics().setEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
         return eventInfo;
     }
@@ -140,7 +141,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
         return Integer.parseInt(header.split(":", 2)[1].trim());
     }
 
-    private void processEvent(boolean isRequest, EventInfo eventInfo, IInterceptedProxyMessage interceptedMessage) {
+    private void processEvent(boolean isRequest, IEventInfo eventInfo, IInterceptedProxyMessage interceptedMessage) {
         int messageId = isRequest ? lastMessageId.getAndIncrement() : -1;
         try {
             rulesEngine.run(eventInfo);
@@ -176,7 +177,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
         }
     }
 
-    private void sanityCheck(EventInfo eventInfo) {
+    private void sanityCheck(IEventInfo eventInfo) {
         if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
             if (eventInfo.isRequestChanged() && eventInfo.getDataDirection() == DataDirection.Response) {
                 Log.get().withMessage(String.format(dataDirectionWarning, "request", "Response")).log();
@@ -187,7 +188,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
         }
     }
 
-    private void sendToSelf(int messageId, EventInfo eventInfo, IInterceptedProxyMessage interceptedMessage) {
+    private void sendToSelf(int messageId, IEventInfo eventInfo, IInterceptedProxyMessage interceptedMessage) {
         IHttpRequestResponse messageInfo = eventInfo.getRequestResponse();
         messageInfo.setRequest(BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
                 Stream.concat(Stream.of(
@@ -211,7 +212,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
 
     @Override
     public void processProxyMessage(boolean messageIsRequest, IInterceptedProxyMessage message) {
-        EventInfo eventInfo = asEventInfo(messageIsRequest, message);
+        IEventInfo eventInfo = asEventInfo(messageIsRequest, message);
         processEvent(messageIsRequest, eventInfo, message);
     }
 
@@ -220,7 +221,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
         if (toolFlag != BurpTool.Proxy.getId()) {
             BurpTool burpTool = getBurpToolIfEnabled(toolFlag);
             if (burpTool != null && burpTool != BurpTool.Proxy) {
-                EventInfo eventInfo = asEventInfo(messageIsRequest, burpTool, messageInfo);
+                IEventInfo eventInfo = asEventInfo(messageIsRequest, burpTool, messageInfo);
                 processEvent(messageIsRequest, eventInfo, null);
             }
         }

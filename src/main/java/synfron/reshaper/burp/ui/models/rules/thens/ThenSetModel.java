@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
     @Getter
     protected String sourceIdentifier = "";
     @Getter
+    private GetItemPlacement sourceIdentifierPlacement;
+    @Getter
     protected boolean useReplace;
     @Getter
     protected String regexPattern = "";
@@ -38,15 +41,16 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
         super(then, isNew);
         useMessageValue = then.isUseMessageValue();
         sourceMessageValue = then.getSourceMessageValue();
-        sourceIdentifier = VariableString.getTag(then.getSourceIdentifier(), sourceIdentifier);
+        sourceIdentifier = VariableString.toString(then.getSourceIdentifier(), sourceIdentifier);
+        sourceIdentifierPlacement = then.getSourceIdentifierPlacement();
         sourceMessageValueType = then.getSourceMessageValueType();
-        sourceMessageValuePath = VariableString.getTag(then.getSourceMessageValuePath(), sourceMessageValuePath);
+        sourceMessageValuePath = VariableString.toString(then.getSourceMessageValuePath(), sourceMessageValuePath);
         useReplace = then.isUseReplace();
-        regexPattern = VariableString.getTag(then.getRegexPattern(), regexPattern);
-        text = VariableString.getTag(then.getText(), text);
-        replacementText = VariableString.getTag(then.getReplacementText(), replacementText);
+        regexPattern = VariableString.toString(then.getRegexPattern(), regexPattern);
+        text = VariableString.toString(then.getText(), text);
+        replacementText = VariableString.toString(then.getReplacementText(), replacementText);
         destinationMessageValueType = then.getDestinationMessageValueType();
-        destinationMessageValuePath = VariableString.getTag(then.getDestinationMessageValuePath(), destinationMessageValuePath);
+        destinationMessageValuePath = VariableString.toString(then.getDestinationMessageValuePath(), destinationMessageValuePath);
     }
 
     public void setUseMessageValue(boolean useMessageValue) {
@@ -67,6 +71,11 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
     public void setSourceIdentifier(String sourceIdentifier) {
         this.sourceIdentifier = sourceIdentifier;
         propertyChanged("sourceIdentifier", sourceIdentifier);
+    }
+
+    public void setSourceIdentifierPlacement(GetItemPlacement sourceIdentifierPlacement) {
+        this.sourceIdentifierPlacement = sourceIdentifierPlacement;
+        propertyChanged("sourceIdentifierPlacement", sourceIdentifierPlacement);
     }
 
     public void setSourceMessageValuePath(String sourceMessageValuePath) {
@@ -119,6 +128,7 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
         ruleOperation.setSourceMessageValue(sourceMessageValue);
         ruleOperation.setSourceMessageValueType(sourceMessageValueType);
         ruleOperation.setSourceIdentifier(VariableString.getAsVariableString(sourceIdentifier));
+        ruleOperation.setSourceIdentifierPlacement(sourceIdentifierPlacement);
         ruleOperation.setSourceMessageValuePath(VariableString.getAsVariableString(sourceMessageValuePath));
         ruleOperation.setUseReplace(useReplace);
         ruleOperation.setRegexPattern(VariableString.getAsVariableString(regexPattern));

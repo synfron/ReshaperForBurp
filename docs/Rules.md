@@ -39,6 +39,8 @@ Source Message Value - The HTTP event entity to check. Only available if `Use Me
 
 Source Identifier - The property of the HTTP entity to check. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Source Text - The text to use as the value to check. Only available if `Use Message Value` is not selected. Supports variable tags.
 
 Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
@@ -165,6 +167,8 @@ Source Message Value - The HTTP event entity to get the source value from. Only 
 
 Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
 Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
@@ -181,6 +185,8 @@ Destination Message Value - The HTTP event entity to set the value of.
 
 Destination Identifier - The property of the HTTP entity to set the value of. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
 
 Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the HTTP event entity. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
@@ -196,6 +202,8 @@ Message Value - The HTTP event entity to delete.
 
 Identifier - The property of the HTTP entity to delete. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Identifier Placement - Placement of the value to delete if there are multiple. (i.e. First, Last, All)
+
 ### Set Variable
 
 Set a variable using another value (text, variable, or HTTP event entity)
@@ -207,6 +215,8 @@ Use Message Value - Use [Message Value](MessageValues.html) (HTTP event entity) 
 Source Message Value - The HTTP event entity to get the source value from. Only available if `Use Message Value` is selected.
 
 Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
+
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
@@ -318,6 +328,8 @@ Destination Message Value - The HTTP message entity to set the value of.
 
 Destination Identifier - The property of the HTTP message to set the value of. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Destination Variable Source - Global or Event scope.
 
 Destination Variable Name - The name of the variable to hold the built HTTP message. Supports variable tags.
@@ -337,6 +349,8 @@ Source Text - The text to set in the message. Supports variable tags.
 Source Message Value - The HTTP message entity to extract a value from.
 
 Source Identifier - The property of the HTTP entity to extract a value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
+
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
 Destination Variable Source - Global or Event scope.
 

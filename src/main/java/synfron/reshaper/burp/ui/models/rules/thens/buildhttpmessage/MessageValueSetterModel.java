@@ -7,6 +7,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage.MessageValueSetter;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class MessageValueSetterModel {
     @Getter
     private String destinationIdentifier = "";
     @Getter
+    private SetItemPlacement destinationIdentifierPlacement;
+    @Getter
     protected boolean validated;
     @Getter
     protected boolean deleted;
@@ -30,9 +33,10 @@ public class MessageValueSetterModel {
 
     public MessageValueSetterModel(MessageValueSetter messageValueSetter) {
         this.messageValueSetter = messageValueSetter;
-        sourceText = VariableString.getTag(messageValueSetter.getSourceText(), sourceText);
+        sourceText = VariableString.toString(messageValueSetter.getSourceText(), sourceText);
         destinationMessageValue = messageValueSetter.getDestinationMessageValue();
-        destinationIdentifier = VariableString.getTag(messageValueSetter.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifier = VariableString.toString(messageValueSetter.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifierPlacement = messageValueSetter.getDestinationIdentifierPlacement();
     }
 
     public void setDestinationMessageValue(MessageValue destinationMessageValue) {
@@ -48,6 +52,11 @@ public class MessageValueSetterModel {
     public void setDestinationIdentifier(String destinationIdentifier) {
         this.destinationIdentifier = destinationIdentifier;
         propertyChanged("destinationIdentifier", destinationIdentifier);
+    }
+
+    public void setDestinationIdentifierPlacement(SetItemPlacement destinationIdentifierPlacement) {
+        this.destinationIdentifierPlacement = destinationIdentifierPlacement;
+        propertyChanged("destinationIdentifierPlacement", destinationIdentifierPlacement);
     }
 
     public void setDeleted(boolean deleted) {
@@ -86,6 +95,7 @@ public class MessageValueSetterModel {
         }
         messageValueSetter.setDestinationMessageValue(destinationMessageValue);
         messageValueSetter.setDestinationIdentifier(VariableString.getAsVariableString(destinationIdentifier));
+        messageValueSetter.setDestinationIdentifierPlacement(destinationIdentifierPlacement);
         messageValueSetter.setSourceText(VariableString.getAsVariableString(sourceText));
         return true;
     }

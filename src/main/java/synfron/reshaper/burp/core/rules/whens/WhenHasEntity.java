@@ -3,7 +3,7 @@ package synfron.reshaper.burp.core.rules.whens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -16,7 +16,7 @@ public class WhenHasEntity extends When<WhenHasEntity> {
     private VariableString identifier;
 
     @Override
-    public boolean isMatch(EventInfo eventInfo)
+    public boolean isMatch(IEventInfo eventInfo)
     {
         boolean matches = false;
         try {
@@ -39,8 +39,8 @@ public class WhenHasEntity extends When<WhenHasEntity> {
                 case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
                 case HttpResponseCookie -> eventInfo.getHttpResponseMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
                 case HttpRequestUriPath -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getPath());
-                case HttpRequestUriQueryParameters -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameters());
-                case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParameter(identifier.getText(eventInfo)) != null;
+                case HttpRequestUriQueryParameters -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParametersText());
+                case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParams().hasQueryParameter(identifier.getText(eventInfo));
             };
         } catch (Exception ignored) {
         }

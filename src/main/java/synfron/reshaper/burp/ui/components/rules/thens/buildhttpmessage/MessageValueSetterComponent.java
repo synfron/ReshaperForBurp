@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.rules.thens.buildhttpmessage;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.buildhttpmessage.MessageValueSetterModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
@@ -22,6 +23,7 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
     private final boolean deletable;
     private JComboBox<MessageValue> destinationMessageValue;
     private JTextField destinationIdentifier;
+    private JComboBox<SetItemPlacement> destinationIdentifierPlacement;
     private JTextField sourceText;
 
     public MessageValueSetterComponent(MessageValueSetterModel model, DataDirection dataDirection, boolean deletable) {
@@ -45,19 +47,27 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
                         .toArray(MessageValue[]::new)
         );
         destinationIdentifier = new JTextField();
+        destinationIdentifierPlacement = new JComboBox<>(SetItemPlacement.values());
 
         sourceText.setText(model.getSourceText());
         destinationMessageValue.setSelectedItem(model.getDestinationMessageValue());
         destinationIdentifier.setText(model.getDestinationIdentifier());
+        destinationIdentifierPlacement.setSelectedItem(model.getDestinationIdentifierPlacement());
 
         sourceText.getDocument().addDocumentListener(new DocumentActionListener(this::onTextChanged));
         destinationMessageValue.addActionListener(this::onMessageValueChanged);
         destinationIdentifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
+        destinationIdentifierPlacement.addActionListener(this::onDestinationIdentifierPlacementChanged);
 
         add(getLabeledField("Source Text", sourceText), "wrap");
         add(getLabeledField("Destination Message Value", destinationMessageValue), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Destination Identifier *", destinationIdentifier),
+                List.of(destinationMessageValue),
+                () -> ((MessageValue) destinationMessageValue.getSelectedItem()).isIdentifierRequired()
+        ), "wrap");
+        add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Destination Identifier Placement", destinationIdentifierPlacement),
                 List.of(destinationMessageValue),
                 () -> ((MessageValue) destinationMessageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
@@ -70,6 +80,10 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
 
     private void onIdentifierChanged(ActionEvent actionEvent) {
         model.setDestinationIdentifier(destinationIdentifier.getText());
+    }
+
+    private void onDestinationIdentifierPlacementChanged(ActionEvent actionEvent) {
+        model.setDestinationIdentifierPlacement((SetItemPlacement) destinationIdentifierPlacement.getSelectedItem());
     }
 
     private void onMessageValueChanged(ActionEvent actionEvent) {

@@ -3,6 +3,8 @@ package synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage;
 import lombok.Data;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.io.Serializable;
@@ -11,6 +13,7 @@ import java.io.Serializable;
 public class MessageValueSetter implements Serializable {
     private MessageValue destinationMessageValue;
     private VariableString destinationIdentifier;
+    private SetItemPlacement destinationIdentifierPlacement = SetItemPlacement.Only;
     private VariableString sourceText;
 
     public MessageValueSetter() {}
