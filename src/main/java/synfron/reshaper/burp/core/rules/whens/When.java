@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.Setter;
-import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.utils.Serializer;
 
@@ -24,7 +23,7 @@ public abstract class When<T extends When<T>> implements IRuleOperation<T> {
     @Getter @Setter
     private boolean useOrCondition;
 
-    public abstract boolean isMatch(EventInfo eventInfo);
+    public abstract boolean isMatch(IEventInfo eventInfo);
 
     @SuppressWarnings("unchecked")
     public T copy() {

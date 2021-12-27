@@ -19,7 +19,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
     public ThenSetVariableModel(ThenSetVariable then, Boolean isNew) {
         super(then, isNew);
         targetSource = then.getTargetSource();
-        variableName = VariableString.getTag(then.getVariableName(), variableName);
+        variableName = VariableString.toString(then.getVariableName(), variableName);
     }
 
     public void setTargetSource(VariableSource targetSource) {

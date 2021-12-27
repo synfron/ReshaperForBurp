@@ -3,6 +3,8 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -16,6 +18,7 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
     protected JCheckBox useMessageValue;
     protected JComboBox<MessageValue> sourceMessageValue;
     protected JTextField sourceIdentifier;
+    protected JComboBox<GetItemPlacement> sourceIdentifierPlacement;
     protected JComboBox<MessageValueType> sourceMessageValueType;
     private JTextField sourceMessageValuePath;
     protected JCheckBox useReplace;
@@ -34,6 +37,7 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         useMessageValue = new JCheckBox("Use Message Value");
         sourceMessageValue = new JComboBox<>(MessageValue.values());
         sourceIdentifier = new JTextField();
+        sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());
         sourceMessageValueType = new JComboBox<>(MessageValueType.values());
         sourceMessageValuePath = new JTextField();
         useReplace = new JCheckBox("Use Regex Replace");
@@ -46,6 +50,7 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         useMessageValue.setSelected(model.isUseMessageValue());
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
         sourceIdentifier.setText(model.getSourceIdentifier());
+        sourceIdentifierPlacement.setSelectedItem(model.getSourceIdentifierPlacement());
         sourceMessageValueType.setSelectedItem(model.getSourceMessageValueType());
         sourceMessageValuePath.setText(model.getSourceMessageValuePath());
         useReplace.setSelected(model.isUseReplace());
@@ -58,6 +63,7 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         useMessageValue.addActionListener(this::onUseMessageValueChanged);
         sourceMessageValue.addActionListener(this::onSourceMessageValueChanged);
         sourceIdentifier.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceIdentifierChanged));
+        sourceIdentifierPlacement.addActionListener(this::onSourceIdentifierPlacementChanged);
         sourceMessageValueType.addActionListener(this::onSourceMessageValueTypeChanged);
         sourceMessageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceMessageValuePathChanged));
         useReplace.addActionListener(this::onUseReplaceChanged);
@@ -75,6 +81,11 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Source Identifier *", sourceIdentifier),
+                List.of(useMessageValue, sourceMessageValue),
+                () -> useMessageValue.isSelected() && ((MessageValue)sourceMessageValue.getSelectedItem()).isIdentifierRequired()
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Source Identifier Placement", sourceIdentifierPlacement),
                 List.of(useMessageValue, sourceMessageValue),
                 () -> useMessageValue.isSelected() && ((MessageValue)sourceMessageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
@@ -120,6 +131,10 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
 
     private void onSourceIdentifierChanged(ActionEvent actionEvent) {
         model.setSourceIdentifier(sourceIdentifier.getText());
+    }
+
+    private void onSourceIdentifierPlacementChanged(ActionEvent actionEvent) {
+        model.setSourceIdentifierPlacement((GetItemPlacement) sourceIdentifierPlacement.getSelectedItem());
     }
 
     private void onSourceMessageValueTypeChanged(ActionEvent actionEvent) {

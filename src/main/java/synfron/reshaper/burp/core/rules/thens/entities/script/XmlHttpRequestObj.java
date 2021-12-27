@@ -13,6 +13,8 @@ import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseStatusLine;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.net.URI;
@@ -25,10 +27,10 @@ public class XmlHttpRequestObj {
     public static final int UNSENT = 0;
     public static final int OPENED = 1;
     public static final int DONE = 4;
-    private static final String requestTemplate = "%s %s HTTP/1.1\n" +
-            "Host: %s\n" +
-            "Accept: */*\n" +
-            "Connection: close\n";
+    private static final String requestTemplate = "%s %s HTTP/1.1\r\n" +
+            "Host: %s\r\n" +
+            "Accept: */*\r\n" +
+            "Connection: close\r\n";
     private final Dispatcher dispatcher;
     @Getter
     private int readyState;
@@ -202,7 +204,7 @@ public class XmlHttpRequestObj {
 
     public String getResponseHeader(String name) {
         if (responseMessage != null) {
-            return responseMessage.getHeaders().getHeader(name);
+            return responseMessage.getHeaders().getHeader(name, GetItemPlacement.Last);
         }
         return null;
     }
@@ -215,6 +217,6 @@ public class XmlHttpRequestObj {
     }
 
     public void setRequestHeader(String name, String value) {
-        requestMessage.getHeaders().setHeader(name, value);
+        requestMessage.getHeaders().setHeader(name, value, SetItemPlacement.Only);
     }
 }

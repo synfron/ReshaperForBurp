@@ -38,18 +38,18 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
 
     public ThenSendRequestModel(ThenSendRequest then, Boolean isNew) {
         super(then, isNew);
-        protocol = VariableString.getTag(then.getProtocol(), protocol);
-        address = VariableString.getTag(then.getAddress(), address);
-        port = VariableString.getTag(then.getPort(), port);
-        request = VariableString.getTag(then.getRequest(), request);
+        protocol = VariableString.toString(then.getProtocol(), protocol);
+        address = VariableString.toString(then.getAddress(), address);
+        port = VariableString.toString(then.getPort(), port);
+        request = VariableString.toString(then.getRequest(), request);
         waitForCompletion = then.isWaitForCompletion();
-        failAfter = VariableString.getTag(then.getFailAfter(), failAfter);
+        failAfter = VariableString.toString(then.getFailAfter(), failAfter);
         failOnErrorStatusCode = then.isFailOnErrorStatusCode();
         breakAfterFailure = then.isBreakAfterFailure();
         captureOutput = then.isCaptureOutput();
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
-        captureVariableName = VariableString.getTag(then.getCaptureVariableName(), captureVariableName);
+        captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
     }
 
     public void setProtocol(String protocol) {

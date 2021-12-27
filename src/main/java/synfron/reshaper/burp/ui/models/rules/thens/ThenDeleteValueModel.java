@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
+import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -15,11 +16,14 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
     private MessageValue messageValue;
     @Getter
     private String identifier;
+    @Getter
+    private DeleteItemPlacement identifierPlacement;
 
     public ThenDeleteValueModel(ThenDeleteValue then, Boolean isNew) {
         super(then, isNew);
         messageValue = then.getMessageValue();
-        identifier = VariableString.getTag(then.getIdentifier(), identifier);
+        identifier = VariableString.toString(then.getIdentifier(), identifier);
+        identifierPlacement = then.getIdentifierPlacement();
     }
 
     public void setMessageValue(MessageValue messageValue) {
@@ -30,6 +34,11 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
         propertyChanged("identifier", identifier);
+    }
+
+    public void setIdentifierPlacement(DeleteItemPlacement identifierPlacement) {
+        this.identifierPlacement = identifierPlacement;
+        propertyChanged("identifierPlacement", identifierPlacement);
     }
 
     public List<String> validate() {
@@ -45,6 +54,7 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
             return false;
         }
         ruleOperation.setIdentifier(VariableString.getAsVariableString(identifier));
+        ruleOperation.setIdentifierPlacement(identifierPlacement);
         ruleOperation.setMessageValue(messageValue);
         setValidated(true);
         return true;

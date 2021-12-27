@@ -3,6 +3,8 @@ package synfron.reshaper.burp.ui.components.rules.thens.parsehttpmessage;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.parsehttpmessage.MessageValueGetterModel;
@@ -23,6 +25,7 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
     private final boolean deletable;
     private JComboBox<MessageValue> sourceMessageValue;
     private JTextField sourceIdentifier;
+    protected JComboBox<GetItemPlacement> sourceIdentifierPlacement;
     private JComboBox<VariableSource> destinationVariableSource;
     private JTextField destinationVariableName;
 
@@ -44,22 +47,30 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
                 Stream.of(MessageValue.values()).filter(messageValue -> messageValue.getDataDirection() == dataDirection).toArray(MessageValue[]::new)
         );
         sourceIdentifier = new JTextField();
+        sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());
         destinationVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
         destinationVariableName = new JTextField();
 
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
         sourceIdentifier.setText(model.getSourceIdentifier());
+        sourceIdentifierPlacement.setSelectedItem(model.getSourceIdentifierPlacement());
         destinationVariableSource.setSelectedItem(model.getDestinationVariableSource());
         destinationVariableName.setText(model.getDestinationVariableName());
 
         sourceMessageValue.addActionListener(this::onSourceMessageValueChanged);
         sourceIdentifier.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceIdentifierChanged));
+        sourceIdentifierPlacement.addActionListener(this::onSourceIdentifierPlacementChanged);
         destinationVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationVariableNameChanged));
         destinationVariableSource.addActionListener(this::onDestinationVariableSourceChanged);
 
         add(getLabeledField("Message Value", sourceMessageValue), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Identifier *", sourceIdentifier),
+                List.of(sourceMessageValue),
+                () -> ((MessageValue) sourceMessageValue.getSelectedItem()).isIdentifierRequired()
+        ), "wrap");
+        add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Identifier Placement", sourceIdentifierPlacement),
                 List.of(sourceMessageValue),
                 () -> ((MessageValue) sourceMessageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
@@ -74,6 +85,10 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
 
     private void onSourceIdentifierChanged(ActionEvent actionEvent) {
         model.setSourceIdentifier(sourceIdentifier.getText());
+    }
+
+    private void onSourceIdentifierPlacementChanged(ActionEvent actionEvent) {
+        model.setSourceIdentifierPlacement((GetItemPlacement) sourceIdentifierPlacement.getSelectedItem());
     }
 
     private void onSourceMessageValueChanged(ActionEvent actionEvent) {

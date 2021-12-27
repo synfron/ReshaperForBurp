@@ -7,7 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.events.MessageArgs;
 import synfron.reshaper.burp.core.events.message.*;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.vars.*;
@@ -31,7 +31,7 @@ public class ThenPrompt extends Then<ThenPrompt> {
     private VariableString captureVariableName;
 
     @Override
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = false;
         boolean failed = false;
         boolean complete = false;
@@ -86,7 +86,7 @@ public class ThenPrompt extends Then<ThenPrompt> {
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
     }
 
-    private void setVariable(EventInfo eventInfo, String variableName, String value) {
+    private void setVariable(IEventInfo eventInfo, String variableName, String value) {
         Variables variables = switch (captureVariableSource) {
             case Event -> eventInfo.getVariables();
             case Global -> GlobalVariables.get();

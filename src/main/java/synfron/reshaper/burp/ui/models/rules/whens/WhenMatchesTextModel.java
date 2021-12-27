@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -22,6 +23,8 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     @Getter
     private String identifier = "";
     @Getter
+    private GetItemPlacement identifierPlacement;
+    @Getter
     private MessageValueType messageValueType;
     @Getter
     private String messageValuePath = "";
@@ -32,12 +35,13 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
 
     public WhenMatchesTextModel(WhenMatchesText when, Boolean isNew) {
         super(when, isNew);
-        sourceText = VariableString.getTag(when.getSourceText(), sourceText);
-        matchText = VariableString.getTag(when.getMatchText(), matchText);
+        sourceText = VariableString.toString(when.getSourceText(), sourceText);
+        matchText = VariableString.toString(when.getMatchText(), matchText);
         messageValue = when.getMessageValue();
-        identifier = VariableString.getTag(when.getIdentifier(), identifier);
+        identifier = VariableString.toString(when.getIdentifier(), identifier);
+        identifierPlacement = when.getIdentifierPlacement();
         messageValueType = when.getMessageValueType();
-        messageValuePath = VariableString.getTag(when.getMessageValuePath(), messageValuePath);
+        messageValuePath = VariableString.toString(when.getMessageValuePath(), messageValuePath);
         matchType = when.getMatchType();
         useMessageValue = when.isUseMessageValue();
     }
@@ -45,6 +49,11 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
         propertyChanged("identifier", identifier);
+    }
+
+    public void setIdentifierPlacement(GetItemPlacement identifierPlacement) {
+        this.identifierPlacement = identifierPlacement;
+        propertyChanged("identifierPlacement", identifierPlacement);
     }
 
     public void setSourceText(String sourceText) {
@@ -96,6 +105,7 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
             return false;
         }
         ruleOperation.setIdentifier(VariableString.getAsVariableString(identifier));
+        ruleOperation.setIdentifierPlacement(identifierPlacement);
         ruleOperation.setSourceText(VariableString.getAsVariableString(sourceText));
         ruleOperation.setMatchText(VariableString.getAsVariableString(matchText));
         ruleOperation.setMessageValue(messageValue);

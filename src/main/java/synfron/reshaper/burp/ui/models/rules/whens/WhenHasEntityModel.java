@@ -19,7 +19,7 @@ public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEnt
     public WhenHasEntityModel(WhenHasEntity when, Boolean isNew) {
         super(when, isNew);
         messageValue = when.getMessageValue();
-        identifier = VariableString.getTag(when.getIdentifier(), identifier);
+        identifier = VariableString.toString(when.getIdentifier(), identifier);
     }
 
     public void setMessageValue(MessageValue messageValue) {

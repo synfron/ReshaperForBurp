@@ -6,7 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -17,6 +18,8 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
     private MessageValue sourceMessageValue = MessageValue.HttpRequestBody;
     @Getter @Setter
     private VariableString sourceIdentifier;
+    @Getter @Setter
+    private GetItemPlacement sourceIdentifierPlacement = GetItemPlacement.Last;
     @Getter @Setter
     private MessageValueType sourceMessageValueType = MessageValueType.Text;
     @Getter @Setter
@@ -34,12 +37,12 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
     @Getter @Setter
     protected VariableString destinationMessageValuePath;
 
-    private String getValue(EventInfo eventInfo)
+    private String getValue(IEventInfo eventInfo)
     {
-        return MessageValueHandler.getValue(eventInfo, sourceMessageValue, sourceIdentifier);
+        return MessageValueHandler.getValue(eventInfo, sourceMessageValue, sourceIdentifier, sourceIdentifierPlacement);
     }
 
-    protected String getReplacementValue(EventInfo eventInfo)
+    protected String getReplacementValue(IEventInfo eventInfo)
     {
         String text = "";
         if (useMessageValue)

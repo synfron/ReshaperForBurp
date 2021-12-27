@@ -1,28 +1,22 @@
 package synfron.reshaper.burp.core.rules.thens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
-import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.VariableString;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ThenSaveFile extends Then<ThenSaveFile> {
     @Getter @Setter
@@ -35,7 +29,7 @@ public class ThenSaveFile extends Then<ThenSaveFile> {
     private FileExistsAction fileExistsAction = FileExistsAction.Overwrite;
 
     @Override
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = true;
         String filePathValue = null;
         String textValue = null;

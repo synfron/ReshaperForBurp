@@ -15,6 +15,7 @@ public class HttpRequestUri extends HttpEntity {
 
     private final String uri;
     private URIBuilder uriBuilder;
+    private HttpRequestQueryParams queryParams;
     @Getter
     private boolean changed;
 
@@ -43,43 +44,36 @@ public class HttpRequestUri extends HttpEntity {
         changed = true;
     }
 
-    public String getQueryParameter(String name) {
+    public HttpRequestQueryParams getQueryParams() {
         prepare();
-        return uriBuilder.getQueryParams().stream()
-                .filter(entry -> entry.getName().equals(name))
-                .map(NameValuePair::getValue)
-                .findFirst().orElse(null);
-    }
-
-    public void setQueryParameter(String name, String value) {
-        if (value != null) {
-            prepare();
-            uriBuilder.setParameter(name, value);
-            changed = true;
-        } else {
-            deleteParameter(name);
+        if (queryParams == null) {
+            queryParams = new HttpRequestQueryParams(uriBuilder.getQueryParams());
         }
+        return queryParams;
     }
 
-    public void deleteParameter(String name) {
-        uriBuilder.setParameters(
-            uriBuilder.getQueryParams().stream().filter(param -> !param.getName().equals(name)).toArray(NameValuePair[]::new)
-        );
-    }
-
-    public String getQueryParameters() {
+    public String getQueryParametersText() {
         prepare();
         return URLEncodedUtils.format(uriBuilder.getQueryParams(), ObjectUtils.defaultIfNull(uriBuilder.getCharset(), StandardCharsets.UTF_8));
 
     }
 
-    public void setQueryParameters(String parameters) {
+    public void setQueryParametersText(String parameters) {
         prepare();
         uriBuilder.setParameters(URLEncodedUtils.parse(parameters, ObjectUtils.defaultIfNull(uriBuilder.getCharset(), StandardCharsets.UTF_8)));
+        queryParams = null;
         changed = true;
     }
 
     public String getValue() {
-        return !isChanged() ? uri : uriBuilder.toString();
+        boolean isQueryParamsChanged = queryParams != null && queryParams.isChanged();
+        if (isChanged() || isQueryParamsChanged) {
+            if (isQueryParamsChanged) {
+                uriBuilder.setParameters(queryParams.getValue());
+            }
+            return uriBuilder.toString();
+        } else {
+            return uri;
+        }
     }
 }

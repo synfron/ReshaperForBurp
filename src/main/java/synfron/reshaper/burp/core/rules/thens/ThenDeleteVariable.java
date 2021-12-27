@@ -2,7 +2,7 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
@@ -18,7 +18,7 @@ public class ThenDeleteVariable extends Then<ThenDeleteVariable> {
     private VariableString variableName;
 
     @Override
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = false;
         try {
             Variables variables = switch (targetSource) {
