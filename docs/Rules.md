@@ -43,9 +43,9 @@ Source Identifier Placement - Placement of the value to get if there are multipl
 
 Source Text - The text to use as the value to check. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Match Type - Match the text using Equals, Contains, Begins With, Ends With, or Regex.
 
@@ -171,9 +171,9 @@ Source Identifier Placement - Placement of the value to get if there are multipl
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the source value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Use Regex Replace - Use regex on the source value.
 
@@ -187,9 +187,9 @@ Destination Identifier - The property of the HTTP entity to set the value of. On
 
 Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
-Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Destination Value Type - Declare that the value to set is Text, JSON (node), HTML (element), or Params (value).
 
-Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the HTTP event entity. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
+Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 
 ### Delete Value
@@ -220,9 +220,9 @@ Source Identifier Placement - Placement of the value to get if there are multipl
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the source value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Use Regex Replace - Use regex on the source value.
 
@@ -234,9 +234,9 @@ Destination Variable Source - Global or Event scope.
 
 Destination Variable Name - The name of the variable to set. Supports variable tags.
 
-Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to set the inner value.
+Destination Value Type - Declare that the value to set is Text, JSON (node), HTML (element), or Params (value).
 
-Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the variable value. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
+Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 ### Delete Variable
 
