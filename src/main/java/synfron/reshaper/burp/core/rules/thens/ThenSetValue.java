@@ -52,6 +52,7 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
             switch (destinationMessageValueType) {
                 case Json -> replacementText = TextUtils.setJsonValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
                 case Html -> replacementText = TextUtils.setHtmlValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
+                case Params -> replacementText = TextUtils.setParamValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
             }
         }
         MessageValueHandler.setValue(eventInfo, destinationMessageValue, destinationIdentifier, destinationIdentifierPlacement, replacementText);

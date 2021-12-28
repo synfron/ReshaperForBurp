@@ -1,23 +1,42 @@
 package synfron.reshaper.burp.core.utils;
 
 import burp.BurpExtender;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.ParseContext;
 import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class TextUtils {
+
+    private static ParseContext jsonPathContext;
+
+    private static ParseContext getJsonPathContext() {
+        if (jsonPathContext == null) {
+            jsonPathContext = JsonPath.using(Configuration.defaultConfiguration().addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL).addOptions(Option.SUPPRESS_EXCEPTIONS));
+        }
+        return jsonPathContext;
+    }
+
     public static String getJsonValue(String text, String jsonPath) {
-        return stripQuotes(JSONValue.toJSONString(JsonPath.parse(text).read(jsonPath)));
+        return stripQuotes(JSONValue.toJSONString(getJsonPathContext().parse(text).read(jsonPath)));
     }
 
     public static String setJsonValue(String text, String jsonPath, String value) {
-        return stripQuotes(JsonPath.parse(text).set(jsonPath, JSONValue.parse(value)).jsonString());
+        return stripQuotes(getJsonPathContext().parse(text).set(jsonPath, JSONValue.parse(value)).jsonString());
     }
 
     private static String stripQuotes(String text) {
@@ -40,6 +59,31 @@ public class TextUtils {
         elements.before(value);
         elements.remove();
         return doc.toString();
+    }
+
+    public static String getParamValue(String text, String name) {
+        return URLEncodedUtils.parse(text, StandardCharsets.UTF_8).stream()
+                .filter(param -> param.getName().equals(name))
+                .map(NameValuePair::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static String setParamValue(String text, String name, String value) {
+        List<NameValuePair> params = new ArrayList<>();
+        boolean found = false;
+        for (NameValuePair param : URLEncodedUtils.parse(text, StandardCharsets.UTF_8)) {
+            if (param.getName().equals(name)) {
+                found = true;
+                params.add(new BasicNameValuePair(name, value));
+            } else {
+                params.add(param);
+            }
+        }
+        if (!found) {
+            params.add(new BasicNameValuePair(name, value));
+        }
+        return URLEncodedUtils.format(params, StandardCharsets.UTF_8);
     }
 
     public static boolean isMatch(String text, String regex) {

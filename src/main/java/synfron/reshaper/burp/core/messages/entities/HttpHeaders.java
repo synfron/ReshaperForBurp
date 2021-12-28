@@ -56,7 +56,7 @@ public abstract class HttpHeaders extends HttpEntity {
         return cookies != null ? cookies : new HttpCookies("").withPropertyAddedListener(cookies -> {
             if (this.cookies == null) {
                 this.cookies = cookies;
-                headers.setLast(new CaseInsensitiveString(cookieHeaderName), new Mapped<>(() -> this.cookies.getValue()));
+                headers.add(new CaseInsensitiveString(cookieHeaderName), new Mapped<>(() -> this.cookies.getValue()));
             }
         });
     }

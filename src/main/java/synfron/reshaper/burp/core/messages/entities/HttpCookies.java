@@ -27,7 +27,7 @@ public class HttpCookies extends HttpEntity {
 
     public void setCookie(String name, String value, SetItemPlacement itemPlacement) {
         if (value != null) {
-            getCookies().setLast(new CaseInsensitiveString(name), value);
+            getCookies().set(new CaseInsensitiveString(name), value, itemPlacement);
             changed = true;
             propertyAdded();
         } else {

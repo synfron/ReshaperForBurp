@@ -81,6 +81,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
             switch (messageValueType) {
                 case Json -> value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo));
                 case Html -> value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo));
+                case Params -> value = TextUtils.getParamValue(value, messageValuePath.getText(eventInfo));
             }
         }
         return value;
