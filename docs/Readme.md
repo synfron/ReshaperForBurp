@@ -96,7 +96,7 @@ Share values across different rules while processing the same event or all event
 
 #### IntelliJ
 
-1. Apply this [git patch](https://gist.github.com/ddwightx/d3f27fdbeebe0d017103c2bae1574386) to the project to allow Reshaper to be debugged as a legacy extension in Burp Suite.
+1. Apply this [git patch](https://gist.github.com/ddwightx/6965732339bdf4cd022d550f40a9e99f) to the project to allow Reshaper to be debugged as a legacy extension in Burp Suite.
 2. In Reshaper, using the Settings tab, export all rules and global variables to a JSON file to prevent data loss.
 3. In Extender, unload the Reshaper extension from Burp Suite if you already have the extension installed from the BApp Store or from a JAR.
 4. Close Burp Suite.
@@ -107,7 +107,7 @@ Share values across different rules while processing the same event or all event
 
 #### CLI
 
-1. Apply this [git patch](https://gist.github.com/ddwightx/d3f27fdbeebe0d017103c2bae1574386) to the project to allow Reshaper to be debugged as a legacy extension in Burp Suite.
+1. Apply this [git patch](https://gist.github.com/ddwightx/6965732339bdf4cd022d550f40a9e99f) to the project to allow Reshaper to be debugged as a legacy extension in Burp Suite.
 2. In Reshaper, using the Settings tab, export all rules and global variables to a JSON file to prevent data loss.
 3. In Extender, unload the Reshaper extension from Burp Suite if you already have the extension installed from the BApp Store or from a JAR.
 4. Close Burp Suite.
