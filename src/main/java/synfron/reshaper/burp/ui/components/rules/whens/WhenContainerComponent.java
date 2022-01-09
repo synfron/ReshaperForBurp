@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.rules.whens;
 
 import synfron.reshaper.burp.ui.components.rules.RuleOperationContainerComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
+import synfron.reshaper.burp.ui.models.rules.whens.WhenContentTypeModel;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModelType;
 
 import java.util.HashMap;
@@ -16,6 +17,8 @@ public class WhenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(WhenModelType.EventDirection, WhenEventDirectionComponent.class);
         componentMap.put(WhenModelType.HasEntity, WhenHasEntityComponent.class);
         componentMap.put(WhenModelType.MatchesText, WhenMatchesTextComponent.class);
+        componentMap.put(WhenModelType.ContentType, WhenContentTypeComponent.class);
+        componentMap.put(WhenModelType.MimeType, WhenMimeTypeComponent.class);
         componentMap.put(WhenModelType.ProxyName, WhenProxyNameComponent.class);
         componentMap.put(WhenModelType.FromTool, WhenFromToolComponent.class);
     }

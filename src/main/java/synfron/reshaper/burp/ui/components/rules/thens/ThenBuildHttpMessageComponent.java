@@ -30,9 +30,9 @@ public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMe
 
     private void initComponent() {
         dataDirection = new JComboBox<>(DataDirection.values());
-        starterHttpMessage = new JTextField();
+        starterHttpMessage = createTextField();
         destinationVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        destinationVariableName = new JTextField();
+        destinationVariableName = createTextField();
         JButton addSetter = new JButton("Add Setter");
 
         dataDirection.setSelectedItem(model.getDataDirection());

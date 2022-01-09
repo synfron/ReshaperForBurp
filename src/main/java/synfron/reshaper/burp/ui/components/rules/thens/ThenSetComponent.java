@@ -36,16 +36,16 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
         sourceMessageValue = new JComboBox<>(MessageValue.values());
-        sourceIdentifier = new JTextField();
+        sourceIdentifier = createTextField();
         sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());
         sourceMessageValueType = new JComboBox<>(MessageValueType.values());
-        sourceMessageValuePath = new JTextField();
+        sourceMessageValuePath = createTextField();
         useReplace = new JCheckBox("Use Regex Replace");
-        regexPattern = new JTextField();
-        text = new JTextField();
-        replacementText = new JTextField();
+        regexPattern = createTextField();
+        text = createTextField();
+        replacementText = createTextField();
         destinationMessageValueType = new JComboBox<>(MessageValueType.values());
-        destinationMessageValuePath = new JTextField();
+        destinationMessageValuePath = createTextField();
 
         useMessageValue.setSelected(model.isUseMessageValue());
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());

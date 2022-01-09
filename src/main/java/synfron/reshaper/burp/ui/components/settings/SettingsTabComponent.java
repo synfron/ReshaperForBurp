@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.settings;
 
 import burp.BurpExtender;
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.core.settings.SettingsManager;
@@ -36,6 +37,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     private JCheckBox enableSanityCheckWarnings;
     private JCheckBox logInExtenderOutput;
     private JTextField logTabCharacterLimit;
+    private JComboBox<String> defaultEncoding;
     private JCheckBox proxy;
     private JCheckBox repeater;
     private JCheckBox intruder;
@@ -72,28 +74,32 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         JPanel container = new JPanel(new MigLayout());
 
         enableEventDiagnostics = new JCheckBox("Enable Event Diagnostics");
-        diagnosticValueMaxLength = new JTextField();
+        diagnosticValueMaxLength = createTextField();
         enableSanityCheckWarnings = new JCheckBox("Enable Sanity Check Warnings");
         logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
-        logTabCharacterLimit = new JTextField();
+        logTabCharacterLimit = createTextField();
+        defaultEncoding = new JComboBox<>(Encoder.getEncodings().toArray(new String[0]));
 
         enableEventDiagnostics.setSelected(generalSettings.isEnableEventDiagnostics());
         diagnosticValueMaxLength.setText(Objects.toString(generalSettings.getDiagnosticValueMaxLength()));
         enableSanityCheckWarnings.setSelected(generalSettings.isEnableSanityCheckWarnings());
         logInExtenderOutput.setSelected(generalSettings.isLogInExtenderOutput());
         logTabCharacterLimit.setText(Objects.toString(generalSettings.getLogTabCharacterLimit()));
+        defaultEncoding.setSelectedItem(generalSettings.getDefaultEncoding());
 
         enableEventDiagnostics.addActionListener(this::onEnableEventDiagnosticsChanged);
         diagnosticValueMaxLength.addFocusListener(new FocusActionListener(this::onDiagnosticValueMaxLengthFocusChanged));
         enableSanityCheckWarnings.addActionListener(this::onEnableSanityCheckWarningsChanged);
         logInExtenderOutput.addActionListener(this::onLogInExtenderOutputChanged);
         logTabCharacterLimit.addFocusListener(new FocusActionListener(this::onLogTabCharacterLimitFocusChanged));
+        defaultEncoding.addActionListener(this::onSetDefaultEncodingChanged);
 
         container.add(enableEventDiagnostics, "wrap");
         container.add(getLabeledField("Diagnostic Value Max Length", diagnosticValueMaxLength), "wrap");
         container.add(enableSanityCheckWarnings, "wrap");
         container.add(logInExtenderOutput, "wrap");
         container.add(getLabeledField("Log Tab Character Limit", logTabCharacterLimit), "wrap");
+        container.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
         return container;
     }
 
@@ -134,6 +140,10 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         container.add(target, "wrap");
         container.add(extender);
         return container;
+    }
+
+    private void onSetDefaultEncodingChanged(ActionEvent actionEvent) {
+        generalSettings.setDefaultEncoding((String) defaultEncoding.getSelectedItem());
     }
 
     private void onLogTabCharacterLimitFocusChanged(ActionEvent actionEvent) {

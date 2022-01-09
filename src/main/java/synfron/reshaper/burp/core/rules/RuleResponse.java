@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.rules;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import synfron.reshaper.burp.core.messages.MimeType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,10 @@ public class RuleResponse {
     }
 
     private RuleResponse(int flags) {
-        this(getValues().stream().map(RuleResponse::getName).collect(Collectors.joining(", ")), flags);
+        this(getValues().stream()
+                .filter(ruleResponse -> ruleResponse.hasFlags(flags))
+                .map(RuleResponse::getName)
+                .collect(Collectors.joining(", ")), flags);
     }
 
     public static List<RuleResponse> getValues() {

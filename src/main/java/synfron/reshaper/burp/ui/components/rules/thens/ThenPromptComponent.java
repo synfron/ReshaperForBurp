@@ -22,12 +22,12 @@ public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenProm
     }
 
     private void initComponent() {
-        description = new JTextField();
-        starterText = new JTextField();
-        failAfter = new JTextField();
+        description = createTextField();
+        starterText = createTextField();
+        failAfter = createTextField();
         breakAfterFailure = new JCheckBox("Break After Failure");
         captureVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        captureVariableName = new JTextField();
+        captureVariableName = createTextField();
 
         description.setText(model.getDescription());
         starterText.setText(model.getStarterText());

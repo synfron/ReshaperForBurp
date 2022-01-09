@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.synfron.reshaper.burp'
-version '1.5.3'
+version '1.5.3-next'
 
 targetCompatibility = '15'
 sourceCompatibility = '15'
@@ -22,11 +22,13 @@ dependencies {
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'net.jodah:expiringmap:0.5.10'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
     implementation 'com.miglayout:miglayout-swing:11.0'
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'com.jayway.jsonpath:json-path:2.6.0'
     implementation 'net.portswigger.burp.extender:burp-extender-api:2.3'
+    implementation 'org.rypt:f8:1.1-RC1'
+    implementation files('libs/htmlchardet-1.0.2.1.jar')
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 }

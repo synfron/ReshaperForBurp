@@ -19,7 +19,7 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
     }
 
     private void initComponent() {
-        identifier = new JTextField();
+        identifier = createTextField();
         messageValue = new JComboBox<>(MessageValue.values());
 
         messageValue.setSelectedItem(model.getMessageValue());

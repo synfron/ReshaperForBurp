@@ -20,6 +20,10 @@ Has Entity - If the HTTP event contains a certain entity
 
 Matches Text - If a value (text, variable, or HTTP event entity) matches a value
 
+Content Type - If the HTTP request body is reported to match specified content types
+
+MIME Type - If the HTTP response body is reported to match specified MIME types
+
 Proxy Name - If received by a certain Burp proxy listener
 
 From Tool - If the HTTP message is from a specific Burp tool
@@ -45,6 +49,8 @@ Run Rules - Run a specific rule or all auto-run rules
 Run Script - Execute a JavaScript script
 
 Set Event Direction - Change whether to send a request or to send a response at the end of processing
+
+Set Encoding - Set the encoding used to read and write bytes of the HTTP request or response body
 
 Set Value - Set the value of an HTTP event using another value (text, variable, or HTTP event entity)
 

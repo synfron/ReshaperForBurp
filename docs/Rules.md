@@ -51,6 +51,22 @@ Match Type - Match the text using Equals, Contains, Begins With, Ends With, or R
 
 Match Text - The text to match the value against. Supports variable tags.
 
+### Content Type
+
+If the HTTP request body is reported to match specified content types.
+
+#### Fields
+
+Request Content Type - None, JSON, XML, URL Encoded, Multi-Part, AMF, and/or Unknown
+
+### MIME Type
+
+If the HTTP response body is reported to match specified MIME types.
+
+#### Fields
+
+Response MIME Type - HTML, Script, CSS, JSON, SVG, Other XML, Other Text, Image, Out Binary, and/or Unknown.
+
 ### Proxy Name
 
 If received by a certain Burp proxy listener
@@ -153,7 +169,15 @@ If the event direction is switched from request to response, no request is sent.
 
 #### Fields
 
-Set Event Direction - Request or Response. 
+Set Event Direction - Request or Response.
+
+### Set Encoding
+
+Set the encoding used to read and write bytes of the HTTP request or response body.
+
+#### Fields
+
+Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
 
 ### Set Value
 
@@ -258,7 +282,7 @@ File Path - File path of the file, include file name. Supports variable tags.
 
 Text - The text to save. Supports variable tags.
 
-Encoding - The charset/encoding of the file (e.g. utf-8). Supports variable tags.
+Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
 
 File Exists Action - Action to do if the file already exist: None (Don't write), Overwrite, Append
 

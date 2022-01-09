@@ -68,9 +68,9 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
     }
 
     private String buildRequestMessage(IEventInfo eventInfo) {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, starterHttpMessage, "")
-        ));
+        ), eventInfo.getEncoder());
         for (MessageValueSetter messageValueSetter : getMessageValueSetters()) {
             MessageValueHandler.setRequestValue(
                     eventInfo,
@@ -85,9 +85,9 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
     }
 
     private String buildResponseMessage(IEventInfo eventInfo) {
-        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, starterHttpMessage, "")
-        ));
+        ), eventInfo.getEncoder());
         for (MessageValueSetter messageValueSetter : getMessageValueSetters()) {
             MessageValueHandler.setResponseValue(
                     eventInfo,
