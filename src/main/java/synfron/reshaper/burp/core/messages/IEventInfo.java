@@ -49,6 +49,8 @@ public interface IEventInfo {
 
     synfron.reshaper.burp.core.messages.entities.HttpResponseMessage getHttpResponseMessage();
 
+    Encoder getEncoder();
+
     synfron.reshaper.burp.core.vars.Variables getVariables();
 
     IDiagnostics getDiagnostics();

@@ -44,7 +44,7 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
                 .filter(value -> !excludedMessageValues.contains(value))
                 .toArray(MessageValue[]::new)
         );
-        identifier = new JTextField();
+        identifier = createTextField();
         identifierPlacement = new JComboBox<>(DeleteItemPlacement.values());
 
         messageValue.setSelectedItem(model.getMessageValue());

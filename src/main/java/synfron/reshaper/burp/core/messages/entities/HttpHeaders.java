@@ -32,13 +32,14 @@ public abstract class HttpHeaders extends HttpEntity {
     }
 
     public void setHeader(String name, String value, SetItemPlacement itemPlacement) {
+        ListMap<CaseInsensitiveString, IValue<String>> headers = getHeaders();
         if (value == null) {
             deleteHeader(name, IItemPlacement.toDelete(itemPlacement));
         } else if (name.equalsIgnoreCase(cookieHeaderName)) {
             cookies = new HttpCookies(value);
-            getHeaders().set(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()), itemPlacement);
+            headers.set(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()), itemPlacement);
         } else {
-            getHeaders().set(new CaseInsensitiveString(name), new Value<>(value), itemPlacement);
+            headers.set(new CaseInsensitiveString(name), new Value<>(value), itemPlacement);
         }
         changed = true;
     }

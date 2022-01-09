@@ -19,7 +19,7 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
     private void initComponent() {
         runSingle = new JCheckBox("Run Single");
-        ruleName = new JTextField();
+        ruleName = createTextField();
 
         runSingle.setSelected(model.isRunSingle());
         ruleName.setText(model.getRuleName());

@@ -1,31 +1,35 @@
 package synfron.reshaper.burp.core.messages.entities;
 
-import lombok.Getter;
-import synfron.reshaper.burp.core.utils.TextUtils;
+import synfron.reshaper.burp.core.messages.Encoder;
 
 public class HttpBody extends HttpEntity {
 
     private String text;
     private final byte[] rawBytes;
-    @Getter
-    private boolean changed;
+    private final Encoder encoder;
 
-    public HttpBody(byte[] rawBytes) {
+    public HttpBody(byte[] rawBytes, Encoder encoder) {
         this.rawBytes = rawBytes;
+        this.encoder = encoder;
     }
 
     public byte[] getValue() {
-        return !isChanged() ? rawBytes : TextUtils.stringToBytes(text);
+        return rawBytes;
     }
 
     public boolean hasValue() {
-        return !isChanged() ? rawBytes.length > 0 : text.length() > 0;
+        return rawBytes.length > 0;
     }
 
     public String getText() {
         if (text == null) {
-            text = TextUtils.bytesToString(rawBytes);
+            text = encoder.decode(rawBytes);
         }
         return text;
+    }
+
+    @Override
+    public boolean isChanged() {
+        return false;
     }
 }

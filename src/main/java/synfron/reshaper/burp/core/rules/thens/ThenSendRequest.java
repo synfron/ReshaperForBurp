@@ -64,7 +64,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                     String address = VariableString.getTextOrDefault(eventInfo, this.address, eventInfo.getDestinationAddress());
                     int port = VariableString.getIntOrDefault(eventInfo, this.port, eventInfo.getDestinationPort() == null ? 0 : eventInfo.getDestinationPort());
                     byte[] request = this.request != null && !this.request.isEmpty() ?
-                            BurpExtender.getCallbacks().getHelpers().stringToBytes(this.request.getText(eventInfo)) :
+                            eventInfo.getEncoder().encode(this.request.getText(eventInfo)) :
                             eventInfo.getHttpRequestMessage().getValue();
                     byte[] responseBytes = BurpExtender.getCallbacks().makeHttpRequest(
                             address,

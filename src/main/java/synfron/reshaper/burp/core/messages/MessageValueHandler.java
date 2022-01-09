@@ -72,8 +72,8 @@ public class MessageValueHandler {
             switch (messageValue) {
                 case HttpProtocol -> eventInfo.setHttpProtocol(replacementText);
                 case SourceAddress -> throw new UnsupportedOperationException("Cannot set Source Address");
-                case HttpRequestMessage -> eventInfo.setHttpRequestMessage(TextUtils.stringToBytes(replacementText));
-                case HttpResponseMessage -> eventInfo.setHttpResponseMessage(TextUtils.stringToBytes(replacementText));
+                case HttpRequestMessage -> eventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(replacementText));
+                case HttpResponseMessage -> eventInfo.setHttpResponseMessage(eventInfo.getEncoder().encode(replacementText));
                 case DestinationPort -> eventInfo.setDestinationPort(Integer.parseInt(replacementText));
                 case DestinationAddress -> eventInfo.setDestinationAddress(replacementText);
                 case Url -> eventInfo.setUrl(replacementText);
@@ -89,7 +89,7 @@ public class MessageValueHandler {
             case HttpRequestStatusLine -> requestMessage.setStatusLine(replacementText);
             case HttpRequestCookie -> requestMessage.getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpRequestUri -> requestMessage.getStatusLine().setUrl(replacementText);
-            case HttpRequestMessage -> eventInfo.setHttpRequestMessage(TextUtils.stringToBytes(replacementText));
+            case HttpRequestMessage -> eventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(replacementText));
             case HttpRequestMethod -> requestMessage.getStatusLine().setMethod(replacementText);
             case HttpRequestUriPath -> requestMessage.getStatusLine().getUrl().setPath(StringUtils.defaultString(replacementText));
             case HttpRequestUriQueryParameter -> requestMessage.getStatusLine().getUrl().getQueryParams().setQueryParameter(identifier.getText(eventInfo), replacementText, itemPlacement);
@@ -104,7 +104,7 @@ public class MessageValueHandler {
             case HttpResponseBody -> responseMessage.setBody(StringUtils.defaultString(replacementText));
             case HttpResponseStatusLine -> responseMessage.setStatusLine(replacementText);
             case HttpResponseCookie -> responseMessage.getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
-            case HttpResponseMessage -> eventInfo.setHttpResponseMessage(TextUtils.stringToBytes(replacementText));
+            case HttpResponseMessage -> eventInfo.setHttpResponseMessage(eventInfo.getEncoder().encode(replacementText));
             case HttpResponseStatusCode -> responseMessage.getStatusLine().setCode(replacementText);
             case HttpResponseStatusMessage -> responseMessage.getStatusLine().setMessage(StringUtils.defaultString(replacementText));
         }

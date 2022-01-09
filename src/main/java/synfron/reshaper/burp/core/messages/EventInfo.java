@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.core.messages;
 
+import burp.BurpExtender;
 import burp.IHttpRequestResponse;
 import burp.IInterceptedProxyMessage;
 import lombok.Getter;
@@ -41,6 +42,8 @@ public class EventInfo implements IEventInfo {
     private HttpResponseMessage httpResponseMessage;
     @Getter
     private final Variables variables = new Variables();
+    @Getter
+    private final Encoder encoder = new Encoder(BurpExtender.getGeneralSettings().getDefaultEncoding());
     private boolean changed;
     @Getter
     private final IDiagnostics diagnostics = new Diagnostics();
@@ -49,8 +52,8 @@ public class EventInfo implements IEventInfo {
         this.burpTool = BurpTool.Proxy;
         this.dataDirection = dataDirection;
         this.requestResponse = proxyMessage.getMessageInfo();
-        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest());
-        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse());
+        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest(), encoder);
+        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse(), encoder);
         proxyName = proxyMessage.getListenerInterface();
         httpProtocol = requestResponse.getHttpService().getProtocol();
         sourceAddress = proxyMessage.getClientIpAddress().getHostAddress();
@@ -62,8 +65,8 @@ public class EventInfo implements IEventInfo {
         this.burpTool = burpTool;
         this.dataDirection = dataDirection;
         this.requestResponse = requestResponse;
-        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest());
-        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse());
+        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest(), encoder);
+        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse(), encoder);
         httpProtocol = requestResponse.getHttpService().getProtocol();
         sourceAddress = "burp::";
         destinationPort = requestResponse.getHttpService().getPort();
@@ -79,13 +82,13 @@ public class EventInfo implements IEventInfo {
 
     @Override
     public void setHttpRequestMessage(byte[] request) {
-        httpRequestMessage = new HttpRequestMessage(request);
+        httpRequestMessage = new HttpRequestMessage(request, encoder);
         changed = true;
     }
 
     @Override
     public void setHttpResponseMessage(byte[] response) {
-        httpResponseMessage = new HttpResponseMessage(response);
+        httpResponseMessage = new HttpResponseMessage(response, encoder);
         changed = true;
     }
 

@@ -9,6 +9,8 @@ import org.mozilla.javascript.ArrowFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeJavaObject;
+import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseStatusLine;
@@ -75,7 +77,8 @@ public class XmlHttpRequestObj {
         uriBuilder.setParameters(inputUriBuilder.getQueryParams());
         uriBuilder.setFragment(inputUriBuilder.getFragment());
         String request = String.format(requestTemplate, method, uriBuilder.toString(), requestUrl.getAuthority());
-        requestMessage = new HttpRequestMessage(TextUtils.stringToBytes(request));
+        Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
+        requestMessage = new HttpRequestMessage(encoder.encode(request), encoder);
         setReadyState(OPENED);
     }
 
@@ -140,8 +143,9 @@ public class XmlHttpRequestObj {
             if (!Thread.interrupted()) {
                 try {
                     HttpRequestMessage requestMessage = this.requestMessage;
+                    Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
                     if (StringUtils.isNotEmpty(body)) {
-                        requestMessage = new HttpRequestMessage(requestMessage.getValue());
+                        requestMessage = new HttpRequestMessage(requestMessage.getValue(), encoder);
                         requestMessage.setBody(body);
                     }
                     boolean useHttps = !StringUtils.equalsIgnoreCase(requestUrl.getScheme(), "http");
@@ -156,7 +160,7 @@ public class XmlHttpRequestObj {
                         dispatcher.execute(context -> {
                             if (response != null && response.length != 0) {
                                 responseURL = requestUrl.toString();
-                                responseMessage = new HttpResponseMessage(response);
+                                responseMessage = new HttpResponseMessage(response, encoder);
                                 setReadyState(DONE);
                                 execute(onload);
                             } else {

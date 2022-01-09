@@ -21,7 +21,7 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private void initComponent() {
         mainContainer.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane();
-        script = new JTextPane();
+        script = createTextPane();
         scrollPane.setViewportView(script);
 
         script.setText(model.getScript());
@@ -36,7 +36,7 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private Component getOtherFields() {
         JPanel container = new JPanel(new MigLayout());
 
-        maxExecutionSeconds = new JTextField();
+        maxExecutionSeconds = createTextField();
 
         maxExecutionSeconds.setText(model.getMaxExecutionSeconds());
 

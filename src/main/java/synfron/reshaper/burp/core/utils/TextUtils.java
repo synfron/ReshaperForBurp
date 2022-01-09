@@ -104,14 +104,6 @@ public class TextUtils {
         return value != null ? value.toString() : null;
     }
 
-    public static String bytesToString(byte[] bytes) {
-        return BurpExtender.getCallbacks().getHelpers().bytesToString(ObjectUtils.defaultIfNull(bytes, new byte[0]));
-    }
-
-    public static byte[] stringToBytes(String value) {
-        return BurpExtender.getCallbacks().getHelpers().stringToBytes(StringUtils.defaultString(value));
-    }
-
     public static String bufferAppend(String text1, String text2, String suffix, int maxLength) {
         String newText;
         int untrimmedLength = text1.length() + text2.length();

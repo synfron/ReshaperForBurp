@@ -16,6 +16,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenRunRules> RunRules = new ThenType<>("Run Rules", ThenRunRules.class);
     public static final ThenType<ThenRunScript> RunScript = new ThenType<>("Run Script", ThenRunScript.class);
     public static final ThenType<ThenSetEventDirection> SetEventDirection = new ThenType<>("Set Event Direction", ThenSetEventDirection.class);
+    public static final ThenType<ThenSetEncoding> SetEncoding = new ThenType<>("Set Encoding", ThenSetEncoding.class);
     public static final ThenType<ThenSetValue> SetValue = new ThenType<>("Set Value", ThenSetValue.class);
     public static final ThenType<ThenDeleteValue> DeleteValue = new ThenType<>("Delete Value", ThenDeleteValue.class);
     public static final ThenType<ThenSetVariable> SetVariable = new ThenType<>("Set Variable", ThenSetVariable.class);
@@ -47,6 +48,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 RunRules,
                 RunScript,
                 SetEventDirection,
+                SetEncoding,
                 SetValue,
                 DeleteValue,
                 SetVariable,

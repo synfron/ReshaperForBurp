@@ -70,7 +70,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                         "https"
                 );
                 request = CollectionUtils.defaultIfEmpty(
-                        TextUtils.stringToBytes(
+                        eventInfo.getEncoder().encode(
                                 VariableString.getTextOrDefault(eventInfo, this.request, "")
                         ),
                         eventInfo.getHttpRequestMessage().getValue()
@@ -91,7 +91,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                     Pair.of("host", host),
                     Pair.of("port", port),
                     Pair.of("isHttps", isHttps),
-                    Pair.of("request", TextUtils.bytesToString(request))
+                    Pair.of("request", eventInfo.getEncoder().decode(request))
             ));
         }
     }
@@ -111,7 +111,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                         "https"
                 );
                 request = CollectionUtils.defaultIfEmpty(
-                        TextUtils.stringToBytes(
+                        eventInfo.getEncoder().encode(
                                 VariableString.getTextOrDefault(eventInfo, this.request, "")
                         ),
                         eventInfo.getHttpRequestMessage().getValue()
@@ -132,7 +132,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                     Pair.of("host", host),
                     Pair.of("port", port),
                     Pair.of("isHttps", isHttps),
-                    Pair.of("request", TextUtils.bytesToString(request))
+                    Pair.of("request", eventInfo.getEncoder().decode(request))
             ));
         }
     }
@@ -143,7 +143,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         try {
             if (overrideDefaults) {
                 data = CollectionUtils.defaultIfEmpty(
-                        TextUtils.stringToBytes(
+                        eventInfo.getEncoder().encode(
                                 VariableString.getTextOrDefault(eventInfo, value, "")
                         ),
                         eventInfo.getHttpRequestMessage().getValue()
@@ -158,7 +158,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
                     Pair.of("sendTo", sendTo),
-                    Pair.of("data", TextUtils.bytesToString(data))
+                    Pair.of("data", eventInfo.getEncoder().decode(data))
             ));
         }
     }
