@@ -29,17 +29,17 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
     }
 
     private void initComponent() {
-        command = new JTextField();
-        input = new JTextField();
+        command = createTextField();
+        input = createTextField();
         waitForCompletion = new JCheckBox("Wait for Completion");
-        failAfter = new JTextField();
+        failAfter = createTextField();
         killAfterFailure = new JCheckBox("Kill After Failure");
         failOnNonZeroExitCode = new JCheckBox("Fail on Non-Zero Exit Code");
         breakAfterFailure = new JCheckBox("Break After Failure");
         captureOutput = new JCheckBox("Capture Output");
         captureAfterFailure = new JCheckBox("Capture After Failure");
         captureVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        captureVariableName = new JTextField();
+        captureVariableName = createTextField();
 
         command.setText(model.getCommand());
         input.setText(model.getInput());

@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.settings;
 
 import lombok.Data;
 import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.messages.Encoder;
 
 @Data
 public class GeneralSettings {
@@ -17,6 +18,7 @@ public class GeneralSettings {
     private boolean enableSanityCheckWarnings = true;
     private boolean logInExtenderOutput = true;
     private int logTabCharacterLimit = 1000000;
+    private String defaultEncoding = Encoder.getDefaultEncoderName();
 
     public void importSettings(GeneralSettings other) {
         if (other != null) {

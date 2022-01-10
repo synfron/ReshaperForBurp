@@ -27,7 +27,7 @@ public class ThenParseHttpMessageComponent extends ThenComponent<ThenParseHttpMe
 
     private void initComponent() {
         dataDirection = new JComboBox<>(DataDirection.values());
-        httpMessage = new JTextField();
+        httpMessage = createTextField();
         JButton addGetter = new JButton("Add Getter");
 
         dataDirection.setSelectedItem(model.getDataDirection());

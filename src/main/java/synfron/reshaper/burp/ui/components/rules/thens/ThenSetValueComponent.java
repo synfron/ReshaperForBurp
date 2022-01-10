@@ -25,7 +25,7 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
     @Override
     protected List<Component> getExtendedComponents() {
         destinationMessageValue = new JComboBox<>(MessageValue.values());
-        destinationIdentifier = new JTextField();
+        destinationIdentifier = createTextField();
         destinationIdentifierPlacement = new JComboBox<>(SetItemPlacement.values());
 
         destinationMessageValue.setSelectedItem(model.getDestinationMessageValue());

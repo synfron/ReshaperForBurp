@@ -43,13 +43,29 @@ Source Identifier Placement - Placement of the value to get if there are multipl
 
 Source Text - The text to use as the value to check. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Match Type - Match the text using Equals, Contains, Begins With, Ends With, or Regex.
 
 Match Text - The text to match the value against. Supports variable tags.
+
+### Content Type
+
+If the HTTP request body is reported to match specified content types.
+
+#### Fields
+
+Request Content Type - None, JSON, XML, URL Encoded, Multi-Part, AMF, and/or Unknown
+
+### MIME Type
+
+If the HTTP response body is reported to match specified MIME types.
+
+#### Fields
+
+Response MIME Type - HTML, Script, CSS, JSON, SVG, Other XML, Other Text, Image, Out Binary, and/or Unknown.
 
 ### Proxy Name
 
@@ -153,7 +169,15 @@ If the event direction is switched from request to response, no request is sent.
 
 #### Fields
 
-Set Event Direction - Request or Response. 
+Set Event Direction - Request or Response.
+
+### Set Encoding
+
+Set the encoding used to read and write bytes of the HTTP request or response body.
+
+#### Fields
+
+Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
 
 ### Set Value
 
@@ -171,9 +195,9 @@ Source Identifier Placement - Placement of the value to get if there are multipl
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the source value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Use Regex Replace - Use regex on the source value.
 
@@ -187,9 +211,9 @@ Destination Identifier - The property of the HTTP entity to set the value of. On
 
 Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
-Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Destination Value Type - Declare that the value to set is Text, JSON (node), HTML (element), or Params (value).
 
-Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the HTTP event entity. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
+Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 
 ### Delete Value
@@ -220,9 +244,9 @@ Source Identifier Placement - Placement of the value to get if there are multipl
 
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the source value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Use Regex Replace - Use regex on the source value.
 
@@ -234,9 +258,9 @@ Destination Variable Source - Global or Event scope.
 
 Destination Variable Name - The name of the variable to set. Supports variable tags.
 
-Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to set the inner value.
+Destination Value Type - Declare that the value to set is Text, JSON (node), HTML (element), or Params (value).
 
-Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the variable value. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
+Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 ### Delete Variable
 
@@ -258,7 +282,7 @@ File Path - File path of the file, include file name. Supports variable tags.
 
 Text - The text to save. Supports variable tags.
 
-Encoding - The charset/encoding of the file (e.g. utf-8). Supports variable tags.
+Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
 
 File Exists Action - Action to do if the file already exist: None (Don't write), Overwrite, Append
 

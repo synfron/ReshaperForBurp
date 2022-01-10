@@ -16,6 +16,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenRunRulesModel, ThenRunRules> RunRules = new ThenModelType<>("Run Rules", ThenRunRulesModel.class, ThenType.RunRules);
     public static final ThenModelType<ThenRunScriptModel, ThenRunScript> RunScript = new ThenModelType<>("Run Script", ThenRunScriptModel.class, ThenType.RunScript);
     public static final ThenModelType<ThenSetEventDirectionModel, ThenSetEventDirection> SetEventDirection = new ThenModelType<>("Set Event Direction", ThenSetEventDirectionModel.class, ThenType.SetEventDirection);
+    public static final ThenModelType<ThenSetEncodingModel, ThenSetEncoding> SetEncoding = new ThenModelType<>("Set Encoding", ThenSetEncodingModel.class, ThenType.SetEncoding);
     public static final ThenModelType<ThenSetValueModel, ThenSetValue> SetValue = new ThenModelType<>("Set Value", ThenSetValueModel.class, ThenType.SetValue);
     public static final ThenModelType<ThenDeleteValueModel, ThenDeleteValue> DeleteValue = new ThenModelType<>("Delete Value", ThenDeleteValueModel.class, ThenType.DeleteValue);
     public static final ThenModelType<ThenSetVariableModel, ThenSetVariable> SetVariable = new ThenModelType<>("Set Variable", ThenSetVariableModel.class, ThenType.SetVariable);
@@ -43,6 +44,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
                 RunRules,
                 RunScript,
                 SetEventDirection,
+                SetEncoding,
                 SetValue,
                 DeleteValue,
                 SetVariable,

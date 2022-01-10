@@ -117,6 +117,7 @@ public class ReshaperObj {
                     ThenType.SendRequest,
                     ThenType.SendTo,
                     ThenType.SetEventDirection,
+                    ThenType.SetEncoding,
                     ThenType.SetValue,
                     ThenType.SetVariable
             );

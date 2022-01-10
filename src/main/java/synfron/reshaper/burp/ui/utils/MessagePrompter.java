@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.utils;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,15 +12,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class MessagePrompter {
-    private static Map<String, JDialog> dialogMap = new ConcurrentHashMap<>();
+public class MessagePrompter implements IFormComponent {
+    private static final Map<String, JDialog> dialogMap = new ConcurrentHashMap<>();
 
     public static void createTextAreaDialog(String id, String title, String description, String text, Consumer<String> valueHandler) {
         JPanel container = new JPanel(new BorderLayout());
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new EmptyBorder(10,0,0,0));
-        JTextPane inputText = new JTextPane();
+        JTextPane inputText = IFormComponent.addUndo(new JTextPane());
         inputText.setText(text);
         scrollPane.setViewportView(inputText);
         scrollPane.setPreferredSize(new Dimension(320, 160));

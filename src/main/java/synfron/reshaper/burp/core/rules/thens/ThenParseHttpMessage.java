@@ -49,9 +49,9 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
     }
 
     private List<Pair<String, String>> parseRequestMessage(IEventInfo eventInfo) {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
-        ));
+        ), eventInfo.getEncoder());
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
@@ -68,9 +68,9 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
     }
 
     private List<Pair<String, String>> parseResponseMessage(IEventInfo eventInfo) {
-        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
-        ));
+        ), eventInfo.getEncoder());
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);

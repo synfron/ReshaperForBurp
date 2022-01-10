@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
 import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -52,6 +53,9 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(filePath)) {
             errors.add("File Path is required");
+        }
+        if (!Encoder.isSupported(encoding) && !VariableString.hasTag(encoding)) {
+            errors.add("Unsupported encoding");
         }
         return errors;
     }

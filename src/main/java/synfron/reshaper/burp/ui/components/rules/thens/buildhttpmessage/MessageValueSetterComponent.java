@@ -40,13 +40,13 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
     private void initComponent() {
         setLayout(new MigLayout());
 
-        sourceText = new JTextField();
+        sourceText = createTextField();
         destinationMessageValue = new JComboBox<>(
                 Stream.of(MessageValue.values())
                         .filter(messageValue -> messageValue.getDataDirection() == dataDirection && !messageValue.isTopLevel())
                         .toArray(MessageValue[]::new)
         );
-        destinationIdentifier = new JTextField();
+        destinationIdentifier = createTextField();
         destinationIdentifierPlacement = new JComboBox<>(SetItemPlacement.values());
 
         sourceText.setText(model.getSourceText());

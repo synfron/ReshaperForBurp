@@ -3,8 +3,9 @@ package synfron.reshaper.burp.core.messages.entities;
 import burp.BurpExtender;
 import burp.IRequestInfo;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.messages.ContentType;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -13,14 +14,16 @@ import java.util.stream.Stream;
 public class HttpRequestMessage extends HttpEntity {
 
     private final byte[] request;
+    private final Encoder encoder;
     private IRequestInfo requestInfo;
     private boolean changed;
     private HttpRequestStatusLine statusLine;
     private HttpHeaders headers;
     private HttpBody body;
 
-    public HttpRequestMessage(byte[] request) {
+    public HttpRequestMessage(byte[] request, Encoder encoder) {
         this.request = request != null ? request : new byte[0];
+        this.encoder = encoder;
     }
 
     @Override
@@ -38,9 +41,16 @@ public class HttpRequestMessage extends HttpEntity {
         return requestInfo;
     }
 
+    public ContentType getContentType() {
+        return ContentType.get(getRequestInfo().getContentType());
+    }
+
     public HttpRequestStatusLine getStatusLine() {
         if (statusLine == null) {
             statusLine = new HttpRequestStatusLine(getRequestInfo().getHeaders().stream().findFirst().orElse(""));
+            if (!encoder.isUseDefault() && !getContentType().isTextBased()) {
+                encoder.setEncoding("default");
+            }
         }
         return statusLine;
     }
@@ -67,13 +77,13 @@ public class HttpRequestMessage extends HttpEntity {
     public HttpBody getBody() {
         if (this.body == null) {
             byte[] body = Arrays.copyOfRange(request, getRequestInfo().getBodyOffset(), request.length);
-            this.body = new HttpBody(body);
+            this.body = new HttpBody(body, encoder);
         }
         return this.body;
     }
 
     public void setBody(String body) {
-        this.body = new HttpBody(TextUtils.stringToBytes(body));
+        this.body = new HttpBody(encoder.encode(body), encoder);
         changed = true;
     }
 
@@ -95,6 +105,6 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     public String getText() {
-        return TextUtils.bytesToString(getValue());
+        return encoder.decode(getValue());
     }
 }

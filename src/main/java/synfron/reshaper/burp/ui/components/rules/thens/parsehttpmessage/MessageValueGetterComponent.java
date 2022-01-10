@@ -46,10 +46,10 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
         sourceMessageValue = new JComboBox<>(
                 Stream.of(MessageValue.values()).filter(messageValue -> messageValue.getDataDirection() == dataDirection).toArray(MessageValue[]::new)
         );
-        sourceIdentifier = new JTextField();
+        sourceIdentifier = createTextField();
         sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());
         destinationVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        destinationVariableName = new JTextField();
+        destinationVariableName = createTextField();
 
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
         sourceIdentifier.setText(model.getSourceIdentifier());

@@ -13,7 +13,7 @@ public class WhenEventDirection extends When<WhenEventDirection> {
 
     @Override
     public boolean isMatch(IEventInfo eventInfo) {
-        boolean isMatch = (eventInfo.getDataDirection() == dataDirection) == !isNegate();
+        boolean isMatch = eventInfo.getDataDirection() == dataDirection;
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logCompare(this, null, MatchType.Equals, dataDirection, eventInfo.getDataDirection(), isMatch);
         return isMatch;
     }

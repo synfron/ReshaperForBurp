@@ -4,6 +4,7 @@ import burp.BurpExtender;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
@@ -126,7 +127,14 @@ public class VariableString implements Serializable {
     private String getFileText(IEventInfo eventInfo, String locator) {
         try {
             String[] variableNameParts = locator.split(":", 2);
-            return FileUtils.readFileToString(new File(variableNameParts[1]), variableNameParts[0]);
+            File file = new File(variableNameParts[1]);
+            String encoding = variableNameParts[0];
+            Encoder encoder = new Encoder(encoding);
+            if (encoder.isUseDefault() || encoder.isUseAutoDetect()) {
+                byte[] fileBytes = FileUtils.readFileToByteArray(file);
+                return encoder.decode(fileBytes);
+            }
+            return FileUtils.readFileToString(file, encoding);
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) {
                 Log.get().withMessage(String.format("Error reading file with variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, locator))).withException(e).logErr();
@@ -179,10 +187,15 @@ public class VariableString implements Serializable {
         if (StringUtils.isEmpty(formattedString)) {
             return false;
         }
-        String strippedText = formattedString.replaceAll(String.format("\\{\\{(%s):(.+?)\\}\\}", Arrays.stream(VariableSource.values())
-                .map(value -> value.toString().toLowerCase())
-                .collect(Collectors.joining("|"))
-        ), "");
+        String strippedText = formattedString.replaceAll(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())), "");
         return TextUtils.isInt(strippedText);
+    }
+
+    public static boolean hasTag(String text) {
+        if (StringUtils.isEmpty(text)) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
+        return pattern.matcher(text).find();
     }
 }

@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.ThenHighlight;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
@@ -14,7 +15,7 @@ import java.awt.event.ActionEvent;
 public class ThenSaveFileComponent extends ThenComponent<ThenSaveFileModel, ThenSaveFile> {
     private JTextField filePath;
     private JTextField text;
-    private JTextField encoding;
+    private JComboBox<String> encoding;
     private JComboBox<FileExistsAction> fileExistsAction;
 
     public ThenSaveFileComponent(ThenSaveFileModel then) {
@@ -23,19 +24,20 @@ public class ThenSaveFileComponent extends ThenComponent<ThenSaveFileModel, Then
     }
 
     private void initComponent() {
-        filePath = new JTextField();
-        text = new JTextField();
-        encoding = new JTextField();
+        filePath = createTextField();
+        text = createTextField();
+        encoding = new JComboBox<>(Encoder.getEncodings().toArray(new String[0]));
         fileExistsAction = new JComboBox<>(FileExistsAction.values());
 
         filePath.setText(model.getFilePath());
         text.setText(model.getText());
-        encoding.setText(model.getEncoding());
+        encoding.setSelectedItem(model.getEncoding());
+        encoding.setEditable(true);
         fileExistsAction.setSelectedItem(model.getFileExistsAction());
 
         filePath.getDocument().addDocumentListener(new DocumentActionListener(this::onFilePathChanged));
         text.getDocument().addDocumentListener(new DocumentActionListener(this::onTextChanged));
-        encoding.getDocument().addDocumentListener(new DocumentActionListener(this::onEncodingChanged));
+        encoding.addActionListener(this::onEncodingChanged);
         fileExistsAction.addActionListener(this::onFileExistsActionChanged);
 
         mainContainer.add(getLabeledField("File Path *", filePath), "wrap");
@@ -54,7 +56,7 @@ public class ThenSaveFileComponent extends ThenComponent<ThenSaveFileModel, Then
     }
 
     private void onEncodingChanged(ActionEvent actionEvent) {
-        model.setEncoding(encoding.getText());
+        model.setEncoding((String) encoding.getSelectedItem());
     }
 
     private void onFileExistsActionChanged(ActionEvent actionEvent) {

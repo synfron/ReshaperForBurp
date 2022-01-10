@@ -212,8 +212,10 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
 
     @Override
     public void processProxyMessage(boolean messageIsRequest, IInterceptedProxyMessage message) {
-        IEventInfo eventInfo = asEventInfo(messageIsRequest, message);
-        processEvent(messageIsRequest, eventInfo, message);
+        if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
+            IEventInfo eventInfo = asEventInfo(messageIsRequest, message);
+            processEvent(messageIsRequest, eventInfo, message);
+        }
     }
 
     @Override
@@ -228,8 +230,7 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
     }
 
     private BurpTool getBurpToolIfEnabled(int toolFlag) {
-        GeneralSettings generalSettings = BurpExtender.getGeneralSettings();
         BurpTool burpTool = BurpTool.getById(toolFlag);
-        return burpTool != null && generalSettings.isCapture(burpTool) ? burpTool : null;
+        return burpTool != null && BurpExtender.getGeneralSettings().isCapture(burpTool) ? burpTool : null;
     }
 }

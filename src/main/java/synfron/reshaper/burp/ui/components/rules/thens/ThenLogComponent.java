@@ -16,7 +16,7 @@ public class ThenLogComponent extends ThenComponent<ThenLogModel, ThenLog> {
     }
 
     private void initComponent() {
-        text = new JTextField();
+        text = createTextField();
 
         text.setText(model.getText());
 
