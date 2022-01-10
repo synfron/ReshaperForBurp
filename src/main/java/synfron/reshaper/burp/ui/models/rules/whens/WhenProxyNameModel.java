@@ -25,7 +25,7 @@ public class WhenProxyNameModel extends WhenModel<WhenProxyNameModel, WhenProxyN
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(proxyName)) {
-            errors.add("Delay is required");
+            errors.add("Proxy Name is required");
         }
         return errors;
     }

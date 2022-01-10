@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
@@ -18,7 +18,7 @@ public class ThenDelay extends Then<ThenDelay> {
     private VariableString delay;
 
     @Override
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = false;
         try {
             Thread.sleep(ObjectUtils.defaultIfNull(delay.getInt(eventInfo), 0));

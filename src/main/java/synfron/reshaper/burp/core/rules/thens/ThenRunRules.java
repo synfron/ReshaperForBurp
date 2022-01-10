@@ -4,7 +4,7 @@ import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
@@ -18,7 +18,7 @@ public class ThenRunRules extends Then<ThenRunRules> {
     @Getter @Setter
     private String ruleName;
 
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         RulesEngine rulesEngine = BurpExtender.getConnector().getRulesEngine();
         RuleResponse ruleResponse;
         if (runSingle) {

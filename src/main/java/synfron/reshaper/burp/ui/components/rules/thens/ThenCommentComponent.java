@@ -16,13 +16,13 @@ public class ThenCommentComponent extends ThenComponent<ThenCommentModel, ThenCo
     }
 
     private void initComponent() {
-        text = new JTextField();
+        text = createTextField();
 
         text.setText(model.getText());
 
         text.getDocument().addDocumentListener(new DocumentActionListener(this::onTextChanged));
 
-        mainContainer.add(getLabeledField("Text", text), "wrap");
+        mainContainer.add(getLabeledField("Text *", text), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

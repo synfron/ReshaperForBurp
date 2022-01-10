@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenSetValue;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -15,11 +16,14 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     private MessageValue destinationMessageValue;
     @Getter
     private String destinationIdentifier = "";
+    @Getter
+    private SetItemPlacement destinationIdentifierPlacement;
 
     public ThenSetValueModel(ThenSetValue then, Boolean isNew) {
         super(then, isNew);
         destinationMessageValue = then.getDestinationMessageValue();
-        destinationIdentifier = VariableString.getFormattedString(then.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifier = VariableString.toString(then.getDestinationIdentifier(), destinationIdentifier);
+        destinationIdentifierPlacement = then.getDestinationIdentifierPlacement();
     }
 
     public void setDestinationMessageValue(MessageValue destinationMessageValue) {
@@ -30,6 +34,11 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     public void setDestinationIdentifier(String destinationIdentifier) {
         this.destinationIdentifier = destinationIdentifier;
         propertyChanged("destinationIdentifier", destinationIdentifier);
+    }
+
+    public void setDestinationIdentifierPlacement(SetItemPlacement destinationIdentifierPlacement) {
+        this.destinationIdentifierPlacement = destinationIdentifierPlacement;
+        propertyChanged("destinationIdentifierPlacement", destinationIdentifierPlacement);
     }
 
 
@@ -48,6 +57,7 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
         }
         ruleOperation.setDestinationMessageValue(destinationMessageValue);
         ruleOperation.setDestinationIdentifier(VariableString.getAsVariableString(destinationIdentifier));
+        ruleOperation.setDestinationIdentifierPlacement(destinationIdentifierPlacement);
         return super.persist();
     }
 

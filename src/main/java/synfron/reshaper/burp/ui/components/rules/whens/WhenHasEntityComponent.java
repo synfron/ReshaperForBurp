@@ -19,7 +19,7 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
     }
 
     private void initComponent() {
-        identifier = new JTextField();
+        identifier = createTextField();
         messageValue = new JComboBox<>(MessageValue.values());
 
         messageValue.setSelectedItem(model.getMessageValue());
@@ -30,7 +30,7 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
 
         mainContainer.add(getLabeledField("Message Value", messageValue), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Identifier", identifier),
+                getLabeledField("Identifier *", identifier),
                 messageValue,
                 () -> ((MessageValue)messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");

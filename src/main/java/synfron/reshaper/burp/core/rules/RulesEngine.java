@@ -2,7 +2,7 @@ package synfron.reshaper.burp.core.rules;
 
 import lombok.Getter;
 import org.mozilla.javascript.RhinoException;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.utils.Log;
@@ -14,7 +14,7 @@ public class RulesEngine {
     @Getter
     private final RulesRegistry rulesRegistry = new RulesRegistry();
 
-    private boolean match(List<When<?>> whens, EventInfo eventInfo)
+    private boolean match(List<When<?>> whens, IEventInfo eventInfo)
     {
         boolean  isMatch = true;
         boolean  first = true;
@@ -37,7 +37,7 @@ public class RulesEngine {
         return isMatch;
     }
 
-    private RuleResponse perform(List<Then<?>> thens, EventInfo eventInfo)
+    private RuleResponse perform(List<Then<?>> thens, IEventInfo eventInfo)
     {
         RuleResponse thenResult = RuleResponse.Continue;
         for (Then<?> then : thens)
@@ -52,7 +52,7 @@ public class RulesEngine {
         return thenResult;
     }
 
-    public RuleResponse run(EventInfo eventInfo)
+    public RuleResponse run(IEventInfo eventInfo)
     {
         List<Rule> rules = rulesRegistry.getRules();
         try {
@@ -71,7 +71,7 @@ public class RulesEngine {
         return RuleResponse.Continue;
     }
 
-    public RuleResponse run(EventInfo eventInfo, Rule rule)
+    public RuleResponse run(IEventInfo eventInfo, Rule rule)
     {
         RuleResponse thenResult = RuleResponse.Continue;
         if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logStart(rule);

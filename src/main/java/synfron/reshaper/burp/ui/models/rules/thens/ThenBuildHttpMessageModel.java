@@ -33,12 +33,12 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     public ThenBuildHttpMessageModel(ThenBuildHttpMessage then, Boolean isNew) {
         super(then, isNew);
         this.dataDirection = then.getDataDirection();
-        this.starterHttpMessage = VariableString.getFormattedString(then.getStarterHttpMessage(), starterHttpMessage);
+        this.starterHttpMessage = VariableString.toString(then.getStarterHttpMessage(), starterHttpMessage);
         this.messageValueSetters = then.getMessageValueSetters().stream()
                 .map(messageValueSetter -> new MessageValueSetterModel(messageValueSetter).withListener(messageValueSetterChangedListener))
                 .collect(Collectors.toList());
         this.destinationVariableSource = then.getDestinationVariableSource();
-        this.DestinationVariableName = VariableString.getFormattedString(then.getDestinationVariableName(), DestinationVariableName);
+        this.DestinationVariableName = VariableString.toString(then.getDestinationVariableName(), DestinationVariableName);
     }
 
     public MessageValueSetterModel addMessageValueSetter() {
@@ -83,9 +83,9 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(DestinationVariableName)) {
-            errors.add("Variable Name is required");
+            errors.add("Destination Variable Name is required");
         } else if (!VariableString.isValidVariableName(DestinationVariableName)) {
-            errors.add("Variable Name is invalid");
+            errors.add("Destination Variable Name is invalid");
         }
         messageValueSetters.forEach(messageValueSetter -> errors.addAll(messageValueSetter.validate()));
         return errors;

@@ -1,12 +1,13 @@
 package synfron.reshaper.burp.core.rules;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import synfron.reshaper.burp.core.messages.MimeType;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode
 public class RuleResponse {
     public static final RuleResponse Continue = new RuleResponse("Continue", 1);
     public static final RuleResponse BreakThens = new RuleResponse("Skip Next Thens", 2);
@@ -22,15 +23,20 @@ public class RuleResponse {
     private final String name;
     private final int flags;
 
-    @JsonCreator
-    private RuleResponse(@JsonProperty("name") String name, @JsonProperty("flags") int flags) {
+    private RuleResponse() {
+        this(Continue.name, Continue.flags);
+    }
+
+    private RuleResponse(String name, int flags) {
         this.name = name;
         this.flags = flags;
     }
 
     private RuleResponse(int flags) {
-        name = getValues().stream().map(RuleResponse::getName).collect(Collectors.joining(", "));
-        this.flags = flags;
+        this(getValues().stream()
+                .filter(ruleResponse -> ruleResponse.hasFlags(flags))
+                .map(RuleResponse::getName)
+                .collect(Collectors.joining(", ")), flags);
     }
 
     public static List<RuleResponse> getValues() {

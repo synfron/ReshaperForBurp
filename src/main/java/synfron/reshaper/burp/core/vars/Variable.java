@@ -1,7 +1,5 @@
 package synfron.reshaper.burp.core.vars;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
@@ -20,8 +18,11 @@ public class Variable {
     @Getter
     private final String name;
 
-    @JsonCreator
-    public Variable(@JsonProperty("name") String name) {
+    private Variable() {
+        this(null);
+    }
+
+    public Variable(String name) {
         this.name = name;
     }
 

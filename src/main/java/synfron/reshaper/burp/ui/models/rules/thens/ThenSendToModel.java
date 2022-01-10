@@ -32,12 +32,12 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         super(then, isNew);
         sendTo = then.getSendTo();
         overrideDefaults = then.isOverrideDefaults();
-        host = VariableString.getFormattedString(then.getHost(), host);
-        port = VariableString.getFormattedString(then.getPort(), port);
-        protocol = VariableString.getFormattedString(then.getProtocol(), protocol);
-        request = VariableString.getFormattedString(then.getRequest(), request);
-        value = VariableString.getFormattedString(then.getValue(), value);
-        url = VariableString.getFormattedString(then.getUrl(), url);
+        host = VariableString.toString(then.getHost(), host);
+        port = VariableString.toString(then.getPort(), port);
+        protocol = VariableString.toString(then.getProtocol(), protocol);
+        request = VariableString.toString(then.getRequest(), request);
+        value = VariableString.toString(then.getValue(), value);
+        url = VariableString.toString(then.getUrl(), url);
     }
 
     public void setSendTo(SendToOption sendTo) {

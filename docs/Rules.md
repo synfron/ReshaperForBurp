@@ -39,15 +39,33 @@ Source Message Value - The HTTP event entity to check. Only available if `Use Me
 
 Source Identifier - The property of the HTTP entity to check. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Source Text - The text to use as the value to check. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Match Type - Match the text using Equals, Contains, Begins With, Ends With, or Regex.
 
 Match Text - The text to match the value against. Supports variable tags.
+
+### Content Type
+
+If the HTTP request body is reported to match specified content types.
+
+#### Fields
+
+Request Content Type - None, JSON, XML, URL Encoded, Multi-Part, AMF, and/or Unknown
+
+### MIME Type
+
+If the HTTP response body is reported to match specified MIME types.
+
+#### Fields
+
+Response MIME Type - HTML, Script, CSS, JSON, SVG, Other XML, Other Text, Image, Out Binary, and/or Unknown.
 
 ### Proxy Name
 
@@ -103,6 +121,24 @@ Add a comment to the request/response line in the HTTP history
 
 Text - The text of the comment. Supports variable tags.
 
+### Prompt
+
+Get text via a prompt dialog.
+
+#### Fields
+
+Description - Description text to display in the prompt above the text entry field. Supports variable tags.
+
+Starter Text - Initial text in the text entry field. Supports variable tags.
+
+Fail After (milliseconds) - Flag the request as failed after waiting the specified amount of time for the response. Only available if `Wait for Completion` is selected. Supports variable tags.
+
+Break After Failure - Do not run any other Thens or Rules for this event if the request was flagged as failed. Only available if `Wait for Completion` is selected.
+
+Capture Variable Source - Global or Event scope.
+
+Capture Variable Name - The name of variable to store the response message. Supports variable tags.
+
 ### Run Rules
 
 Run a specific rule or all auto-run rules.
@@ -133,7 +169,15 @@ If the event direction is switched from request to response, no request is sent.
 
 #### Fields
 
-Set Event Direction - Request or Response. 
+Set Event Direction - Request or Response.
+
+### Set Encoding
+
+Set the encoding used to read and write bytes of the HTTP request or response body.
+
+#### Fields
+
+Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
 
 ### Set Value
 
@@ -147,11 +191,13 @@ Source Message Value - The HTTP event entity to get the source value from. Only 
 
 Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the source value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Use Regex Replace - Use regex on the source value.
 
@@ -163,9 +209,11 @@ Destination Message Value - The HTTP event entity to set the value of.
 
 Destination Identifier - The property of the HTTP entity to set the value of. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
-Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
-Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the HTTP event entity. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
+Destination Value Type - Declare that the value to set is Text, JSON (node), HTML (element), or Params (value).
+
+Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 
 ### Delete Value
@@ -177,6 +225,8 @@ Remove an HTTP message entity
 Message Value - The HTTP event entity to delete.
 
 Identifier - The property of the HTTP entity to delete. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
+
+Identifier Placement - Placement of the value to delete if there are multiple. (i.e. First, Last, All)
 
 ### Set Variable
 
@@ -190,11 +240,13 @@ Source Message Value - The HTTP event entity to get the source value from. Only 
 
 Source Identifier - The property of the HTTP entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Source Text - The text to use as the source value. Only available if `Use Message Value` is not selected. Supports variable tags.
 
-Source Value Type - Declare that the value is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to get the inner value.
+Source Value Type - Declare that the value is Text, JSON (node), HTML (element), or Params (value).
 
-Source Value Path - Specify a JSON path for JSON or a CSS selector for HTML to get a value from within the source value and then use this value instead. Only available if `Source Value Type` is JSON or HTML. Supports variable tags.
+Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Source Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 Use Regex Replace - Use regex on the source value.
 
@@ -206,9 +258,9 @@ Destination Variable Source - Global or Event scope.
 
 Destination Variable Name - The name of the variable to set. Supports variable tags.
 
-Destination Value Type - Declare that the value to set is Text, JSON (node), or HTML (element). If JSON or HTML, use JSON path or a CSS selector to set the inner value.
+Destination Value Type - Declare that the value to set is Text, JSON (node), HTML (element), or Params (value).
 
-Destination Value Path - Specify a JSON path for JSON or a CSS selector for HTML to set the value of within the variable value. Only available if `Destination Value Type` is JSON or HTML. Supports variable tags.
+Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
 ### Delete Variable
 
@@ -219,6 +271,20 @@ Delete a variable
 Variable Source - Global or Event scope.
 
 Variable Name - The name of the variable to delete. Supports variable tags.
+
+### Save File
+
+Save text to a file.
+
+#### Fields
+
+File Path - File path of the file, include file name. Supports variable tags.
+
+Text - The text to save. Supports variable tags.
+
+Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
+
+File Exists Action - Action to do if the file already exist: None (Don't write), Overwrite, Append
 
 ### Send To
 
@@ -268,7 +334,7 @@ Capture After Failure - Capture standard out even if the process is flagged as f
 
 Capture Variable Source - Global or Event scope.
 
-Capture Variable Name - The name of variable to store the captured output.
+Capture Variable Name - The name of variable to store the captured output. Supports variable tags.
 
 ### Build HTTP Message
 
@@ -285,6 +351,8 @@ Source Text - The text to set in the message. Supports variable tags.
 Destination Message Value - The HTTP message entity to set the value of.
 
 Destination Identifier - The property of the HTTP message to set the value of. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
+
+Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
 Destination Variable Source - Global or Event scope.
 
@@ -306,6 +374,8 @@ Source Message Value - The HTTP message entity to extract a value from.
 
 Source Identifier - The property of the HTTP entity to extract a value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
+Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
+
 Destination Variable Source - Global or Event scope.
 
 Destination Variable Name - The name of the variable to hold the built HTTP message value. Supports variable tags.
@@ -316,13 +386,13 @@ Send a separate HTTP request.
 
 #### Fields
 
-Protocol - `http` or `https`
+Protocol - `http` or `https`. Supports variable tags.
 
-Address - Host name without port. Example: `www.example.com`
+Address - Host name without port. Example: `www.example.com`. Supports variable tags.
 
-Port - Example: `80`
+Port - Example: `80`. Supports variable tags.
 
-Request - The HTTP request message to send.
+Request - The HTTP request message to send. Supports variable tags.
 
 Wait for Completion - Wait for a response before continuing.
 
@@ -338,7 +408,7 @@ Capture After Failure - Capture the HTTP response message even if the request is
 
 Capture Variable Source - Global or Event scope.
 
-Capture Variable Name - The name of variable to store the response message.
+Capture Variable Name - The name of variable to store the response message. Supports variable tags.
 
 ### Drop
 

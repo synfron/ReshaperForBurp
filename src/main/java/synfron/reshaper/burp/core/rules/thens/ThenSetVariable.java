@@ -3,7 +3,7 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
@@ -20,7 +20,7 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> {
     @Getter @Setter
     private VariableString variableName;
 
-    public RuleResponse perform(EventInfo eventInfo)
+    public RuleResponse perform(IEventInfo eventInfo)
     {
         try {
             String replacementText = getReplacementValue(eventInfo);
@@ -31,7 +31,7 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> {
         return RuleResponse.Continue;
     }
 
-    private void setValue(EventInfo eventInfo, String replacementText)
+    private void setValue(IEventInfo eventInfo, String replacementText)
     {
         Variables variables = switch (targetSource) {
             case Event -> eventInfo.getVariables();
@@ -46,12 +46,14 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> {
                 switch (destinationMessageValueType) {
                     case Json -> replacementText = TextUtils.setJsonValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
                     case Html -> replacementText = TextUtils.setHtmlValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
+                    case Params -> replacementText = TextUtils.setParamValue(variable.getValue().toString(), destinationMessageValuePath.getText(eventInfo), replacementText);
                 }
             }
             variable.setValue(replacementText);
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Arrays.asList(
                     Pair.of("sourceMessageValue", isUseMessageValue() ? getSourceMessageValue() : null),
                     Pair.of("sourceIdentifier", isUseMessageValue() && getSourceMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, getSourceIdentifier(), null) : null),
+                    Pair.of("sourceIdentifierPlacement", isUseMessageValue() ? getSourceIdentifierPlacement() : null),
                     Pair.of("sourceValueType", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? getSourceMessageValueType() : null),
                     Pair.of("sourceValuePath", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, getSourceMessageValuePath(), null) : null),
                     Pair.of("sourceText", !isUseMessageValue() ? VariableString.getTextOrDefault(eventInfo, getText(), null) : null),

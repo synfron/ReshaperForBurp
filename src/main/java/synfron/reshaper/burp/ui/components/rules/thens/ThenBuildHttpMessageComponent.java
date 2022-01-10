@@ -30,9 +30,9 @@ public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMe
 
     private void initComponent() {
         dataDirection = new JComboBox<>(DataDirection.values());
-        starterHttpMessage = new JTextField();
+        starterHttpMessage = createTextField();
         destinationVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        destinationVariableName = new JTextField();
+        destinationVariableName = createTextField();
         JButton addSetter = new JButton("Add Setter");
 
         dataDirection.setSelectedItem(model.getDataDirection());
@@ -51,7 +51,7 @@ public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMe
         mainContainer.add(getLabeledField("Message Value Setters", getMessageValueSetterList()), "wrap");
         mainContainer.add(getPaddedButton(addSetter), "wrap");
         mainContainer.add(getLabeledField("Destination Variable Source", destinationVariableSource), "wrap");
-        mainContainer.add(getLabeledField("Destination Variable Name", destinationVariableName), "wrap");
+        mainContainer.add(getLabeledField("Destination Variable Name *", destinationVariableName), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

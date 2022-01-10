@@ -29,17 +29,17 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
     }
 
     private void initComponent() {
-        command = new JTextField();
-        input = new JTextField();
+        command = createTextField();
+        input = createTextField();
         waitForCompletion = new JCheckBox("Wait for Completion");
-        failAfter = new JTextField();
+        failAfter = createTextField();
         killAfterFailure = new JCheckBox("Kill After Failure");
         failOnNonZeroExitCode = new JCheckBox("Fail on Non-Zero Exit Code");
         breakAfterFailure = new JCheckBox("Break After Failure");
         captureOutput = new JCheckBox("Capture Output");
         captureAfterFailure = new JCheckBox("Capture After Failure");
         captureVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        captureVariableName = new JTextField();
+        captureVariableName = createTextField();
 
         command.setText(model.getCommand());
         input.setText(model.getInput());
@@ -65,11 +65,11 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
 
-        mainContainer.add(getLabeledField("Command", command), "wrap");
+        mainContainer.add(getLabeledField("Command *", command), "wrap");
         mainContainer.add(getLabeledField("Stdin", input), "wrap");
         mainContainer.add(waitForCompletion, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Fail After (milliseconds)", failAfter),
+                getLabeledField("Fail After (milliseconds) *", failAfter),
                 waitForCompletion,
                 () -> waitForCompletion.isSelected()
         ), "wrap");
@@ -104,7 +104,7 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Capture Variable Name", captureVariableName),
+                getLabeledField("Capture Variable Name *", captureVariableName),
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
         ), "wrap");

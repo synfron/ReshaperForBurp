@@ -2,8 +2,11 @@ package synfron.reshaper.burp.core.messages.entities;
 
 import burp.BurpExtender;
 import burp.IResponseInfo;
+import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.messages.ContentType;
+import synfron.reshaper.burp.core.messages.Encoder;
+import synfron.reshaper.burp.core.messages.MimeType;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -14,14 +17,16 @@ import static java.util.stream.Collectors.toList;
 public class HttpResponseMessage extends HttpEntity {
 
     private final byte[] response;
+    private final Encoder encoder;
     private IResponseInfo responseInfo;
     private boolean changed;
     private HttpResponseStatusLine statusLine;
     private HttpHeaders headers;
     private HttpBody body;
 
-    public HttpResponseMessage(byte[] response) {
+    public HttpResponseMessage(byte[] response, Encoder encoder) {
         this.response = response != null ? response : new byte[0];
+        this.encoder = encoder;
     }
 
     @Override
@@ -35,8 +40,20 @@ public class HttpResponseMessage extends HttpEntity {
     private IResponseInfo getResponseInfo() {
         if (responseInfo == null) {
             responseInfo = BurpExtender.getCallbacks().getHelpers().analyzeResponse(response);
+            if (!encoder.isUseDefault() && !getMimeType().isTextBased()) {
+                encoder.setEncoding("default");
+            }
         }
         return responseInfo;
+    }
+
+    public MimeType getMimeType() {
+        IResponseInfo responseInfo = getResponseInfo();
+        String statedMimeType = responseInfo.getStatedMimeType();
+        return MimeType.get(statedMimeType.equalsIgnoreCase("svg") ?
+                statedMimeType :
+                StringUtils.defaultIfEmpty(responseInfo.getInferredMimeType(), statedMimeType)
+        );
     }
 
     public HttpResponseStatusLine getStatusLine() {
@@ -68,13 +85,13 @@ public class HttpResponseMessage extends HttpEntity {
     public HttpBody getBody() {
         if (this.body == null) {
             byte[] body = Arrays.copyOfRange(response, getResponseInfo().getBodyOffset(), response.length);
-            this.body = new HttpBody(body);
+            this.body = new HttpBody(body, encoder);
         }
         return this.body;
     }
 
     public void setBody(String body) {
-        this.body = new HttpBody(TextUtils.stringToBytes(body));
+        this.body = new HttpBody(encoder.encode(body), encoder);
         changed = true;
     }
 
@@ -96,6 +113,6 @@ public class HttpResponseMessage extends HttpEntity {
     }
 
     public String getText() {
-        return TextUtils.bytesToString(getValue());
+        return encoder.decode(getValue());
     }
 }

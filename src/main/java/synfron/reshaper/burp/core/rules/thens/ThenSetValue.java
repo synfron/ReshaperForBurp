@@ -3,12 +3,14 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
+import synfron.reshaper.burp.core.utils.IItemPlacement;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -20,12 +22,14 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
     private MessageValue destinationMessageValue = MessageValue.HttpRequestBody;
     @Getter @Setter
     private VariableString destinationIdentifier;
+    @Getter @Setter
+    private SetItemPlacement destinationIdentifierPlacement = SetItemPlacement.Only;
 
     public ThenSetValue() {
         setUseMessageValue(false);
     }
 
-    public RuleResponse perform(EventInfo eventInfo)
+    public RuleResponse perform(IEventInfo eventInfo)
     {
         try {
             String replacementText = getReplacementValue(eventInfo);
@@ -36,19 +40,26 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
         return RuleResponse.Continue;
     }
 
-    private void setValue(EventInfo eventInfo, String replacementText)
+    private void setValue(IEventInfo eventInfo, String replacementText)
     {
         if (destinationMessageValueType != MessageValueType.Text) {
-            String fullText = MessageValueHandler.getValue(eventInfo, destinationMessageValue, destinationIdentifier);
+            String fullText = MessageValueHandler.getValue(
+                    eventInfo,
+                    destinationMessageValue,
+                    destinationIdentifier,
+                    IItemPlacement.toGet(destinationIdentifierPlacement)
+            );
             switch (destinationMessageValueType) {
                 case Json -> replacementText = TextUtils.setJsonValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
                 case Html -> replacementText = TextUtils.setHtmlValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
+                case Params -> replacementText = TextUtils.setParamValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
             }
         }
-        MessageValueHandler.setValue(eventInfo, destinationMessageValue, destinationIdentifier, replacementText);
+        MessageValueHandler.setValue(eventInfo, destinationMessageValue, destinationIdentifier, destinationIdentifierPlacement, replacementText);
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Arrays.asList(
                 Pair.of("sourceMessageValue", isUseMessageValue() ? getSourceMessageValue() : null),
                 Pair.of("sourceIdentifier", isUseMessageValue() && getSourceMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, getSourceIdentifier(), null) : null),
+                Pair.of("sourceIdentifierPlacement", isUseMessageValue() ? getSourceIdentifierPlacement() : null),
                 Pair.of("sourceValueType", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? getSourceMessageValueType() : null),
                 Pair.of("sourceValuePath", isUseMessageValue() && getSourceMessageValueType() != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, getSourceMessageValuePath(), null) : null),
                 Pair.of("sourceText", !isUseMessageValue() ? VariableString.getTextOrDefault(eventInfo, getText(), null) : null),
@@ -56,6 +67,7 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
                 Pair.of("replacementText", isUseReplace() ? VariableString.getTextOrDefault(eventInfo, getReplacementText(), null) : null),
                 Pair.of("destinationMessageValue", destinationMessageValue),
                 Pair.of("destinationIdentifier",  getDestinationMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, destinationIdentifier, null) : null),
+                Pair.of("destinationIdentifierPlacement", getDestinationMessageValue().isIdentifierRequired() ? destinationIdentifierPlacement : null),
                 Pair.of("destinationValueType", destinationMessageValueType != MessageValueType.Text ? destinationMessageValueType : null),
                 Pair.of("destinationValuePath", destinationMessageValueType != MessageValueType.Text ? VariableString.getTextOrDefault(eventInfo, destinationMessageValuePath, null) : null),
                 Pair.of("input", replacementText)

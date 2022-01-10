@@ -7,6 +7,8 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
+import synfron.reshaper.burp.core.utils.ObjectUtils;
+import synfron.reshaper.burp.core.utils.Serializer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,10 +55,8 @@ public class Rule implements Serializable {
     }
 
     public Rule copy() {
-        Rule rule = new Rule();
-        rule.whens = whens.stream().map(IRuleOperation::copy).map(when -> (When<?>)when).collect(Collectors.toList());
-        rule.thens = thens.stream().map(IRuleOperation::copy).map(then -> (Then<?>)then).collect(Collectors.toList());
-        rule.autoRun = autoRun;
+        Rule rule = Serializer.copy(this);
+        rule.name = null;
         rule.enabled = false;
         return rule;
     }

@@ -16,13 +16,13 @@ public class WhenProxyNameComponent extends WhenComponent<WhenProxyNameModel, Wh
     }
 
     private void initComponent() {
-        proxyName = new JTextField();
+        proxyName = createTextField();
 
         proxyName.setText(model.getProxyName());
 
         proxyName.getDocument().addDocumentListener(new DocumentActionListener(this::onProxyNameChanged));
 
-        mainContainer.add(getLabeledField("Proxy Name", proxyName), "wrap");
+        mainContainer.add(getLabeledField("Proxy Name *", proxyName), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
         mainContainer.add(getPaddedButton(validate));
     }

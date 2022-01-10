@@ -4,13 +4,15 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.NativeObject;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.thens.ThenType;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.Serializer;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
@@ -33,7 +35,7 @@ public class ReshaperObj {
         }
 
         public String getEventVariable(String name) {
-            return getVariable(((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables(), name);
+            return getVariable(((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables(), name);
         }
 
         private String getVariable(Variables variables, String name) {
@@ -54,7 +56,7 @@ public class ReshaperObj {
             if (!VariableString.isValidVariableName(name)) {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
-            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(name).setValue(value);
+            ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(name).setValue(value);
         }
 
         public void deleteGlobalVariable(String name) {
@@ -62,7 +64,7 @@ public class ReshaperObj {
         }
 
         public void deleteEventVariable(String name) {
-            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(name);
+            ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(name);
         }
     }
 
@@ -78,9 +80,10 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid message value key: '%s'", key));
             }
             return MessageValueHandler.getValue(
-                    (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
+                    (IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
                     EnumUtils.getEnumIgnoreCase(MessageValue.class, key),
-                    VariableString.getAsVariableString(identifier, false)
+                    VariableString.getAsVariableString(identifier, false),
+                    GetItemPlacement.Last
             );
         }
 
@@ -90,9 +93,10 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid message value key: '%s'", key));
             }
             MessageValueHandler.setValue(
-                    (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
+                    (IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
                     EnumUtils.getEnumIgnoreCase(MessageValue.class, key),
                     VariableString.getAsVariableString(identifier, false),
+                    SetItemPlacement.Only,
                     value
             );
         }
@@ -113,6 +117,7 @@ public class ReshaperObj {
                     ThenType.SendRequest,
                     ThenType.SendTo,
                     ThenType.SetEventDirection,
+                    ThenType.SetEncoding,
                     ThenType.SetValue,
                     ThenType.SetVariable
             );
@@ -130,7 +135,7 @@ public class ReshaperObj {
                     null
             ).toString();
             Then<?> then = (Then<?>)Serializer.deserialize(thenDataJson, thenClass);
-            return then.perform((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).toString();
+            return then.perform((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).toString();
         }
     }
 }

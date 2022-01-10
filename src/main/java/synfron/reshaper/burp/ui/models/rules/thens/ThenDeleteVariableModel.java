@@ -19,7 +19,7 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
     public ThenDeleteVariableModel(ThenDeleteVariable then, Boolean isNew) {
         super(then, isNew);
         targetSource = then.getTargetSource();
-        variableName = VariableString.getFormattedString(then.getVariableName(), variableName);
+        variableName = VariableString.toString(then.getVariableName(), variableName);
     }
 
     public void setTargetSource(VariableSource targetSource) {

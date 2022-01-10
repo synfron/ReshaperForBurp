@@ -15,7 +15,7 @@ public class ThenCommentModel extends ThenModel<ThenCommentModel, ThenComment> {
 
     public ThenCommentModel(ThenComment then, Boolean isNew) {
         super(then, isNew);
-        text = VariableString.getFormattedString(then.getText(), text);
+        text = VariableString.toString(then.getText(), text);
     }
 
     public void setText(String text) {

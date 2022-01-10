@@ -15,7 +15,7 @@ public class ThenLogModel extends ThenModel<ThenLogModel, ThenLog> {
 
     public ThenLogModel(ThenLog then, Boolean isNew) {
         super(then, isNew);
-        text = VariableString.getFormattedString(then.getText(), text);
+        text = VariableString.toString(then.getText(), text);
     }
 
     public void setText(String text) {

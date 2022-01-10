@@ -36,17 +36,17 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
 
     public ThenRunProcessModel(ThenRunProcess then, Boolean isNew) {
         super(then, isNew);
-        command = VariableString.getFormattedString(then.getCommand(), command);
-        input = VariableString.getFormattedString(then.getInput(), input);
+        command = VariableString.toString(then.getCommand(), command);
+        input = VariableString.toString(then.getInput(), input);
         waitForCompletion = then.isWaitForCompletion();
-        failAfter = VariableString.getFormattedString(then.getFailAfter(), failAfter);
+        failAfter = VariableString.toString(then.getFailAfter(), failAfter);
         killAfterFailure = then.isKillAfterFailure();
         failOnNonZeroExitCode = then.isFailOnNonZeroExitCode();
         breakAfterFailure = then.isBreakAfterFailure();
         captureOutput = then.isCaptureOutput();
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
-        captureVariableName = VariableString.getFormattedString(then.getCaptureVariableName(), captureVariableName);
+        captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
     }
 
     public void setCommand(String command) {
@@ -111,10 +111,10 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         }
         if (waitForCompletion && StringUtils.isEmpty(failAfter)) {
             errors.add("Fail After is required");
-        }
-        if (waitForCompletion && !VariableString.isPotentialInt(failAfter)) {
+        } else if (waitForCompletion && !VariableString.isPotentialInt(failAfter)) {
             errors.add("Fail After must be an integer");
-        } else if (waitForCompletion && captureOutput && StringUtils.isEmpty(captureVariableName)) {
+        }
+        if (waitForCompletion && captureOutput && StringUtils.isEmpty(captureVariableName)) {
             errors.add("Capture Variable Name is required");
         } else  if (waitForCompletion && captureOutput && !VariableString.isValidVariableName(captureVariableName)) {
             errors.add("Capture Variable Name is invalid");

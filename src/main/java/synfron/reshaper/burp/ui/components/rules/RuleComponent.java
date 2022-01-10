@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.rules;
 import lombok.SneakyThrows;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -15,7 +16,7 @@ import java.awt.font.TextAttribute;
 import java.net.URI;
 import java.util.Map;
 
-public class RuleComponent extends JPanel {
+public class RuleComponent extends JPanel implements IFormComponent {
     private final RuleModel model;
     private JCheckBox isEnabled;
     private JCheckBox autoRun;
@@ -58,7 +59,7 @@ public class RuleComponent extends JPanel {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        ruleName = new JTextField();
+        ruleName = createTextField();
 
         ruleName.setText(model.getName());
         ruleName.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -74,7 +75,7 @@ public class RuleComponent extends JPanel {
     }
 
     private Component getGitHubLink() {
-        JLabel githubLink = new JLabel("View on GitHub");
+        JLabel githubLink = new JLabel("Help");
         githubLink.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         Font font = githubLink.getFont();
         Map attributes = font.getAttributes();
@@ -87,7 +88,7 @@ public class RuleComponent extends JPanel {
             @SneakyThrows
             @Override
             public void mouseClicked(MouseEvent e) {
-                Desktop.getDesktop().browse(new URI("https://github.com/synfron/ReshaperForBurp"));
+                Desktop.getDesktop().browse(new URI("https://synfron.github.io/ReshaperForBurp"));
             }
 
             @Override

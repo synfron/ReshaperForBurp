@@ -4,6 +4,7 @@ import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenMatchesTextModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -16,6 +17,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
     protected JCheckBox useMessageValue;
     protected JComboBox<MessageValue> messageValue;
     protected JTextField identifier;
+    protected JComboBox<GetItemPlacement> identifierPlacement;
     protected JComboBox<MessageValueType> messageValueType;
     private JTextField messageValuePath;
     protected JTextField sourceText;
@@ -30,16 +32,18 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
         messageValue = new JComboBox<>(MessageValue.values());
-        identifier = new JTextField();
-        sourceText = new JTextField();
+        identifier = createTextField();
+        identifierPlacement = new JComboBox<>(GetItemPlacement.values());
+        sourceText = createTextField();
         messageValueType = new JComboBox<>(MessageValueType.values());
-        messageValuePath = new JTextField();
+        messageValuePath = createTextField();
         matchType = new JComboBox<>(MatchType.values());
-        matchText = new JTextField();
+        matchText = createTextField();
 
         useMessageValue.setSelected(model.isUseMessageValue());
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
+        identifierPlacement.setSelectedItem(model.getIdentifierPlacement());
         sourceText.setText(model.getSourceText());
         messageValueType.setSelectedItem(model.getMessageValueType());
         messageValuePath.setText(model.getMessageValuePath());
@@ -49,6 +53,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         useMessageValue.addActionListener(this::onUseMessageValueChanged);
         messageValue.addActionListener(this::onMessageValueChanged);
         identifier.getDocument().addDocumentListener(new DocumentActionListener(this::onIdentifierChanged));
+        identifierPlacement.addActionListener(this::onIdentifierPlacementChanged);
         sourceText.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceTextChanged));
         messageValueType.addActionListener(this::onMessageValueTypeChanged);
         messageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onMessageValuePathChanged));
@@ -62,7 +67,12 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
                 () -> useMessageValue.isSelected()
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Source Identifier", identifier),
+                getLabeledField("Source Identifier *", identifier),
+                List.of(useMessageValue, messageValue),
+                () -> useMessageValue.isSelected() && ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Identifier Placement", identifierPlacement),
                 List.of(useMessageValue, messageValue),
                 () -> useMessageValue.isSelected() && ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
@@ -97,6 +107,10 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
 
     private void onIdentifierChanged(ActionEvent actionEvent) {
         model.setIdentifier(identifier.getText());
+    }
+
+    private void onIdentifierPlacementChanged(ActionEvent actionEvent) {
+        model.setIdentifierPlacement((GetItemPlacement) identifierPlacement.getSelectedItem());
     }
 
     private void onMessageValueTypeChanged(ActionEvent actionEvent) {

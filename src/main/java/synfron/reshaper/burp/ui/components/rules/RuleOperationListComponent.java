@@ -151,7 +151,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private void onDuplicate(ActionEvent actionEvent) {
         RuleOperationModel<?,?> templateModel = operationsList.getSelectedValue();
         if (templateModel != null) {
-            T model = getModel(templateModel.getRuleOperation());
+            T model = getModel(templateModel.getRuleOperation().copy());
             model.getPropertyChangedEvent().add(ruleOperationChangedListener);
             operationsListModel.addElement(model);
             getRuleOperations().add(model);

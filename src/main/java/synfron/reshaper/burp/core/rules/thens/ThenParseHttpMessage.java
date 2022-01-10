@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
@@ -26,7 +26,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
     @Getter @Setter
     private List<MessageValueGetter> messageValueGetters = new ArrayList<>();
 
-    public RuleResponse perform(EventInfo eventInfo) {
+    public RuleResponse perform(IEventInfo eventInfo) {
         try {
             List<Pair<String, String>> variables;
             if (dataDirection == DataDirection.Request) {
@@ -48,33 +48,45 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
         return RuleResponse.Continue;
     }
 
-    private List<Pair<String, String>> parseRequestMessage(EventInfo eventInfo) {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(
+    private List<Pair<String, String>> parseRequestMessage(IEventInfo eventInfo) {
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
-        ));
+        ), eventInfo.getEncoder());
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
-            String value = MessageValueHandler.getRequestValue(eventInfo, httpRequestMessage, messageValueGetter.getSourceMessageValue(), messageValueGetter.getSourceIdentifier());
+            String value = MessageValueHandler.getRequestValue(
+                    eventInfo,
+                    httpRequestMessage,
+                    messageValueGetter.getSourceMessageValue(),
+                    messageValueGetter.getSourceIdentifier(),
+                    messageValueGetter.getSourceIdentifierPlacement()
+            );
             variables.add(setVariable(eventInfo, messageValueGetter.getDestinationVariableSource(), variableName, value));
         }
         return variables;
     }
 
-    private List<Pair<String, String>> parseResponseMessage(EventInfo eventInfo) {
-        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(BurpExtender.getCallbacks().getHelpers().stringToBytes(
+    private List<Pair<String, String>> parseResponseMessage(IEventInfo eventInfo) {
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
-        ));
+        ), eventInfo.getEncoder());
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
-            String value = MessageValueHandler.getResponseValue(eventInfo, httpResponseMessage, messageValueGetter.getSourceMessageValue(), messageValueGetter.getSourceIdentifier());
+            String value = MessageValueHandler.getResponseValue(
+                    eventInfo,
+                    httpResponseMessage,
+                    messageValueGetter.getSourceMessageValue(),
+                    messageValueGetter.getSourceIdentifier(),
+                    messageValueGetter.getSourceIdentifierPlacement()
+            );
             variables.add(setVariable(eventInfo, messageValueGetter.getDestinationVariableSource(), variableName, value));
         }
         return variables;
     }
 
-    private Pair<String, String> setVariable(EventInfo eventInfo, VariableSource variableSource, String variableName, String value) {
+    private Pair<String, String> setVariable(IEventInfo eventInfo, VariableSource variableSource, String variableName, String value) {
         Variables variables = switch (variableSource) {
             case Event -> eventInfo.getVariables();
             case Global -> GlobalVariables.get();
@@ -85,7 +97,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
             variable = variables.add(variableName);
             variable.setValue(value);
         }
-        return Pair.of(VariableString.getFormattedString(variableSource, variableName), value);
+        return Pair.of(VariableSourceEntry.getTag(variableSource, variableName), value);
     }
 
     @Override

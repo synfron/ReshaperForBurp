@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.components.vars;
 import lombok.SneakyThrows;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -15,10 +16,10 @@ import java.awt.font.TextAttribute;
 import java.net.URI;
 import java.util.Map;
 
-public class VariableComponent extends JPanel {
+public class VariableComponent extends JPanel implements IFormComponent {
     private final VariableModel model;
     private JTextField variableName;
-    private JTextArea variableText;
+    private JTextPane variableText;
     private JCheckBox persistent;
     private JButton save;
     private final IEventListener<PropertyChangedArgs> variablePropertyChangedListener = this::onVariablePropertyChanged;
@@ -61,7 +62,7 @@ public class VariableComponent extends JPanel {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        variableName = new JTextField();
+        variableName = createTextField();
         variableName.setText(model.getName());
         variableName.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         variableName.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -79,7 +80,7 @@ public class VariableComponent extends JPanel {
         JPanel container = new JPanel(new BorderLayout());
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        variableText = new JTextArea();
+        variableText = createTextPane();
         variableText.setText(model.getValue());
 
         JScrollPane scrollPane = new JScrollPane();
@@ -120,7 +121,7 @@ public class VariableComponent extends JPanel {
     }
 
     private Component getGitHubLink() {
-        JLabel githubLink = new JLabel("View on GitHub");
+        JLabel githubLink = new JLabel("Help");
         githubLink.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         Font font = githubLink.getFont();
         Map attributes = font.getAttributes();
@@ -133,7 +134,7 @@ public class VariableComponent extends JPanel {
             @SneakyThrows
             @Override
             public void mouseClicked(MouseEvent e) {
-                Desktop.getDesktop().browse(new URI("https://github.com/synfron/ReshaperForBurp"));
+                Desktop.getDesktop().browse(new URI("https://synfron.github.io/ReshaperForBurp"));
             }
 
             @Override

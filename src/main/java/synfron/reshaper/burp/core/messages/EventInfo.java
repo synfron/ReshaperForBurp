@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.core.messages;
 
+import burp.BurpExtender;
 import burp.IHttpRequestResponse;
 import burp.IInterceptedProxyMessage;
 import lombok.Getter;
@@ -8,13 +9,15 @@ import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
+import synfron.reshaper.burp.core.rules.diagnostics.IDiagnostics;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.Variables;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class EventInfo {
+public class EventInfo implements IEventInfo {
     @Getter
     private final IHttpRequestResponse requestResponse;
     @Getter
@@ -39,16 +42,18 @@ public class EventInfo {
     private HttpResponseMessage httpResponseMessage;
     @Getter
     private final Variables variables = new Variables();
+    @Getter
+    private final Encoder encoder = new Encoder(BurpExtender.getGeneralSettings().getDefaultEncoding());
     private boolean changed;
     @Getter
-    private final Diagnostics diagnostics = new Diagnostics();
+    private final IDiagnostics diagnostics = new Diagnostics();
 
     public EventInfo(DataDirection dataDirection, IInterceptedProxyMessage proxyMessage) {
         this.burpTool = BurpTool.Proxy;
         this.dataDirection = dataDirection;
         this.requestResponse = proxyMessage.getMessageInfo();
-        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest());
-        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse());
+        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest(), encoder);
+        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse(), encoder);
         proxyName = proxyMessage.getListenerInterface();
         httpProtocol = requestResponse.getHttpService().getProtocol();
         sourceAddress = proxyMessage.getClientIpAddress().getHostAddress();
@@ -60,8 +65,8 @@ public class EventInfo {
         this.burpTool = burpTool;
         this.dataDirection = dataDirection;
         this.requestResponse = requestResponse;
-        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest());
-        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse());
+        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest(), encoder);
+        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse(), encoder);
         httpProtocol = requestResponse.getHttpService().getProtocol();
         sourceAddress = "burp::";
         destinationPort = requestResponse.getHttpService().getPort();
@@ -69,41 +74,49 @@ public class EventInfo {
         proxyName = null;
     }
 
+    @Override
     public void setDataDirection(DataDirection dataDirection) {
         this.dataDirection = dataDirection;
         changed = true;
     }
 
+    @Override
     public void setHttpRequestMessage(byte[] request) {
-        httpRequestMessage = new HttpRequestMessage(request);
+        httpRequestMessage = new HttpRequestMessage(request, encoder);
         changed = true;
     }
 
+    @Override
     public void setHttpResponseMessage(byte[] response) {
-        httpResponseMessage = new HttpResponseMessage(response);
+        httpResponseMessage = new HttpResponseMessage(response, encoder);
         changed = true;
     }
 
+    @Override
     public void setDestinationAddress(String destinationAddress) {
         this.destinationAddress = destinationAddress;
         changed = true;
     }
 
+    @Override
     public void setDestinationPort(int destinationPort) {
         this.destinationPort = destinationPort;
         changed = true;
     }
 
+    @Override
     public void setHttpProtocol(String httpProtocol) {
         this.httpProtocol = httpProtocol;
         changed = true;
     }
 
+    @Override
     public void setShouldDrop(boolean shouldDrop) {
         this.shouldDrop = shouldDrop;
         changed = true;
     }
 
+    @Override
     public void setUrl(String urlStr) {
         try {
             URL url = new URL(urlStr);
@@ -111,26 +124,30 @@ public class EventInfo {
             setDestinationAddress(url.getHost());
             setDestinationPort(url.getPort() > 0 ? url.getPort() : url.getDefaultPort());
             getHttpRequestMessage().getStatusLine().setUrl(url.getFile().startsWith("/") ? url.getFile() : "/" + url.getFile());
-            getHttpRequestMessage().getHeaders().setHeader("Host", url.getAuthority());
+            getHttpRequestMessage().getHeaders().setHeader("Host", url.getAuthority(), SetItemPlacement.Only);
         } catch (MalformedURLException e) {
             throw new WrappedException(e);
         }
     }
 
+    @Override
     public boolean isChanged() {
         return changed ||
                 (httpRequestMessage != null && httpRequestMessage.isChanged()) ||
                 (httpResponseMessage != null && httpResponseMessage.isChanged());
     }
 
+    @Override
     public boolean isRequestChanged() {
         return httpRequestMessage != null && httpRequestMessage.isChanged();
     }
 
+    @Override
     public boolean isResponseChanged() {
         return httpResponseMessage != null && httpResponseMessage.isChanged();
     }
 
+    @Override
     public String getUrl() {
         String url;
         try {

@@ -19,7 +19,7 @@ public class ThenDeleteVariableComponent extends ThenComponent<ThenDeleteVariabl
 
     private void initComponent() {
         targetSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        variableName = new JTextField();
+        variableName = createTextField();
 
         targetSource.setSelectedItem(model.getTargetSource());
         variableName.setText(model.getVariableName());
@@ -28,7 +28,7 @@ public class ThenDeleteVariableComponent extends ThenComponent<ThenDeleteVariabl
         variableName.getDocument().addDocumentListener(new DocumentActionListener(this::onVariableNameChanged));
 
         mainContainer.add(getLabeledField("Variable Source", targetSource), "wrap");
-        mainContainer.add(getLabeledField("Variable Name", variableName), "wrap");
+        mainContainer.add(getLabeledField("Variable Name *", variableName), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
 

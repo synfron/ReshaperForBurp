@@ -19,7 +19,7 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
     private void initComponent() {
         runSingle = new JCheckBox("Run Single");
-        ruleName = new JTextField();
+        ruleName = createTextField();
 
         runSingle.setSelected(model.isRunSingle());
         ruleName.setText(model.getRuleName());
@@ -29,7 +29,7 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
         mainContainer.add(runSingle, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Rule Name", ruleName),
+                getLabeledField("Rule Name *", ruleName),
                 runSingle,
                 () -> runSingle.isSelected()
         ), "wrap");

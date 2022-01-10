@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, ThenRunScript> {
-    private JTextArea script;
+    private JTextPane script;
     private JTextField maxExecutionSeconds;
 
     public ThenRunScriptComponent(ThenRunScriptModel then) {
@@ -21,14 +21,14 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private void initComponent() {
         mainContainer.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane();
-        script = new JTextArea();
+        script = createTextPane();
         scrollPane.setViewportView(script);
 
         script.setText(model.getScript());
 
         script.getDocument().addDocumentListener(new DocumentActionListener(this::onScriptChanged));
 
-        mainContainer.add(new JLabel("Script"), BorderLayout.PAGE_START);
+        mainContainer.add(new JLabel("Script *"), BorderLayout.PAGE_START);
         mainContainer.add(scrollPane, BorderLayout.CENTER);
         mainContainer.add(getOtherFields(), BorderLayout.PAGE_END);
     }
@@ -36,13 +36,13 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private Component getOtherFields() {
         JPanel container = new JPanel(new MigLayout());
 
-        maxExecutionSeconds = new JTextField();
+        maxExecutionSeconds = createTextField();
 
         maxExecutionSeconds.setText(model.getMaxExecutionSeconds());
 
         maxExecutionSeconds.getDocument().addDocumentListener(new DocumentActionListener(this::onMaxExecutionSecondsChanged));
 
-        container.add(getLabeledField("Max Execution (secs)", maxExecutionSeconds), "wrap");
+        container.add(getLabeledField("Max Execution (secs) *", maxExecutionSeconds), "wrap");
         container.add(getPaddedButton(validate));
         return container;
     }

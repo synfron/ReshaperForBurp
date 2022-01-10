@@ -9,10 +9,14 @@ import org.mozilla.javascript.ArrowFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeJavaObject;
+import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.messages.entities.HttpResponseStatusLine;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
+import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.net.URI;
@@ -25,10 +29,10 @@ public class XmlHttpRequestObj {
     public static final int UNSENT = 0;
     public static final int OPENED = 1;
     public static final int DONE = 4;
-    private static final String requestTemplate = "%s %s HTTP/1.1\n" +
-            "Host: %s\n" +
-            "Accept: */*\n" +
-            "Connection: close\n";
+    private static final String requestTemplate = "%s %s HTTP/1.1\r\n" +
+            "Host: %s\r\n" +
+            "Accept: */*\r\n" +
+            "Connection: close\r\n";
     private final Dispatcher dispatcher;
     @Getter
     private int readyState;
@@ -73,7 +77,8 @@ public class XmlHttpRequestObj {
         uriBuilder.setParameters(inputUriBuilder.getQueryParams());
         uriBuilder.setFragment(inputUriBuilder.getFragment());
         String request = String.format(requestTemplate, method, uriBuilder.toString(), requestUrl.getAuthority());
-        requestMessage = new HttpRequestMessage(TextUtils.stringToBytes(request));
+        Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
+        requestMessage = new HttpRequestMessage(encoder.encode(request), encoder);
         setReadyState(OPENED);
     }
 
@@ -138,8 +143,9 @@ public class XmlHttpRequestObj {
             if (!Thread.interrupted()) {
                 try {
                     HttpRequestMessage requestMessage = this.requestMessage;
+                    Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
                     if (StringUtils.isNotEmpty(body)) {
-                        requestMessage = new HttpRequestMessage(requestMessage.getValue());
+                        requestMessage = new HttpRequestMessage(requestMessage.getValue(), encoder);
                         requestMessage.setBody(body);
                     }
                     boolean useHttps = !StringUtils.equalsIgnoreCase(requestUrl.getScheme(), "http");
@@ -154,7 +160,7 @@ public class XmlHttpRequestObj {
                         dispatcher.execute(context -> {
                             if (response != null && response.length != 0) {
                                 responseURL = requestUrl.toString();
-                                responseMessage = new HttpResponseMessage(response);
+                                responseMessage = new HttpResponseMessage(response, encoder);
                                 setReadyState(DONE);
                                 execute(onload);
                             } else {
@@ -202,7 +208,7 @@ public class XmlHttpRequestObj {
 
     public String getResponseHeader(String name) {
         if (responseMessage != null) {
-            return responseMessage.getHeaders().getHeader(name);
+            return responseMessage.getHeaders().getHeader(name, GetItemPlacement.Last);
         }
         return null;
     }
@@ -215,6 +221,6 @@ public class XmlHttpRequestObj {
     }
 
     public void setRequestHeader(String name, String value) {
-        requestMessage.getHeaders().setHeader(name, value);
+        requestMessage.getHeaders().setHeader(name, value, SetItemPlacement.Only);
     }
 }

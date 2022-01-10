@@ -4,6 +4,9 @@ import burp.BurpExtender;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 @SuppressWarnings("FieldCanBeLocal")
 public class Log {
     private String message;
@@ -71,14 +74,12 @@ public class Log {
 
     private void printToDisplay(String text) {
         BurpExtender.getLogTextEditor().setText(
-                TextUtils.stringToBytes(
-                        TextUtils.bufferAppend(
-                                TextUtils.bytesToString(BurpExtender.getLogTextEditor().getText()),
-                                text,
-                                "\n",
-                                BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
-                        )
-                )
+                TextUtils.bufferAppend(
+                        new String(BurpExtender.getLogTextEditor().getText(), StandardCharsets.UTF_8),
+                        text,
+                        "\n",
+                        BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
+                ).getBytes(StandardCharsets.UTF_8)
         );
     }
 }

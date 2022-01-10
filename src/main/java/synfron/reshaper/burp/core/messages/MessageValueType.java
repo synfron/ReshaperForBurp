@@ -5,7 +5,8 @@ import lombok.Getter;
 public enum MessageValueType {
     Text("Text"),
     Json("JSON"),
-    Html("HTML");
+    Html("HTML"),
+    Params("Params");
 
     @Getter
     private final String name;

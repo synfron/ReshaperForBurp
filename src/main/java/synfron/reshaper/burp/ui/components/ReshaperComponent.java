@@ -13,10 +13,6 @@ import synfron.reshaper.burp.ui.components.vars.VariablesTabComponent;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- *
- * @author AssistantX
- */
 public class ReshaperComponent extends JPanel implements ITab {
 
     public ReshaperComponent() {
