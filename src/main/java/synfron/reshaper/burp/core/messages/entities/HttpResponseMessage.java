@@ -40,8 +40,8 @@ public class HttpResponseMessage extends HttpEntity {
     private IResponseInfo getResponseInfo() {
         if (responseInfo == null) {
             responseInfo = BurpExtender.getCallbacks().getHelpers().analyzeResponse(response);
-            if (!encoder.isUseDefault() && !getMimeType().isTextBased()) {
-                encoder.setEncoding("default");
+            if (!encoder.isUseDefault() && encoder.isAutoSet() && !getMimeType().isTextBased()) {
+                encoder.setEncoding("default", true);
             }
         }
         return responseInfo;
