@@ -18,7 +18,7 @@ public class ThenSetEncoding extends Then<ThenSetEncoding> {
         boolean hasError = false;
         String encodingValue = encoding.getText(eventInfo);
         try {
-            eventInfo.getEncoder().setEncoding(encodingValue);
+            eventInfo.getEncoder().setEncoding(encodingValue, false);
         } catch (Exception e) {
             hasError = true;
             throw e;
