@@ -37,6 +37,9 @@ public class HttpRequestMessage extends HttpEntity {
     private IRequestInfo getRequestInfo() {
         if (requestInfo == null) {
             requestInfo = BurpExtender.getCallbacks().getHelpers().analyzeRequest(request);
+            if (!encoder.isUseDefault() && encoder.isAutoSet() && !getContentType().isTextBased()) {
+                encoder.setEncoding("default", true);
+            }
         }
         return requestInfo;
     }
@@ -48,9 +51,6 @@ public class HttpRequestMessage extends HttpEntity {
     public HttpRequestStatusLine getStatusLine() {
         if (statusLine == null) {
             statusLine = new HttpRequestStatusLine(getRequestInfo().getHeaders().stream().findFirst().orElse(""));
-            if (!encoder.isUseDefault() && !getContentType().isTextBased()) {
-                encoder.setEncoding("default");
-            }
         }
         return statusLine;
     }

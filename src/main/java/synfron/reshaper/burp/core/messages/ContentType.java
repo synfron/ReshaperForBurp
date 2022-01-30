@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 public class ContentType {
-    public static final ContentType Json = new ContentType("JSON", 4, 16);
-    public static final ContentType UrlEncoded = new ContentType("URL Encoded", 1, 2);
-    public static final ContentType Xml = new ContentType("XML", 3, 8);
     public static final ContentType None = new ContentType("None", 0, 1);
+    public static final ContentType UrlEncoded = new ContentType("URL Encoded", 1, 2);
     public static final ContentType MultiPart = new ContentType("Multi-Part", 2, 4);
+    public static final ContentType Xml = new ContentType("XML", 3, 8);
+    public static final ContentType Json = new ContentType("JSON", 4, 16);
     public static final ContentType Amf = new ContentType("AMF", 5, 32);
     public static final ContentType Unknown = new ContentType("Unknown", -1, 64);
 
@@ -39,12 +39,6 @@ public class ContentType {
     private ContentType(String name, int id, int flags) {
         this.names = new String[] { name };
         this.ids = new int[] { id };
-        this.flags = flags;
-    }
-
-    private ContentType(String[] names, int[] ids, int flags) {
-        this.names = names;
-        this.ids = ids;
         this.flags = flags;
     }
 
@@ -81,7 +75,7 @@ public class ContentType {
     }
 
     public boolean isTextBased() {
-        return flags < ContentType.None.flags;
+        return flags != 0 && (flags & ~(Json.flags | UrlEncoded.flags | Xml.flags)) == 0;
     }
 
     public static List<ContentType> getValues() {
