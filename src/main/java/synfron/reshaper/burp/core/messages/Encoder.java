@@ -23,12 +23,14 @@ public class Encoder {
     private boolean useDefault;
     @Getter
     private boolean useAutoDetect;
+    @Getter
+    private boolean autoSet = true;
 
     public Encoder(String encoding) {
-        setEncoding(encoding);
+        setEncoding(encoding, true);
     }
 
-    public void setEncoding(String encoding) {
+    public void setEncoding(String encoding, boolean autoSet) {
         useDefault = false;
         useAutoDetect = false;
         if (encoding == null || defaultEncoderName.equalsIgnoreCase(encoding)) {
@@ -38,6 +40,7 @@ public class Encoder {
         } else {
             charset = Charset.forName(encoding);
         }
+        this.autoSet = autoSet;
     }
 
     public static List<String> getEncodings() {
