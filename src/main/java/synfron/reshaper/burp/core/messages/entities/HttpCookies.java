@@ -8,6 +8,7 @@ import synfron.reshaper.burp.core.utils.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class HttpCookies extends HttpEntity {
     private ListMap<CaseInsensitiveString, String> cookies;
@@ -42,6 +43,10 @@ public class HttpCookies extends HttpEntity {
 
     public String getCookie(String name, GetItemPlacement itemPlacement) {
         return getCookies().get(new CaseInsensitiveString(name), itemPlacement);
+    }
+
+    public List<String> getCookiesNames() {
+        return getCookies().keys().stream().map(CaseInsensitiveString::toString).sorted().collect(Collectors.toList());
     }
 
     public boolean contains(String name)
