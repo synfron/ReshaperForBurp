@@ -154,6 +154,10 @@ public class ListMap<K, V> {
         return backingMap.containsKey(key);
     }
 
+    public Set<K> keys() {
+        return backingMap.keySet();
+    }
+
     public int size() {
         return nodeCount;
     }

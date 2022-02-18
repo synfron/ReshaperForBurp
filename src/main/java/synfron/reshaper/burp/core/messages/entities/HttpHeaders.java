@@ -4,6 +4,7 @@ import synfron.reshaper.burp.core.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class HttpHeaders extends HttpEntity {
     protected final List<String> headerLines;
@@ -60,6 +61,10 @@ public abstract class HttpHeaders extends HttpEntity {
                 headers.add(new CaseInsensitiveString(cookieHeaderName), new Mapped<>(() -> this.cookies.getValue()));
             }
         });
+    }
+
+    public List<String> getHeaderNames() {
+        return getHeaders().keys().stream().map(CaseInsensitiveString::toString).sorted().collect(Collectors.toList());
     }
 
     private ListMap<CaseInsensitiveString, IValue<String>> getHeaders() {

@@ -71,7 +71,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
         variableName.getDocument().addDocumentListener(new DocumentActionListener(this::onVariableNameChanged));
 
-        container.add(new JLabel("Variable Name"));
+        container.add(new JLabel("Variable Name *"));
         container.add(variableName);
         return container;
     }
@@ -129,7 +129,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
         githubLink.setFont(font.deriveFont(attributes));
 
         githubLink.addMouseListener(new MouseListener() {
-            private Color originalColor = githubLink.getForeground();
+            private final Color originalColor = githubLink.getForeground();
 
             @SneakyThrows
             @Override

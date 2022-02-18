@@ -28,7 +28,7 @@ public class VariableModel {
     private boolean saved = true;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    private IEventListener<PropertyChangedArgs> variableChanged = this::onVariableChanged;
+    private final IEventListener<PropertyChangedArgs> variableChanged = this::onVariableChanged;
 
     public VariableModel() {
         saved = false;
