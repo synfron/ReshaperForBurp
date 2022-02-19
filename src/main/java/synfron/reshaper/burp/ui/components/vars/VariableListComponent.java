@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
+import synfron.reshaper.burp.ui.utils.ListCellRenderer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -39,6 +40,7 @@ public class VariableListComponent extends JPanel {
                 .collect(Collectors.toList()));
 
         variableList = new JList<>(variableListModel);
+        variableList.setCellRenderer(new ListCellRenderer());
         variableList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane();
