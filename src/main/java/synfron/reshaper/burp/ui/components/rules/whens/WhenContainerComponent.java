@@ -21,6 +21,7 @@ public class WhenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(WhenModelType.MimeType, WhenMimeTypeComponent.class);
         componentMap.put(WhenModelType.ProxyName, WhenProxyNameComponent.class);
         componentMap.put(WhenModelType.FromTool, WhenFromToolComponent.class);
+        componentMap.put(WhenModelType.InScope, WhenInScopeComponent.class);
     }
 
     @Override

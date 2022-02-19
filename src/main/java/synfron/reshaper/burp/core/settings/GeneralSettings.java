@@ -46,6 +46,7 @@ public class GeneralSettings {
             case Scanner -> isCaptureScanner();
             case Intruder -> isCaptureIntruder();
             case Extender -> isCaptureExtender();
+            case Session -> true;
         };
     }
 }

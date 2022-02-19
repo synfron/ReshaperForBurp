@@ -10,6 +10,7 @@ public class ForegroundColorListCellRenderer extends DefaultListCellRenderer {
 
     public ForegroundColorListCellRenderer(BiFunction<Object, Color, Color> colorProvider) {
         this.colorProvider = colorProvider;
+        putClientProperty("html.disable", Boolean.TRUE);
     }
 
     @Override

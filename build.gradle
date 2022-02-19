@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.synfron.reshaper.burp'
-version '1.6.2'
+version '1.7.0'
 
 targetCompatibility = '15'
 sourceCompatibility = '15'
@@ -28,6 +28,7 @@ dependencies {
     implementation 'com.jayway.jsonpath:json-path:2.6.0'
     implementation 'net.portswigger.burp.extender:burp-extender-api:2.3'
     implementation 'org.rypt:f8:1.1-RC1'
+    implementation 'org.apache.commons:commons-csv:1.8'
     implementation files('libs/htmlchardet-1.0.2.1.jar')
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
