@@ -1,5 +1,8 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import burp.BurpExtender;
+import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.rules.thens.ThenRunRules;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenRunRulesModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
@@ -7,9 +10,12 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, ThenRunRules> {
-    private JTextField ruleName;
+    private JComboBox<String> ruleName;
     private JCheckBox runSingle;
 
     public ThenRunRulesComponent(ThenRunRulesModel then) {
@@ -19,13 +25,16 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
     private void initComponent() {
         runSingle = new JCheckBox("Run Single");
-        ruleName = createTextField();
+        ruleName = new JComboBox<>(Stream.concat(
+                Arrays.stream(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules()).map(rule -> rule.getName()),
+                Stream.of(model.getRuleName())
+        ).filter(StringUtils::isNotEmpty).sorted().distinct().toArray(String[]::new));
 
         runSingle.setSelected(model.isRunSingle());
-        ruleName.setText(model.getRuleName());
+        ruleName.setSelectedItem(model.getRuleName());
 
         runSingle.addActionListener(this::onRunSingleChanged);
-        ruleName.getDocument().addDocumentListener(new DocumentActionListener(this::onRuleNameChanged));
+        ruleName.addActionListener(this::onRuleNameChanged);
 
         mainContainer.add(runSingle, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -41,6 +50,6 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
     }
 
     private void onRuleNameChanged(ActionEvent actionEvent) {
-        model.setRuleName(ruleName.getText());
+        model.setRuleName((String) ruleName.getSelectedItem());
     }
 }

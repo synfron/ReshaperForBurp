@@ -10,6 +10,8 @@ import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.RulesEngine;
 
+import java.util.stream.Stream;
+
 public class ThenRunRules extends Then<ThenRunRules> {
     private int cacheVersion;
     private transient Rule ruleCache = null;
@@ -42,7 +44,7 @@ public class ThenRunRules extends Then<ThenRunRules> {
 
     private Rule getRule(RulesEngine rulesEngine) {
         if (isRuleCacheExpired(rulesEngine)) {
-            ruleCache = rulesEngine.getRulesRegistry().getRules().stream()
+            ruleCache = Stream.of(rulesEngine.getRulesRegistry().getRules())
                     .filter(rule -> StringUtils.isNotEmpty(rule.getName()) && rule.getName().equals(ruleName))
                     .findFirst()
                     .get();

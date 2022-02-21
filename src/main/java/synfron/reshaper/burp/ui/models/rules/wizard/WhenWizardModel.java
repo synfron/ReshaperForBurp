@@ -126,7 +126,7 @@ public class WhenWizardModel {
             rule.setName(ruleName);
             rule.setEnabled(false);
             rule.setAutoRun(true);
-            rule.setWhens(new ArrayList<>(whens));
+            rule.setWhens(whens.toArray(When[]::new));
             BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
             setInvalidated(false);
             return true;
