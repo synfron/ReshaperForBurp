@@ -51,6 +51,17 @@ public class Diagnostics implements IDiagnostics {
         )));
     }
 
+    @Override
+    public void logValue(When<?> when, boolean result, Object... values) {
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.When, String.format(
+                "%-4sWhen %s('%s') %s\n",
+                isLast(DiagnosticEntityType.When) ? toPrefix(when.isUseOrCondition()) : "",
+                when.getType().getName(),
+                toValuePhrase(values),
+                toResultPhrase(result, when.isNegate())
+        )));
+    }
+
     private boolean isLast(DiagnosticEntityType entityType) {
         List<DiagnosticRecord> records = getRecords();
         return records.size() > 0 && records.get(records.size() - 1).getEntityType() == entityType;

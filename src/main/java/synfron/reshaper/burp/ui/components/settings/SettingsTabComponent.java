@@ -12,6 +12,7 @@ import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.utils.FocusActionListener;
+import synfron.reshaper.burp.ui.utils.TableCellRenderer;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -98,7 +99,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         container.add(getLabeledField("Diagnostic Value Max Length", diagnosticValueMaxLength), "wrap");
         container.add(enableSanityCheckWarnings, "wrap");
         container.add(logInExtenderOutput, "wrap");
-        container.add(getLabeledField("Log Tab Character Limit", logTabCharacterLimit), "wrap");
+        container.add(getLabeledField("Logs Tab Character Limit", logTabCharacterLimit), "wrap");
         container.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
         return container;
     }
@@ -341,6 +342,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
             public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
             }
         };
+        exportRulesTable.setDefaultRenderer(Object.class, new TableCellRenderer());
         JScrollPane scrollPane = new JScrollPane(exportRulesTable);
         exportRulesModel = createTableModel(getExportRulesData(), new Object[] { "Export", "Rule Name" });
         exportRulesTable.setModel(exportRulesModel);
@@ -354,6 +356,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
             public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
             }
         };
+        exportVariablesTable.setDefaultRenderer(Object.class, new TableCellRenderer());
         JScrollPane scrollPane = new JScrollPane(exportVariablesTable);
         exportVariablesModel = createTableModel(getExportVariablesData(), new Object[] { "Export", "Variable Name" });
         exportVariablesTable.setModel(exportVariablesModel);

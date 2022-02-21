@@ -14,6 +14,7 @@ public class WhenModelType<P extends WhenModel<P, T>, T extends When<T>> extends
     public static final WhenModelType<WhenMimeTypeModel, WhenMimeType> MimeType = new WhenModelType<>("MIME Type", WhenMimeTypeModel.class, WhenType.MimeType);
     public static final WhenModelType<WhenProxyNameModel, WhenProxyName> ProxyName = new WhenModelType<>("Proxy Name", WhenProxyNameModel.class, WhenType.ProxyName);
     public static final WhenModelType<WhenFromToolModel, WhenFromTool> FromTool = new WhenModelType<>("From Tool", WhenFromToolModel.class, WhenType.FromTool);
+    public static final WhenModelType<WhenInScopeModel, WhenInScope> InScope = new WhenModelType<>("In Scope", WhenInScopeModel.class, WhenType.InScope);
 
     private WhenModelType(String name, Class<P> type, RuleOperationType<T> ruleOperationType) {
         super(name, type, ruleOperationType);
@@ -27,7 +28,8 @@ public class WhenModelType<P extends WhenModel<P, T>, T extends When<T>> extends
                 ContentType,
                 MimeType,
                 ProxyName,
-                FromTool
+                FromTool,
+                InScope
         );
     }
 }

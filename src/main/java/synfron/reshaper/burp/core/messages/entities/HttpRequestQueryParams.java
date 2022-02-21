@@ -6,6 +6,7 @@ import org.apache.http.message.BasicNameValuePair;
 import synfron.reshaper.burp.core.utils.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HttpRequestQueryParams extends HttpEntity {
     @Getter
@@ -24,6 +25,11 @@ public class HttpRequestQueryParams extends HttpEntity {
                 params.add(parameter.getName(), parameter.getValue());
             }
         }
+    }
+
+    public List<String> getParamNames() {
+        prepare();
+        return params.keys().stream().sorted().collect(Collectors.toList());
     }
 
     public boolean hasQueryParameter(String name) {

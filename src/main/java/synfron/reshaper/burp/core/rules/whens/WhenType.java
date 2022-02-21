@@ -14,6 +14,7 @@ public class WhenType<T extends When<T>> extends RuleOperationType<T> {
     public static final WhenType<WhenMimeType> MimeType = new WhenType<>("MIME Type", WhenMimeType.class);
     public static final WhenType<WhenProxyName> ProxyName = new WhenType<>("Proxy Name", WhenProxyName.class);
     public static final WhenType<WhenFromTool> FromTool = new WhenType<>("From Tool", WhenFromTool.class);
+    public static final WhenType<WhenInScope> InScope = new WhenType<>("In Scope", WhenInScope.class);
 
     private WhenType() {
         this(null, null);
@@ -31,7 +32,8 @@ public class WhenType<T extends When<T>> extends RuleOperationType<T> {
                 ContentType,
                 MimeType,
                 ProxyName,
-                FromTool
+                FromTool,
+                InScope
         );
     }
 }

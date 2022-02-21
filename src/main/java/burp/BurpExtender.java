@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.events.MessageEvent;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.ui.components.ReshaperComponent;
+import synfron.reshaper.burp.ui.utils.ContextMenuHandler;
 import synfron.reshaper.burp.ui.utils.UiMessageHandler;
 
 public class BurpExtender implements IBurpExtender {
@@ -20,7 +21,8 @@ public class BurpExtender implements IBurpExtender {
     private static final GeneralSettings generalSettings = new GeneralSettings();
     @Getter
     private static final MessageEvent messageEvent = new MessageEvent();
-    private static UiMessageHandler uiMessageHandler = new UiMessageHandler(messageEvent);
+    private static final UiMessageHandler uiMessageHandler = new UiMessageHandler(messageEvent);
+    private static final ContextMenuHandler contextMenuHandler = new ContextMenuHandler();
 
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
@@ -34,6 +36,9 @@ public class BurpExtender implements IBurpExtender {
         callbacks.registerProxyListener(connector);
         callbacks.registerHttpListener(connector);
         callbacks.registerExtensionStateListener(connector);
+        callbacks.registerSessionHandlingAction(connector);
+        callbacks.registerContextMenuFactory(contextMenuHandler);
+
         Log.get().withMessage("Reshaper started").log();
     }
 }
