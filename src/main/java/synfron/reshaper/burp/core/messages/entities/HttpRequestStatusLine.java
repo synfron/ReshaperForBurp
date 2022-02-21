@@ -23,7 +23,7 @@ public class HttpRequestStatusLine extends HttpEntity {
             String[] lineParts = statusLine.split(" ", 3);
             method = CollectionUtils.elementAtOrDefault(lineParts, 0, "");
             url = new HttpRequestUri(CollectionUtils.elementAtOrDefault(lineParts, 1, ""));
-            version = CollectionUtils.elementAtOrDefault(lineParts, 2, "");;
+            version = CollectionUtils.elementAtOrDefault(lineParts, 2, "");
             parsed = true;
         }
     }

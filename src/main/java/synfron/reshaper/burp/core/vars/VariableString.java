@@ -1,6 +1,10 @@
 package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
+import burp.ICookie;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +18,7 @@ import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +39,12 @@ public class VariableString implements Serializable {
     public VariableString(String text, List<VariableSourceEntry> variables) {
         this.text = text;
         this.variables = variables;
+    }
+
+    public static CSVFormat getParamFormat() {
+        return CSVFormat.DEFAULT.withDelimiter(':')
+                .withAllowMissingColumnNames(true)
+                .withEscape('\\');
     }
 
     public static boolean isValidVariableName(String name) {
@@ -108,6 +119,7 @@ public class VariableString implements Serializable {
                         case Message -> getMessageVariable(eventInfo, variable.getName());
                         case File -> getFileText(eventInfo, variable.getName());
                         case Special -> variable.getName();
+                        case CookieJar -> getCookie(variable.getName());
                         default -> null;
                     };
                     variableVals.add(value);
@@ -122,6 +134,40 @@ public class VariableString implements Serializable {
             }
         }
         return String.format(text, variableVals.toArray());
+    }
+
+    private String getCookie(String locator) {
+        try {
+            String[] parts = locator.split(":", 3);
+            String domain = parts[0];
+            String name = parts[1];
+            String path = CollectionUtils.elementAtOrDefault(parts, 2);
+            if (Arrays.stream(parts).anyMatch(part -> part.startsWith("\""))) {
+                CSVParser csvParser = CSVParser.parse(locator, getParamFormat());
+                CSVRecord record = csvParser.getRecords().get(0);
+                if (record.size() == 2) {
+                    domain = record.get(0);
+                    name = record.get(1);
+                    path = null;
+                } else if (record.size() == 3) {
+                    domain = record.get(0);
+                    name = record.get(1);
+                    path = record.get(2);
+                }
+            }
+            for (ICookie cookie : BurpExtender.getCallbacks().getCookieJarContents()) {
+                if (cookie.getDomain().equals(domain)
+                        && cookie.getName().equals(name)
+                        && (path == null || StringUtils.defaultString(cookie.getPath()).equals(path))) {
+                    return cookie.getValue();
+                }
+            }
+        } catch (Exception e) {
+            if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
+                Log.get().withMessage(String.format("Invalid use of cookie jar variable tag: %s", VariableSourceEntry.getTag(VariableSource.CookieJar, locator))).withException(e).logErr();
+            }
+        }
+        return "";
     }
 
     private String getFileText(IEventInfo eventInfo, String locator) {

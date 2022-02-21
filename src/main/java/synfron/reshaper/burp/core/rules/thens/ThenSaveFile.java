@@ -47,7 +47,7 @@ public class ThenSaveFile extends Then<ThenSaveFile> {
                     encodingValue = VariableString.getTextOrDefault(eventInfo, encoding, Charset.defaultCharset().name());
                     Encoder encoder = new Encoder(encodingValue);
                     if (encoder.isUseDefault()) {
-                        byte[] fileBytes = encoder.encode(encodingValue);
+                        byte[] fileBytes = encoder.encode(textValue);
                         FileUtils.writeByteArrayToFile(path.toFile(), fileBytes, fileExistsAction == FileExistsAction.Append);
                     } else {
                         FileUtils.write(path.toFile(), textValue, encoder.isUseAutoDetect() ? StandardCharsets.UTF_8.toString() : encodingValue, fileExistsAction == FileExistsAction.Append);

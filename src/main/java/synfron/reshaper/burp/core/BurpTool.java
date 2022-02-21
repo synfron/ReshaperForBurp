@@ -12,12 +12,13 @@ public enum BurpTool {
     Target(IBurpExtenderCallbacks.TOOL_TARGET),
     Spider(IBurpExtenderCallbacks.TOOL_SPIDER),
     Scanner(IBurpExtenderCallbacks.TOOL_SCANNER),
-    Extender(IBurpExtenderCallbacks.TOOL_EXTENDER);
+    Extender(IBurpExtenderCallbacks.TOOL_EXTENDER),
+    Session(null);
 
     @Getter
-    private final int id;
+    private final Integer id;
 
-    BurpTool(int id) {
+    BurpTool(Integer id) {
         this.id = id;
     }
 

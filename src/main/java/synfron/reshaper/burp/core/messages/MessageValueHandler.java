@@ -8,6 +8,9 @@ import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
+import java.util.Collections;
+import java.util.List;
+
 public class MessageValueHandler {
 
     public static String getValue(IEventInfo eventInfo, MessageValue messageValue, VariableString identifier, GetItemPlacement itemPlacement)
@@ -108,5 +111,16 @@ public class MessageValueHandler {
             case HttpResponseStatusCode -> responseMessage.getStatusLine().setCode(replacementText);
             case HttpResponseStatusMessage -> responseMessage.getStatusLine().setMessage(StringUtils.defaultString(replacementText));
         }
+    }
+
+    public static List<String> getIdentifier(IEventInfo eventInfo, MessageValue messageValue) {
+        return switch (messageValue) {
+            case HttpRequestHeader -> eventInfo.getHttpRequestMessage().getHeaders().getHeaderNames();
+            case HttpResponseHeader -> eventInfo.getHttpResponseMessage().getHeaders().getHeaderNames();
+            case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookies().getCookiesNames();
+            case HttpResponseCookie -> eventInfo.getHttpResponseMessage().getHeaders().getCookies().getCookiesNames();
+            case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParams().getParamNames();
+            default -> Collections.emptyList();
+        };
     }
 }

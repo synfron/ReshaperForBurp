@@ -76,7 +76,7 @@ public class XmlHttpRequestObj {
         uriBuilder.setPath(StringUtils.defaultIfBlank(inputUriBuilder.getPath(), "/"));
         uriBuilder.setParameters(inputUriBuilder.getQueryParams());
         uriBuilder.setFragment(inputUriBuilder.getFragment());
-        String request = String.format(requestTemplate, method, uriBuilder.toString(), requestUrl.getAuthority());
+        String request = String.format(requestTemplate, method, uriBuilder, requestUrl.getAuthority());
         Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
         requestMessage = new HttpRequestMessage(encoder.encode(request), encoder);
         setReadyState(OPENED);

@@ -35,5 +35,7 @@ For example, if Global variable named `firstName` has the value `John` and varia
 
 **Special Character Tag (special, s):** `{{s:specialCharacterSequences}}`. Examples: `{{s:n}}` (new line), `{{s:rn}}` (carriage return + new line), `{{s:u00A9}}` (Copyright symbol)
 
+**Cookie Jar Tag (cookiejar, cj):** `{{cookiejar:domain}}` or `{{cookiejar:domain:path}}`. Example: `{{cookiejar:example.com:/}}`
+
 
 {% endraw %}

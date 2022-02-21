@@ -69,7 +69,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
 
         ruleName.getDocument().addDocumentListener(new DocumentActionListener(this::onRuleNameChanged));
 
-        container.add(new JLabel("Rule Name"));
+        container.add(new JLabel("Rule Name *"));
         container.add(ruleName);
         return container;
     }
@@ -83,7 +83,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
         githubLink.setFont(font.deriveFont(attributes));
 
         githubLink.addMouseListener(new MouseListener() {
-            private Color originalColor = githubLink.getForeground();
+            private final Color originalColor = githubLink.getForeground();
 
             @SneakyThrows
             @Override
