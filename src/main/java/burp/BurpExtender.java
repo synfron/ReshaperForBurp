@@ -36,6 +36,7 @@ public class BurpExtender implements IBurpExtender {
         callbacks.registerProxyListener(connector);
         callbacks.registerHttpListener(connector);
         callbacks.registerExtensionStateListener(connector);
+        callbacks.registerSessionHandlingAction(connector);
         callbacks.registerContextMenuFactory(contextMenuHandler);
 
         Log.get().withMessage("Reshaper started").log();

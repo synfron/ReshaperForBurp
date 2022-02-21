@@ -3,6 +3,7 @@ package synfron.reshaper.burp.core;
 import burp.*;
 import lombok.Getter;
 import net.jodah.expiringmap.ExpiringMap;
+import org.apache.commons.lang3.ArrayUtils;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.EventInfo;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Connector implements IProxyListener, IHttpListener, IExtensionStateListener {
+public class Connector implements IProxyListener, IHttpListener, IExtensionStateListener, ISessionHandlingAction {
 
     private static final AtomicInteger lastMessageId = new AtomicInteger(1);
     @Getter
@@ -232,5 +233,17 @@ public class Connector implements IProxyListener, IHttpListener, IExtensionState
     private BurpTool getBurpToolIfEnabled(int toolFlag) {
         BurpTool burpTool = BurpTool.getById(toolFlag);
         return burpTool != null && BurpExtender.getGeneralSettings().isCapture(burpTool) ? burpTool : null;
+    }
+
+    @Override
+    public String getActionName() {
+        return "Reshaper";
+    }
+
+    @Override
+    public void performAction(IHttpRequestResponse currentRequest, IHttpRequestResponse[] macroItems) {
+        boolean messageIsRequest = ArrayUtils.isEmpty(currentRequest.getResponse());
+        IEventInfo eventInfo = asEventInfo(messageIsRequest, BurpTool.Session, currentRequest);
+        processEvent(messageIsRequest, eventInfo, null);
     }
 }

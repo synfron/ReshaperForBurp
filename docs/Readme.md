@@ -28,6 +28,8 @@ Proxy Name - If received by a certain Burp proxy listener
 
 From Tool - If the HTTP message is from a specific Burp tool
 
+In Scope - If the URL is in the suite-wide scope
+
 [More](https://synfron.github.io/ReshaperForBurp/Rules.html#whens)
 
 ### Thens

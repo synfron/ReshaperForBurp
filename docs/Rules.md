@@ -71,13 +71,25 @@ Response MIME Type - HTML, Script, CSS, JSON, SVG, Other XML, Other Text, Image,
 
 If received by a certain Burp proxy listener
 
+#### Fields
+
 Proxy Name - The Burp proxy listener interface (e.g. 127.0.0.1:8080)
 
 ### From Tool
 
 If the HTTP message is from a specific Burp tool
 
-Tool - Proxy, Repeater, Intruder, Target, Spider, Scanner, or Extender
+#### Fields
+
+Tool - Proxy, Repeater, Intruder, Target, Spider, Scanner, Extender, or Session
+
+### In Scope
+
+If the URL is in the suite-wide scope
+
+#### Fields
+
+URL - The URL to check or leave blank to use the current request's URL. Supports variable tags. 
 
 ## Thens
 

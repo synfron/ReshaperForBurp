@@ -13,7 +13,8 @@ public enum VariableSource {
     Global("g", false),
     Message("m", true),
     File("f", true),
-    Special("s", true);
+    Special("s", true),
+    CookieJar("cj", true);
 
     private final String shortName;
     private final boolean accessor;
