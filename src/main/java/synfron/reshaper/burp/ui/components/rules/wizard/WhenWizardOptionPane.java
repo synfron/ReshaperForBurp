@@ -66,7 +66,6 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new EmptyBorder(0,0,0,0));
         scrollPane.setViewportView(container);
-        scrollPane.setPreferredSize(new Dimension(300, 300));
 
         JButton addItem = new JButton("Add");
 
@@ -76,6 +75,8 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         container.add(getLabeledField("Rule Name *", ruleName), "wrap");
         container.add(getWhenWizardItemList(), "wrap");
         container.add(getPaddedButton(addItem), "wrap");
+
+        scrollPane.setPreferredSize(container.getPreferredSize());
 
         return scrollPane;
     }
