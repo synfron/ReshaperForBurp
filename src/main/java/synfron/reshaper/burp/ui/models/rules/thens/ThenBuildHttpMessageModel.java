@@ -26,7 +26,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     @Getter
     private VariableSource destinationVariableSource;
     @Getter
-    private String DestinationVariableName;
+    private String destinationVariableName;
 
     private final IEventListener<PropertyChangedArgs> messageValueSetterChangedListener = this::onMessageValueSetterChanged;
 
@@ -38,7 +38,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
                 .map(messageValueSetter -> new MessageValueSetterModel(messageValueSetter).withListener(messageValueSetterChangedListener))
                 .collect(Collectors.toList());
         this.destinationVariableSource = then.getDestinationVariableSource();
-        this.DestinationVariableName = VariableString.toString(then.getDestinationVariableName(), DestinationVariableName);
+        this.destinationVariableName = VariableString.toString(then.getDestinationVariableName(), destinationVariableName);
     }
 
     public MessageValueSetterModel addMessageValueSetter() {
@@ -76,15 +76,15 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     }
 
     public void setDestinationVariableName(String destinationVariableName) {
-        this.DestinationVariableName = destinationVariableName;
+        this.destinationVariableName = destinationVariableName;
         propertyChanged("destinationVariableName", destinationVariableName);
     }
 
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (StringUtils.isEmpty(DestinationVariableName)) {
+        if (StringUtils.isEmpty(destinationVariableName)) {
             errors.add("Destination Variable Name is required");
-        } else if (!VariableString.isValidVariableName(DestinationVariableName)) {
+        } else if (!VariableString.isValidVariableName(destinationVariableName)) {
             errors.add("Destination Variable Name is invalid");
         }
         messageValueSetters.forEach(messageValueSetter -> errors.addAll(messageValueSetter.validate()));
@@ -106,7 +106,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
         );
 
         ruleOperation.setDestinationVariableSource(destinationVariableSource);
-        ruleOperation.setDestinationVariableName(VariableString.getAsVariableString(DestinationVariableName));
+        ruleOperation.setDestinationVariableName(VariableString.getAsVariableString(destinationVariableName));
         setValidated(true);
         return true;
     }

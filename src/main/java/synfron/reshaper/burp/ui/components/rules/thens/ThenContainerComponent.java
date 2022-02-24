@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.rules.thens.ThenEvaluate;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationContainerComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenModelType;
@@ -21,6 +22,7 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.Prompt, ThenPromptComponent.class);
         componentMap.put(ThenModelType.RunRules, ThenRunRulesComponent.class);
         componentMap.put(ThenModelType.RunScript, ThenRunScriptComponent.class);
+        componentMap.put(ThenModelType.Evaluate, ThenEvaluateComponent.class);
         componentMap.put(ThenModelType.SetEventDirection, ThenSetEventDirectionComponent.class);
         componentMap.put(ThenModelType.SetEncoding, ThenSetEncodingComponent.class);
         componentMap.put(ThenModelType.SetValue, ThenSetValueComponent.class);

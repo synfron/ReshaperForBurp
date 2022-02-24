@@ -97,14 +97,12 @@ public class VariableString implements Serializable {
 
     public Integer getInt(IEventInfo eventInfo)
     {
-        String text = getText(eventInfo);
-        Integer nullableValue = null;
-        try {
-            nullableValue = Integer.parseInt(text);
-        } catch (NumberFormatException ignored) {
+        return TextUtils.asInt(getText(eventInfo));
+    }
 
-        }
-        return nullableValue;
+    public Double getDouble(IEventInfo eventInfo)
+    {
+        return TextUtils.asDouble(getText(eventInfo));
     }
 
     public String getText(IEventInfo eventInfo)
@@ -223,9 +221,15 @@ public class VariableString implements Serializable {
         return variableString != null ? variableString.getText(eventInfo) : null;
     }
 
-    public static int getIntOrDefault(IEventInfo eventInfo, VariableString variableString, int defaultValue) {
+    public static Integer getIntOrDefault(IEventInfo eventInfo, VariableString variableString, Integer defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 variableString.getInt(eventInfo) :
+                defaultValue;
+    }
+
+    public static Double getDoubleOrDefault(IEventInfo eventInfo, VariableString variableString, Double defaultValue) {
+        return variableString != null && !variableString.isEmpty() ?
+                variableString.getDouble(eventInfo) :
                 defaultValue;
     }
 

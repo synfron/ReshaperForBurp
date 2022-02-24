@@ -173,6 +173,18 @@ Script - The text of the JavaScript script to run.
 
 Max Execution (secs) - Terminate long-running scripts after this time.
 
+### Evaluate
+
+Perform operations on values
+
+#### Fields
+
+X - First value.  Supports variable tags.
+
+Operation - `Add`, `Subtract`, `Multiply`, `Divide By`, `Increment`, `Decrement`, `Mod`, `Abs`, `Round`, `Equals`, `Greater Than`, `Greater Than Or Equals`, `Less Than`, or `Less Than Or Equals`
+
+Y - Second value. Only available for certain operations. Supports variable tags.
+
 ### Set Event Direction
 
 Change whether to send a request or to send a response at the end of processing
