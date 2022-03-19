@@ -410,13 +410,15 @@ Send a separate HTTP request.
 
 #### Fields
 
-Protocol - `http` or `https`. Supports variable tags.
+Request - The HTTP request message to send. Uses the value from the current event if left blank. Supports variable tags.
 
-Address - Host name without port. Example: `www.example.com`. Supports variable tags.
+URL - The URL of the request. If this is set, it overrides the Host request header, the request message URI, protocol, address, and port. Supports variable tags.
 
-Port - Example: `80`. Supports variable tags.
+Protocol - `http` or `https`. If this is set, it overrides the values from the URL (if set) or the current event. Supports variable tags.
 
-Request - The HTTP request message to send. Supports variable tags.
+Address - Hostname without port. If this is set, it overrides the values from the URL (if set) or the current event. Example: `www.example.com`. Supports variable tags.
+
+Port - Example: `80`. If this is set, it overrides the values from the URL (if set) or the current event. Supports variable tags.
 
 Wait for Completion - Wait for a response before continuing.
 

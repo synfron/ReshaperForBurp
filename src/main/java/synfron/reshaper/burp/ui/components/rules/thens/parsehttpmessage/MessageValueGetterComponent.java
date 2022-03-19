@@ -44,7 +44,9 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
         setLayout(new MigLayout());
 
         sourceMessageValue = new JComboBox<>(
-                Stream.of(MessageValue.values()).filter(messageValue -> messageValue.getDataDirection() == dataDirection).toArray(MessageValue[]::new)
+                Stream.of(MessageValue.values())
+                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isMessageGettable())
+                        .toArray(MessageValue[]::new)
         );
         sourceIdentifier = createTextField();
         sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());

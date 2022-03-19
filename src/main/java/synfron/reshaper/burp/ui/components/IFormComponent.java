@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
 
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -33,13 +34,36 @@ public interface IFormComponent {
     }
 
     default JTextField createTextField() {
-        return addUndo(new JTextField());
+        return addCopyPaste(addUndo(new JTextField()));
     }
 
     default JTextPane createTextPane() {
-        return addUndo(new JTextPane());
+        return addCopyPaste(addUndo(new JTextPane()));
     }
-    
+
+    static <T extends JTextComponent> T addCopyPaste(T textComponent) {
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        Action cut = new DefaultEditorKit.CutAction();
+        Action copy = new DefaultEditorKit.CopyAction();
+        Action paste = new DefaultEditorKit.PasteAction();
+        Action selectAll = new ActionPerformedListener(event -> textComponent.selectAll());
+
+        cut.putValue(Action.NAME, "Cut");
+        copy.putValue(Action.NAME, "Copy");
+        paste.putValue(Action.NAME, "Paste");
+        selectAll.putValue(Action.NAME, "Select All");
+
+        popupMenu.add(cut);
+        popupMenu.add(copy);
+        popupMenu.add(paste);
+        popupMenu.add(selectAll);
+
+        textComponent.setComponentPopupMenu(popupMenu);
+
+        return textComponent;
+    }
+
     static <T extends JTextComponent> T addUndo(T textComponent) {
         UndoManager undoManager = new UndoManager();
 

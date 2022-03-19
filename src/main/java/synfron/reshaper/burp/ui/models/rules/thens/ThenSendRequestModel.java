@@ -12,13 +12,15 @@ import java.util.List;
 public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSendRequest> {
 
     @Getter
+    private String request;
+    @Getter
+    private String url;
+    @Getter
     private String protocol;
     @Getter
     private String address;
     @Getter
     private String port;
-    @Getter
-    private String request;
     @Getter
     private boolean waitForCompletion;
     @Getter
@@ -38,10 +40,11 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
 
     public ThenSendRequestModel(ThenSendRequest then, Boolean isNew) {
         super(then, isNew);
+        request = VariableString.toString(then.getRequest(), request);
+        url = VariableString.toString(then.getUrl(), url);
         protocol = VariableString.toString(then.getProtocol(), protocol);
         address = VariableString.toString(then.getAddress(), address);
         port = VariableString.toString(then.getPort(), port);
-        request = VariableString.toString(then.getRequest(), request);
         waitForCompletion = then.isWaitForCompletion();
         failAfter = VariableString.toString(then.getFailAfter(), failAfter);
         failOnErrorStatusCode = then.isFailOnErrorStatusCode();
@@ -50,6 +53,16 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
         captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+        propertyChanged("request", request);
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+        propertyChanged("url", url);
     }
 
     public void setProtocol(String protocol) {
@@ -65,11 +78,6 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
     public void setPort(String port) {
         this.port = port;
         propertyChanged("port", port);
-    }
-
-    public void setRequest(String request) {
-        this.request = request;
-        propertyChanged("request", request);
     }
 
     public void setWaitForCompletion(boolean waitForCompletion) {
@@ -134,10 +142,11 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
         if (validate().size() != 0) {
             return false;
         }
+        ruleOperation.setRequest(VariableString.getAsVariableString(request));
+        ruleOperation.setUrl(VariableString.getAsVariableString(url));
         ruleOperation.setProtocol(VariableString.getAsVariableString(protocol));
         ruleOperation.setAddress(VariableString.getAsVariableString(address));
         ruleOperation.setPort(VariableString.getAsVariableString(port));
-        ruleOperation.setRequest(VariableString.getAsVariableString(request));
         ruleOperation.setWaitForCompletion(waitForCompletion);
         ruleOperation.setFailAfter(VariableString.getAsVariableString(failAfter));
         ruleOperation.setFailOnErrorStatusCode(failOnErrorStatusCode);

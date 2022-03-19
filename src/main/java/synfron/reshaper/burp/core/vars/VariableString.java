@@ -55,6 +55,10 @@ public class VariableString implements Serializable {
         return StringUtils.isEmpty(text);
     }
 
+    public static boolean isEmpty(VariableString variableString) {
+        return variableString == null || variableString.isEmpty();
+    }
+
     public String toString()
     {
         return String.format(text, variables.stream().map(VariableSourceEntry::getTag).toArray());
