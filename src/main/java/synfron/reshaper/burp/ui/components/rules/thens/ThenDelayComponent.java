@@ -16,7 +16,7 @@ public class ThenDelayComponent extends ThenComponent<ThenDelayModel,ThenDelay> 
     }
 
     private void initComponent() {
-        delay = createTextField();
+        delay = createTextField(true);
 
         delay.setText(model.getDelay());
 

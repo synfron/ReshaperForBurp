@@ -4,12 +4,14 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenSetVariable;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Collections;
 import java.util.List;
 
-public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, ThenSetVariable> {
+public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, ThenSetVariable> implements IVariableCreator {
 
     @Getter
     private VariableSource targetSource;
@@ -20,6 +22,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
         super(then, isNew);
         targetSource = then.getTargetSource();
         variableName = VariableString.toString(then.getVariableName(), variableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public void setTargetSource(VariableSource targetSource) {
@@ -63,5 +66,12 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
     @Override
     public RuleOperationModelType<ThenSetVariableModel, ThenSetVariable> getType() {
         return ThenModelType.SetVariable;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return StringUtils.isNotEmpty(variableName) ?
+                List.of(new VariableSourceEntry(targetSource, variableName)) :
+                Collections.emptyList();
     }
 }

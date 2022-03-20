@@ -19,7 +19,7 @@ public class UiMessageHandler {
         switch (messageArgs.getData().getMessageType()) {
             case PromptRequest -> {
                 PromptRequestMessage message = (PromptRequestMessage)messageArgs.getData();
-                MessagePrompter.createTextAreaDialog(
+                ModalPrompter.createTextAreaDialog(
                         message.getMessageId(),
                         "Prompt",
                         message.getDescription(),
@@ -30,7 +30,7 @@ public class UiMessageHandler {
                         )))
                 );
             }
-            case PromptCancel -> MessagePrompter.dismiss(messageArgs.getData().getMessageId());
+            case PromptCancel -> ModalPrompter.dismiss(messageArgs.getData().getMessageId());
         }
     }
 }

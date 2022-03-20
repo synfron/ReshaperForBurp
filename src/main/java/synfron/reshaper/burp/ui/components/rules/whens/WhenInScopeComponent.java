@@ -16,7 +16,7 @@ public class WhenInScopeComponent extends WhenComponent<WhenInScopeModel, WhenIn
     }
 
     private void initComponent() {
-        url = createTextField();
+        url = createTextField(true);
 
         url.setText(model.getUrl());
 

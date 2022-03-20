@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
@@ -18,7 +19,6 @@ import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +55,10 @@ public class VariableString implements Serializable {
         return StringUtils.isEmpty(text);
     }
 
+    public static boolean isEmpty(VariableString variableString) {
+        return variableString == null || variableString.isEmpty();
+    }
+
     public String toString()
     {
         return String.format(text, variables.stream().map(VariableSourceEntry::getTag).toArray());
@@ -63,8 +67,16 @@ public class VariableString implements Serializable {
     public static String toString(VariableString variableString, String defaultValue) {
         return variableString != null ? variableString.toString() : defaultValue;
     }
+
     public static VariableString getAsVariableString(String str) {
         return getAsVariableString(str, true);
+    }
+
+    public static List<Pair<Integer, Integer>> getVariableTagPositions(String str) {
+        Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
+        return pattern.matcher(str).results()
+                .map(result -> Pair.of(result.start(), result.end()))
+                .collect(Collectors.toList());
     }
 
     public static VariableString getAsVariableString(String str, boolean requiresParsing)
@@ -97,14 +109,12 @@ public class VariableString implements Serializable {
 
     public Integer getInt(IEventInfo eventInfo)
     {
-        String text = getText(eventInfo);
-        Integer nullableValue = null;
-        try {
-            nullableValue = Integer.parseInt(text);
-        } catch (NumberFormatException ignored) {
+        return TextUtils.asInt(getText(eventInfo));
+    }
 
-        }
-        return nullableValue;
+    public Double getDouble(IEventInfo eventInfo)
+    {
+        return TextUtils.asDouble(getText(eventInfo));
     }
 
     public String getText(IEventInfo eventInfo)
@@ -223,9 +233,15 @@ public class VariableString implements Serializable {
         return variableString != null ? variableString.getText(eventInfo) : null;
     }
 
-    public static int getIntOrDefault(IEventInfo eventInfo, VariableString variableString, int defaultValue) {
+    public static Integer getIntOrDefault(IEventInfo eventInfo, VariableString variableString, Integer defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 variableString.getInt(eventInfo) :
+                defaultValue;
+    }
+
+    public static Double getDoubleOrDefault(IEventInfo eventInfo, VariableString variableString, Double defaultValue) {
+        return variableString != null && !variableString.isEmpty() ?
+                variableString.getDouble(eventInfo) :
                 defaultValue;
     }
 

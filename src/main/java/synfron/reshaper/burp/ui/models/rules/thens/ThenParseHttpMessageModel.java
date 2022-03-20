@@ -1,11 +1,13 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenParseHttpMessage;
 import synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage.MessageValueGetter;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.parsehttpmessage.MessageValueGetterModel;
@@ -13,7 +15,7 @@ import synfron.reshaper.burp.ui.models.rules.thens.parsehttpmessage.MessageValue
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageModel, ThenParseHttpMessage> {
+public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageModel, ThenParseHttpMessage> implements IVariableCreator {
 
     @Getter
     private DataDirection dataDirection;
@@ -31,6 +33,7 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
         this.messageValueGetters = then.getMessageValueGetters().stream()
                 .map(messageValueGetter -> new MessageValueGetterModel(messageValueGetter).withListener(messageValueGetterChangedListener))
                 .collect(Collectors.toList());
+        VariableCreatorRegistry.register(this);
     }
 
     public MessageValueGetterModel addMessageValueGetter() {
@@ -98,5 +101,13 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
     @Override
     public RuleOperationModelType<ThenParseHttpMessageModel, ThenParseHttpMessage> getType() {
         return ThenModelType.ParseHttpMessage;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return messageValueGetters.stream()
+                .filter(getter -> StringUtils.isNotEmpty(getter.getDestinationVariableName()))
+                .map(getter -> new VariableSourceEntry(getter.getDestinationVariableSource(), getter.getDestinationVariableName()))
+                .collect(Collectors.toList());
     }
 }

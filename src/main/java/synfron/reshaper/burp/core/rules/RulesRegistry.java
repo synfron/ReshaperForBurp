@@ -1,9 +1,11 @@
 package synfron.reshaper.burp.core.rules;
 
 import lombok.Getter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.*;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,34 +20,34 @@ public class RulesRegistry {
 
     private final IEventListener<PropertyChangedArgs> rulePropertyChangedListener = this::onRulePropertyChanged;
 
-    private List<Rule> rules = new ArrayList<>();
+    private Rule[] rules = new Rule[0];
 
-    public List<Rule> getRules() {
-        return new ArrayList<>(rules);
+    public Rule[] getRules() {
+        return rules;
     }
 
     @Getter
     private final CollectionChangedEvent collectionChangedEvent = new CollectionChangedEvent();
 
     public synchronized void deleteRule(Rule rule) {
-        int index = rules.indexOf(rule);
+        int index = ArrayUtils.indexOf(rules, rule);
         if (index >= 0) {
-            rules.remove(index);
+            rules = ArrayUtils.remove(rules, index);
             version++;
             collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Remove, index, rule));
         }
     }
 
     public synchronized void addRule(Rule rule) {
-        rules.add(rule);
+        rules = ArrayUtils.add(rules, rule);
         version++;
-        collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Add, rules.size() - 1, rule));
+        collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Add, rules.length - 1, rule));
         rule.getPropertyChangedEvent().add(rulePropertyChangedListener);
     }
 
     private void onRulePropertyChanged(PropertyChangedArgs propertyChangedArgs) {
         Rule rule = (Rule)propertyChangedArgs.getSource();
-        int index = rules.indexOf(rule);
+        int index = ArrayUtils.indexOf(rules, rule);
         if (index >= 0) {
             version++;
             collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Update, index, rule));
@@ -55,11 +57,9 @@ public class RulesRegistry {
     public synchronized void movePrevious(Rule rule)
     {
         if (rule != null) {
-            int currentIndex = rules.indexOf(rule);
+            int currentIndex = ArrayUtils.indexOf(rules, rule);
             if (currentIndex > 0) {
-
-                rules.remove(currentIndex);
-                rules.add(--currentIndex, rule);
+                rules = CollectionUtils.move(rules, rule, currentIndex, --currentIndex);
                 version++;
                 collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Move, currentIndex + 1, currentIndex, rule));
             }
@@ -70,11 +70,10 @@ public class RulesRegistry {
     {
         if (rule != null)
         {
-            int currentIndex = rules.indexOf(rule);
-            if (currentIndex < rules.size() - 1)
+            int currentIndex = ArrayUtils.indexOf(rules, rule);
+            if (currentIndex < rules.length - 1)
             {
-                rules.remove(currentIndex);
-                rules.add(++currentIndex, rule);
+                rules = CollectionUtils.move(rules, rule, currentIndex, ++currentIndex);
                 version++;
                 collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Move, currentIndex - 1, currentIndex, rule));
             }
@@ -83,20 +82,20 @@ public class RulesRegistry {
 
     public void importRules(List<Rule> rules, boolean overwriteDuplicates) {
         rules = ObjectUtils.defaultIfNull(rules, Collections.emptyList());
-        Set<String> existingRules = this.rules.stream().map(Rule::toString).collect(Collectors.toSet());
+        Set<String> existingRules = Stream.of(this.rules).map(Rule::toString).collect(Collectors.toSet());
         Set<String> newRules = rules.stream().map(Rule::toString).collect(Collectors.toSet());
         this.rules = Stream.concat(
-                this.rules.stream()
+                Stream.of(this.rules)
                         .filter(rule -> !overwriteDuplicates || !newRules.contains(rule.getName())),
                 rules.stream()
                         .filter(rule -> overwriteDuplicates || !existingRules.contains(rule.getName()))
                         .map(rule -> rule.withListener(rulePropertyChangedListener))
-        ).collect(Collectors.toList());
+        ).toArray(Rule[]::new);
         version++;
         collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Reset));
     }
 
     public List<Rule> exportRules() {
-        return rules.stream().filter(rule -> StringUtils.isNotEmpty(rule.getName())).collect(Collectors.toList());
+        return Stream.of(this.rules).filter(rule -> StringUtils.isNotEmpty(rule.getName())).collect(Collectors.toList());
     }
 }

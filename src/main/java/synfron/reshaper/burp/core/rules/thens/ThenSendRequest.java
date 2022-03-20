@@ -6,7 +6,10 @@ import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import synfron.reshaper.burp.core.events.Event;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
+import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
@@ -21,13 +24,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ThenSendRequest extends Then<ThenSendRequest> {
     @Getter @Setter
+    private VariableString request;
+    @Getter @Setter
+    private VariableString url;
+    @Getter @Setter
     private VariableString protocol;
     @Getter @Setter
     private VariableString address;
     @Getter @Setter
     private VariableString port;
-    @Getter @Setter
-    private VariableString request;
     @Getter @Setter
     private boolean waitForCompletion;
     @Getter @Setter
@@ -60,17 +65,36 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
             AtomicReference<byte[]> response = new AtomicReference<>();
             executor.submit(() -> {
                 try {
-                    boolean useHttps = !StringUtils.equalsIgnoreCase(VariableString.getTextOrDefault(eventInfo, protocol, eventInfo.getHttpProtocol()), "http");
-                    String address = VariableString.getTextOrDefault(eventInfo, this.address, eventInfo.getDestinationAddress());
-                    int port = VariableString.getIntOrDefault(eventInfo, this.port, eventInfo.getDestinationPort() == null ? 0 : eventInfo.getDestinationPort());
-                    byte[] request = this.request != null && !this.request.isEmpty() ?
-                            eventInfo.getEncoder().encode(this.request.getText(eventInfo)) :
-                            eventInfo.getHttpRequestMessage().getValue();
+                    EventInfo newEventInfo = new EventInfo(eventInfo);
+                    boolean useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
+                    if (!VariableString.isEmpty(request)) {
+                        newEventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(this.request.getText(eventInfo)));
+                    }
+                    if (!VariableString.isEmpty(url)) {
+                        newEventInfo.setUrl(url.getText(eventInfo));
+                        useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
+                    }
+                    if (!VariableString.isEmpty(protocol)) {
+                        useHttps = !StringUtils.equalsIgnoreCase(protocol.getText(eventInfo), "http");
+                    }
+                    if (!VariableString.isEmpty(address)) {
+                        newEventInfo.setDestinationAddress(address.getText(eventInfo));
+                    }
+                    if (!VariableString.isEmpty(port)) {
+                        newEventInfo.setDestinationPort(VariableString.getIntOrDefault(
+                                eventInfo,
+                                this.port,
+                                (newEventInfo.getDestinationPort() == null || newEventInfo.getDestinationPort() == 0) ?
+                                        (useHttps ? 443 : 80) :
+                                        newEventInfo.getDestinationPort()
+                        ));
+                    }
+
                     byte[] responseBytes = BurpExtender.getCallbacks().makeHttpRequest(
-                            address,
-                            port > 0 ? port : (useHttps ? 443 : 80),
+                            newEventInfo.getDestinationAddress(),
+                            newEventInfo.getDestinationPort(),
                             useHttps,
-                            request
+                            newEventInfo.getHttpRequestMessage().getValue()
                     );
                     response.set(responseBytes);
                 } catch (Exception e) {
@@ -90,7 +114,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                         0;
                 failed = !complete || (failOnErrorStatusCode && (exitCode == 0 || (exitCode >= 400 && exitCode < 600)));
                 if (captureOutput && (!failed || captureAfterFailure)) {
-                    output = BurpExtender.getCallbacks().getHelpers().bytesToString(response.get());
+                    output = response.get() != null ? BurpExtender.getCallbacks().getHelpers().bytesToString(response.get()) : "";
                     setVariable(eventInfo, captureVariableName, output);
                 }
             }
@@ -105,10 +129,11 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
         } finally {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
+                        Pair.of("url", VariableString.getTextOrDefault(eventInfo, url, null)),
+                        Pair.of("request", VariableString.getTextOrDefault(eventInfo, request, null)),
                         Pair.of("protocol", VariableString.getTextOrDefault(eventInfo, protocol, null)),
                         Pair.of("address", VariableString.getTextOrDefault(eventInfo, address, null)),
                         Pair.of("port", VariableString.getTextOrDefault(eventInfo, port, null)),
-                        Pair.of("request", VariableString.getTextOrDefault(eventInfo, request, null)),
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
                         Pair.of("captureVariableName", waitForCompletion && captureOutput ? captureVariableName : null),

@@ -16,7 +16,7 @@ public class WhenEventDirectionComponent extends WhenComponent<WhenEventDirectio
     }
 
     private void initComponent() {
-        dataDirection = new JComboBox<>(DataDirection.values());
+        dataDirection = createComboBox(DataDirection.values());
 
         dataDirection.setSelectedItem(model.getDataDirection());
 

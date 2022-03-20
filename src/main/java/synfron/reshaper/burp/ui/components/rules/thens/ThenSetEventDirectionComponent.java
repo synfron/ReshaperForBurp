@@ -16,7 +16,7 @@ public class ThenSetEventDirectionComponent extends ThenComponent<ThenSetEventDi
     }
 
     private void initComponent() {
-        dataDirection = new JComboBox<>(DataDirection.values());
+        dataDirection = createComboBox(DataDirection.values());
 
         dataDirection.setSelectedItem(model.getDataDirection());
 

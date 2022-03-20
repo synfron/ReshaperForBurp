@@ -11,7 +11,6 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.stream.Stream;
@@ -40,14 +39,14 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
     private void initComponent() {
         setLayout(new MigLayout());
 
-        sourceText = createTextField();
-        destinationMessageValue = new JComboBox<>(
+        sourceText = createTextField(true);
+        destinationMessageValue = createComboBox(
                 Stream.of(MessageValue.values())
-                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && !messageValue.isTopLevel())
+                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isMessageSettable())
                         .toArray(MessageValue[]::new)
         );
-        destinationIdentifier = createTextField();
-        destinationIdentifierPlacement = new JComboBox<>(SetItemPlacement.values());
+        destinationIdentifier = createTextField(true);
+        destinationIdentifierPlacement = createComboBox(SetItemPlacement.values());
 
         sourceText.setText(model.getSourceText());
         destinationMessageValue.setSelectedItem(model.getDestinationMessageValue());
@@ -96,13 +95,5 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
 
     private void onDelete(ActionEvent actionEvent) {
         model.setDeleted(true);
-    }
-
-    protected Component getPaddedButton(JButton button) {
-        JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        outerContainer.setAlignmentX(LEFT_ALIGNMENT);
-        outerContainer.setAlignmentY(TOP_ALIGNMENT);
-        outerContainer.add(button);
-        return outerContainer;
     }
 }

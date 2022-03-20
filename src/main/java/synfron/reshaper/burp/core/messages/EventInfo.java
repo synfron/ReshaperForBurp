@@ -3,6 +3,7 @@ package synfron.reshaper.burp.core.messages;
 import burp.BurpExtender;
 import burp.IHttpRequestResponse;
 import burp.IInterceptedProxyMessage;
+import lombok.Data;
 import lombok.Getter;
 import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
@@ -74,6 +75,20 @@ public class EventInfo implements IEventInfo {
         proxyName = null;
     }
 
+    public EventInfo(IEventInfo sourceEventInfo) {
+        this.burpTool = sourceEventInfo.getBurpTool();
+        this.dataDirection = sourceEventInfo.getDataDirection();
+        this.requestResponse = null;
+        this.encoder.setEncoding(sourceEventInfo.getEncoder().getEncoding(), sourceEventInfo.getEncoder().isAutoSet());
+        httpRequestMessage = new HttpRequestMessage(sourceEventInfo.getHttpRequestMessage().getValue(), encoder);
+        httpResponseMessage = new HttpResponseMessage(sourceEventInfo.getHttpResponseMessage().getValue(), encoder);
+        httpProtocol = sourceEventInfo.getHttpProtocol();
+        sourceAddress = sourceEventInfo.getSourceAddress();
+        destinationPort = sourceEventInfo.getDestinationPort();
+        destinationAddress = sourceEventInfo.getDestinationAddress();
+        proxyName = sourceEventInfo.getProxyName();
+    }
+
     @Override
     public void setDataDirection(DataDirection dataDirection) {
         this.dataDirection = dataDirection;
@@ -123,8 +138,7 @@ public class EventInfo implements IEventInfo {
             setHttpProtocol(url.getProtocol());
             setDestinationAddress(url.getHost());
             setDestinationPort(url.getPort() > 0 ? url.getPort() : url.getDefaultPort());
-            getHttpRequestMessage().getStatusLine().setUrl(url.getFile().startsWith("/") ? url.getFile() : "/" + url.getFile());
-            getHttpRequestMessage().getHeaders().setHeader("Host", url.getAuthority(), SetItemPlacement.Only);
+            getHttpRequestMessage().setUrl(url);
         } catch (MalformedURLException e) {
             throw new WrappedException(e);
         }
@@ -162,4 +176,5 @@ public class EventInfo implements IEventInfo {
         }
         return url;
     }
+
 }

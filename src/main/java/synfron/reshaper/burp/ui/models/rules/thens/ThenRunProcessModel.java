@@ -4,12 +4,14 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenRunProcess;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Collections;
 import java.util.List;
 
-public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunProcess> {
+public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunProcess> implements IVariableCreator {
 
     @Getter
     private String command;
@@ -47,6 +49,7 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
         captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public void setCommand(String command) {
@@ -153,5 +156,12 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     @Override
     public RuleOperationModelType<ThenRunProcessModel, ThenRunProcess> getType() {
         return ThenModelType.RunProcess;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return captureOutput && StringUtils.isNotEmpty(captureVariableName) ?
+                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                Collections.emptyList();
     }
 }
