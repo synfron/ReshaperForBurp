@@ -9,7 +9,6 @@ import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> extends JScrollPane implements IFormComponent {
@@ -36,14 +35,6 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
         if ("validated".equals(propertyChangedArgs.getName())) {
             setValidateButtonState();
         }
-    }
-
-    protected Component getPaddedButton(JButton button) {
-        JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        outerContainer.setAlignmentX(LEFT_ALIGNMENT);
-        outerContainer.setAlignmentY(TOP_ALIGNMENT);
-        outerContainer.add(button);
-        return outerContainer;
     }
 
     private void setValidateButtonState() {

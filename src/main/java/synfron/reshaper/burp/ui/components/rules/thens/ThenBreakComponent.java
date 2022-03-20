@@ -16,7 +16,7 @@ public class ThenBreakComponent extends ThenComponent<ThenBreakModel, ThenBreak>
     }
 
     private void initComponent() {
-        breakType = new JComboBox<>(RuleResponse.getValues().stream().skip(1).toArray(RuleResponse[]::new));
+        breakType = createComboBox(RuleResponse.getValues().stream().skip(1).toArray(RuleResponse[]::new));
 
         breakType.setSelectedItem(model.getBreakType());
 

@@ -15,7 +15,7 @@ public class ThenHighlightComponent extends ThenComponent<ThenHighlightModel, Th
     }
 
     private void initComponent() {
-        color = new JComboBox<>(ThenHighlight.HighlightColor.values());
+        color = createComboBox(ThenHighlight.HighlightColor.values());
 
         color.setSelectedItem(model.getColor());
 

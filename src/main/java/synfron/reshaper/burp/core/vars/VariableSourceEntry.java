@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,6 +25,12 @@ public class VariableSourceEntry implements Serializable {
         this.tag = tag;
     }
 
+    public VariableSourceEntry(VariableSource variableSource, String name) {
+        this.variableSource = variableSource;
+        this.name = name;
+        this.tag = getTag();
+    }
+
     public String getTag() {
         return StringUtils.isNotEmpty(tag) ? tag : getTag(variableSource, name);
     }
@@ -32,11 +39,21 @@ public class VariableSourceEntry implements Serializable {
         return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), name);
     }
 
-    public static String getTag(String source, String name, String identifier) {
-        return String.format("{{%s}}", Stream.of(
-                StringUtils.defaultString(source),
-                StringUtils.defaultString(name),
-                StringUtils.defaultIfEmpty(identifier, null)
+    public static String getTag(VariableSource variableSource, String... names) {
+        return String.format("{{%s}}", Stream.concat(
+                Stream.of(StringUtils.defaultString(variableSource.toString().toLowerCase())),
+                Arrays.stream(names).map(name -> StringUtils.defaultIfEmpty(name, null))
+        ).filter(Objects::nonNull).collect(Collectors.joining(":")));
+    }
+
+    public static String getShortTag(VariableSource variableSource, String name) {
+        return String.format("{{%s:%s}}", variableSource.getShortName(), name);
+    }
+
+    public static String getShortTag(VariableSource variableSource, String... names) {
+        return String.format("{{%s}}", Stream.concat(
+                Stream.of(StringUtils.defaultString(variableSource.getShortName())),
+                Arrays.stream(names).map(name -> StringUtils.defaultIfEmpty(name, null))
         ).filter(Objects::nonNull).collect(Collectors.joining(":")));
     }
 }

@@ -1,8 +1,8 @@
-package synfron.reshaper.burp.ui.models.rules.wizard;
+package synfron.reshaper.burp.ui.models.rules.wizard.whens;
 
 import lombok.Getter;
 
-public enum WizardMatchType {
+public enum WhenWizardMatchType {
     Exists("Exists", false),
     Equals("Equals", true),
     Contains("Contains", true),
@@ -15,7 +15,7 @@ public enum WizardMatchType {
     @Getter
     private final boolean matcher;
 
-    WizardMatchType(String name, boolean matcher) {
+    WhenWizardMatchType(String name, boolean matcher) {
         this.name = name;
         this.matcher = matcher;
     }

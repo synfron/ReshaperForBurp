@@ -16,7 +16,7 @@ public class WhenFromToolComponent extends WhenComponent<WhenFromToolModel, When
     }
 
     private void initComponent() {
-        tool = new JComboBox<>(BurpTool.values());
+        tool = createComboBox(BurpTool.values());
 
         tool.setSelectedItem(model.getTool());
 

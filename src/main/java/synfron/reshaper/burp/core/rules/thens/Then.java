@@ -19,6 +19,7 @@ import synfron.reshaper.burp.core.utils.Serializer;
         @JsonSubTypes.Type(value = ThenLog.class),
         @JsonSubTypes.Type(value = ThenRunRules.class),
         @JsonSubTypes.Type(value = ThenRunScript.class),
+        @JsonSubTypes.Type(value = ThenEvaluate.class),
         @JsonSubTypes.Type(value = ThenSendTo.class),
         @JsonSubTypes.Type(value = ThenSetEventDirection.class),
         @JsonSubTypes.Type(value = ThenSetValue.class),

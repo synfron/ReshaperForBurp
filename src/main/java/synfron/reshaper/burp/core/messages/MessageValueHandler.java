@@ -16,9 +16,9 @@ public class MessageValueHandler {
     public static String getValue(IEventInfo eventInfo, MessageValue messageValue, VariableString identifier, GetItemPlacement itemPlacement)
     {
         String value;
-        if (messageValue.getDataDirection() == DataDirection.Request) {
+        if (!messageValue.isTopLevel() && messageValue.getDataDirection() == DataDirection.Request) {
             value = getRequestValue(eventInfo, eventInfo.getHttpRequestMessage(), messageValue, identifier, itemPlacement);
-        } else if (messageValue.getDataDirection() == DataDirection.Response) {
+        } else if (!messageValue.isTopLevel() && messageValue.getDataDirection() == DataDirection.Response) {
             value = getResponseValue(eventInfo, eventInfo.getHttpResponseMessage(), messageValue, identifier, itemPlacement);
         } else {
             value = switch (messageValue) {
@@ -27,6 +27,8 @@ public class MessageValueHandler {
                 case SourceAddress -> eventInfo.getSourceAddress();
                 case DestinationPort -> Integer.toString(eventInfo.getDestinationPort());
                 case DestinationAddress -> eventInfo.getDestinationAddress();
+                case HttpRequestMessage -> eventInfo.getHttpRequestMessage().getText();
+                case HttpResponseMessage -> eventInfo.getHttpResponseMessage().getText();
                 default -> throw new UnsupportedOperationException(String.format("Cannot get message value '%s'", messageValue));
             };
         }
@@ -67,9 +69,9 @@ public class MessageValueHandler {
     
 
     public static void setValue(IEventInfo eventInfo, MessageValue messageValue, VariableString identifier, SetItemPlacement itemPlacement, String replacementText) {
-        if (messageValue.getDataDirection() == DataDirection.Request && !messageValue.isTopLevel()) {
+        if (!messageValue.isTopLevel() && messageValue.getDataDirection() == DataDirection.Request) {
             setRequestValue(eventInfo, eventInfo.getHttpRequestMessage(), messageValue, identifier,itemPlacement, replacementText);
-        } else if (messageValue.getDataDirection() == DataDirection.Response && !messageValue.isTopLevel()) {
+        } else if (!messageValue.isTopLevel() && messageValue.getDataDirection() == DataDirection.Response) {
             setResponseValue(eventInfo, eventInfo.getHttpResponseMessage(), messageValue, identifier, itemPlacement, replacementText);
         } else {
             switch (messageValue) {
@@ -92,11 +94,11 @@ public class MessageValueHandler {
             case HttpRequestStatusLine -> requestMessage.setStatusLine(replacementText);
             case HttpRequestCookie -> requestMessage.getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpRequestUri -> requestMessage.getStatusLine().setUrl(replacementText);
-            case HttpRequestMessage -> eventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(replacementText));
             case HttpRequestMethod -> requestMessage.getStatusLine().setMethod(replacementText);
             case HttpRequestUriPath -> requestMessage.getStatusLine().getUrl().setPath(StringUtils.defaultString(replacementText));
             case HttpRequestUriQueryParameter -> requestMessage.getStatusLine().getUrl().getQueryParams().setQueryParameter(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpRequestUriQueryParameters -> requestMessage.getStatusLine().getUrl().setQueryParametersText(StringUtils.defaultString(replacementText));
+            case Url -> requestMessage.setUrl(StringUtils.defaultString(replacementText));
         }
     }
 
@@ -107,7 +109,6 @@ public class MessageValueHandler {
             case HttpResponseBody -> responseMessage.setBody(StringUtils.defaultString(replacementText));
             case HttpResponseStatusLine -> responseMessage.setStatusLine(replacementText);
             case HttpResponseCookie -> responseMessage.getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
-            case HttpResponseMessage -> eventInfo.setHttpResponseMessage(eventInfo.getEncoder().encode(replacementText));
             case HttpResponseStatusCode -> responseMessage.getStatusLine().setCode(replacementText);
             case HttpResponseStatusMessage -> responseMessage.getStatusLine().setMessage(StringUtils.defaultString(replacementText));
         }

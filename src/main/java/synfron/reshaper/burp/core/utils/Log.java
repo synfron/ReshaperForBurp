@@ -36,6 +36,7 @@ public class Log {
                 StringUtils.defaultString(exception.getMessage(), ""),
                 ExceptionUtils.getStackTrace(exception)
         );
+        exception.printStackTrace();
         return this;
     }
 

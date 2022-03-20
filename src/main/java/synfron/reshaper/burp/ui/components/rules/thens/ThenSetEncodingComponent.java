@@ -16,7 +16,7 @@ public class ThenSetEncodingComponent extends ThenComponent<ThenSetEncodingModel
     }
 
     private void initComponent() {
-        encoding = new JComboBox<>(Encoder.getEncodings().toArray(new String[0]));
+        encoding = createComboBox(Encoder.getEncodings().toArray(new String[0]));
 
         encoding.setSelectedItem(model.getEncoding());
 

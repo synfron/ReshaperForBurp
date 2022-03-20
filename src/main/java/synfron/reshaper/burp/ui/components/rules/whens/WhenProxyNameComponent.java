@@ -16,7 +16,7 @@ public class WhenProxyNameComponent extends WhenComponent<WhenProxyNameModel, Wh
     }
 
     private void initComponent() {
-        proxyName = createTextField();
+        proxyName = createTextField(false);
 
         proxyName.setText(model.getProxyName());
 

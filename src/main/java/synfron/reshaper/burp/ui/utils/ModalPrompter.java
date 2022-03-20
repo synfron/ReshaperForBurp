@@ -1,19 +1,48 @@
 package synfron.reshaper.burp.ui.utils;
 
-import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class MessagePrompter implements IFormComponent {
+public class ModalPrompter<T extends IPrompterModel<T>> implements IFormComponent {
     private static final Map<String, JDialog> dialogMap = new ConcurrentHashMap<>();
+    private final T model;
+    private final IPrompter<T> prompter;
+    private final boolean reopenOnError;
+
+    private final IEventListener<PropertyChangedArgs> modelChangedListener = this::onModelChanged;
+
+    public ModalPrompter(T model, IPrompter<T> prompter, boolean reopenOnError) {
+        this.model = model;
+        this.prompter = prompter;
+        this.reopenOnError = reopenOnError;
+
+        model.setModalPrompter(this);
+    }
+
+    private void open() {
+        model.resetPropertyChangedListener();
+        model.withListener(modelChangedListener);
+        prompter.open(model);
+    }
+
+    public static <T extends IPrompterModel<T>> void open(T model, IPrompter<T> prompter, boolean reopenOnError) {
+        ModalPrompter<T> modalPrompter = new ModalPrompter<>(model, prompter, reopenOnError);
+        modalPrompter.open();
+    }
+
+    private void onModelChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (reopenOnError && !model.isDismissed() && propertyChangedArgs.getName().equals("invalidated") && (boolean)propertyChangedArgs.getValue()) {
+            ModalPrompter.open(model, prompter, reopenOnError);
+        }
+    }
 
     public static void createTextAreaDialog(String id, String title, String description, String text, Consumer<String> valueHandler) {
         JPanel container = new JPanel(new BorderLayout());
@@ -39,6 +68,7 @@ public class MessagePrompter implements IFormComponent {
             } else {
                 valueHandler.accept(null);
             }
+            dismiss(id);
         });
 
         dialog.setModal(false);
@@ -49,6 +79,7 @@ public class MessagePrompter implements IFormComponent {
         JDialog dialog = dialogMap.get(id);
         if (dialog != null) {
             dialog.dispose();
+            dialogMap.remove(id);
         }
     }
 }

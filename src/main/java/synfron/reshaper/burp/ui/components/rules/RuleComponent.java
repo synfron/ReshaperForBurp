@@ -59,7 +59,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        ruleName = createTextField();
+        ruleName = createTextField(false);
 
         ruleName.setText(model.getName());
         ruleName.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

@@ -100,6 +100,35 @@ public class TextUtils {
         }
     }
 
+    public static Integer asInt(String text) {
+        Integer nullableValue = null;
+        try {
+            nullableValue = Integer.parseInt(text);
+        } catch (NumberFormatException ignored) {
+
+        }
+        return nullableValue;
+    }
+
+    public static boolean isDouble(String text) {
+        try {
+            Double.parseDouble(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static Double asDouble(String text) {
+        Double nullableValue = null;
+        try {
+            nullableValue = Double.parseDouble(text);
+        } catch (NumberFormatException ignored) {
+
+        }
+        return nullableValue;
+    }
+
     public static String toString(Object value) {
         return value != null ? value.toString() : null;
     }
