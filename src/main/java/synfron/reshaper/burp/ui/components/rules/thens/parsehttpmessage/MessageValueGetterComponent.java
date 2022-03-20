@@ -4,7 +4,6 @@ import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.parsehttpmessage.MessageValueGetterModel;
@@ -13,7 +12,6 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,15 +41,15 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
     private void initComponent() {
         setLayout(new MigLayout());
 
-        sourceMessageValue = new JComboBox<>(
+        sourceMessageValue = createComboBox(
                 Stream.of(MessageValue.values())
                         .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isMessageGettable())
                         .toArray(MessageValue[]::new)
         );
-        sourceIdentifier = createTextField();
-        sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());
-        destinationVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        destinationVariableName = createTextField();
+        sourceIdentifier = createTextField(true);
+        sourceIdentifierPlacement = createComboBox(GetItemPlacement.values());
+        destinationVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        destinationVariableName = createTextField(true);
 
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
         sourceIdentifier.setText(model.getSourceIdentifier());
@@ -107,13 +105,5 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
 
     private void onDelete(ActionEvent actionEvent) {
         model.setDeleted(true);
-    }
-
-    protected Component getPaddedButton(JButton button) {
-        JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        outerContainer.setAlignmentX(LEFT_ALIGNMENT);
-        outerContainer.setAlignmentY(TOP_ALIGNMENT);
-        outerContainer.add(button);
-        return outerContainer;
     }
 }

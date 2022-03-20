@@ -75,11 +75,11 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         JPanel container = new JPanel(new MigLayout());
 
         enableEventDiagnostics = new JCheckBox("Enable Event Diagnostics");
-        diagnosticValueMaxLength = createTextField();
+        diagnosticValueMaxLength = createTextField(false);
         enableSanityCheckWarnings = new JCheckBox("Enable Sanity Check Warnings");
         logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
-        logTabCharacterLimit = createTextField();
-        defaultEncoding = new JComboBox<>(Encoder.getEncodings().toArray(new String[0]));
+        logTabCharacterLimit = createTextField(false);
+        defaultEncoding = createComboBox(Encoder.getEncodings().toArray(new String[0]));
 
         enableEventDiagnostics.setSelected(generalSettings.isEnableEventDiagnostics());
         diagnosticValueMaxLength.setText(Objects.toString(generalSettings.getDiagnosticValueMaxLength()));

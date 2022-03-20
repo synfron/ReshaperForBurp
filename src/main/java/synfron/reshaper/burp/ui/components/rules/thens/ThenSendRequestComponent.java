@@ -31,19 +31,19 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
     }
 
     private void initComponent() {
-        request = createTextField();
-        url = createTextField();
-        protocol = createTextField();
-        address = createTextField();
-        port = createTextField();
+        request = createTextField(true);
+        url = createTextField(true);
+        protocol = createTextField(true);
+        address = createTextField(true);
+        port = createTextField(true);
         waitForCompletion = new JCheckBox("Wait for Completion");
-        failAfter = createTextField();
+        failAfter = createTextField(true);
         failOnErrorStatusCode = new JCheckBox("Fail on Error Status Code");
         breakAfterFailure = new JCheckBox("Break After Failure");
         captureOutput = new JCheckBox("Capture Output");
         captureAfterFailure = new JCheckBox("Capture After Failure");
-        captureVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        captureVariableName = createTextField();
+        captureVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        captureVariableName = createTextField(true);
 
         request.setText(model.getRequest());
         url.setText(model.getUrl());

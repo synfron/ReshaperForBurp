@@ -1,11 +1,11 @@
-package synfron.reshaper.burp.ui.components.rules.wizard;
+package synfron.reshaper.burp.ui.components.rules.wizard.whens;
 
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.components.IFormComponent;
-import synfron.reshaper.burp.ui.models.rules.wizard.WhenWizardItemModel;
-import synfron.reshaper.burp.ui.models.rules.wizard.WhenWizardModel;
+import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardItemModel;
+import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
@@ -43,6 +43,8 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
                         "Validation Error",
                         JOptionPane.ERROR_MESSAGE);
             }
+        } else {
+            model.setDismissed(true);
         }
     }
 
@@ -62,7 +64,7 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
     private Component getBody() {
         JPanel container = new JPanel(new MigLayout());
 
-        ruleName = createTextField();
+        ruleName = createTextField(false);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new EmptyBorder(0,0,0,0));
         scrollPane.setViewportView(container);
@@ -83,14 +85,6 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
 
     private void onRuleNameChanged(ActionEvent actionEvent) {
         model.setRuleName(ruleName.getText());
-    }
-
-    protected Component getPaddedButton(JButton button) {
-        JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        outerContainer.setAlignmentX(LEFT_ALIGNMENT);
-        outerContainer.setAlignmentY(TOP_ALIGNMENT);
-        outerContainer.add(button);
-        return outerContainer;
     }
 
     private void onAddItem(ActionEvent actionEvent) {

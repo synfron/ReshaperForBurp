@@ -5,12 +5,14 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenEvaluate;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Collections;
 import java.util.List;
 
-public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate> {
+public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate> implements IVariableCreator {
 
     @Getter
     private String x;
@@ -30,6 +32,7 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         this.y = VariableString.toString(then.getY(), y);
         this.destinationVariableSource = then.getDestinationVariableSource();
         this.destinationVariableName = VariableString.toString(then.getDestinationVariableName(), destinationVariableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public void setX(String x) {
@@ -98,5 +101,12 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     @Override
     public RuleOperationModelType<ThenEvaluateModel, ThenEvaluate> getType() {
         return ThenModelType.Evaluate;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return StringUtils.isNotEmpty(destinationVariableName) ?
+                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                Collections.emptyList();
     }
 }

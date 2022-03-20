@@ -4,12 +4,14 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenSendRequest;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Collections;
 import java.util.List;
 
-public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSendRequest> {
+public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSendRequest> implements IVariableCreator {
 
     @Getter
     private String request;
@@ -53,6 +55,7 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
         captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public void setRequest(String request) {
@@ -171,5 +174,12 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
     @Override
     public RuleOperationModelType<ThenSendRequestModel, ThenSendRequest> getType() {
         return ThenModelType.SendRequest;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return captureOutput && StringUtils.isNotEmpty(captureVariableName) ?
+                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                Collections.emptyList();
     }
 }

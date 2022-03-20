@@ -23,11 +23,11 @@ public class ThenEvaluateComponent extends ThenComponent<ThenEvaluateModel, Then
     }
 
     private void initComponent() {
-        x = createTextField();
-        operation = new JComboBox<>(Operation.values());
-        y = createTextField();
-        destinationVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        destinationVariableName = createTextField();
+        x = createTextField(true);
+        operation = createComboBox(Operation.values());
+        y = createTextField(true);
+        destinationVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        destinationVariableName = createTextField(true);
 
         x.setText(model.getX());
         operation.setSelectedItem(model.getOperation());

@@ -1,10 +1,10 @@
-package synfron.reshaper.burp.ui.components.rules.wizard;
+package synfron.reshaper.burp.ui.components.rules.wizard.whens;
 
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.ui.components.IFormComponent;
-import synfron.reshaper.burp.ui.models.rules.wizard.WhenWizardItemModel;
-import synfron.reshaper.burp.ui.models.rules.wizard.WizardMatchType;
+import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardItemModel;
+import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardMatchType;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -18,7 +18,7 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
     private final boolean deletable;
     private JComboBox<MessageValue> messageValue;
     private JComboBox<String> identifier;
-    private JComboBox<WizardMatchType> matchType;
+    private JComboBox<WhenWizardMatchType> matchType;
     private JTextField text;
 
     public WhenWizardItemComponent(WhenWizardItemModel model, boolean deletable) {
@@ -31,10 +31,10 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
         setLayout(new BorderLayout());
         JPanel container = new JPanel(new MigLayout());
 
-        messageValue = new JComboBox<>(MessageValue.values());
-        identifier = new JComboBox<>(model.getIdentifiers().getOptions().toArray(new String[0]));
-        matchType = new JComboBox<>(WizardMatchType.values());
-        text = createTextField();
+        messageValue = createComboBox(MessageValue.values());
+        identifier = createComboBox(model.getIdentifiers().getOptions().toArray(new String[0]));
+        matchType = createComboBox(WhenWizardMatchType.values());
+        text = createTextField(true);
         text.setColumns(20);
         text.setMaximumSize(new Dimension(text.getPreferredSize().width, text.getPreferredSize().height));
         text.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -69,7 +69,7 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
         container.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 text,
                 List.of(matchType, messageValue, identifier),
-                () -> (!((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired() || identifier.getItemCount() != 0) && ((WizardMatchType) matchType.getSelectedItem()).isMatcher()
+                () -> (!((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired() || identifier.getItemCount() != 0) && ((WhenWizardMatchType) matchType.getSelectedItem()).isMatcher()
         ), "wrap");
 
         add(new JSeparator(), BorderLayout.PAGE_START);
@@ -103,7 +103,7 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
     }
 
     private void onMatchTypeChanged(ActionEvent actionEvent) {
-        model.setMatchType((WizardMatchType) matchType.getSelectedItem());
+        model.setMatchType((WhenWizardMatchType) matchType.getSelectedItem());
     }
 
     private void onTextChanged(ActionEvent actionEvent) {

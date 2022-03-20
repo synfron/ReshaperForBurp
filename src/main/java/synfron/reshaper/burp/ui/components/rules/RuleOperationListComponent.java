@@ -4,6 +4,7 @@ import lombok.Getter;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -15,7 +16,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,?>> extends JPanel {
+public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,?>> extends JPanel implements IFormComponent {
     protected final RuleModel model;
     protected JList<T> operationsList;
     protected DefaultListModel<T> operationsListModel;
@@ -117,7 +118,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private Component getAddOperation() {
         JPanel container = new JPanel();
 
-        operationSelector = new JComboBox<>(getRuleOperationModelTypes().toArray(new RuleOperationModelType<?,?>[0]));
+        operationSelector = createComboBox(getRuleOperationModelTypes().toArray(new RuleOperationModelType<?,?>[0]));
         JButton add = new JButton("Add");
 
         add.addActionListener(this::onAdd);

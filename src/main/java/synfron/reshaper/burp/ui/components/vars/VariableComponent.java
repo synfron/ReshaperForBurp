@@ -62,7 +62,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        variableName = createTextField();
+        variableName = createTextField(false);
         variableName.setText(model.getName());
         variableName.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         variableName.setAlignmentX(Component.LEFT_ALIGNMENT);

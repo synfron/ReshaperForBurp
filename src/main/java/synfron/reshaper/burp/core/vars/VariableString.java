@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
@@ -18,7 +19,6 @@ import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,8 +67,16 @@ public class VariableString implements Serializable {
     public static String toString(VariableString variableString, String defaultValue) {
         return variableString != null ? variableString.toString() : defaultValue;
     }
+
     public static VariableString getAsVariableString(String str) {
         return getAsVariableString(str, true);
+    }
+
+    public static List<Pair<Integer, Integer>> getVariableTagPositions(String str) {
+        Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
+        return pattern.matcher(str).results()
+                .map(result -> Pair.of(result.start(), result.end()))
+                .collect(Collectors.toList());
     }
 
     public static VariableString getAsVariableString(String str, boolean requiresParsing)

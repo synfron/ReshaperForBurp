@@ -25,7 +25,7 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
     private void initComponent() {
         runSingle = new JCheckBox("Run Single");
-        ruleName = new JComboBox<>(Stream.concat(
+        ruleName = createComboBox(Stream.concat(
                 Arrays.stream(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules()).map(rule -> rule.getName()),
                 Stream.of(model.getRuleName())
         ).filter(StringUtils::isNotEmpty).sorted().distinct().toArray(String[]::new));

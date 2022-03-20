@@ -1,9 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
-import lombok.Getter;
 import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.rules.thens.ThenHighlight;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
 import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSaveFileModel;
@@ -24,15 +21,14 @@ public class ThenSaveFileComponent extends ThenComponent<ThenSaveFileModel, Then
     }
 
     private void initComponent() {
-        filePath = createTextField();
-        text = createTextField();
-        encoding = new JComboBox<>(Encoder.getEncodings().toArray(new String[0]));
-        fileExistsAction = new JComboBox<>(FileExistsAction.values());
+        filePath = createTextField(true);
+        text = createTextField(true);
+        encoding = createComboBox(Encoder.getEncodings().toArray(new String[0]), true);
+        fileExistsAction = createComboBox(FileExistsAction.values());
 
         filePath.setText(model.getFilePath());
         text.setText(model.getText());
         encoding.setSelectedItem(model.getEncoding());
-        encoding.setEditable(true);
         fileExistsAction.setSelectedItem(model.getFileExistsAction());
 
         filePath.getDocument().addDocumentListener(new DocumentActionListener(this::onFilePathChanged));

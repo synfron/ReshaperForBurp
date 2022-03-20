@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.rules.thens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
@@ -52,7 +51,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
                     ),
                     messageValueSetters.stream().map(messageValueSetter -> Pair.of(
                             VariableSourceEntry.getTag(
-                                    VariableSource.Message.name().toLowerCase(),
+                                    VariableSource.Message,
                                     messageValueSetter.getDestinationMessageValue().name().toLowerCase(),
                                     messageValueSetter.getDestinationMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(
                                             eventInfo, messageValueSetter.getDestinationIdentifier(), null

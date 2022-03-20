@@ -26,14 +26,14 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
     }
 
     private void initComponent() {
-        sendTo = new JComboBox<>(SendToOption.values());
+        sendTo = createComboBox(SendToOption.values());
         overrideDefaults = new JCheckBox("Override Defaults");
-        host = createTextField();
-        port = createTextField();
-        protocol = createTextField();
-        request = createTextField();
-        value = createTextField();
-        url = createTextField();
+        host = createTextField(true);
+        port = createTextField(true);
+        protocol = createTextField(true);
+        request = createTextField(true);
+        value = createTextField(true);
+        url = createTextField(true);
 
         sendTo.setSelectedItem(model.getSendTo());
         overrideDefaults.setSelected(model.isOverrideDefaults());

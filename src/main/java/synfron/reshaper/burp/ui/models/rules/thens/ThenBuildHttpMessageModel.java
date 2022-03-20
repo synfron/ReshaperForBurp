@@ -8,14 +8,16 @@ import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenBuildHttpMessage;
 import synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage.MessageValueSetter;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.buildhttpmessage.MessageValueSetterModel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageModel, ThenBuildHttpMessage> {
+public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageModel, ThenBuildHttpMessage> implements IVariableCreator {
 
     @Getter
     private DataDirection dataDirection;
@@ -39,6 +41,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
                 .collect(Collectors.toList());
         this.destinationVariableSource = then.getDestinationVariableSource();
         this.destinationVariableName = VariableString.toString(then.getDestinationVariableName(), destinationVariableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public MessageValueSetterModel addMessageValueSetter() {
@@ -123,5 +126,12 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     @Override
     public RuleOperationModelType<ThenBuildHttpMessageModel, ThenBuildHttpMessage> getType() {
         return ThenModelType.BuildHttpMessage;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return StringUtils.isNotEmpty(destinationVariableName) ?
+                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                Collections.emptyList();
     }
 }

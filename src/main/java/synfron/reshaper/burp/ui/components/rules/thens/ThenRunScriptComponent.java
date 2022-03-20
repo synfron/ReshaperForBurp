@@ -36,7 +36,7 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private Component getOtherFields() {
         JPanel container = new JPanel(new MigLayout());
 
-        maxExecutionSeconds = createTextField();
+        maxExecutionSeconds = createTextField(false);
 
         maxExecutionSeconds.setText(model.getMaxExecutionSeconds());
 
