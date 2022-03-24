@@ -19,9 +19,9 @@ public class Rule implements Serializable {
     @Getter
     private final transient PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     @Getter @Setter
-    private List<When<?>> whens = new ArrayList<>();
+    private When<?>[] whens = new When<?>[0];
     @Getter @Setter
-    private List<Then<?>> thens = new ArrayList<>();
+    private Then<?>[] thens = new Then<?>[0];
     @Getter
     private boolean enabled = true;
     @Getter

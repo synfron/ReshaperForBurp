@@ -1,7 +1,8 @@
-package synfron.reshaper.burp.ui.models.rules.wizard;
+package synfron.reshaper.burp.ui.models.rules.wizard.whens;
 
 import burp.BurpExtender;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
@@ -17,13 +18,15 @@ import synfron.reshaper.burp.core.rules.whens.WhenHasEntity;
 import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.ui.utils.IPrompterModel;
+import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WhenWizardModel {
+public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     @Getter
     private final IEventInfo eventInfo;
     @Getter
@@ -35,6 +38,11 @@ public class WhenWizardModel {
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     @Getter
     private boolean invalidated;
+    @Getter
+    private boolean dismissed;
+
+    @Setter @Getter
+    private ModalPrompter<WhenWizardModel> modalPrompter;
 
     public WhenWizardModel(IEventInfo eventInfo) {
         this.eventInfo = eventInfo;
@@ -105,6 +113,11 @@ public class WhenWizardModel {
         propertyChanged("invalidated", invalidated);
     }
 
+    public void setDismissed(boolean dismissed) {
+        this.dismissed = dismissed;
+        propertyChanged("dismissed", dismissed);
+    }
+
     public boolean createRule() {
         if (validate().isEmpty()) {
             Rule rule = new Rule();
@@ -126,7 +139,7 @@ public class WhenWizardModel {
             rule.setName(ruleName);
             rule.setEnabled(false);
             rule.setAutoRun(true);
-            rule.setWhens(new ArrayList<>(whens));
+            rule.setWhens(whens.toArray(When[]::new));
             BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
             setInvalidated(false);
             return true;

@@ -11,10 +11,11 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel, ThenSendRequest> {
+    private JTextField request;
+    private JTextField url;
     private JTextField protocol;
     private JTextField address;
     private JTextField port;
-    private JTextField request;
     private JCheckBox waitForCompletion;
     private JTextField failAfter;
     private JCheckBox failOnErrorStatusCode;
@@ -30,23 +31,25 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
     }
 
     private void initComponent() {
-        protocol = createTextField();
-        address = createTextField();
-        port = createTextField();
-        request = createTextField();
+        request = createTextField(true);
+        url = createTextField(true);
+        protocol = createTextField(true);
+        address = createTextField(true);
+        port = createTextField(true);
         waitForCompletion = new JCheckBox("Wait for Completion");
-        failAfter = createTextField();
+        failAfter = createTextField(true);
         failOnErrorStatusCode = new JCheckBox("Fail on Error Status Code");
         breakAfterFailure = new JCheckBox("Break After Failure");
         captureOutput = new JCheckBox("Capture Output");
         captureAfterFailure = new JCheckBox("Capture After Failure");
-        captureVariableSource = new JComboBox<>(new VariableSource[] { VariableSource.Event, VariableSource.Global });
-        captureVariableName = createTextField();
+        captureVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        captureVariableName = createTextField(true);
 
+        request.setText(model.getRequest());
+        url.setText(model.getUrl());
         protocol.setText(model.getProtocol());
         address.setText(model.getAddress());
         port.setText(model.getPort());
-        request.setText(model.getRequest());
         waitForCompletion.setSelected(model.isWaitForCompletion());
         failAfter.setText(model.getFailAfter());
         failOnErrorStatusCode.setSelected(model.isFailOnErrorStatusCode());
@@ -56,10 +59,11 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         captureVariableSource.setSelectedItem(model.getCaptureVariableSource());
         captureVariableName.setText(model.getCaptureVariableName());
 
+        request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
+        url.getDocument().addDocumentListener(new DocumentActionListener(this::onUrlChanged));
         protocol.getDocument().addDocumentListener(new DocumentActionListener(this::onProtocolChanged));
         address.getDocument().addDocumentListener(new DocumentActionListener(this::onAddressChanged));
         port.getDocument().addDocumentListener(new DocumentActionListener(this::onPortChanged));
-        request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
         waitForCompletion.addActionListener(this::onWaitForCompletionChanged);
         failAfter.getDocument().addDocumentListener(new DocumentActionListener(this::onFailAfterChanged));
         failOnErrorStatusCode.addActionListener(this::onFailOnErrorStatusCodeChanged);
@@ -69,10 +73,11 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
 
+        mainContainer.add(getLabeledField("Request", request), "wrap");
+        mainContainer.add(getLabeledField("URL", url), "wrap");
         mainContainer.add(getLabeledField("Protocol", protocol), "wrap");
         mainContainer.add(getLabeledField("Address", address), "wrap");
         mainContainer.add(getLabeledField("Port", port), "wrap");
-        mainContainer.add(getLabeledField("Request", request), "wrap");
         mainContainer.add(waitForCompletion, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Fail After (milliseconds) *", failAfter),
@@ -114,6 +119,10 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
 
     private void onRequestChanged(ActionEvent actionEvent) {
         model.setRequest(request.getText());
+    }
+
+    private void onUrlChanged(ActionEvent actionEvent) {
+        model.setUrl(url.getText());
     }
 
     private void onPortChanged(ActionEvent actionEvent) {

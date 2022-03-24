@@ -31,14 +31,14 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
 
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
-        messageValue = new JComboBox<>(MessageValue.values());
-        identifier = createTextField();
-        identifierPlacement = new JComboBox<>(GetItemPlacement.values());
-        sourceText = createTextField();
-        messageValueType = new JComboBox<>(MessageValueType.values());
-        messageValuePath = createTextField();
-        matchType = new JComboBox<>(MatchType.values());
-        matchText = createTextField();
+        messageValue = createComboBox(MessageValue.values());
+        identifier = createTextField(true);
+        identifierPlacement = createComboBox(GetItemPlacement.values());
+        sourceText = createTextField(true);
+        messageValueType = createComboBox(MessageValueType.values());
+        messageValuePath = createTextField(true);
+        matchType = createComboBox(MatchType.values());
+        matchText = createTextField(true);
 
         useMessageValue.setSelected(model.isUseMessageValue());
         messageValue.setSelectedItem(model.getMessageValue());

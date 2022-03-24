@@ -16,7 +16,7 @@ public class ThenCommentComponent extends ThenComponent<ThenCommentModel, ThenCo
     }
 
     private void initComponent() {
-        text = createTextField();
+        text = createTextField(true);
 
         text.setText(model.getText());
 

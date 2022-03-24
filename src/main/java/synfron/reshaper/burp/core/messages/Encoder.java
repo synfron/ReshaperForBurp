@@ -30,6 +30,15 @@ public class Encoder {
         setEncoding(encoding, true);
     }
 
+    public String getEncoding() {
+        if (useAutoDetect) {
+            return autoDetectEncoderName;
+        } else if (useDefault) {
+            return defaultEncoderName;
+        }
+        return charset.displayName();
+    }
+
     public void setEncoding(String encoding, boolean autoSet) {
         useDefault = false;
         useAutoDetect = false;

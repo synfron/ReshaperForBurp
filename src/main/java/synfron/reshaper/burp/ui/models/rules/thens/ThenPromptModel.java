@@ -4,12 +4,14 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.ThenPrompt;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Collections;
 import java.util.List;
 
-public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
+public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> implements IVariableCreator {
 
     @Getter
     private String description;
@@ -32,6 +34,7 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
         breakAfterFailure = then.isBreakAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
         captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public void setDescription(String description) {
@@ -108,5 +111,12 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> {
     @Override
     public RuleOperationModelType<ThenPromptModel, ThenPrompt> getType() {
         return ThenModelType.Prompt;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return StringUtils.isNotEmpty(captureVariableName) ?
+                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                Collections.emptyList();
     }
 }

@@ -8,14 +8,16 @@ import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenBuildHttpMessage;
 import synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage.MessageValueSetter;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.buildhttpmessage.MessageValueSetterModel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageModel, ThenBuildHttpMessage> {
+public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageModel, ThenBuildHttpMessage> implements IVariableCreator {
 
     @Getter
     private DataDirection dataDirection;
@@ -26,7 +28,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     @Getter
     private VariableSource destinationVariableSource;
     @Getter
-    private String DestinationVariableName;
+    private String destinationVariableName;
 
     private final IEventListener<PropertyChangedArgs> messageValueSetterChangedListener = this::onMessageValueSetterChanged;
 
@@ -38,7 +40,8 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
                 .map(messageValueSetter -> new MessageValueSetterModel(messageValueSetter).withListener(messageValueSetterChangedListener))
                 .collect(Collectors.toList());
         this.destinationVariableSource = then.getDestinationVariableSource();
-        this.DestinationVariableName = VariableString.toString(then.getDestinationVariableName(), DestinationVariableName);
+        this.destinationVariableName = VariableString.toString(then.getDestinationVariableName(), destinationVariableName);
+        VariableCreatorRegistry.register(this);
     }
 
     public MessageValueSetterModel addMessageValueSetter() {
@@ -76,15 +79,15 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     }
 
     public void setDestinationVariableName(String destinationVariableName) {
-        this.DestinationVariableName = destinationVariableName;
+        this.destinationVariableName = destinationVariableName;
         propertyChanged("destinationVariableName", destinationVariableName);
     }
 
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (StringUtils.isEmpty(DestinationVariableName)) {
+        if (StringUtils.isEmpty(destinationVariableName)) {
             errors.add("Destination Variable Name is required");
-        } else if (!VariableString.isValidVariableName(DestinationVariableName)) {
+        } else if (!VariableString.isValidVariableName(destinationVariableName)) {
             errors.add("Destination Variable Name is invalid");
         }
         messageValueSetters.forEach(messageValueSetter -> errors.addAll(messageValueSetter.validate()));
@@ -106,7 +109,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
         );
 
         ruleOperation.setDestinationVariableSource(destinationVariableSource);
-        ruleOperation.setDestinationVariableName(VariableString.getAsVariableString(DestinationVariableName));
+        ruleOperation.setDestinationVariableName(VariableString.getAsVariableString(destinationVariableName));
         setValidated(true);
         return true;
     }
@@ -123,5 +126,12 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     @Override
     public RuleOperationModelType<ThenBuildHttpMessageModel, ThenBuildHttpMessage> getType() {
         return ThenModelType.BuildHttpMessage;
+    }
+
+    @Override
+    public List<VariableSourceEntry> getVariableEntries() {
+        return StringUtils.isNotEmpty(destinationVariableName) ?
+                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                Collections.emptyList();
     }
 }

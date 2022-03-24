@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.ui.models.rules.wizard;
+package synfron.reshaper.burp.ui.models.rules.wizard.whens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,7 @@ public class WhenWizardItemModel {
     @Getter
     private Select<String> identifiers = new Select<>(Collections.emptyList(), null);
     @Getter
-    private WizardMatchType matchType = WizardMatchType.Equals;
+    private WhenWizardMatchType matchType = WhenWizardMatchType.Equals;
     @Getter
     private String text;
     @Getter
@@ -92,7 +92,7 @@ public class WhenWizardItemModel {
         resetText();
     }
 
-    public void setMatchType(WizardMatchType matchType) {
+    public void setMatchType(WhenWizardMatchType matchType) {
         this.matchType = matchType;
         propertyChanged("matchType", matchType);
     }

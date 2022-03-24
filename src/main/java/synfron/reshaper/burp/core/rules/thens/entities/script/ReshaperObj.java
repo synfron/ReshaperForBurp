@@ -107,6 +107,7 @@ public class ReshaperObj {
             Stream<ThenType<?>> supportedThenTypes = Stream.of(
                     ThenType.Highlight,
                     ThenType.Comment,
+                    ThenType.Evaluate,
                     ThenType.BuildHttpMessage,
                     ThenType.DeleteValue,
                     ThenType.DeleteVariable,

@@ -50,6 +50,8 @@ Run Rules - Run a specific rule or all auto-run rules
 
 Run Script - Execute a JavaScript script
 
+Evaluate - Perform operations on values
+
 Set Event Direction - Change whether to send a request or to send a response at the end of processing
 
 Set Encoding - Set the encoding used to read and write bytes of the HTTP request or response body

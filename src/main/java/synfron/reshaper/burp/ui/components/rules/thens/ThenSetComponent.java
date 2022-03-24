@@ -4,7 +4,6 @@ import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -35,17 +34,17 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
 
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
-        sourceMessageValue = new JComboBox<>(MessageValue.values());
-        sourceIdentifier = createTextField();
-        sourceIdentifierPlacement = new JComboBox<>(GetItemPlacement.values());
-        sourceMessageValueType = new JComboBox<>(MessageValueType.values());
-        sourceMessageValuePath = createTextField();
+        sourceMessageValue = createComboBox(MessageValue.values());
+        sourceIdentifier = createTextField(true);
+        sourceIdentifierPlacement = createComboBox(GetItemPlacement.values());
+        sourceMessageValueType = createComboBox(MessageValueType.values());
+        sourceMessageValuePath = createTextField(true);
         useReplace = new JCheckBox("Use Regex Replace");
-        regexPattern = createTextField();
-        text = createTextField();
-        replacementText = createTextField();
-        destinationMessageValueType = new JComboBox<>(MessageValueType.values());
-        destinationMessageValuePath = createTextField();
+        regexPattern = createTextField(true);
+        text = createTextField(true);
+        replacementText = createTextField(true);
+        destinationMessageValueType = createComboBox(MessageValueType.values());
+        destinationMessageValuePath = createTextField(true);
 
         useMessageValue.setSelected(model.isUseMessageValue());
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());

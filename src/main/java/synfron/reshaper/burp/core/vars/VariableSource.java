@@ -14,12 +14,20 @@ public enum VariableSource {
     Message("m", true),
     File("f", true),
     Special("s", true),
-    CookieJar("cj", true);
+    CookieJar("Cookie Jar", "cj", true);
 
+    private final String displayName;
     private final String shortName;
     private final boolean accessor;
 
+    VariableSource(String displayName, String shortName, boolean accessor) {
+        this.displayName = displayName;
+        this.shortName = shortName;
+        this.accessor = accessor;
+    }
+
     VariableSource(String shortName, boolean accessor) {
+        this.displayName = this.name();
         this.shortName = shortName;
         this.accessor = accessor;
     }
@@ -36,5 +44,11 @@ public enum VariableSource {
                 .filter(source -> source.name().equalsIgnoreCase(name) || source.shortName.equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
+    }
+
+
+    @Override
+    public String toString() {
+        return displayName;
     }
 }

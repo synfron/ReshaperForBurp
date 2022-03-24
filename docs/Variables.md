@@ -20,7 +20,7 @@ Special character variables provide access to special characters which typically
 
 ## Variable Tags
 
-Variables can be read by Whens and Thens when a variable tag is specified in supporting text fields.
+Variables can be read by Whens and Thens when a variable tag is specified in supporting text fields. Variable tags can be typed in manually or inserted via the right-click menu for those text fields.
 {% raw %}
 
 **Event Variable Tag (event, e):** `{{event:MyVariableName}}`
@@ -35,7 +35,7 @@ For example, if Global variable named `firstName` has the value `John` and varia
 
 **Special Character Tag (special, s):** `{{s:specialCharacterSequences}}`. Examples: `{{s:n}}` (new line), `{{s:rn}}` (carriage return + new line), `{{s:u00A9}}` (Copyright symbol)
 
-**Cookie Jar Tag (cookiejar, cj):** `{{cookiejar:domain}}` or `{{cookiejar:domain:path}}`. Example: `{{cookiejar:example.com:/}}`
+**Cookie Jar Tag (cookiejar, cj):** `{{cookiejar:domain:name}}` or `{{cookiejar:domain:name:path}}`. Example: `{{cookiejar:example.com:tracker:/}}`
 
 
 {% endraw %}

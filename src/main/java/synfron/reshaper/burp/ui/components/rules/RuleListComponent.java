@@ -5,6 +5,7 @@ import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.Rule;
+import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.ForegroundColorListCellRenderer;
@@ -14,10 +15,12 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RuleListComponent extends JPanel {
     private JList<RuleModel> rulesList;
@@ -34,7 +37,7 @@ public class RuleListComponent extends JPanel {
         setLayout(new BorderLayout());
 
         ruleListModel = new DefaultListModel<>();
-        ruleListModel.addAll(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules().stream()
+        ruleListModel.addAll(Stream.of(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules())
                 .map(rule -> new RuleModel(rule).withListener(ruleModelChangeListener))
                 .collect(Collectors.toList()));
 
@@ -119,7 +122,7 @@ public class RuleListComponent extends JPanel {
                         ruleListModel.elements()).stream().collect(Collectors.toMap(RuleModel::getRule, Function.identity())
                 );
                 ruleListModel.clear();
-                ruleListModel.addAll(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules().stream()
+                ruleListModel.addAll(Stream.of(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules())
                         .map(rule -> ruleModelMap.containsKey(rule) ?
                                 ruleModelMap.get(rule) :
                                 new RuleModel(rule).withListener(ruleModelChangeListener)
@@ -205,7 +208,7 @@ public class RuleListComponent extends JPanel {
     private Rule createNewRule() {
         Rule rule = new Rule();
         rule.setEnabled(false);
-        rule.getWhens().add(new WhenEventDirection());
+        rule.setWhens(new When[]{ new WhenEventDirection() });
         return rule;
     }
 }

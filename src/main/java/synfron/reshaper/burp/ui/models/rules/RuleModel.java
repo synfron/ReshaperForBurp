@@ -14,6 +14,7 @@ import synfron.reshaper.burp.ui.models.rules.whens.WhenModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RuleModel {
     @Getter
@@ -40,10 +41,10 @@ public class RuleModel {
 
     public RuleModel(Rule rule, boolean isNew) {
         this.rule = rule;
-        this.whens = rule.getWhens().stream()
+        this.whens = Stream.of(rule.getWhens())
                 .map(when -> WhenModel.getModel(when).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
-        this.thens = rule.getThens().stream()
+        this.thens = Stream.of(rule.getThens())
                 .map(then -> ThenModel.getModel(then).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
         this.name = rule.getName();
@@ -123,16 +124,14 @@ public class RuleModel {
         whens.forEach(WhenModel::persist);
         thens.forEach(RuleOperationModel::persist);
 
-        rule.getWhens().clear();
-        rule.getWhens().addAll(whens.stream()
+        rule.setWhens(whens.stream()
                 .map(model -> (When<?>)model.getRuleOperation())
-                .collect(Collectors.toList())
+                .toArray(When[]::new)
         );
 
-        rule.getThens().clear();
-        rule.getThens().addAll(thens.stream()
+        rule.setThens(thens.stream()
                 .map(model -> (Then<?>)model.getRuleOperation())
-                .collect(Collectors.toList())
+                .toArray(Then[]::new)
         );
 
         rule.setName(name);

@@ -3,7 +3,6 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
 import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDeleteValueModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -40,12 +39,12 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
     }
 
     private void initComponent() {
-        messageValue = new JComboBox<>(Arrays.stream(MessageValue.values())
+        messageValue = createComboBox(Arrays.stream(MessageValue.values())
                 .filter(value -> !excludedMessageValues.contains(value))
                 .toArray(MessageValue[]::new)
         );
-        identifier = createTextField();
-        identifierPlacement = new JComboBox<>(DeleteItemPlacement.values());
+        identifier = createTextField(true);
+        identifierPlacement = createComboBox(DeleteItemPlacement.values());
 
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());
