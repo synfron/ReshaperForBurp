@@ -33,6 +33,7 @@ public class GlobalVariableTagWizardModel implements IVariableTagWizardModel {
                 .distinct()
                 .sorted(String::compareToIgnoreCase)
                 .collect(Collectors.toList());
+        variableName = variableNames.stream().findFirst().orElse(null);
     }
 
     private void propertyChanged(String name, Object value) {
