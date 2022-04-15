@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.synfron.reshaper.burp'
-version '1.8.1'
+version '1.8.2'
 
 targetCompatibility = '15'
 sourceCompatibility = '15'
@@ -36,6 +36,7 @@ dependencies {
 
 jar {
     from {
+        duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
