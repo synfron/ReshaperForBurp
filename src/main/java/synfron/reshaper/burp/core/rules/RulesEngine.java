@@ -7,8 +7,6 @@ import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.utils.Log;
 
-import java.util.List;
-
 public class RulesEngine {
 
     @Getter
