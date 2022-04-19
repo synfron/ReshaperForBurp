@@ -35,6 +35,18 @@ value - The new value.
 
 Get all [Message Value](MessageValues.html) keys.
 
+#### setRuleResponse(ruleResponse)
+
+Set whether further processing of Thens or Rules should continue after this script finishes executing. This provides the same functionality as Then Break.
+
+Continue - Continue processing as normal.</br>
+BreakThens - Skip running any further Thens of the current Rule.</br>
+BreakRules - Skip running any further Thens and Rules for this event.
+
+Parameters:
+
+ruleResponse - "Continue" | "BreakThens" | "BreakRules"
+
 #### runThen(thenType, thenData)
 
 Run a Then action.
@@ -57,12 +69,6 @@ BuildHttpMessage
     }]
     destinationVariableSource: "Global" | "Event"
     destinationVariableName: string
-}
-```
-Break
-```
-{
-    breakType: "Continue" | "BreakThens" | "BreakRules"
 }
 ```
 Delete Value
