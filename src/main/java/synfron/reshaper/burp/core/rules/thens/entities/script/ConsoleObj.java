@@ -1,13 +1,27 @@
 package synfron.reshaper.burp.core.rules.thens.entities.script;
 
+import org.mozilla.javascript.ScriptableObject;
 import synfron.reshaper.burp.core.utils.Log;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ConsoleObj {
     public void log(Object... args) {
-        Log.get().withMessage("Script Log").withPayload(args.length == 1 ? args[0] : args).log();
+        List<Object> values = getConsoleWritable(args);
+        Log.get().withMessage("Script Log").withPayload(values.size() == 1 ? values.get(0) : values).log();
     }
 
     public void error(Object... args) {
-        Log.get().withMessage("Script Log").withPayload(args.length == 1 ? args[0] : args).logErr();
+        List<Object> values = getConsoleWritable(args);
+        Log.get().withMessage("Script Log").withPayload(values.size() == 1 ? values.get(0) : values).logErr();
+    }
+
+    private List<Object> getConsoleWritable(Object[] values) {
+        return Arrays.stream(values)
+                .map(value -> value instanceof ScriptableObject ? Objects.toString(value) : value)
+                .collect(Collectors.toList());
     }
 }
