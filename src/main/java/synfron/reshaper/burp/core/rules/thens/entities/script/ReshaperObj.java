@@ -8,6 +8,7 @@ import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
+import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.thens.ThenType;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
@@ -112,7 +113,6 @@ public class ReshaperObj {
                     ThenType.DeleteValue,
                     ThenType.DeleteVariable,
                     ThenType.Drop,
-                    ThenType.Break,
                     ThenType.Log,
                     ThenType.ParseHttpMessage,
                     ThenType.SendRequest,
@@ -137,6 +137,20 @@ public class ReshaperObj {
             ).toString();
             Then<?> then = (Then<?>)Serializer.deserialize(thenDataJson, thenClass);
             return then.perform((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).toString();
+        }
+
+        public void setRuleResponse(String ruleResponse) {
+            switch (ruleResponse.toUpperCase()) {
+                case "CONTINUE":
+                    Dispatcher.getCurrent().getDataBag().put("ruleResponse", RuleResponse.Continue);
+                    break;
+                case "BREAKTHENS":
+                    Dispatcher.getCurrent().getDataBag().put("ruleResponse", RuleResponse.BreakThens);
+                    break;
+                case "BREAKRULES":
+                    Dispatcher.getCurrent().getDataBag().put("ruleResponse", RuleResponse.BreakRules);
+                    break;
+            }
         }
     }
 }

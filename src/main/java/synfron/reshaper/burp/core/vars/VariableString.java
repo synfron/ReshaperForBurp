@@ -250,7 +250,7 @@ public class VariableString implements Serializable {
             return false;
         }
         String strippedText = formattedString.replaceAll(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())), "");
-        return TextUtils.isInt(strippedText);
+        return TextUtils.isInt(strippedText) || strippedText.isEmpty();
     }
 
     public static boolean hasTag(String text) {
