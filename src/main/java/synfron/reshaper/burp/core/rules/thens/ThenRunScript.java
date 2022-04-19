@@ -17,6 +17,7 @@ public class ThenRunScript extends Then<ThenRunScript> {
 
     public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = false;
+        RuleResponse ruleResponse = RuleResponse.Continue;
         try {
             Dispatcher dispatcher = new Dispatcher();
             dispatcher.setMaxExecutionSeconds(maxExecutionSeconds);
@@ -29,13 +30,15 @@ public class ThenRunScript extends Then<ThenRunScript> {
                     1,
                     null
             ));
+
+            ruleResponse = (RuleResponse)dispatcher.getDataBag().getOrDefault("ruleResponse", ruleResponse);
         } catch (Exception e) {
             hasError = true;
             throw e;
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, script);
         }
-        return RuleResponse.Continue;
+        return ruleResponse;
     }
 
     @Override
