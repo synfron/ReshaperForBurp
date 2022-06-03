@@ -15,6 +15,7 @@ public class GeneralSettings {
     private boolean captureExtender;
     private boolean enableEventDiagnostics;
     private int diagnosticValueMaxLength = 200;
+    private String RemoteImportAddress = "https://github.com/synfron/ReshaperForBurp";
     private boolean enableSanityCheckWarnings = true;
     private boolean logInExtenderOutput = true;
     private int logTabCharacterLimit = 1000000;
@@ -34,6 +35,7 @@ public class GeneralSettings {
             this.enableSanityCheckWarnings = other.enableSanityCheckWarnings;
             this.logInExtenderOutput = other.logInExtenderOutput;
             this.logTabCharacterLimit = other.logTabCharacterLimit;
+            this.RemoteImportAddress = other.RemoteImportAddress;
         }
     }
 
@@ -50,3 +52,4 @@ public class GeneralSettings {
         };
     }
 }
+
