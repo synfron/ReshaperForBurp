@@ -80,6 +80,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
         logTabCharacterLimit = createTextField(false);
         defaultEncoding = createComboBox(Encoder.getEncodings().toArray(new String[0]));
+        JButton resetData = new JButton("Reset Data");
 
         enableEventDiagnostics.setSelected(generalSettings.isEnableEventDiagnostics());
         diagnosticValueMaxLength.setText(Objects.toString(generalSettings.getDiagnosticValueMaxLength()));
@@ -94,6 +95,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         logInExtenderOutput.addActionListener(this::onLogInExtenderOutputChanged);
         logTabCharacterLimit.addFocusListener(new FocusActionListener(this::onLogTabCharacterLimitFocusChanged));
         defaultEncoding.addActionListener(this::onSetDefaultEncodingChanged);
+        resetData.addActionListener(this::onResetData);
+
 
         container.add(enableEventDiagnostics, "wrap");
         container.add(getLabeledField("Diagnostic Value Max Length", diagnosticValueMaxLength), "wrap");
@@ -101,6 +104,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         container.add(logInExtenderOutput, "wrap");
         container.add(getLabeledField("Logs Tab Character Limit", logTabCharacterLimit), "wrap");
         container.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
+        container.add(resetData, "wrap");
         return container;
     }
 
@@ -141,6 +145,24 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         container.add(target, "wrap");
         container.add(extender);
         return container;
+    }
+
+    private void onResetData(ActionEvent actionEvent) {
+        try {
+            int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to reset data? This will remove all rules and variables.", "Reset Data", JOptionPane.YES_NO_OPTION);
+            if (response == JOptionPane.YES_OPTION) {
+                settingsManager.resetData();
+                refreshLists();
+            }
+        } catch (Exception e) {
+            Log.get().withMessage("Error resetting data").withException(e).logErr();
+
+            JOptionPane.showMessageDialog(this,
+                    "Error resetting data",
+                    "Reset Data Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void onSetDefaultEncodingChanged(ActionEvent actionEvent) {
