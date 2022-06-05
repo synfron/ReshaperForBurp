@@ -12,6 +12,7 @@ import synfron.reshaper.burp.core.vars.Variable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 public class SettingsManager {
@@ -62,5 +63,10 @@ public class SettingsManager {
 
     private RulesRegistry getRulesRegistry() {
         return BurpExtender.getConnector().getRulesEngine().getRulesRegistry();
+    }
+
+    public void resetData() {
+        Arrays.stream(getRulesRegistry().getRules()).forEach(rule -> getRulesRegistry().deleteRule(rule));
+        GlobalVariables.get().getValues().forEach(variable -> GlobalVariables.get().remove(variable.getName()));
     }
 }
