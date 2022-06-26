@@ -19,6 +19,8 @@ public class GeneralSettings {
     private boolean logInExtenderOutput = true;
     private int logTabCharacterLimit = 1000000;
     private String defaultEncoding = Encoder.getDefaultEncoderName();
+    private ImportMethod importMethod = ImportMethod.File;
+    private String importUrl;
 
     public void importSettings(GeneralSettings other) {
         if (other != null) {
@@ -34,6 +36,8 @@ public class GeneralSettings {
             this.enableSanityCheckWarnings = other.enableSanityCheckWarnings;
             this.logInExtenderOutput = other.logInExtenderOutput;
             this.logTabCharacterLimit = other.logTabCharacterLimit;
+            this.importMethod = other.importMethod;
+            this.importUrl = other.importUrl;
         }
     }
 
@@ -49,4 +53,10 @@ public class GeneralSettings {
             case Session -> true;
         };
     }
+
+    public enum ImportMethod {
+        File,
+        Url
+    }
 }
+
