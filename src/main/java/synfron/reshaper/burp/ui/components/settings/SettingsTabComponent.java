@@ -1,7 +1,9 @@
 package synfron.reshaper.burp.ui.components.settings;
 
 import burp.BurpExtender;
+import com.alexandriasoftware.swing.JSplitButton;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.io.IOUtils;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
@@ -21,7 +23,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
 import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,6 +52,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     private JCheckBox spider;
     private JCheckBox target;
     private JCheckBox extender;
+    private ButtonGroup importMethod;
 
     public SettingsTabComponent() {
         initComponent();
@@ -263,13 +270,43 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         );
 
         overwriteDuplicates = new JCheckBox("Overwrite Duplicates");
-        JButton importData = new JButton("Import Data");
-
-        importData.addActionListener(this::onImportData);
+        JSplitButton importData = getImportDataButton();
 
         container.add(overwriteDuplicates);
         container.add(importData);
         return container;
+    }
+
+    private JSplitButton getImportDataButton() {
+        JSplitButton importData = new JSplitButton("Import Data    ");
+
+        JPopupMenu importOptions = new JPopupMenu();
+
+        importMethod = new ButtonGroup();
+        JRadioButtonMenuItem importFromFile = new JRadioButtonMenuItem("From File");
+        JRadioButtonMenuItem importFromUrl = new JRadioButtonMenuItem("From URL");
+
+        importFromFile.setSelected(generalSettings.getImportMethod() == GeneralSettings.ImportMethod.File);
+        importFromFile.setActionCommand(GeneralSettings.ImportMethod.File.name());
+        importFromUrl.setSelected(generalSettings.getImportMethod() == GeneralSettings.ImportMethod.Url);
+        importFromUrl.setActionCommand(GeneralSettings.ImportMethod.Url.name());
+
+        importData.addButtonClickedActionListener(this::onImportData);
+        importFromFile.addItemListener(this::onImportMethodChange);
+
+        importMethod.add(importFromFile);
+        importMethod.add(importFromUrl);
+
+        importOptions.add(importFromFile);
+        importOptions.add(importFromUrl);
+
+        importData.setPopupMenu(importOptions);
+
+        return importData;
+    }
+
+    private void onImportMethodChange(ItemEvent itemEvent) {
+        generalSettings.setImportMethod(GeneralSettings.ImportMethod.valueOf(importMethod.getSelection().getActionCommand()));
     }
 
     private JFileChooser createFileChooser(String title) {
@@ -319,10 +356,19 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     }
 
     private void onImportData(ActionEvent actionEvent) {
+        switch (generalSettings.getImportMethod()) {
+            case File -> onImportFromFile();
+            case Url -> onImportFromUrl();
+        }
+    }
+
+    private void onImportFromFile() {
+        String file = null;
         try {
             JFileChooser fileChooser = createFileChooser("Import");
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
+                file = fileChooser.getSelectedFile().getAbsolutePath();
                 settingsManager.importSettings(fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
                 refreshLists();
 
@@ -333,10 +379,40 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
                 );
             }
         } catch (Exception e) {
-            Log.get().withMessage("Error importing data").withException(e).logErr();
+            Log.get().withMessage("Error importing data from file").withException(e).logErr();
 
             JOptionPane.showMessageDialog(this,
-                    "Error importing data",
+                    String.format("Error importing data from file: %s", file),
+                    "Import Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    private void onImportFromUrl() {
+        String url = null;
+        try {
+            url = JOptionPane.showInputDialog("Import URL", generalSettings.getImportUrl());
+            if (url != null) {
+                generalSettings.setImportUrl(url);
+                URLConnection connection = new URL(url).openConnection();
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(10000);
+                String settingsJson = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+                settingsManager.importSettings(settingsJson, overwriteDuplicates.isSelected());
+                refreshLists();
+
+                JOptionPane.showMessageDialog(this,
+                        "Import successful",
+                        "Import",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+            }
+        } catch (Exception e) {
+            Log.get().withMessage("Error importing data from URL").withException(e).logErr();
+
+            JOptionPane.showMessageDialog(this,
+                    String.format("Error importing data from URL: %s", url),
                     "Import Error",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -410,3 +486,4 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
                 .toArray(Object[][]::new);
     }
 }
+
