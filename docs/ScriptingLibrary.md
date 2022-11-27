@@ -142,7 +142,7 @@ SendRequest
 SendTo
 ```
 {
-    sendTo: "Comparer" | "Intruder" | "Repeater" | "Spider" | "Browser"
+    sendTo: "Comparer" | "Intruder" | "Repeater" | "Browser"
     overrideDefaults: boolean
     host: string
     port: number

@@ -1,16 +1,16 @@
 package synfron.reshaper.burp.core.rules.thens;
 
 import burp.BurpExtender;
+import burp.api.montoya.http.HttpMode;
+import burp.api.montoya.http.message.responses.HttpResponse;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.events.Event;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.DataDirection;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
@@ -56,13 +56,13 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
         boolean failed = false;
         boolean complete = false;
         String output = null;
-        int exitCode = 0;
+        int statusCode = 0;
         String captureVariableName = null;
         try {
             int failAfterInMilliseconds = waitForCompletion ? getFailAfter(eventInfo) : 0;
             captureVariableName = getVariableName(eventInfo);
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            AtomicReference<byte[]> response = new AtomicReference<>();
+            AtomicReference<HttpResponse> response = new AtomicReference<>();
             executor.submit(() -> {
                 try {
                     EventInfo newEventInfo = new EventInfo(eventInfo);
@@ -90,13 +90,11 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                         ));
                     }
 
-                    byte[] responseBytes = BurpExtender.getCallbacks().makeHttpRequest(
-                            newEventInfo.getDestinationAddress(),
-                            newEventInfo.getDestinationPort(),
-                            useHttps,
-                            newEventInfo.getHttpRequestMessage().getValue()
-                    );
-                    response.set(responseBytes);
+                    HttpResponse httpResponse = BurpExtender.getApi().http().issueRequest(
+                            newEventInfo.asHttpRequest(),
+                            HttpMode.AUTO
+                    ).httpResponse();
+                    response.set(httpResponse);
                 } catch (Exception e) {
                     Log.get().withMessage("Failure sending request").withException(e).logErr();
                 } finally {
@@ -108,13 +106,13 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                 if (complete) {
                     executor.shutdownNow();
                 }
-                byte[] responseBytes = response.get();
-                exitCode = complete && failOnErrorStatusCode && ArrayUtils.isNotEmpty(responseBytes) ?
-                        (int) BurpExtender.getCallbacks().getHelpers().analyzeResponse(response.get()).getStatusCode() :
+                HttpResponse httpResponse = response.get();
+                statusCode = complete && failOnErrorStatusCode && httpResponse != null ?
+                        httpResponse.statusCode() :
                         0;
-                failed = !complete || (failOnErrorStatusCode && (exitCode == 0 || (exitCode >= 400 && exitCode < 600)));
+                failed = !complete || (failOnErrorStatusCode && (statusCode == 0 || (statusCode >= 400 && statusCode < 600)));
                 if (captureOutput && (!failed || captureAfterFailure)) {
-                    output = response.get() != null ? BurpExtender.getCallbacks().getHelpers().bytesToString(response.get()) : "";
+                    output = response.get() != null ? new HttpResponseMessage(response.get().asBytes().getBytes(), eventInfo.getEncoder()).getText() : "";
                     setVariable(eventInfo, captureVariableName, output);
                 }
             }
@@ -139,7 +137,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                         Pair.of("captureVariableName", waitForCompletion && captureOutput ? captureVariableName : null),
                         Pair.of("exceededWait", waitForCompletion ? !complete : null),
                         Pair.of("failed", waitForCompletion ? failed : null),
-                        Pair.of("exitCode", waitForCompletion ? exitCode : null)
+                        Pair.of("exitCode", waitForCompletion ? statusCode : null)
                 ));
         }
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;

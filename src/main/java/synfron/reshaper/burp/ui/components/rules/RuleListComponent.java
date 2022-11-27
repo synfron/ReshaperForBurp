@@ -8,6 +8,7 @@ import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
+import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
 import synfron.reshaper.burp.ui.utils.ForegroundColorListCellRenderer;
 import synfron.reshaper.burp.ui.utils.WrapLayout;
 
@@ -15,7 +16,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,7 +42,7 @@ public class RuleListComponent extends JPanel {
                 .map(rule -> new RuleModel(rule).withListener(ruleModelChangeListener))
                 .collect(Collectors.toList()));
 
-        rulesList = new JList<>(ruleListModel);
+        rulesList = getRulesList();
         rulesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         rulesList.setCellRenderer(new ForegroundColorListCellRenderer(this::ruleListItemColorProvider));
 
@@ -55,10 +56,46 @@ public class RuleListComponent extends JPanel {
         add(getActionBar(), BorderLayout.PAGE_END);
     }
 
+    private JList<RuleModel> getRulesList() {
+        return new JList<>(ruleListModel) {
+
+            private RuleModel mouseActionItem;
+
+            @Override
+            public JPopupMenu getComponentPopupMenu() {
+                if (mouseActionItem != null && !mouseActionItem.isNew()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    Action toggleDiagnostics = new ActionPerformedListener(event -> mouseActionItem.getRule().setDiagnosticsEnabled(!mouseActionItem.isDiagnosticsEnabled()));
+
+                    toggleDiagnostics.putValue(Action.NAME, "Toggle Debug Logging");
+
+                    popupMenu.add(toggleDiagnostics);
+
+                    return popupMenu;
+                }
+                return super.getComponentPopupMenu();
+            }
+
+            @Override
+            protected void processMouseEvent(MouseEvent e) {
+                if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+                    JList jList = (JList) e.getSource();
+                    int itemIndex = jList.locationToIndex(e.getPoint());
+                    if (itemIndex >= 0) {
+                        mouseActionItem = (RuleModel) jList.getModel().getElementAt(itemIndex);
+                    } else {
+                        mouseActionItem = null;
+                    }
+                }
+                super.processMouseEvent(e);
+            }
+        };
+    }
+
     private Color ruleListItemColorProvider(Object item, Color defaultColor) {
         Color newColor = null;
         if (item instanceof RuleModel) {
-            RuleModel model = (RuleModel)item;
+            RuleModel model = (RuleModel) item;
             if (!model.isEnabled()) {
                 newColor = new Color(
                         rgbScaler(defaultColor.getRed(), 2.6),
@@ -71,15 +108,14 @@ public class RuleListComponent extends JPanel {
     }
 
     private int rgbScaler(int value, double divisor) {
-        return (int)(value-((value-(0xFF^value))/divisor));
+        return (int) (value - ((value - (0xFF ^ value)) / divisor));
     }
 
     private void onSelectionChanged(ListSelectionEvent listSelectionEvent) {
         RuleModel rule = rulesList.getSelectedValue();
         if (rule != null) {
             ruleContainer.setModel(rule);
-        }
-        else if (!defaultSelect()) {
+        } else if (!defaultSelect()) {
             ruleContainer.setModel(null);
         }
     }
@@ -157,7 +193,7 @@ public class RuleListComponent extends JPanel {
     }
 
     private void onRuleModelChange(PropertyChangedArgs propertyChangedArgs) {
-        RuleModel model = (RuleModel)propertyChangedArgs.getSource();
+        RuleModel model = (RuleModel) propertyChangedArgs.getSource();
         int index = ruleListModel.indexOf(model);
         ruleListModel.set(index, model);
     }
@@ -208,7 +244,7 @@ public class RuleListComponent extends JPanel {
     private Rule createNewRule() {
         Rule rule = new Rule();
         rule.setEnabled(false);
-        rule.setWhens(new When[]{ new WhenEventDirection() });
+        rule.setWhens(new When[]{new WhenEventDirection()});
         return rule;
     }
 }

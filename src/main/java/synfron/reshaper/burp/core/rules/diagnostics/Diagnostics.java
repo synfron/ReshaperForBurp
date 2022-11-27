@@ -23,7 +23,9 @@ public class Diagnostics implements IDiagnostics {
 
     private List<DiagnosticRecord> records;
     @Getter @Setter
-    private boolean enabled;
+    private boolean ruleEnabled;
+    @Getter @Setter
+    private boolean eventEnabled;
 
     @Override
     public void logCompare(When<?> when, List<? extends Pair<String, ? extends Serializable>> properties, MatchType matchType, Object matcher, Object value, boolean result) {
@@ -137,6 +139,16 @@ public class Diagnostics implements IDiagnostics {
             }
         }
         return buffer.toString();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return ruleEnabled || eventEnabled;
+    }
+
+    @Override
+    public boolean hasLogs() {
+        return records != null;
     }
 
     private List<DiagnosticRecord> getRecords() {

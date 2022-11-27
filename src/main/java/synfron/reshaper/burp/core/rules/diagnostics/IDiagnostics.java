@@ -33,5 +33,13 @@ public interface IDiagnostics {
 
     boolean isEnabled();
 
-    void setEnabled(boolean enabled);
+    boolean isEventEnabled();
+
+    boolean isRuleEnabled();
+
+    boolean hasLogs();
+
+    void setRuleEnabled(boolean enabled);
+
+    void setEventEnabled(boolean enabled);
 }

@@ -4,7 +4,7 @@
 - [Redirect a request to a different server](#tip2)
 - [Change a value in a returned response](#tip3)
 - [Auto-respond to requests without first sending a request to an external server (response mocking)](#tip4)
-- [Drop a request so it is not sent to an external server (Works on all supported tools: Proxy, Repeater, Intruder, Scanner, Spider, Target, Extender (other extensions))](#tip5)
+- [Drop a request so it is not sent to an external server (Works on all supported tools: Proxy, Repeater, Intruder, Scanner, Target, Extender (other extensions))](#tip5)
 - [Share or backup/restore Global Variables and Rules](#tip6)
 
 <a href="#" id="tip1"></a>
@@ -93,7 +93,7 @@ In the example below, we tell the browser to allow any origin by overriding the 
 <a href="#" id="tip5"></a>
 **Drop a request so that it is not sent to an external server:**
 
-The example of drop requests below works on all supported tools: Proxy, Repeater, Intruder, Scanner, Spider, Target, Extender (other extensions).
+The example of drop requests below works on all supported tools: Proxy, Repeater, Intruder, Scanner, Target, Extender (other extensions).
 
 1. Open the `Settings` tab.
 2. Ensure the tool is selected under `Capture Traffic From:`

@@ -1,6 +1,10 @@
 package synfron.reshaper.burp.core.rules.thens.entities.script;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.message.requests.HttpRequest;
+import burp.api.montoya.http.message.responses.HttpResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -149,16 +153,18 @@ public class XmlHttpRequestObj {
                         requestMessage.setBody(body);
                     }
                     boolean useHttps = !StringUtils.equalsIgnoreCase(requestUrl.getScheme(), "http");
-                    byte[] response = BurpExtender.getCallbacks().makeHttpRequest(
-                            requestUrl.getHost(),
-                            requestUrl.getPort() > 0 ? requestUrl.getPort() : (useHttps ? 443 : 80),
-                            useHttps,
-                            requestMessage.getValue()
-                    );
+                    HttpResponse response = BurpExtender.getApi().http().issueRequest(
+                            HttpRequest.httpRequest(ByteArray.byteArray(requestMessage.getValue()))
+                                    .withService(HttpService.httpService(
+                                            requestUrl.getHost(),
+                                            requestUrl.getPort() > 0 ? requestUrl.getPort() : (useHttps ? 443 : 80),
+                                            useHttps
+                                    ))
+                    ).httpResponse();
                     if (!dispatcher.isTimeoutReach() && this.executor == executor) {
                         this.executor = null;
                         dispatcher.execute(context -> {
-                            if (response != null && response.length != 0) {
+                            if (response != null) {
                                 responseURL = requestUrl.toString();
                                 responseMessage = new HttpResponseMessage(response, encoder);
                                 setReadyState(DONE);

@@ -72,6 +72,11 @@ public class RulesEngine {
     public RuleResponse run(IEventInfo eventInfo, Rule rule)
     {
         RuleResponse thenResult = RuleResponse.Continue;
+        boolean ruleDiagnosticsEnabled = eventInfo.getDiagnostics().isRuleEnabled();
+        boolean currentRuleDiagnosticsEnabled = rule.isDiagnosticsEnabled();
+        if (!ruleDiagnosticsEnabled && currentRuleDiagnosticsEnabled) {
+            eventInfo.getDiagnostics().setRuleEnabled(true);
+        }
         if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logStart(rule);
         try
         {
@@ -85,6 +90,9 @@ public class RulesEngine {
             Log.get().withException(e).withMessage("Failure running rule").withPayload(rule).logErr();
         } finally {
             if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logEnd(rule);
+        }
+        if (!ruleDiagnosticsEnabled && currentRuleDiagnosticsEnabled) {
+            eventInfo.getDiagnostics().setRuleEnabled(false);
         }
         return thenResult;
     }

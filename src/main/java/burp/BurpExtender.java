@@ -1,5 +1,9 @@
 package burp;
 
+import burp.api.montoya.BurpExtension;
+import burp.api.montoya.MontoyaApi;
+import burp.api.montoya.ui.editor.EditorOptions;
+import burp.api.montoya.ui.editor.RawEditor;
 import lombok.Getter;
 import synfron.reshaper.burp.core.Connector;
 import synfron.reshaper.burp.core.events.MessageEvent;
@@ -9,14 +13,14 @@ import synfron.reshaper.burp.ui.components.ReshaperComponent;
 import synfron.reshaper.burp.ui.utils.ContextMenuHandler;
 import synfron.reshaper.burp.ui.utils.UiMessageHandler;
 
-public class BurpExtender implements IBurpExtender {
+public class BurpExtender implements BurpExtension {
 
     @Getter
-    private static IBurpExtenderCallbacks callbacks;
+    private static MontoyaApi api;
     @Getter
     private final static Connector connector = new Connector();
     @Getter
-    private static ITextEditor logTextEditor;
+    private static RawEditor logTextEditor;
     @Getter
     private static final GeneralSettings generalSettings = new GeneralSettings();
     @Getter
@@ -25,19 +29,22 @@ public class BurpExtender implements IBurpExtender {
     private static final ContextMenuHandler contextMenuHandler = new ContextMenuHandler();
 
     @Override
-    public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
-        BurpExtender.callbacks = callbacks;
-        logTextEditor = callbacks.createTextEditor();
-        logTextEditor.setEditable(false);
+    public void initialize(MontoyaApi api) {
+        BurpExtender.api = api;
+
+        logTextEditor = api.userInterface().createRawEditor(EditorOptions.READ_ONLY);
+
         connector.init();
 
-        callbacks.addSuiteTab(new ReshaperComponent());
-        callbacks.setExtensionName("Reshaper");
-        callbacks.registerProxyListener(connector);
-        callbacks.registerHttpListener(connector);
-        callbacks.registerExtensionStateListener(connector);
-        callbacks.registerSessionHandlingAction(connector);
-        callbacks.registerContextMenuFactory(contextMenuHandler);
+        api.extension().setName("Reshaper");
+        api.userInterface().registerSuiteTab("Reshaper", new ReshaperComponent());
+
+        api.proxy().registerRequestHandler(connector);
+        api.proxy().registerResponseHandler(connector);
+        api.http().registerHttpHandler(connector);
+        api.extension().registerUnloadingHandler(connector);
+        api.http().registerSessionHandlingAction(connector);
+        api.userInterface().registerContextMenuItemsProvider(contextMenuHandler);
 
         Log.get().withMessage("Reshaper started").log();
     }

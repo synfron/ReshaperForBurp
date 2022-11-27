@@ -81,7 +81,7 @@ If the HTTP message is from a specific Burp tool
 
 #### Fields
 
-Tool - Proxy, Repeater, Intruder, Target, Spider, Scanner, Extender, or Session
+Tool - Proxy, Repeater, Intruder, Target, Scanner, Extender, or Session
 
 ### In Scope
 
@@ -316,7 +316,7 @@ Send data to other Burp tools or the system default browser
 
 #### Fields
 
-Send To - Comparer, Intruder, Repeater Spider, or Browser
+Send To - Comparer, Intruder, Repeater, or Browser
 
 Override Defaults - Select to be able to override values to send to the given Burp tool
 
@@ -330,7 +330,7 @@ Request - Full HTTP request text. Leave empty to use default value. Only availab
 
 Value - Value to compare. Leave empty to use default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
 
-URL - Leave empty to use default value. Only available for if Spider or Browser, and `Override Defaults` is selected. Supports variable tags.
+URL - Leave empty to use default value. Only available for Browser, and `Override Defaults` is selected. Supports variable tags.
 
 ### Run Process
 

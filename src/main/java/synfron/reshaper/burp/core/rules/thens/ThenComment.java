@@ -16,7 +16,7 @@ public class ThenComment extends Then<ThenComment> {
     public RuleResponse perform(IEventInfo eventInfo) {
         boolean hasError = true;
         try {
-            eventInfo.getRequestResponse().setComment(text.getText(eventInfo));
+            eventInfo.getAnnotations().withComment(text.getText(eventInfo));
             hasError = false;
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, VariableString.getTextOrDefault(eventInfo, text, null));

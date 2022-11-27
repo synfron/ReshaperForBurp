@@ -49,7 +49,6 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     private JCheckBox repeater;
     private JCheckBox intruder;
     private JCheckBox scanner;
-    private JCheckBox spider;
     private JCheckBox target;
     private JCheckBox extender;
     private ButtonGroup importMethod;
@@ -123,7 +122,6 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         repeater = new JCheckBox("Repeater");
         intruder = new JCheckBox("Intruder");
         scanner = new JCheckBox("Scanner");
-        spider = new JCheckBox("Spider");
         target = new JCheckBox("Target");
         extender = new JCheckBox("Extender");
 
@@ -131,7 +129,6 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         repeater.setSelected(generalSettings.isCaptureRepeater());
         intruder.setSelected(generalSettings.isCaptureIntruder());
         scanner.setSelected(generalSettings.isCaptureScanner());
-        spider.setSelected(generalSettings.isCaptureSpider());
         target.setSelected(generalSettings.isCaptureTarget());
         extender.setSelected(generalSettings.isCaptureExtender());
 
@@ -139,7 +136,6 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         repeater.addActionListener(this::onRepeaterChanged);
         intruder.addActionListener(this::onIntruderChanged);
         scanner.addActionListener(this::onScannerChanged);
-        spider.addActionListener(this::onSpiderChanged);
         target.addActionListener(this::onTargetChanged);
         extender.addActionListener(this::onExtenderChanged);
 
@@ -148,9 +144,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         container.add(repeater, "wrap");
         container.add(intruder);
         container.add(scanner, "wrap");
-        container.add(spider);
-        container.add(target, "wrap");
-        container.add(extender);
+        container.add(target);
+        container.add(extender, "wrap");
         return container;
     }
 
@@ -214,10 +209,6 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
 
     private void onScannerChanged(ActionEvent actionEvent) {
         generalSettings.setCaptureScanner(scanner.isSelected());
-    }
-
-    private void onSpiderChanged(ActionEvent actionEvent) {
-        generalSettings.setCaptureSpider(spider.isSelected());
     }
 
     private void onTargetChanged(ActionEvent actionEvent) {

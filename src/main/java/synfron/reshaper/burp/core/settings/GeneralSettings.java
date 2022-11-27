@@ -8,7 +8,6 @@ import synfron.reshaper.burp.core.messages.Encoder;
 public class GeneralSettings {
     private boolean captureProxy = true;
     private boolean captureTarget;
-    private boolean captureSpider;
     private boolean captureScanner;
     private boolean captureRepeater;
     private boolean captureIntruder;
@@ -26,7 +25,6 @@ public class GeneralSettings {
         if (other != null) {
             this.captureProxy = other.captureProxy;
             this.captureTarget = other.captureTarget;
-            this.captureSpider = other.captureSpider;
             this.captureScanner = other.captureScanner;
             this.captureRepeater = other.captureRepeater;
             this.captureIntruder = other.captureIntruder;
@@ -46,7 +44,6 @@ public class GeneralSettings {
             case Proxy -> isCaptureProxy();
             case Repeater -> isCaptureRepeater();
             case Target -> isCaptureTarget();
-            case Spider -> isCaptureSpider();
             case Scanner -> isCaptureScanner();
             case Intruder -> isCaptureIntruder();
             case Extender -> isCaptureExtender();

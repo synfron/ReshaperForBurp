@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
-import burp.ICookie;
+import burp.api.montoya.http.message.cookies.Cookie;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -165,11 +165,11 @@ public class VariableString implements Serializable {
                     path = record.get(2);
                 }
             }
-            for (ICookie cookie : BurpExtender.getCallbacks().getCookieJarContents()) {
-                if (cookie.getDomain().equals(domain)
-                        && cookie.getName().equals(name)
-                        && (path == null || StringUtils.defaultString(cookie.getPath()).equals(path))) {
-                    return cookie.getValue();
+            for (Cookie cookie : BurpExtender.getApi().http().cookieJar().cookies()) {
+                if (cookie.domain().equals(domain)
+                        && cookie.name().equals(name)
+                        && (path == null || StringUtils.defaultString(cookie.path()).equals(path))) {
+                    return cookie.value();
                 }
             }
         } catch (Exception e) {

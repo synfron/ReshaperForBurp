@@ -1,8 +1,16 @@
 package synfron.reshaper.burp.core.messages;
 
+import burp.api.montoya.core.Annotations;
+import burp.api.montoya.http.message.requests.HttpRequest;
+import burp.api.montoya.http.message.responses.HttpResponse;
+import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
+import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.rules.diagnostics.IDiagnostics;
+import synfron.reshaper.burp.core.vars.Variables;
 
 public interface IEventInfo {
+
     void setDataDirection(DataDirection dataDirection);
 
     void setHttpRequestMessage(byte[] request);
@@ -27,9 +35,7 @@ public interface IEventInfo {
 
     String getUrl();
 
-    burp.IHttpRequestResponse getRequestResponse();
-
-    synfron.reshaper.burp.core.BurpTool getBurpTool();
+    BurpTool getBurpTool();
 
     DataDirection getDataDirection();
 
@@ -43,15 +49,29 @@ public interface IEventInfo {
 
     String getHttpProtocol();
 
+    boolean isSecure();
+
     boolean isShouldDrop();
 
-    synfron.reshaper.burp.core.messages.entities.HttpRequestMessage getHttpRequestMessage();
+    HttpRequestMessage getHttpRequestMessage();
 
-    synfron.reshaper.burp.core.messages.entities.HttpResponseMessage getHttpResponseMessage();
+    HttpResponseMessage getHttpResponseMessage();
 
     Encoder getEncoder();
 
-    synfron.reshaper.burp.core.vars.Variables getVariables();
+    Variables getVariables();
 
     IDiagnostics getDiagnostics();
+
+    Annotations getAnnotations();
+
+    HttpRequest asHttpRequest();
+
+    void setHttpRequestOverride(HttpRequest httpRequest);
+
+    HttpResponse asHttpResponse();
+
+    HttpRequest getInitialHttpRequest();
+
+    HttpResponse getInitialHttpResponse();
 }

@@ -1,10 +1,13 @@
 package synfron.reshaper.burp.core.messages;
 
 import burp.BurpExtender;
-import burp.IHttpRequestResponse;
-import burp.IInterceptedProxyMessage;
-import lombok.Data;
+import burp.api.montoya.core.Annotations;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.message.requests.HttpRequest;
+import burp.api.montoya.http.message.responses.HttpResponse;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
@@ -12,7 +15,6 @@ import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
 import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
 import synfron.reshaper.burp.core.rules.diagnostics.IDiagnostics;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.Variables;
 
 import java.net.MalformedURLException;
@@ -20,7 +22,11 @@ import java.net.URL;
 
 public class EventInfo implements IEventInfo {
     @Getter
-    private final IHttpRequestResponse requestResponse;
+    private final HttpRequest initialHttpRequest;
+    @Getter
+    private final HttpResponse initialHttpResponse;
+    @Getter
+    private final Annotations annotations;
     @Getter
     private final BurpTool burpTool;
     @Getter
@@ -48,37 +54,33 @@ public class EventInfo implements IEventInfo {
     private boolean changed;
     @Getter
     private final IDiagnostics diagnostics = new Diagnostics();
+    private HttpRequest httpRequestOverride;
 
-    public EventInfo(DataDirection dataDirection, IInterceptedProxyMessage proxyMessage) {
-        this.burpTool = BurpTool.Proxy;
-        this.dataDirection = dataDirection;
-        this.requestResponse = proxyMessage.getMessageInfo();
-        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest(), encoder);
-        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse(), encoder);
-        proxyName = proxyMessage.getListenerInterface();
-        httpProtocol = requestResponse.getHttpService().getProtocol();
-        sourceAddress = proxyMessage.getClientIpAddress().getHostAddress();
-        destinationPort = requestResponse.getHttpService().getPort();
-        destinationAddress = requestResponse.getHttpService().getHost();
-    }
-
-    public EventInfo(DataDirection dataDirection, BurpTool burpTool, IHttpRequestResponse requestResponse) {
+    public EventInfo(DataDirection dataDirection, BurpTool burpTool, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, String proxyName, String sourceAddress) {
         this.burpTool = burpTool;
         this.dataDirection = dataDirection;
-        this.requestResponse = requestResponse;
-        httpRequestMessage = new HttpRequestMessage(requestResponse.getRequest(), encoder);
-        httpResponseMessage = new HttpResponseMessage(requestResponse.getResponse(), encoder);
-        httpProtocol = requestResponse.getHttpService().getProtocol();
-        sourceAddress = "burp::";
-        destinationPort = requestResponse.getHttpService().getPort();
-        destinationAddress = requestResponse.getHttpService().getHost();
-        proxyName = null;
+        this.initialHttpRequest = httpRequest;
+        this.initialHttpResponse = httpResponse;
+        this.annotations = annotations;
+        httpRequestMessage = new HttpRequestMessage(httpRequest, encoder);
+        httpResponseMessage = new HttpResponseMessage(httpResponse, encoder);
+        httpProtocol = httpRequest.httpService().secure() ? "https" : "http";
+        this.sourceAddress = sourceAddress;
+        destinationPort = httpRequest.httpService().port();
+        destinationAddress = httpRequest.httpService().host();
+        this.proxyName = proxyName;
+    }
+
+    public EventInfo(DataDirection dataDirection, BurpTool burpTool, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations) {
+        this(dataDirection, burpTool, httpRequest, httpResponse, annotations, null, "burp::");
     }
 
     public EventInfo(IEventInfo sourceEventInfo) {
         this.burpTool = sourceEventInfo.getBurpTool();
         this.dataDirection = sourceEventInfo.getDataDirection();
-        this.requestResponse = null;
+        this.initialHttpRequest = null;
+        this.initialHttpResponse = null;
+        this.annotations = null;
         this.encoder.setEncoding(sourceEventInfo.getEncoder().getEncoding(), sourceEventInfo.getEncoder().isAutoSet());
         httpRequestMessage = new HttpRequestMessage(sourceEventInfo.getHttpRequestMessage().getValue(), encoder);
         httpResponseMessage = new HttpResponseMessage(sourceEventInfo.getHttpResponseMessage().getValue(), encoder);
@@ -175,6 +177,35 @@ public class EventInfo implements IEventInfo {
             url = "[Unhandled URL]";
         }
         return url;
+    }
+
+    @Override
+    public boolean isSecure() {
+        return StringUtils.equalsIgnoreCase("https", httpProtocol);
+    }
+
+    @Override
+    public HttpRequest asHttpRequest() {
+        return httpRequestOverride != null ? httpRequestOverride : (isChanged() || initialHttpRequest == null ?
+                HttpRequest.httpRequest(ByteArray.byteArray(httpRequestMessage.getValue()))
+                        .withService(HttpService.httpService(
+                                destinationAddress,
+                                destinationPort,
+                                isSecure()
+                        )) :
+                initialHttpRequest);
+    }
+
+    @Override
+    public void setHttpRequestOverride(HttpRequest httpRequest) {
+        this.httpRequestOverride = httpRequest;
+    }
+
+    @Override
+    public HttpResponse asHttpResponse() {
+        return isChanged() || initialHttpResponse == null ?
+                HttpResponse.httpResponse(ByteArray.byteArray(httpRequestMessage.getValue())) :
+                initialHttpResponse;
     }
 
 }

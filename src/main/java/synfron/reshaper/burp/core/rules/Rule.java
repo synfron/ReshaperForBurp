@@ -7,13 +7,9 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
-import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.core.utils.Serializer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Rule implements Serializable {
     @Getter
@@ -28,6 +24,8 @@ public class Rule implements Serializable {
     private boolean autoRun = true;
     @Getter
     private String name;
+    @Getter
+    private boolean diagnosticsEnabled;
 
     public void setName(String name) {
         this.name = name;
@@ -42,6 +40,11 @@ public class Rule implements Serializable {
     public void setAutoRun(boolean autoRun) {
         this.autoRun = autoRun;
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, "autoRun", autoRun));
+    }
+
+    public void setDiagnosticsEnabled(boolean diagnosticsEnabled) {
+        this.diagnosticsEnabled = diagnosticsEnabled;
+        propertyChangedEvent.invoke(new PropertyChangedArgs(this, "diagnosticsEnabled", diagnosticsEnabled));
     }
 
     @Override

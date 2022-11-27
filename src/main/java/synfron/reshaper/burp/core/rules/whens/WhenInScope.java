@@ -7,9 +7,6 @@ import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.vars.VariableString;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class WhenInScope extends When<WhenInScope> {
 
 
@@ -22,7 +19,7 @@ public class WhenInScope extends When<WhenInScope> {
         boolean isMatch = false;
         String url = VariableString.getTextOrDefault(eventInfo, this.url, eventInfo.getUrl());
         try {
-            isMatch = BurpExtender.getCallbacks().isInScope(new URL(url));
+            isMatch = BurpExtender.getApi().scope().isInScope(url);
         } catch (Exception ignored) {
         }
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, isMatch, url);
