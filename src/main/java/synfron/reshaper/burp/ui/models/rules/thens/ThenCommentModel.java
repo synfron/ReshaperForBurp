@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenComment;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -13,8 +14,8 @@ public class ThenCommentModel extends ThenModel<ThenCommentModel, ThenComment> {
     @Getter
     private String text;
 
-    public ThenCommentModel(ThenComment then, Boolean isNew) {
-        super(then, isNew);
+    public ThenCommentModel(ProtocolType protocolType, ThenComment then, Boolean isNew) {
+        super(protocolType, then, isNew);
         text = VariableString.toString(then.getText(), text);
     }
 

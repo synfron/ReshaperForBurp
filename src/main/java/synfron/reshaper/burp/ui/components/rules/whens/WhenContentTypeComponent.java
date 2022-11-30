@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.rules.whens.WhenContentType;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenContentTypeModel;
@@ -17,8 +18,8 @@ public class WhenContentTypeComponent extends WhenComponent<WhenContentTypeModel
     private JCheckBox amf;
     private JCheckBox unknown;
 
-    public WhenContentTypeComponent(WhenContentTypeModel when) {
-        super(when);
+    public WhenContentTypeComponent(ProtocolType protocolType, WhenContentTypeModel when) {
+        super(protocolType, when);
         initComponent();
     }
 

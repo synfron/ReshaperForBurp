@@ -1,9 +1,10 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenParseHttpMessage;
 import synfron.reshaper.burp.ui.components.rules.thens.parsehttpmessage.MessageValueGetterComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenParseHttpMessageModel;
@@ -15,18 +16,18 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 public class ThenParseHttpMessageComponent extends ThenComponent<ThenParseHttpMessageModel, ThenParseHttpMessage> {
-    private JComboBox<DataDirection> dataDirection;
+    private JComboBox<HttpDataDirection> dataDirection;
     private JTextField httpMessage;
     private JPanel messageValueGettersComponent;
     private final IEventListener<PropertyChangedArgs> messageValueGetterChangedListener = this::onMessageValueGetterChanged;
 
-    public ThenParseHttpMessageComponent(ThenParseHttpMessageModel then) {
-        super(then);
+    public ThenParseHttpMessageComponent(ProtocolType protocolType, ThenParseHttpMessageModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
-        dataDirection = createComboBox(DataDirection.values());
+        dataDirection = createComboBox(HttpDataDirection.values());
         httpMessage = createTextField(true);
         JButton addGetter = new JButton("Add Getter");
 
@@ -55,7 +56,7 @@ public class ThenParseHttpMessageComponent extends ThenComponent<ThenParseHttpMe
         boolean deletableGetter = false;
         for (MessageValueGetterModel messageValueGetterModel : model.getMessageValueGetters()) {
             messageValueGetterModel.withListener(messageValueGetterChangedListener);
-            messageValueGettersComponent.add(new MessageValueGetterComponent(messageValueGetterModel, model.getDataDirection(), deletableGetter), "wrap");
+            messageValueGettersComponent.add(new MessageValueGetterComponent(protocolType, messageValueGetterModel, model.getDataDirection(), deletableGetter), "wrap");
             deletableGetter = true;
         }
         return messageValueGettersComponent;
@@ -65,7 +66,7 @@ public class ThenParseHttpMessageComponent extends ThenComponent<ThenParseHttpMe
         for (MessageValueGetterModel messageValueGetterModel : new ArrayList<>(model.getMessageValueGetters())) {
             removeMessageValueGetter(messageValueGetterModel);
         }
-        model.setDataDirection((DataDirection) dataDirection.getSelectedItem());
+        model.setDataDirection((HttpDataDirection) dataDirection.getSelectedItem());
 
         addMessageValueGetter();
     }
@@ -93,7 +94,7 @@ public class ThenParseHttpMessageComponent extends ThenComponent<ThenParseHttpMe
         MessageValueGetterModel messageValueGetterModel = model.addMessageValueGetter()
                 .withListener(messageValueGetterChangedListener);
         messageValueGettersComponent.add(new MessageValueGetterComponent(
-                messageValueGetterModel,
+                protocolType, messageValueGetterModel,
                 model.getDataDirection(),
                 deletable
         ), "wrap");

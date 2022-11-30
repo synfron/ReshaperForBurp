@@ -10,5 +10,6 @@ import java.util.List;
 @Data
 public class ExportSettings {
     private List<Rule> rules = Collections.emptyList();
+    private List<Rule> webSocketRules = Collections.emptyList();
     private List<Variable> variables = Collections.emptyList();
 }

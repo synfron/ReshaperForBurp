@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSendTo;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -28,8 +29,8 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
     @Getter
     private String url;
 
-    public ThenSendToModel(ThenSendTo then, Boolean isNew) {
-        super(then, isNew);
+    public ThenSendToModel(ProtocolType protocolType, ThenSendTo then, Boolean isNew) {
+        super(protocolType, then, isNew);
         sendTo = then.getSendTo();
         overrideDefaults = then.isOverrideDefaults();
         host = VariableString.toString(then.getHost(), host);

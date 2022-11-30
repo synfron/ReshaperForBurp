@@ -1,21 +1,22 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 public class WhenEventDirectionModel extends WhenModel<WhenEventDirectionModel, WhenEventDirection> {
 
     @Getter
-    private DataDirection dataDirection;
+    private HttpDataDirection dataDirection;
 
-    public WhenEventDirectionModel(WhenEventDirection when, Boolean isNew) {
-        super(when, isNew);
+    public WhenEventDirectionModel(ProtocolType protocolType, WhenEventDirection when, Boolean isNew) {
+        super(protocolType, when, isNew);
         dataDirection = when.getDataDirection();
     }
 
-    public void setDataDirection(DataDirection dataDirection) {
+    public void setDataDirection(HttpDataDirection dataDirection) {
         this.dataDirection = dataDirection;
         propertyChanged("dataDirection", dataDirection);
     }

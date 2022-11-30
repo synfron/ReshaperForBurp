@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSendRequest;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
@@ -40,8 +41,8 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
     @Getter
     private String captureVariableName;
 
-    public ThenSendRequestModel(ThenSendRequest then, Boolean isNew) {
-        super(then, isNew);
+    public ThenSendRequestModel(ProtocolType protocolType, ThenSendRequest then, Boolean isNew) {
+        super(protocolType, then, isNew);
         request = VariableString.toString(then.getRequest(), request);
         url = VariableString.toString(then.getUrl(), url);
         protocol = VariableString.toString(then.getProtocol(), protocol);

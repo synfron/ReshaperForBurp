@@ -1,16 +1,14 @@
-package synfron.reshaper.burp.core.messages.entities;
+package synfron.reshaper.burp.core.messages.entities.http;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.message.headers.HttpHeader;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.utils.Url;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -103,15 +101,10 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     public void setUrl(String urlStr) {
-        try {
-            URL url = new URL(urlStr);
-            setUrl(url);
-        } catch (MalformedURLException e) {
-            throw new WrappedException(e);
-        }
+        setUrl(new Url(urlStr));
     }
 
-    public void setUrl(URL url) {
+    public void setUrl(Url url) {
         getStatusLine().setUrl(url.getFile().startsWith("/") ? url.getFile() : "/" + url.getFile());
         getHeaders().setHeader("Host", url.getAuthority(), SetItemPlacement.Only);
     }

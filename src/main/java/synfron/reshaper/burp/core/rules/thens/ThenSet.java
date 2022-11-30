@@ -3,10 +3,7 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
-import synfron.reshaper.burp.core.messages.MessageValueType;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.*;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -15,7 +12,7 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
     @Getter @Setter
     private boolean useMessageValue = true;
     @Getter @Setter
-    private MessageValue sourceMessageValue = MessageValue.HttpRequestBody;
+    private MessageValue sourceMessageValue;
     @Getter @Setter
     private VariableString sourceIdentifier;
     @Getter @Setter
@@ -37,12 +34,12 @@ public abstract class ThenSet<T extends ThenSet<T>> extends Then<T> {
     @Getter @Setter
     protected VariableString destinationMessageValuePath;
 
-    private String getValue(IEventInfo eventInfo)
+    private String getValue(EventInfo eventInfo)
     {
         return MessageValueHandler.getValue(eventInfo, sourceMessageValue, sourceIdentifier, sourceIdentifierPlacement);
     }
 
-    protected String getReplacementValue(IEventInfo eventInfo)
+    protected String getReplacementValue(EventInfo eventInfo)
     {
         String text = "";
         if (useMessageValue)

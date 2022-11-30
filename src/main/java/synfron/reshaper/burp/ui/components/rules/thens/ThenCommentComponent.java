@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenComment;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenCommentModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -10,8 +11,8 @@ import java.awt.event.ActionEvent;
 public class ThenCommentComponent extends ThenComponent<ThenCommentModel, ThenComment> {
     private JTextField text;
 
-    public ThenCommentComponent(ThenCommentModel then) {
-        super(then);
+    public ThenCommentComponent(ProtocolType protocolType, ThenCommentModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

@@ -5,7 +5,6 @@ import burp.api.montoya.core.Annotations;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.ToolSource;
 import burp.api.montoya.core.ToolType;
-import burp.api.montoya.extension.ExtensionUnloadingHandler;
 import burp.api.montoya.http.HttpHandler;
 import burp.api.montoya.http.HttpService;
 import burp.api.montoya.http.RequestResult;
@@ -19,12 +18,10 @@ import lombok.Getter;
 import lombok.Setter;
 import net.jodah.expiringmap.ExpiringMap;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
+import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.rules.RulesEngine;
-import synfron.reshaper.burp.core.settings.SettingsManager;
 import synfron.reshaper.burp.core.utils.Log;
 
 import java.io.*;
@@ -40,11 +37,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Connector implements
+public class HttpConnector implements
         ProxyHttpRequestHandler,
         ProxyHttpResponseHandler,
         HttpHandler,
-        ExtensionUnloadingHandler,
         SessionHandlingAction
 {
 
@@ -52,26 +48,20 @@ public class Connector implements
     @Getter
     private final RulesEngine rulesEngine = new RulesEngine();
     private ServerSocket serverSocket;
-    private final Map<Integer, IEventInfo> continuationMap = ExpiringMap.builder()
+    private final Map<Integer, HttpEventInfo> continuationMap = ExpiringMap.builder()
             .expiration(30, TimeUnit.SECONDS).build();
-    @Getter
-    private final SettingsManager settingsManager = new SettingsManager();
-    private boolean activated = true;
     private ExecutorService serverExecutor;
     private final String dataDirectionWarning = "Sanity Check - Warning: The %s changed but the data direction is set to %s. Your changes may have no impact. Consider using 'When Data Direction' or 'Then Set Data Direction' to restrict or change the data direction.";
+    private boolean activated = true;
 
     public void init() {
         activated = true;
-        settingsManager.loadSettings();
         createServer();
     }
 
-    @Override
-    public void extensionUnloaded() {
+    public void unload() {
         activated = false;
-        settingsManager.saveSettings();
         closeServer();
-        Log.get().withMessage("Reshaper unloaded").log();
     }
 
     private void closeServer() {
@@ -93,7 +83,7 @@ public class Connector implements
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 bufferedReader.readLine();
                 int reshaperId = getReshaperId(bufferedReader.readLine());
-                IEventInfo eventInfo = continuationMap.get(reshaperId);
+                HttpEventInfo eventInfo = continuationMap.get(reshaperId);
                 if (eventInfo.isShouldDrop()) {
                     continuationMap.remove(reshaperId);
                     close(socket);
@@ -144,7 +134,7 @@ public class Connector implements
         }
     }
 
-    private IEventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations) {
+    private HttpEventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations) {
         return asEventInfo(
                 messageIsRequest,
                 burpTool,
@@ -156,17 +146,17 @@ public class Connector implements
         );
     }
 
-    private IEventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, String proxyName, InetAddress sourceIpAddress) {
+    private HttpEventInfo asEventInfo(boolean messageIsRequest, BurpTool burpTool, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, String proxyName, InetAddress sourceIpAddress) {
         if (!messageIsRequest &&
                 httpRequest.httpService().port() == serverSocket.getLocalPort() &&
                 httpRequest.httpService().host().equals(serverSocket.getInetAddress().getHostAddress())
         ) {
             int reshaperId = Integer.parseInt(httpRequest.headers().get(1).value());
-            IEventInfo requestEventInfo = continuationMap.remove(reshaperId);
+            HttpEventInfo requestEventInfo = continuationMap.remove(reshaperId);
             httpRequest = requestEventInfo.getInitialHttpRequest();
         }
-        IEventInfo eventInfo = new EventInfo(
-                messageIsRequest ? DataDirection.Request : DataDirection.Response,
+        HttpEventInfo eventInfo = new HttpEventInfo(
+                messageIsRequest ? HttpDataDirection.Request : HttpDataDirection.Response,
                 burpTool,
                 httpRequest,
                 httpResponse,
@@ -185,14 +175,14 @@ public class Connector implements
         return Integer.parseInt(header.split(":", 2)[1].trim());
     }
 
-    private EventResult processEvent(boolean isRequest, IEventInfo eventInfo, boolean isIntercept) {
+    private EventResult processEvent(boolean isRequest, HttpEventInfo eventInfo, boolean isIntercept) {
         int messageId = isRequest ? lastMessageId.getAndIncrement() : -1;
         EventResult eventResult = new EventResult(eventInfo);
         try {
             rulesEngine.run(eventInfo);
             if (eventInfo.isChanged()) {
                 sanityCheck(eventInfo);
-                if (eventInfo.getDataDirection() == DataDirection.Request) {
+                if (eventInfo.getDataDirection() == HttpDataDirection.Request) {
                     if (eventInfo.isShouldDrop()) {
                         if (isIntercept) {
                             eventResult.setInterceptResponse(InterceptResponse.Drop);
@@ -200,7 +190,7 @@ public class Connector implements
                             sendToSelf(messageId, eventInfo);
                         }
                     }
-                } else if (isRequest && eventInfo.getDataDirection() == DataDirection.Response) {
+                } else if (isRequest && eventInfo.getDataDirection() == HttpDataDirection.Response) {
                     sendToSelf(messageId, eventInfo);
                     if (isIntercept) {
                         eventResult.setInterceptResponse(InterceptResponse.Disable);
@@ -217,18 +207,18 @@ public class Connector implements
         return eventResult;
     }
 
-    private void sanityCheck(IEventInfo eventInfo) {
+    private void sanityCheck(HttpEventInfo eventInfo) {
         if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
-            if (eventInfo.isRequestChanged() && eventInfo.getDataDirection() == DataDirection.Response) {
+            if (eventInfo.isRequestChanged() && eventInfo.getDataDirection() == HttpDataDirection.Response) {
                 Log.get().withMessage(String.format(dataDirectionWarning, "request", "Response")).log();
             }
-            if (eventInfo.isResponseChanged() && eventInfo.getDataDirection() == DataDirection.Request) {
+            if (eventInfo.isResponseChanged() && eventInfo.getDataDirection() == HttpDataDirection.Request) {
                 Log.get().withMessage(String.format(dataDirectionWarning, "response", "Request")).log();
             }
         }
     }
 
-    private void sendToSelf(int messageId, IEventInfo eventInfo) {
+    private void sendToSelf(int messageId, HttpEventInfo eventInfo) {
         HttpRequestMessage requestMessage = eventInfo.getHttpRequestMessage();
         List<String> headers = new ArrayList<>();
         headers.add(requestMessage.getStatusLine().getValue());
@@ -248,16 +238,16 @@ public class Connector implements
     }
 
     private BurpTool getBurpToolIfEnabled(ToolType toolType) {
-        BurpTool burpTool = BurpTool.getBy(toolType);
+        BurpTool burpTool = BurpTool.from(toolType);
         return burpTool != null && BurpExtender.getGeneralSettings().isCapture(burpTool) ? burpTool : null;
     }
 
     @Override
     public RequestResult handleHttpRequest(HttpRequest request, Annotations annotations, ToolSource toolSource) {
-        if (toolSource.toolType() != ToolType.PROXY) {
+        if (!toolSource.isFromTool(ToolType.PROXY)) {
             BurpTool burpTool = getBurpToolIfEnabled(toolSource.toolType());
             if (burpTool != null && burpTool != BurpTool.Proxy) {
-                IEventInfo eventInfo = asEventInfo(true, burpTool, request, null, annotations);
+                HttpEventInfo eventInfo = asEventInfo(true, burpTool, request, null, annotations);
                 processEvent(true, eventInfo, false);
                 return RequestResult.requestResult(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
             }
@@ -270,7 +260,7 @@ public class Connector implements
         if (toolSource.toolType() != ToolType.PROXY) {
             BurpTool burpTool = getBurpToolIfEnabled(toolSource.toolType());
             if (burpTool != null && burpTool != BurpTool.Proxy) {
-                IEventInfo eventInfo = asEventInfo(false, burpTool, initiatingRequest, response, annotations);
+                HttpEventInfo eventInfo = asEventInfo(false, burpTool, initiatingRequest, response, annotations);
                 processEvent(false, eventInfo, false);
                 return ResponseResult.responseResult(eventInfo.asHttpResponse(), eventInfo.getAnnotations());
             }
@@ -285,7 +275,7 @@ public class Connector implements
 
     @Override
     public RequestResult handle(HttpRequest currentRequest, Annotations annotations, List<HttpRequestResponse> macroRequestResponses) {
-        IEventInfo eventInfo = asEventInfo(true, BurpTool.Session, currentRequest, null, annotations);
+        HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Session, currentRequest, null, annotations);
         processEvent(true, eventInfo, false);
         return RequestResult.requestResult(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
     }
@@ -293,7 +283,7 @@ public class Connector implements
     @Override
     public RequestInitialInterceptResult handleReceivedRequest(InterceptedHttpRequest interceptedRequest, Annotations annotations) {
         if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
-            IEventInfo eventInfo = asEventInfo(true, BurpTool.Proxy, interceptedRequest, null, annotations, interceptedRequest.listenerInterface(), interceptedRequest.sourceIpAddress());
+            HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Proxy, interceptedRequest, null, annotations, interceptedRequest.listenerInterface(), interceptedRequest.sourceIpAddress());
             return processEvent(true, eventInfo, true).asRequestInterceptResult();
         }
         else {
@@ -309,7 +299,7 @@ public class Connector implements
     @Override
     public ResponseInitialInterceptResult handleReceivedResponse(InterceptedHttpResponse interceptedResponse, HttpRequest initiatingRequest, Annotations annotations) {
         if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
-            IEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, initiatingRequest, interceptedResponse, annotations);
+            HttpEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, initiatingRequest, interceptedResponse, annotations);
             return processEvent(false, eventInfo, true).asResponseInterceptResult();
         }
         else {
@@ -322,12 +312,12 @@ public class Connector implements
         return ResponseFinalInterceptResult.continueWith(interceptedResponse, annotations);
     }
 
-    public class EventResult {
-        private final IEventInfo eventInfo;
+    public static class EventResult {
+        private final HttpEventInfo eventInfo;
         @Getter @Setter
         private InterceptResponse interceptResponse;
 
-        public EventResult(IEventInfo eventInfo) {
+        public EventResult(HttpEventInfo eventInfo) {
             this.eventInfo = eventInfo;
             interceptResponse = InterceptResponse.Continue;
         }
@@ -345,33 +335,20 @@ public class Connector implements
         }
 
         public RequestInitialInterceptResult asRequestInterceptResult() {
-            switch (interceptResponse) {
-                case Continue:
-                    return RequestInitialInterceptResult.followUserRules(getRequest(), getAnnotations());
-                case Drop:
-                    return RequestInitialInterceptResult.drop();
-                case Disable:
-                    return RequestInitialInterceptResult.doNotIntercept(getRequest(), getAnnotations());
-            }
-            return null;
+            return switch (interceptResponse) {
+                case Continue -> RequestInitialInterceptResult.followUserRules(getRequest(), getAnnotations());
+                case Drop -> RequestInitialInterceptResult.drop();
+                case Disable -> RequestInitialInterceptResult.doNotIntercept(getRequest(), getAnnotations());
+            };
         }
 
         public ResponseInitialInterceptResult asResponseInterceptResult() {
-            switch (interceptResponse) {
-                case Continue:
-                    return ResponseInitialInterceptResult.followUserRules(getResponse(), getAnnotations());
-                case Drop:
-                    return ResponseInitialInterceptResult.drop();
-                case Disable:
-                    return ResponseInitialInterceptResult.doNotIntercept(getResponse(), getAnnotations());
-            }
-            return null;
+            return switch (interceptResponse) {
+                case Continue -> ResponseInitialInterceptResult.followUserRules(getResponse(), getAnnotations());
+                case Drop -> ResponseInitialInterceptResult.drop();
+                case Disable -> ResponseInitialInterceptResult.doNotIntercept(getResponse(), getAnnotations());
+            };
         }
     }
 
-    public enum InterceptResponse {
-        Continue,
-        Drop,
-        Disable;
-    }
 }

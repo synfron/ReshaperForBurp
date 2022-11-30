@@ -74,13 +74,15 @@ public class Log {
     }
 
     private void printToDisplay(String text) {
-        BurpExtender.getLogTextEditor().setContents(ByteArray.byteArray(
-                TextUtils.bufferAppend(
-                        new String(BurpExtender.getLogTextEditor().getContents().getBytes(), StandardCharsets.UTF_8),
-                        text,
-                        "\n",
-                        BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
-                ).getBytes(StandardCharsets.UTF_8)
-        ));
+        if (BurpExtender.getLogTextEditor() != null) {
+            BurpExtender.getLogTextEditor().setContents(ByteArray.byteArray(
+                    TextUtils.bufferAppend(
+                            new String(BurpExtender.getLogTextEditor().getContents().getBytes(), StandardCharsets.UTF_8),
+                            text,
+                            "\n",
+                            BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
+                    ).getBytes(StandardCharsets.UTF_8)
+            ));
+        }
     }
 }

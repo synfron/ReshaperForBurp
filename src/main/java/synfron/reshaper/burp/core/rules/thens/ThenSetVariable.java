@@ -3,8 +3,10 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValueType;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.TextUtils;
@@ -13,14 +15,14 @@ import synfron.reshaper.burp.core.vars.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class ThenSetVariable extends ThenSet<ThenSetVariable> {
+public class ThenSetVariable extends ThenSet<ThenSetVariable> implements IHttpRuleOperation, IWebSocketRuleOperation {
 
     @Getter @Setter
     private VariableSource targetSource = VariableSource.Global;
     @Getter @Setter
     private VariableString variableName;
 
-    public RuleResponse perform(IEventInfo eventInfo)
+    public RuleResponse perform(EventInfo eventInfo)
     {
         try {
             String replacementText = getReplacementValue(eventInfo);
@@ -31,13 +33,9 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> {
         return RuleResponse.Continue;
     }
 
-    private void setValue(IEventInfo eventInfo, String replacementText)
+    private void setValue(EventInfo eventInfo, String replacementText)
     {
-        Variables variables = switch (targetSource) {
-            case Event -> eventInfo.getVariables();
-            case Global -> GlobalVariables.get();
-            default -> null;
-        };
+        Variables variables = getVariables(targetSource, eventInfo);
         if (variables != null)
         {
             Variable variable = variables.add(variableName.getText(eventInfo));

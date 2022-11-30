@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MimeType;
 import synfron.reshaper.burp.core.rules.whens.WhenMimeType;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenMimeTypeModel;
@@ -20,8 +21,8 @@ public class WhenMimeTypeComponent extends WhenComponent<WhenMimeTypeModel, When
     private JCheckBox otherBinary;
     private JCheckBox unknown;
 
-    public WhenMimeTypeComponent(WhenMimeTypeModel when) {
-        super(when);
+    public WhenMimeTypeComponent(ProtocolType protocolType, WhenMimeTypeModel when) {
+        super(protocolType, when);
         initComponent();
     }
 

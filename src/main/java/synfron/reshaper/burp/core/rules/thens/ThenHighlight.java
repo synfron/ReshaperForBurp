@@ -2,18 +2,20 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 
-public class ThenHighlight extends Then<ThenHighlight> {
+public class ThenHighlight extends Then<ThenHighlight> implements IHttpRuleOperation {
     @Getter
     @Setter
     private HighlightColor color = HighlightColor.None;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
-        eventInfo.getAnnotations().withHighlightColor(color.highlightColor);
+    public RuleResponse perform(EventInfo eventInfo) {
+        ((HttpEventInfo)eventInfo).getAnnotations().withHighlightColor(color.highlightColor);
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, false, color.getValue());
         return RuleResponse.Continue;
     }

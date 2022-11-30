@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MimeType;
 import synfron.reshaper.burp.core.rules.whens.WhenMimeType;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -10,8 +11,8 @@ public class WhenMimeTypeModel extends WhenModel<WhenMimeTypeModel, WhenMimeType
     @Getter
     private MimeType mimeType;
 
-    public WhenMimeTypeModel(WhenMimeType when, Boolean isNew) {
-        super(when, isNew);
+    public WhenMimeTypeModel(ProtocolType protocolType, WhenMimeType when, Boolean isNew) {
+        super(protocolType, when, isNew);
         mimeType = when.getMimeType();
     }
 

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.whens.WhenHasEntity;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenHasEntityModel;
@@ -8,19 +9,22 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 
 public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, WhenHasEntity> {
     private JComboBox<MessageValue> messageValue;
     private JTextField identifier;
 
-    public WhenHasEntityComponent(WhenHasEntityModel when) {
-        super(when);
+    public WhenHasEntityComponent(ProtocolType protocolType, WhenHasEntityModel when) {
+        super(protocolType, when);
         initComponent();
     }
 
     private void initComponent() {
         identifier = createTextField(true);
-        messageValue = createComboBox(MessageValue.values());
+        messageValue = createComboBox(Arrays.stream(MessageValue.values())
+                .filter(value -> value.isGettable(protocolType))
+                .toArray(MessageValue[]::new));
 
         messageValue.setSelectedItem(model.getMessageValue());
         identifier.setText(model.getIdentifier());

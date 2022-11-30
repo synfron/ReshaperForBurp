@@ -2,9 +2,10 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenParseHttpMessage;
 import synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage.MessageValueGetter;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageModel, ThenParseHttpMessage> implements IVariableCreator {
 
     @Getter
-    private DataDirection dataDirection;
+    private HttpDataDirection dataDirection;
     @Getter
     private String httpMessage;
     @Getter
@@ -26,8 +27,8 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
 
     private final IEventListener<PropertyChangedArgs> messageValueGetterChangedListener = this::onMessageValueGetterChanged;
 
-    public ThenParseHttpMessageModel(ThenParseHttpMessage then, Boolean isNew) {
-        super(then, isNew);
+    public ThenParseHttpMessageModel(ProtocolType protocolType, ThenParseHttpMessage then, Boolean isNew) {
+        super(protocolType, then, isNew);
         this.dataDirection = then.getDataDirection();
         this.httpMessage = VariableString.toString(then.getHttpMessage(), httpMessage);
         this.messageValueGetters = then.getMessageValueGetters().stream()
@@ -51,7 +52,7 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
         return index;
     }
 
-    public void setDataDirection(DataDirection dataDirection) {
+    public void setDataDirection(HttpDataDirection dataDirection) {
         this.dataDirection = dataDirection;
         propertyChanged("dataDirection", dataDirection);
     }

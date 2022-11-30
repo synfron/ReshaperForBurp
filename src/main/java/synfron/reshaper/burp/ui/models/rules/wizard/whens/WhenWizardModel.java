@@ -7,8 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     @Getter
-    private final IEventInfo eventInfo;
+    private final HttpEventInfo eventInfo;
     @Getter
     private String ruleName;
     @Getter
@@ -44,7 +44,7 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     @Setter @Getter
     private ModalPrompter<WhenWizardModel> modalPrompter;
 
-    public WhenWizardModel(IEventInfo eventInfo) {
+    public WhenWizardModel(HttpEventInfo eventInfo) {
         this.eventInfo = eventInfo;
     }
 
@@ -134,13 +134,13 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
                 }
             }
             WhenEventDirection direction = new WhenEventDirection();
-            direction.setDataDirection(requiresResponse ? DataDirection.Response : DataDirection.Request);
+            direction.setDataDirection(requiresResponse ? HttpDataDirection.Response : HttpDataDirection.Request);
             whens.addFirst(direction);
             rule.setName(ruleName);
             rule.setEnabled(false);
             rule.setAutoRun(true);
             rule.setWhens(whens.toArray(When[]::new));
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
+            BurpExtender.getHttpConnector().getRulesEngine().getRulesRegistry().addRule(rule);
             setInvalidated(false);
             return true;
         }

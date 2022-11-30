@@ -2,11 +2,13 @@ package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.whens.WhenHasEntity;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEntity> {
@@ -16,9 +18,9 @@ public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEnt
     @Getter
     private String identifier = "";
 
-    public WhenHasEntityModel(WhenHasEntity when, Boolean isNew) {
-        super(when, isNew);
-        messageValue = when.getMessageValue();
+    public WhenHasEntityModel(ProtocolType protocolType, WhenHasEntity when, Boolean isNew) {
+        super(protocolType, when, isNew);
+        messageValue = when.getMessageValue() != null ? when.getMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isGettable(protocolType)).findFirst().orElse(null);
         identifier = VariableString.toString(when.getIdentifier(), identifier);
     }
 

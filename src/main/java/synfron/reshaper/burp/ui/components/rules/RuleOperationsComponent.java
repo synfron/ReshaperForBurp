@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 
@@ -9,10 +10,13 @@ import java.awt.*;
 
 public abstract class RuleOperationsComponent<T extends RuleOperationModel<?,?>> extends JPanel {
 
+    protected final ProtocolType protocolType;
+
     protected final RuleModel model;
     protected JPanel ruleOperationContainer;
 
-    public RuleOperationsComponent(RuleModel model) {
+    public RuleOperationsComponent(ProtocolType protocolType, RuleModel model) {
+        this.protocolType = protocolType;
         this.model = model;
         initComponent();
     }

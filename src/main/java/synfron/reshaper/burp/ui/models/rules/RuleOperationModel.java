@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
@@ -10,13 +11,16 @@ import java.util.List;
 
 public abstract class RuleOperationModel<P extends RuleOperationModel<P, T>, T extends IRuleOperation<T>> {
     @Getter
+    protected final ProtocolType protocolType;
+    @Getter
     protected final T ruleOperation;
     @Getter
     protected boolean validated;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
-    public RuleOperationModel(T ruleOperation, boolean isNew) {
+    public RuleOperationModel(ProtocolType protocolType, T ruleOperation, boolean isNew) {
+        this.protocolType = protocolType;
         this.ruleOperation = ruleOperation;
         this.validated = !isNew;
     }

@@ -1,21 +1,22 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenSetEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 public class ThenSetEventDirectionModel extends ThenModel<ThenSetEventDirectionModel, ThenSetEventDirection> {
 
     @Getter
-    private DataDirection dataDirection;
+    private HttpDataDirection dataDirection;
 
-    public ThenSetEventDirectionModel(ThenSetEventDirection then, Boolean isNew) {
-        super(then, isNew);
+    public ThenSetEventDirectionModel(ProtocolType protocolType, ThenSetEventDirection then, Boolean isNew) {
+        super(protocolType, then, isNew);
         dataDirection = then.getDataDirection();
     }
 
-    public void setDataDirection(DataDirection dataDirection) {
+    public void setDataDirection(HttpDataDirection dataDirection) {
         this.dataDirection = dataDirection;
         propertyChanged("dataDirection", dataDirection);
     }

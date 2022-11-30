@@ -3,10 +3,9 @@ package synfron.reshaper.burp.core.rules.whens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
-import synfron.reshaper.burp.core.messages.MessageValueType;
+import synfron.reshaper.burp.core.messages.*;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
@@ -15,7 +14,7 @@ import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.Arrays;
 
-public class WhenMatchesText extends When<WhenMatchesText> {
+public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter
     @Setter
     private VariableString identifier;
@@ -30,7 +29,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
     private VariableString matchText;
     @Getter
     @Setter
-    private MessageValue messageValue = MessageValue.HttpRequestBody;
+    private MessageValue messageValue;
     @Getter
     @Setter
     private MessageValueType messageValueType = MessageValueType.Text;
@@ -45,7 +44,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
     public boolean useMessageValue = true;
 
     @Override
-    public boolean isMatch(IEventInfo eventInfo) {
+    public boolean isMatch(EventInfo eventInfo) {
         boolean isMatch = false;
         String sourceText = null;
         String matchText = null;
@@ -75,7 +74,7 @@ public class WhenMatchesText extends When<WhenMatchesText> {
         return isMatch;
     }
 
-    private String getPathValue(String value, IEventInfo eventInfo) {
+    private String getPathValue(String value, EventInfo eventInfo) {
         if (messageValueType != MessageValueType.Text && messageValuePath != null)
         {
             switch (messageValueType) {

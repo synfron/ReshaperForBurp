@@ -2,31 +2,29 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 
 import burp.BurpExtender;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.rules.RulesRegistry;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunRules;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenRunRulesModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
-import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, ThenRunRules> {
     private JComboBox<String> ruleName;
     private JCheckBox runSingle;
 
-    public ThenRunRulesComponent(ThenRunRulesModel then) {
-        super(then);
+    public ThenRunRulesComponent(ProtocolType protocolType, ThenRunRulesModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
         runSingle = new JCheckBox("Run Single");
         ruleName = createComboBox(Stream.concat(
-                Arrays.stream(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules()).map(rule -> rule.getName()),
+                Arrays.stream(BurpExtender.getHttpConnector().getRulesEngine().getRulesRegistry().getRules()).map(rule -> rule.getName()),
                 Stream.of(model.getRuleName())
         ).filter(StringUtils::isNotEmpty).sorted().distinct().toArray(String[]::new));
 

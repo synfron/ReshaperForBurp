@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenPrompt;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenPromptModel;
@@ -16,8 +17,8 @@ public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenProm
     private JComboBox<VariableSource> captureVariableSource;
     private JTextField captureVariableName;
 
-    public ThenPromptComponent(ThenPromptModel then) {
-        super(then);
+    public ThenPromptComponent(ProtocolType protocolType, ThenPromptModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
@@ -26,7 +27,7 @@ public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenProm
         starterText = createTextField(true);
         failAfter = createTextField(true);
         breakAfterFailure = new JCheckBox("Break After Failure");
-        captureVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        captureVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         captureVariableName = createTextField(true);
 
         description.setText(model.getDescription());

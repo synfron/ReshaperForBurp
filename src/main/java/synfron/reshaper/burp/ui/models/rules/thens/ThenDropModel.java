@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDrop;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -9,8 +10,8 @@ public class ThenDropModel extends ThenModel<ThenDropModel, ThenDrop> {
     @Getter
     private boolean dropMessage;
 
-    public ThenDropModel(ThenDrop then, Boolean isNew) {
-        super(then, isNew);
+    public ThenDropModel(ProtocolType protocolType, ThenDrop then, Boolean isNew) {
+        super(protocolType, then, isNew);
         dropMessage = then.isDropMessage();
     }
 

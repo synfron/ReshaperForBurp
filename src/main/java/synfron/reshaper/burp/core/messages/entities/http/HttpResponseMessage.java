@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.core.messages.entities;
+package synfron.reshaper.burp.core.messages.entities.http;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.message.headers.HttpHeader;

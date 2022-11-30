@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSendTo;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSendToModel;
@@ -21,8 +22,8 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
     private JTextField value;
     private JTextField url;
 
-    public ThenSendToComponent(ThenSendToModel then) {
-        super(then);
+    public ThenSendToComponent(ProtocolType protocolType, ThenSendToModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

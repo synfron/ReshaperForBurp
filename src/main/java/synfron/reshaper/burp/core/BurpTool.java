@@ -9,9 +9,10 @@ public enum BurpTool {
     Target,
     Scanner,
     Extender,
-    Session;
+    Session,
+    WebSockets;
 
-    public static BurpTool getBy(ToolType toolType) {
+    public static BurpTool from(ToolType toolType) {
         return switch (toolType) {
             case PROXY -> Proxy;
             case TARGET -> Target;

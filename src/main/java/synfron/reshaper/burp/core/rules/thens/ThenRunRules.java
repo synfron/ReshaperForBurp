@@ -4,15 +4,13 @@ import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.rules.Rule;
-import synfron.reshaper.burp.core.rules.RuleOperationType;
-import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.rules.RulesEngine;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
+import synfron.reshaper.burp.core.rules.*;
 
 import java.util.stream.Stream;
 
-public class ThenRunRules extends Then<ThenRunRules> {
+public class ThenRunRules extends Then<ThenRunRules> implements IHttpRuleOperation, IWebSocketRuleOperation {
     private int cacheVersion;
     private transient Rule ruleCache = null;
     @Getter @Setter
@@ -20,8 +18,14 @@ public class ThenRunRules extends Then<ThenRunRules> {
     @Getter @Setter
     private String ruleName;
 
-    public RuleResponse perform(IEventInfo eventInfo) {
-        RulesEngine rulesEngine = BurpExtender.getConnector().getRulesEngine();
+    private RulesEngine getRulesEngine(EventInfo eventInfo) {
+        return (eventInfo instanceof HttpEventInfo) ?
+                BurpExtender.getHttpConnector().getRulesEngine() :
+                BurpExtender.getWebSocketConnector().getRulesEngine();
+    }
+
+    public RuleResponse perform(EventInfo eventInfo) {
+        RulesEngine rulesEngine = getRulesEngine(eventInfo);
         RuleResponse ruleResponse;
         if (runSingle) {
             Rule rule;

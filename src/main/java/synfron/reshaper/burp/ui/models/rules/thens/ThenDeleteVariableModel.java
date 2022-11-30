@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteVariable;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -16,8 +17,8 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
     @Getter
     private String variableName;
 
-    public ThenDeleteVariableModel(ThenDeleteVariable then, Boolean isNew) {
-        super(then, isNew);
+    public ThenDeleteVariableModel(ProtocolType protocolType, ThenDeleteVariable then, Boolean isNew) {
+        super(protocolType, then, isNew);
         targetSource = then.getTargetSource();
         variableName = VariableString.toString(then.getVariableName(), variableName);
     }

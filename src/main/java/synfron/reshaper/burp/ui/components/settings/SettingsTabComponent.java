@@ -4,6 +4,7 @@ import burp.BurpExtender;
 import com.alexandriasoftware.swing.JSplitButton;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.IOUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
@@ -35,9 +36,9 @@ import java.util.stream.Stream;
 public class SettingsTabComponent extends JPanel implements IFormComponent {
 
     private JCheckBox overwriteDuplicates;
-    private DefaultTableModel exportRulesModel;
+    private DefaultTableModel exportHttpRulesModel;
+    private DefaultTableModel exportWebSocketRulesModel;
     private DefaultTableModel exportVariablesModel;
-    private final SettingsManager settingsManager = BurpExtender.getConnector().getSettingsManager();
     private final GeneralSettings generalSettings = BurpExtender.getGeneralSettings();
     private JCheckBox enableEventDiagnostics;
     private JTextField diagnosticValueMaxLength;
@@ -51,6 +52,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     private JCheckBox scanner;
     private JCheckBox target;
     private JCheckBox extender;
+    private JCheckBox webSockets;
     private ButtonGroup importMethod;
 
     public SettingsTabComponent() {
@@ -124,6 +126,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         scanner = new JCheckBox("Scanner");
         target = new JCheckBox("Target");
         extender = new JCheckBox("Extender");
+        webSockets = new JCheckBox("WebSockets");
 
         proxy.setSelected(generalSettings.isCaptureProxy());
         repeater.setSelected(generalSettings.isCaptureRepeater());
@@ -131,6 +134,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         scanner.setSelected(generalSettings.isCaptureScanner());
         target.setSelected(generalSettings.isCaptureTarget());
         extender.setSelected(generalSettings.isCaptureExtender());
+        webSockets.setSelected(generalSettings.isCaptureWebSockets());
 
         proxy.addActionListener(this::onProxyChanged);
         repeater.addActionListener(this::onRepeaterChanged);
@@ -138,6 +142,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         scanner.addActionListener(this::onScannerChanged);
         target.addActionListener(this::onTargetChanged);
         extender.addActionListener(this::onExtenderChanged);
+        webSockets.addActionListener(this::onWebSocketsChanged);
 
         container.add(new JLabel("Capture Traffic From:"), "wrap");
         container.add(proxy);
@@ -146,6 +151,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         container.add(scanner, "wrap");
         container.add(target);
         container.add(extender, "wrap");
+        container.add(webSockets);
         return container;
     }
 
@@ -153,7 +159,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         try {
             int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to reset data? This will remove all rules and variables.", "Reset Data", JOptionPane.YES_NO_OPTION);
             if (response == JOptionPane.YES_OPTION) {
-                settingsManager.resetData();
+                SettingsManager.resetData();
                 refreshLists();
             }
         } catch (Exception e) {
@@ -219,6 +225,10 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         generalSettings.setCaptureExtender(extender.isSelected());
     }
 
+    private void onWebSocketsChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureWebSockets(webSockets.isSelected());
+    }
+
     private Component getExportSettings() {
         JPanel container = new JPanel(new MigLayout());
         container.setBorder(new CompoundBorder(
@@ -233,7 +243,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         exportData.addActionListener(this::onExportData);
 
         container.add(new JLabel("Items to Export"), "wrap");
-        container.add(getExportRulesTable());
+        container.add(getExportHttpRulesTable());
+        container.add(getExportWebSocketRulesTable());
         container.add(getExportVariablesTable(), "wrap");
         container.add(getExportActions());
         return container;
@@ -317,13 +328,17 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
             fileChooser.setSelectedFile(new File("~/ReshaperBackup.json"));
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
-                settingsManager.exportSettings(
+                SettingsManager.exportSettings(
                         fileChooser.getSelectedFile(),
                         exportVariablesModel.getDataVector().stream()
                                 .filter(row -> (boolean)row.get(0))
                                 .map(row -> (Variable)row.get(1))
                                 .collect(Collectors.toList()),
-                        exportRulesModel.getDataVector().stream()
+                        exportHttpRulesModel.getDataVector().stream()
+                                .filter(row -> (boolean)row.get(0))
+                                .map(row -> (Rule)row.get(1))
+                                .collect(Collectors.toList()),
+                        exportWebSocketRulesModel.getDataVector().stream()
                                 .filter(row -> (boolean)row.get(0))
                                 .map(row -> (Rule)row.get(1))
                                 .collect(Collectors.toList())
@@ -360,7 +375,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile().getAbsolutePath();
-                settingsManager.importSettings(fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
+                SettingsManager.importSettings(fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
                 refreshLists();
 
                 JOptionPane.showMessageDialog(this,
@@ -390,7 +405,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
                 connection.setConnectTimeout(10000);
                 connection.setReadTimeout(10000);
                 String settingsJson = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
-                settingsManager.importSettings(settingsJson, overwriteDuplicates.isSelected());
+                SettingsManager.importSettings(settingsJson, overwriteDuplicates.isSelected());
                 refreshLists();
 
                 JOptionPane.showMessageDialog(this,
@@ -411,13 +426,17 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     }
 
     private void refreshLists() {
-        for (int row = exportRulesModel.getRowCount() - 1; row >= 0; row--) {
-            exportRulesModel.removeRow(row);
+        for (int row = exportHttpRulesModel.getRowCount() - 1; row >= 0; row--) {
+            exportHttpRulesModel.removeRow(row);
+        }
+        for (int row = exportWebSocketRulesModel.getRowCount() - 1; row >= 0; row--) {
+            exportWebSocketRulesModel.removeRow(row);
         }
         for (int row = exportVariablesModel.getRowCount() - 1; row >= 0; row--) {
             exportVariablesModel.removeRow(row);
         }
-        Stream.of(getExportRulesData()).forEach(row -> exportRulesModel.addRow(row));
+        Stream.of(getExportHttpRulesData()).forEach(row -> exportHttpRulesModel.addRow(row));
+        Stream.of(getExportWebSocketRulesData()).forEach(row -> exportWebSocketRulesModel.addRow(row));
         Stream.of(getExportVariablesData()).forEach(row -> exportVariablesModel.addRow(row));
     }
 
@@ -425,7 +444,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         refreshLists();
     }
 
-    private Component getExportRulesTable() {
+    private Component getExportHttpRulesTable() {
         JTable exportRulesTable = new JTable() {
             @Override
             public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
@@ -433,8 +452,22 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         };
         exportRulesTable.setDefaultRenderer(Object.class, new TableCellRenderer());
         JScrollPane scrollPane = new JScrollPane(exportRulesTable);
-        exportRulesModel = createTableModel(getExportRulesData(), new Object[] { "Export", "Rule Name" });
-        exportRulesTable.setModel(exportRulesModel);
+        exportHttpRulesModel = createTableModel(getExportHttpRulesData(), new Object[] { "Export", "HTTP Rule Name" });
+        exportRulesTable.setModel(exportHttpRulesModel);
+        exportRulesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        return scrollPane;
+    }
+
+    private Component getExportWebSocketRulesTable() {
+        JTable exportRulesTable = new JTable() {
+            @Override
+            public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+            }
+        };
+        exportRulesTable.setDefaultRenderer(Object.class, new TableCellRenderer());
+        JScrollPane scrollPane = new JScrollPane(exportRulesTable);
+        exportWebSocketRulesModel = createTableModel(getExportWebSocketRulesData(), new Object[] { "Export", "WebSocket Rule Name" });
+        exportRulesTable.setModel(exportWebSocketRulesModel);
         exportRulesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         return scrollPane;
     }
@@ -465,8 +498,14 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         };
     }
 
-    private Object[][] getExportRulesData() {
-        return BurpExtender.getConnector().getRulesEngine().getRulesRegistry().exportRules().stream()
+    private Object[][] getExportHttpRulesData() {
+        return BurpExtender.getRulesRegistry(ProtocolType.Http).exportRules().stream()
+                .map(rule -> new Object[] { true, rule })
+                .toArray(Object[][]::new);
+    }
+
+    private Object[][] getExportWebSocketRulesData() {
+        return BurpExtender.getRulesRegistry(ProtocolType.WebSocket).exportRules().stream()
                 .map(rule -> new Object[] { true, rule })
                 .toArray(Object[][]::new);
     }

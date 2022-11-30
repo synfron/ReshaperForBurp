@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
+import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.thens.Then;
@@ -26,6 +28,8 @@ public class Diagnostics implements IDiagnostics {
     private boolean ruleEnabled;
     @Getter @Setter
     private boolean eventEnabled;
+    private DiagnosticRecord startRecord;
+    private DiagnosticRecord endRecord;
 
     @Override
     public void logCompare(When<?> when, List<? extends Pair<String, ? extends Serializable>> properties, MatchType matchType, Object matcher, Object value, boolean result) {
@@ -109,20 +113,49 @@ public class Diagnostics implements IDiagnostics {
     }
 
     @Override
-    public void logStart(IEventInfo eventInfo) {
-        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.StartEvent, String.format("%s: %s\n", eventInfo.getDataDirection(), eventInfo.getUrl())));
+    public void logStart(EventInfo eventInfo) {
+        if (eventInfo instanceof HttpEventInfo) {
+            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+            logStart(httpEventInfo);
+        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
+            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+            logStart(webSocketEventInfo);
+        }
     }
 
     @Override
-    public void logEnd(IEventInfo eventInfo) {
-        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndEvent, String.format("End %s\n", eventInfo.getDataDirection().toString())));
+    public void logEnd(EventInfo eventInfo) {
+        if (eventInfo instanceof HttpEventInfo) {
+            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+            logEnd(httpEventInfo);
+        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
+            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+            logEnd(webSocketEventInfo);
+        }
+    }
+
+    private void logStart(HttpEventInfo eventInfo) {
+        startRecord = new DiagnosticRecord(DiagnosticEntityType.StartEvent, String.format("%s: %s\n", eventInfo.getInitialDataDirection(), eventInfo.getInitialHttpRequest().url()));
+    }
+
+    private void logStart(WebSocketEventInfo<?> eventInfo) {
+        startRecord = new DiagnosticRecord(DiagnosticEntityType.StartEvent, String.format("%s: %s\n", eventInfo.getInitialDataDirection(), eventInfo.getInitialHttpRequest().url()));
+    }
+
+    private void logEnd(HttpEventInfo eventInfo) {
+        endRecord = new DiagnosticRecord(DiagnosticEntityType.EndEvent, String.format("End %s\n", eventInfo.getDataDirection().toString()));
+    }
+
+    private void logEnd(WebSocketEventInfo<?> eventInfo) {
+        endRecord = new DiagnosticRecord(DiagnosticEntityType.EndEvent, String.format("End %s\n", eventInfo.getDataDirection().toString()));
     }
 
     @Override
     public String getLogs() {
         StringBuilder buffer = new StringBuilder();
         if (records != null) {
-            int indent = 0;
+            int indent = 1;
+            buffer.append(startRecord.getLog());
             DiagnosticEntityType lastEntity = null;
             for (DiagnosticRecord record : records) {
                 if (record.getEntityType() != null) {
@@ -137,6 +170,7 @@ public class Diagnostics implements IDiagnostics {
                 }
                 buffer.append("\t".repeat(indent)).append(record.getLog());
             }
+            buffer.append(endRecord.getLog());
         }
         return buffer.toString();
     }

@@ -3,7 +3,7 @@ package synfron.reshaper.burp.ui.utils;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.ui.contextmenu.ContextMenuEvent;
 import burp.api.montoya.ui.contextmenu.ContextMenuItemsProvider;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.ui.components.rules.wizard.whens.WhenWizardOptionPane;
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
@@ -24,7 +24,7 @@ public class ContextMenuHandler implements ContextMenuItemsProvider {
 
     private void onCreateRule(List<HttpRequestResponse> selectedItems, ActionEvent actionEvent) {
         HttpRequestResponse httpRequestResponse = selectedItems.get(0);
-        openWhenWizard(new WhenWizardModel(new EventInfo(null, null, httpRequestResponse.httpRequest(), httpRequestResponse.httpResponse(), httpRequestResponse.messageAnnotations())));
+        openWhenWizard(new WhenWizardModel(new HttpEventInfo(null, null, httpRequestResponse.httpRequest(), httpRequestResponse.httpResponse(), httpRequestResponse.messageAnnotations())));
     }
 
     private void openWhenWizard(WhenWizardModel model) {

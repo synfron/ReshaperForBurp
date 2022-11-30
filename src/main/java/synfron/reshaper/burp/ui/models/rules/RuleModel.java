@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
@@ -40,18 +41,18 @@ public class RuleModel {
     private final IEventListener<PropertyChangedArgs> ruleOperationChangedListener = this::onRuleOperationChanged;
     private final IEventListener<PropertyChangedArgs> ruleChangedListener = this::onRuleChanged;
 
-    public RuleModel(Rule rule) {
-        this(rule, false);
+    public RuleModel(ProtocolType protocolType, Rule rule) {
+        this(protocolType, rule, false);
     }
 
-    public RuleModel(Rule rule, boolean isNew) {
+    public RuleModel(ProtocolType protocolType, Rule rule, boolean isNew) {
         this.isNew = isNew;
         this.rule = rule;
         this.whens = Stream.of(rule.getWhens())
-                .map(when -> WhenModel.getModel(when).withListener(ruleOperationChangedListener))
+                .map(when -> WhenModel.getModel(protocolType, when).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
         this.thens = Stream.of(rule.getThens())
-                .map(then -> ThenModel.getModel(then).withListener(ruleOperationChangedListener))
+                .map(then -> ThenModel.getModel(protocolType, then).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
         this.name = rule.getName();
         this.enabled = rule.isEnabled();
@@ -126,8 +127,7 @@ public class RuleModel {
         errors.addAll(thens.stream()
                 .flatMap(model -> model.validate().stream()
                         .map(error -> String.format("%s: %s", model.getRuleOperation().getType().getName(), error))
-                )
-                .collect(Collectors.toList())
+                ).collect(Collectors.toList())
         );
         return errors;
     }

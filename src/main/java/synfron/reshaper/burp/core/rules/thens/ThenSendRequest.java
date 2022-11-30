@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
+import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
@@ -22,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ThenSendRequest extends Then<ThenSendRequest> {
+public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
     private VariableString request;
     @Getter @Setter
@@ -51,7 +53,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
     private VariableString captureVariableName;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = false;
         boolean failed = false;
         boolean complete = false;
@@ -65,7 +67,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
             AtomicReference<HttpResponse> response = new AtomicReference<>();
             executor.submit(() -> {
                 try {
-                    EventInfo newEventInfo = new EventInfo(eventInfo);
+                    HttpEventInfo newEventInfo = new HttpEventInfo(eventInfo);
                     boolean useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
                     if (!VariableString.isEmpty(request)) {
                         newEventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(this.request.getText(eventInfo)));
@@ -113,7 +115,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
                 failed = !complete || (failOnErrorStatusCode && (statusCode == 0 || (statusCode >= 400 && statusCode < 600)));
                 if (captureOutput && (!failed || captureAfterFailure)) {
                     output = response.get() != null ? new HttpResponseMessage(response.get().asBytes().getBytes(), eventInfo.getEncoder()).getText() : "";
-                    setVariable(eventInfo, captureVariableName, output);
+                    setVariable(captureVariableSource, eventInfo, captureVariableName, output);
                 }
             }
         } catch (InterruptedException e) {
@@ -143,19 +145,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
     }
 
-    private void setVariable(IEventInfo eventInfo, String variableName, String value) {
-        Variables variables = switch (captureVariableSource) {
-            case Event -> eventInfo.getVariables();
-            case Global -> GlobalVariables.get();
-            default -> null;
-        };
-        if (variables != null) {
-            Variable variable = variables.add(variableName);
-            variable.setValue(value);
-        }
-    }
-
-    private String getVariableName(IEventInfo eventInfo) {
+    private String getVariableName(EventInfo eventInfo) {
         String captureVariableName = null;
         if (captureOutput && StringUtils.isEmpty(captureVariableName = this.captureVariableName.getText(eventInfo))) {
             throw new IllegalArgumentException("Invalid variable name");
@@ -163,7 +153,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> {
         return captureVariableName;
     }
 
-    private int getFailAfter(IEventInfo eventInfo) {
+    private int getFailAfter(EventInfo eventInfo) {
         int failAfter = 0;
         if (waitForCompletion && (failAfter = this.failAfter.getInt(eventInfo)) <= 0) {
             throw new IllegalArgumentException("Invalid wait limit value");

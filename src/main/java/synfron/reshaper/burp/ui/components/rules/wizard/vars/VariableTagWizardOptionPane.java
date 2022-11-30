@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.wizard.vars;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.components.IFormComponent;
@@ -17,13 +18,16 @@ public class VariableTagWizardOptionPane extends JOptionPane implements IFormCom
     private final JPanel outerContainer;
     private final VariableTagWizardModel model;
     private JComboBox<VariableSource> variableSource;
-    private final VariableTagWizardContainerComponent container = new VariableTagWizardContainerComponent();
+    private final VariableTagWizardContainerComponent container;
     private JDialog currentDialog;
+    private final ProtocolType protocolType;
 
-    private VariableTagWizardOptionPane(VariableTagWizardModel model) {
+    private VariableTagWizardOptionPane(VariableTagWizardModel model, ProtocolType protocolType) {
         super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        container = new VariableTagWizardContainerComponent(protocolType);
         outerContainer = (JPanel)message;
         this.model = model;
+        this.protocolType = protocolType;
         addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
         initComponent();
 
@@ -31,7 +35,7 @@ public class VariableTagWizardOptionPane extends JOptionPane implements IFormCom
     }
 
     private void initComponent() {
-        variableSource = createComboBox(VariableSource.values());
+        variableSource = createComboBox(VariableSource.getAll(protocolType));
 
         variableSource.setSelectedItem(model.getVariableSource());
 
@@ -83,8 +87,8 @@ public class VariableTagWizardOptionPane extends JOptionPane implements IFormCom
         }
     }
 
-    public static void showDialog(VariableTagWizardModel model) {
-        VariableTagWizardOptionPane optionPane = new VariableTagWizardOptionPane(model);
+    public static void showDialog(VariableTagWizardModel model, ProtocolType protocolType) {
+        VariableTagWizardOptionPane optionPane = new VariableTagWizardOptionPane(model, protocolType);
         JDialog dialog = optionPane.createDialog("Variable Tag");
         optionPane.setCurrentDialog(dialog);
         dialog.setVisible(true);

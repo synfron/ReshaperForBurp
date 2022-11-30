@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunRules;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -14,8 +15,8 @@ public class ThenRunRulesModel extends ThenModel<ThenRunRulesModel, ThenRunRules
     @Getter
     private String ruleName;
 
-    public ThenRunRulesModel(ThenRunRules then, Boolean isNew) {
-        super(then, isNew);
+    public ThenRunRulesModel(ProtocolType protocolType, ThenRunRules then, Boolean isNew) {
+        super(protocolType, then, isNew);
         runSingle = then.isRunSingle();
         ruleName = then.getRuleName();
     }

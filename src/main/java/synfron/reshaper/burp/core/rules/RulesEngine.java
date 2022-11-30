@@ -2,7 +2,7 @@ package synfron.reshaper.burp.core.rules;
 
 import lombok.Getter;
 import org.mozilla.javascript.RhinoException;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.utils.Log;
@@ -12,7 +12,7 @@ public class RulesEngine {
     @Getter
     private final RulesRegistry rulesRegistry = new RulesRegistry();
 
-    private boolean match(When<?>[] whens, IEventInfo eventInfo)
+    private boolean match(When<?>[] whens, EventInfo eventInfo)
     {
         boolean  isMatch = true;
         boolean  first = true;
@@ -35,7 +35,7 @@ public class RulesEngine {
         return isMatch;
     }
 
-    private RuleResponse perform(Then<?>[] thens, IEventInfo eventInfo)
+    private RuleResponse perform(Then<?>[] thens, EventInfo eventInfo)
     {
         RuleResponse thenResult = RuleResponse.Continue;
         for (Then<?> then : thens)
@@ -50,11 +50,10 @@ public class RulesEngine {
         return thenResult;
     }
 
-    public RuleResponse run(IEventInfo eventInfo)
+    public RuleResponse run(EventInfo eventInfo)
     {
         Rule[] rules = rulesRegistry.getRules();
         try {
-            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logStart(eventInfo);
             for (Rule rule : rules) {
                 if (rule.isAutoRun()) {
                     RuleResponse thenResult = run(eventInfo, rule);
@@ -64,12 +63,13 @@ public class RulesEngine {
                 }
             }
         } finally {
-            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logEnd(eventInfo);
+            if (eventInfo.getDiagnostics().hasLogs()) eventInfo.getDiagnostics().logStart(eventInfo);
+            if (eventInfo.getDiagnostics().hasLogs()) eventInfo.getDiagnostics().logEnd(eventInfo);
         }
         return RuleResponse.Continue;
     }
 
-    public RuleResponse run(IEventInfo eventInfo, Rule rule)
+    public RuleResponse run(EventInfo eventInfo, Rule rule)
     {
         RuleResponse thenResult = RuleResponse.Continue;
         boolean ruleDiagnosticsEnabled = eventInfo.getDiagnostics().isRuleEnabled();

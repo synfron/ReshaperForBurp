@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDelay;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDelayModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -10,8 +11,8 @@ import java.awt.event.ActionEvent;
 public class ThenDelayComponent extends ThenComponent<ThenDelayModel,ThenDelay> {
     private JTextField delay;
 
-    public ThenDelayComponent(ThenDelayModel then) {
-        super(then);
+    public ThenDelayComponent(ProtocolType protocolType, ThenDelayModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

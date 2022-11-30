@@ -2,12 +2,14 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenSet<T>> extends ThenModel<P, T> {
@@ -37,10 +39,10 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
     @Getter
     protected String destinationMessageValuePath = "";
     
-    public ThenSetModel(T then, Boolean isNew) {
-        super(then, isNew);
+    public ThenSetModel(ProtocolType protocolType, T then, Boolean isNew) {
+        super(protocolType, then, isNew);
         useMessageValue = then.isUseMessageValue();
-        sourceMessageValue = then.getSourceMessageValue();
+        sourceMessageValue = then.getSourceMessageValue() != null ? then.getSourceMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isGettable(protocolType)).findFirst().orElse(null);;
         sourceIdentifier = VariableString.toString(then.getSourceIdentifier(), sourceIdentifier);
         sourceIdentifierPlacement = then.getSourceIdentifierPlacement();
         sourceMessageValueType = then.getSourceMessageValueType();

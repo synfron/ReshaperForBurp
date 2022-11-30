@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.rules.diagnostics;
 
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.thens.Then;
@@ -25,9 +25,9 @@ public interface IDiagnostics {
 
     void logEnd(Rule rule);
 
-    void logStart(IEventInfo eventInfo);
+    void logStart(EventInfo eventInfo);
 
-    void logEnd(IEventInfo eventInfo);
+    void logEnd(EventInfo eventInfo);
 
     String getLogs();
 

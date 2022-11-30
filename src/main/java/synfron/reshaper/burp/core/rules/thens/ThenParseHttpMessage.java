@@ -1,35 +1,38 @@
 package synfron.reshaper.burp.core.rules.thens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
-import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
-import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
+import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
+import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage.MessageValueGetter;
 import synfron.reshaper.burp.core.vars.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
+public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
-    private DataDirection dataDirection = DataDirection.Request;
+    private HttpDataDirection dataDirection = HttpDataDirection.Request;
     @Getter @Setter
     private VariableString httpMessage;
     @Getter @Setter
     private List<MessageValueGetter> messageValueGetters = new ArrayList<>();
 
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         try {
             List<Pair<String, String>> variables;
-            if (dataDirection == DataDirection.Request) {
+            if (dataDirection == HttpDataDirection.Request) {
                 variables = parseRequestMessage(eventInfo);
             } else {
                 variables = parseResponseMessage(eventInfo);
@@ -48,7 +51,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
         return RuleResponse.Continue;
     }
 
-    private List<Pair<String, String>> parseRequestMessage(IEventInfo eventInfo) {
+    private List<Pair<String, String>> parseRequestMessage(EventInfo eventInfo) {
         HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
         ), eventInfo.getEncoder());
@@ -67,7 +70,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
         return variables;
     }
 
-    private List<Pair<String, String>> parseResponseMessage(IEventInfo eventInfo) {
+    private List<Pair<String, String>> parseResponseMessage(EventInfo eventInfo) {
         HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
         ), eventInfo.getEncoder());
@@ -86,12 +89,8 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> {
         return variables;
     }
 
-    private Pair<String, String> setVariable(IEventInfo eventInfo, VariableSource variableSource, String variableName, String value) {
-        Variables variables = switch (variableSource) {
-            case Event -> eventInfo.getVariables();
-            case Global -> GlobalVariables.get();
-            default -> null;
-        };
+    private Pair<String, String> setVariable(EventInfo eventInfo, VariableSource variableSource, String variableName, String value) {
+        Variables variables = getVariables(variableSource, eventInfo);
         Variable variable;
         if (variables != null) {
             variable = variables.add(variableName);

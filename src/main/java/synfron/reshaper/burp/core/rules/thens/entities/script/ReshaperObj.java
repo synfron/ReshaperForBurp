@@ -4,7 +4,8 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.NativeObject;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
@@ -36,7 +37,7 @@ public class ReshaperObj {
         }
 
         public String getEventVariable(String name) {
-            return getVariable(((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables(), name);
+            return getVariable(((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables(), name);
         }
 
         private String getVariable(Variables variables, String name) {
@@ -57,7 +58,7 @@ public class ReshaperObj {
             if (!VariableString.isValidVariableName(name)) {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
-            ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(name).setValue(value);
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(name).setValue(value);
         }
 
         public void deleteGlobalVariable(String name) {
@@ -65,23 +66,28 @@ public class ReshaperObj {
         }
 
         public void deleteEventVariable(String name) {
-            ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(name);
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(name);
         }
     }
 
     public static class EventObj {
 
         public List<String> getMessageValueKeys() {
-            return Arrays.stream(MessageValue.values()).map(Enum::name).collect(Collectors.toList());
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
+            return Arrays.stream(MessageValue.values())
+                    .filter(value -> value.hasProtocolType(eventInfo.getProtocolType()))
+                    .map(Enum::name)
+                    .collect(Collectors.toList());
         }
 
         public String getMessageValue(String key, String identifier) {
             MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, key);
-            if (messageValue == null) {
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
+            if (messageValue == null || !messageValue.hasProtocolType(eventInfo.getProtocolType())) {
                 throw new IllegalArgumentException(String.format("Invalid message value key: '%s'", key));
             }
             return MessageValueHandler.getValue(
-                    (IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
+                    eventInfo,
                     EnumUtils.getEnumIgnoreCase(MessageValue.class, key),
                     VariableString.getAsVariableString(identifier, false),
                     GetItemPlacement.Last
@@ -90,11 +96,12 @@ public class ReshaperObj {
 
         public void setMessageValue(String key, String identifier, String value) {
             MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, key);
-            if (messageValue == null) {
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
+            if (messageValue == null || !messageValue.hasProtocolType(eventInfo.getProtocolType())) {
                 throw new IllegalArgumentException(String.format("Invalid message value key: '%s'", key));
             }
             MessageValueHandler.setValue(
-                    (IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo"),
+                    eventInfo,
                     EnumUtils.getEnumIgnoreCase(MessageValue.class, key),
                     VariableString.getAsVariableString(identifier, false),
                     SetItemPlacement.Only,
@@ -104,6 +111,7 @@ public class ReshaperObj {
 
         public String runThen(String thenType, NativeObject thenData) {
             Dispatcher dispatcher = Dispatcher.getCurrent();
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
             String adjustedThenTypeName = StringUtils.prependIfMissing(thenType, "Then");
             Stream<ThenType<?>> supportedThenTypes = Stream.of(
                     ThenType.Highlight,
@@ -116,6 +124,7 @@ public class ReshaperObj {
                     ThenType.Log,
                     ThenType.ParseHttpMessage,
                     ThenType.SendRequest,
+                    ThenType.SendMessage,
                     ThenType.SendTo,
                     ThenType.SetEventDirection,
                     ThenType.SetEncoding,
@@ -123,6 +132,7 @@ public class ReshaperObj {
                     ThenType.SetVariable
             );
             Class<?> thenClass = supportedThenTypes
+                    .filter(type -> eventInfo.getProtocolType().accepts(ProtocolType.fromRuleOperationType(type.getType())))
                     .filter(type -> type.getType().getSimpleName().equalsIgnoreCase(adjustedThenTypeName))
                     .map(RuleOperationType::getType)
                     .findFirst()
@@ -136,7 +146,7 @@ public class ReshaperObj {
                     null
             ).toString();
             Then<?> then = (Then<?>)Serializer.deserialize(thenDataJson, thenClass);
-            return then.perform((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).toString();
+            return then.perform(eventInfo).toString();
         }
 
         public void setRuleResponse(String ruleResponse) {

@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunScript;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenRunScriptModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -13,8 +14,8 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
     private JTextPane script;
     private JTextField maxExecutionSeconds;
 
-    public ThenRunScriptComponent(ThenRunScriptModel then) {
-        super(then);
+    public ThenRunScriptComponent(ProtocolType protocolType, ThenRunScriptModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

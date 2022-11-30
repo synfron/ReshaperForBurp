@@ -28,6 +28,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
     public static final ThenType<ThenBuildHttpMessage> BuildHttpMessage = new ThenType<>("Build HTTP Message", ThenBuildHttpMessage.class);
     public static final ThenType<ThenParseHttpMessage> ParseHttpMessage = new ThenType<>("Parse HTTP Message", ThenParseHttpMessage.class);
     public static final ThenType<ThenSendRequest> SendRequest = new ThenType<>("Send Request", ThenSendRequest.class);
+    public static final ThenType<ThenSendMessage> SendMessage = new ThenType<>("Send Message", ThenSendMessage.class);
     public static final ThenType<ThenDrop> Drop = new ThenType<>("Drop", ThenDrop.class);
 
     private ThenType() {
@@ -61,6 +62,7 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 ParseHttpMessage,
                 BuildHttpMessage,
                 SendRequest,
+                SendMessage,
                 Drop
         );
     }

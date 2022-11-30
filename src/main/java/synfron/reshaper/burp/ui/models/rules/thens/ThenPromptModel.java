@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenPrompt;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
@@ -26,8 +27,8 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> impl
     @Getter
     private String captureVariableName;
 
-    public ThenPromptModel(ThenPrompt then, Boolean isNew) {
-        super(then, isNew);
+    public ThenPromptModel(ProtocolType protocolType, ThenPrompt then, Boolean isNew) {
+        super(protocolType, then, isNew);
         description = VariableString.toString(then.getDescription(), description);
         starterText = VariableString.toString(then.getStarterText(), starterText);
         failAfter = VariableString.toString(then.getFailAfter(), failAfter);

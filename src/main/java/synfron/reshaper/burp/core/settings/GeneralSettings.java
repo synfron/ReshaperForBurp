@@ -12,6 +12,7 @@ public class GeneralSettings {
     private boolean captureRepeater;
     private boolean captureIntruder;
     private boolean captureExtender;
+    private boolean captureWebSockets = true;
     private boolean enableEventDiagnostics;
     private int diagnosticValueMaxLength = 200;
     private boolean enableSanityCheckWarnings = true;
@@ -29,6 +30,7 @@ public class GeneralSettings {
             this.captureRepeater = other.captureRepeater;
             this.captureIntruder = other.captureIntruder;
             this.captureExtender = other.captureExtender;
+            this.captureWebSockets = other.captureWebSockets;
             this.enableEventDiagnostics = other.enableEventDiagnostics;
             this.diagnosticValueMaxLength = other.diagnosticValueMaxLength;
             this.enableSanityCheckWarnings = other.enableSanityCheckWarnings;
@@ -48,6 +50,7 @@ public class GeneralSettings {
             case Intruder -> isCaptureIntruder();
             case Extender -> isCaptureExtender();
             case Session -> true;
+            case WebSockets -> isCaptureWebSockets();
         };
     }
 

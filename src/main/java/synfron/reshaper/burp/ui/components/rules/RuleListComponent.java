@@ -1,12 +1,15 @@
 package synfron.reshaper.burp.ui.components.rules;
 
 import burp.BurpExtender;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.Rule;
+import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
+import synfron.reshaper.burp.core.rules.whens.WhenWebSocketEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
 import synfron.reshaper.burp.ui.utils.ForegroundColorListCellRenderer;
@@ -24,13 +27,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RuleListComponent extends JPanel {
+    private final ProtocolType protocolType;
+    private final RulesRegistry rulesRegistry;
     private JList<RuleModel> rulesList;
     private DefaultListModel<RuleModel> ruleListModel;
     private RuleContainerComponent ruleContainer;
     private final IEventListener<PropertyChangedArgs> ruleModelChangeListener = this::onRuleModelChange;
     private final IEventListener<CollectionChangedArgs> rulesCollectionChangedListener = this::onRulesCollectionChanged;
 
-    public RuleListComponent() {
+    public RuleListComponent(ProtocolType protocolType) {
+        this.protocolType = protocolType;
+        this.rulesRegistry = BurpExtender.getRulesRegistry(protocolType);
         initComponent();
     }
 
@@ -38,8 +45,8 @@ public class RuleListComponent extends JPanel {
         setLayout(new BorderLayout());
 
         ruleListModel = new DefaultListModel<>();
-        ruleListModel.addAll(Stream.of(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules())
-                .map(rule -> new RuleModel(rule).withListener(ruleModelChangeListener))
+        ruleListModel.addAll(Stream.of(rulesRegistry.getRules())
+                .map(rule -> new RuleModel(protocolType, rule).withListener(ruleModelChangeListener))
                 .collect(Collectors.toList()));
 
         rulesList = getRulesList();
@@ -49,7 +56,7 @@ public class RuleListComponent extends JPanel {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(rulesList);
 
-        BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getCollectionChangedEvent().add(rulesCollectionChangedListener);
+        rulesRegistry.getCollectionChangedEvent().add(rulesCollectionChangedListener);
         rulesList.addListSelectionListener(this::onSelectionChanged);
 
         add(scrollPane, BorderLayout.CENTER);
@@ -132,7 +139,7 @@ public class RuleListComponent extends JPanel {
         switch (collectionChangedArgs.getAction()) {
             case Add -> {
                 Rule item = (Rule) collectionChangedArgs.getItem();
-                RuleModel model = new RuleModel(item, true).withListener(ruleModelChangeListener);
+                RuleModel model = new RuleModel(protocolType, item, true).withListener(ruleModelChangeListener);
                 ruleListModel.addElement(model);
                 rulesList.setSelectedValue(model, true);
             }
@@ -158,10 +165,10 @@ public class RuleListComponent extends JPanel {
                         ruleListModel.elements()).stream().collect(Collectors.toMap(RuleModel::getRule, Function.identity())
                 );
                 ruleListModel.clear();
-                ruleListModel.addAll(Stream.of(BurpExtender.getConnector().getRulesEngine().getRulesRegistry().getRules())
+                ruleListModel.addAll(Stream.of(rulesRegistry.getRules())
                         .map(rule -> ruleModelMap.containsKey(rule) ?
                                 ruleModelMap.get(rule) :
-                                new RuleModel(rule).withListener(ruleModelChangeListener)
+                                new RuleModel(protocolType, rule).withListener(ruleModelChangeListener)
                         ).collect(Collectors.toList()));
                 defaultSelect();
             }
@@ -201,7 +208,7 @@ public class RuleListComponent extends JPanel {
     private void onDelete(ActionEvent actionEvent) {
         RuleModel rule = rulesList.getSelectedValue();
         if (rule != null) {
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().deleteRule(rule.getRule());
+            rulesRegistry.deleteRule(rule.getRule());
         }
     }
 
@@ -209,7 +216,7 @@ public class RuleListComponent extends JPanel {
         RuleModel rule = rulesList.getSelectedValue();
         int index = rulesList.getSelectedIndex();
         if (rule != null && index < ruleListModel.size() - 1) {
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().moveNext(rule.getRule());
+            rulesRegistry.moveNext(rule.getRule());
         }
     }
 
@@ -217,18 +224,18 @@ public class RuleListComponent extends JPanel {
         RuleModel rule = rulesList.getSelectedValue();
         int index = rulesList.getSelectedIndex();
         if (rule != null && index > 0) {
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().movePrevious(rule.getRule());
+            rulesRegistry.movePrevious(rule.getRule());
         }
     }
 
     private void onAdd(ActionEvent actionEvent) {
-        BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(createNewRule());
+        rulesRegistry.addRule(createNewRule());
     }
 
     private void onDuplicate(ActionEvent actionEvent) {
         RuleModel rule = rulesList.getSelectedValue();
         if (rule != null) {
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule.getRule().copy());
+            rulesRegistry.addRule(rule.getRule().copy());
         }
     }
 
@@ -236,7 +243,7 @@ public class RuleListComponent extends JPanel {
         this.ruleContainer = ruleContainer;
 
         if (ruleListModel.size() == 0) {
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(createNewRule());
+            rulesRegistry.addRule(createNewRule());
         }
         defaultSelect();
     }
@@ -244,7 +251,7 @@ public class RuleListComponent extends JPanel {
     private Rule createNewRule() {
         Rule rule = new Rule();
         rule.setEnabled(false);
-        rule.setWhens(new When[]{new WhenEventDirection()});
+        rule.setWhens(new When[]{protocolType == ProtocolType.Http ? new WhenEventDirection() : new WhenWebSocketEventDirection()});
         return rule;
     }
 }

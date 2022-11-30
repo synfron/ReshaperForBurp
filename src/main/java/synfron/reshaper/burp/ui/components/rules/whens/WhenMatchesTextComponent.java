@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
@@ -11,6 +12,7 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel, WhenMatchesText> {
@@ -24,14 +26,16 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
     protected JTextField matchText;
     protected JComboBox<MatchType> matchType;
 
-    public WhenMatchesTextComponent(WhenMatchesTextModel when) {
-        super(when);
+    public WhenMatchesTextComponent(ProtocolType protocolType, WhenMatchesTextModel when) {
+        super(protocolType, when);
         initComponent();
     }
 
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
-        messageValue = createComboBox(MessageValue.values());
+        messageValue = createComboBox(Arrays.stream(MessageValue.values())
+                .filter(value -> value.isGettable(protocolType))
+                .toArray(MessageValue[]::new));
         identifier = createTextField(true);
         identifierPlacement = createComboBox(GetItemPlacement.values());
         sourceText = createTextField(true);
