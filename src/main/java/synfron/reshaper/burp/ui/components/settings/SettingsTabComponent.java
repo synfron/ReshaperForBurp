@@ -29,6 +29,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,6 +55,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     private JCheckBox extender;
     private JCheckBox webSockets;
     private ButtonGroup importMethod;
+    private ButtonGroup exportMethod;
 
     public SettingsTabComponent() {
         initComponent();
@@ -254,14 +256,42 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         JPanel container = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         JButton refresh = new JButton("Refresh Lists");
-        JButton exportData = new JButton("Export Data");
+        JButton exportData = getExportDataButton();
 
         refresh.addActionListener(this::onRefresh);
-        exportData.addActionListener(this::onExportData);
 
         container.add(refresh);
         container.add(exportData);
         return container;
+    }
+
+
+    private JSplitButton getExportDataButton() {
+        JSplitButton exportData = new JSplitButton("Export Data    ");
+
+        JPopupMenu exportOptions = new JPopupMenu();
+
+        exportMethod = new ButtonGroup();
+        JRadioButtonMenuItem exportFromJson = new JRadioButtonMenuItem("To JSON");
+        JRadioButtonMenuItem exportFromYaml = new JRadioButtonMenuItem("To YAML");
+
+        exportFromJson.setSelected(generalSettings.getExportMethod() == GeneralSettings.ExportMethod.Json);
+        exportFromJson.setActionCommand(GeneralSettings.ExportMethod.Json.name());
+        exportFromYaml.setSelected(generalSettings.getExportMethod() == GeneralSettings.ExportMethod.Yaml);
+        exportFromYaml.setActionCommand(GeneralSettings.ExportMethod.Yaml.name());
+
+        exportData.addButtonClickedActionListener(this::onExportData);
+        exportFromYaml.addItemListener(this::onExportMethodChange);
+
+        exportMethod.add(exportFromJson);
+        exportMethod.add(exportFromYaml);
+
+        exportOptions.add(exportFromJson);
+        exportOptions.add(exportFromYaml);
+
+        exportData.setPopupMenu(exportOptions);
+
+        return exportData;
     }
 
     private Component getImportSettings() {
@@ -311,8 +341,15 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         generalSettings.setImportMethod(GeneralSettings.ImportMethod.valueOf(importMethod.getSelection().getActionCommand()));
     }
 
-    private JFileChooser createFileChooser(String title) {
-        FileNameExtensionFilter fileFiler = new FileNameExtensionFilter("JSON backup file", "json");
+
+    private JFileChooser createFileChooser(String title, GeneralSettings.ExportMethod... allowedFileTypes) {
+        FileNameExtensionFilter fileFiler = new FileNameExtensionFilter(
+                Arrays.stream(allowedFileTypes)
+                        .map(type -> type.name().toUpperCase())
+                        .collect(Collectors.joining("/")) + " backup file", Arrays.stream(allowedFileTypes)
+                .map(type -> type.name().toLowerCase())
+                .toArray(String[]::new)
+        );
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(title);
         fileChooser.setAcceptAllFileFilterUsed(false);
@@ -322,10 +359,18 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         return fileChooser;
     }
 
+    private void onExportMethodChange(ItemEvent itemEvent) {
+        generalSettings.setExportMethod(GeneralSettings.ExportMethod.valueOf(exportMethod.getSelection().getActionCommand()));
+    }
+
     private void onExportData(ActionEvent actionEvent) {
         try {
-            JFileChooser fileChooser = createFileChooser("Export");
-            fileChooser.setSelectedFile(new File("~/ReshaperBackup.json"));
+            String extension = switch (generalSettings.getExportMethod()) {
+                case Json -> ".json";
+                case Yaml -> ".yaml";
+            };
+            JFileChooser fileChooser = createFileChooser("Export", generalSettings.getExportMethod());
+            fileChooser.setSelectedFile(new File("~/ReshaperBackup" + extension));
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 SettingsManager.exportSettings(
@@ -371,7 +416,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
     private void onImportFromFile() {
         String file = null;
         try {
-            JFileChooser fileChooser = createFileChooser("Import");
+            JFileChooser fileChooser = createFileChooser("Import", GeneralSettings.ExportMethod.Json, GeneralSettings.ExportMethod.Yaml);
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile().getAbsolutePath();

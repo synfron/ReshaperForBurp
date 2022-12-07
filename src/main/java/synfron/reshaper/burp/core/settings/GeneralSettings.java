@@ -20,6 +20,7 @@ public class GeneralSettings {
     private int logTabCharacterLimit = 1000000;
     private String defaultEncoding = Encoder.getDefaultEncoderName();
     private ImportMethod importMethod = ImportMethod.File;
+    private ExportMethod exportMethod = ExportMethod.Json;
     private String importUrl;
 
     public void importSettings(GeneralSettings other) {
@@ -57,6 +58,11 @@ public class GeneralSettings {
     public enum ImportMethod {
         File,
         Url
+    }
+
+    public enum ExportMethod {
+        Json,
+        Yaml
     }
 }
 

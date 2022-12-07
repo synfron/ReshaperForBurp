@@ -42,7 +42,11 @@ public class SettingsManager {
             exportSettings.setVariables(variables);
             exportSettings.setRules(httpRules);
             exportSettings.setWebSocketRules(webSocketRules);
-            Files.writeString(file.toPath(), Serializer.serialize(exportSettings, false));
+            String data = switch (BurpExtender.getGeneralSettings().getExportMethod()) {
+                case Json -> Serializer.serialize(exportSettings, false);
+                case Yaml -> Serializer.serializeYaml(exportSettings, false);
+            };
+            Files.writeString(file.toPath(), data);
         } catch (IOException e) {
             throw new WrappedException(e);
         }
