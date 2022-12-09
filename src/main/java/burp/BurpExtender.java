@@ -51,7 +51,7 @@ public class BurpExtender implements BurpExtension, ExtensionUnloadingHandler {
 
             api.proxy().registerRequestHandler(httpConnector);
             api.proxy().registerResponseHandler(httpConnector);
-            //api.proxy().registerWebSocketCreationHandler(webSocketConnector);
+            api.proxy().registerWebSocketCreationHandler(webSocketConnector);
             api.http().registerHttpHandler(httpConnector);
             api.http().registerSessionHandlingAction(httpConnector);
             api.extension().registerUnloadingHandler(this);

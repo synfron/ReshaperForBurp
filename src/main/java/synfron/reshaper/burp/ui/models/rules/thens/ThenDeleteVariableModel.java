@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteVariable;
 import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -60,6 +61,11 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(VariableSourceEntry.getShortTag(targetSource, abbreviateTargetName(variableName)));
     }
 
     @Override

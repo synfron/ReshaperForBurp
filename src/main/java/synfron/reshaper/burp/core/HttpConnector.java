@@ -52,6 +52,8 @@ public class HttpConnector implements
             .expiration(30, TimeUnit.SECONDS).build();
     private ExecutorService serverExecutor;
     private final String dataDirectionWarning = "Sanity Check - Warning: The %s changed but the data direction is set to %s. Your changes may have no impact. Consider using 'When Data Direction' or 'Then Set Data Direction' to restrict or change the data direction.";
+    private final String interceptWarning = "Sanity Check - Warning: Cannot intercept unless the message is captured from the Proxy tool.";
+    private final String interceptAndDropWarning = "Sanity Check - Warning: Cannot both intercept and drop the same message.";
     private boolean activated = true;
 
     public void init() {
@@ -189,12 +191,16 @@ public class HttpConnector implements
                         } else {
                             sendToSelf(messageId, eventInfo);
                         }
+                    } else {
+                        eventResult.setInterceptResponse(eventInfo.getDefaultInterceptResponse());
                     }
                 } else if (isRequest && eventInfo.getDataDirection() == HttpDataDirection.Response) {
                     sendToSelf(messageId, eventInfo);
                     if (isIntercept) {
                         eventResult.setInterceptResponse(InterceptResponse.Disable);
                     }
+                } else if (!isRequest && isIntercept) {
+                    eventResult.setInterceptResponse(eventInfo.getDefaultInterceptResponse());
                 }
             }
         } catch (Exception e) {
@@ -214,6 +220,14 @@ public class HttpConnector implements
             }
             if (eventInfo.isResponseChanged() && eventInfo.getDataDirection() == HttpDataDirection.Request) {
                 Log.get().withMessage(String.format(dataDirectionWarning, "response", "Request")).log();
+            }
+            if (eventInfo.getDefaultInterceptResponse() == InterceptResponse.Intercept) {
+                if (eventInfo.isShouldDrop()) {
+                    Log.get().withMessage(interceptAndDropWarning).log();
+                }
+                if (eventInfo.getBurpTool() != BurpTool.Proxy) {
+                    Log.get().withMessage(interceptWarning).log();
+                }
             }
         }
     }
@@ -319,7 +333,7 @@ public class HttpConnector implements
 
         public EventResult(HttpEventInfo eventInfo) {
             this.eventInfo = eventInfo;
-            interceptResponse = InterceptResponse.Continue;
+            interceptResponse = InterceptResponse.UserDefined;
         }
 
         public HttpRequest getRequest() {
@@ -336,16 +350,18 @@ public class HttpConnector implements
 
         public RequestInitialInterceptResult asRequestInterceptResult() {
             return switch (interceptResponse) {
-                case Continue -> RequestInitialInterceptResult.followUserRules(getRequest(), getAnnotations());
+                case UserDefined -> RequestInitialInterceptResult.followUserRules(getRequest(), getAnnotations());
                 case Drop -> RequestInitialInterceptResult.drop();
+                case Intercept -> RequestInitialInterceptResult.intercept(getRequest(), getAnnotations());
                 case Disable -> RequestInitialInterceptResult.doNotIntercept(getRequest(), getAnnotations());
             };
         }
 
         public ResponseInitialInterceptResult asResponseInterceptResult() {
             return switch (interceptResponse) {
-                case Continue -> ResponseInitialInterceptResult.followUserRules(getResponse(), getAnnotations());
+                case UserDefined -> ResponseInitialInterceptResult.followUserRules(getResponse(), getAnnotations());
                 case Drop -> ResponseInitialInterceptResult.drop();
+                case Intercept -> ResponseInitialInterceptResult.intercept(getResponse(), getAnnotations());
                 case Disable -> ResponseInitialInterceptResult.doNotIntercept(getResponse(), getAnnotations());
             };
         }

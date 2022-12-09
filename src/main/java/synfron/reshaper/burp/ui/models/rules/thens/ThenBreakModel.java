@@ -40,6 +40,11 @@ public class ThenBreakModel extends ThenModel<ThenBreakModel, ThenBreak> {
     }
 
     @Override
+    protected String getTargetName() {
+        return breakType.getName();
+    }
+
+    @Override
     public RuleOperationModelType<ThenBreakModel, ThenBreak> getType() {
         return ThenModelType.Break;
     }

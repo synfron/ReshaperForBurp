@@ -4,6 +4,7 @@ import burp.BurpExtender;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import lombok.Getter;
 import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.InterceptResponse;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
@@ -24,6 +25,8 @@ public abstract class EventInfo {
     protected String httpProtocol;
     @Getter
     protected boolean shouldDrop;
+    @Getter
+    protected InterceptResponse defaultInterceptResponse = InterceptResponse.UserDefined;
     @Getter
     protected HttpRequestMessage httpRequestMessage;
     @Getter
@@ -56,6 +59,11 @@ public abstract class EventInfo {
 
     public void setShouldDrop(boolean shouldDrop) {
         this.shouldDrop = shouldDrop;
+        changed = true;
+    }
+
+    public void setDefaultInterceptResponse(InterceptResponse defaultInterceptResponse) {
+        this.defaultInterceptResponse = defaultInterceptResponse;
         changed = true;
     }
 

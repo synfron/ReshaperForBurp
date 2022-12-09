@@ -100,6 +100,11 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
     }
 
     @Override
+    protected String getTargetName() {
+        return dataDirection.name();
+    }
+
+    @Override
     public RuleOperationModelType<ThenParseHttpMessageModel, ThenParseHttpMessage> getType() {
         return ThenModelType.ParseHttpMessage;
     }

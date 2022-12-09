@@ -100,6 +100,11 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     }
 
     @Override
+    protected String getTargetName() {
+        return operation.getName();
+    }
+
+    @Override
     public RuleOperationModelType<ThenEvaluateModel, ThenEvaluate> getType() {
         return ThenModelType.Evaluate;
     }

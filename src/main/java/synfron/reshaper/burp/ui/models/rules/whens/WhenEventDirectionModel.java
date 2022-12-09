@@ -39,6 +39,11 @@ public class WhenEventDirectionModel extends WhenModel<WhenEventDirectionModel, 
     }
 
     @Override
+    protected String getTargetName() {
+        return dataDirection.name();
+    }
+
+    @Override
     public RuleOperationModelType<WhenEventDirectionModel, WhenEventDirection> getType() {
         return WhenModelType.EventDirection;
     }

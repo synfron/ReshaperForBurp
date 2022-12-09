@@ -39,6 +39,11 @@ public class WhenWebSocketEventDirectionModel extends WhenModel<WhenWebSocketEve
     }
 
     @Override
+    protected String getTargetName() {
+        return dataDirection.name();
+    }
+
+    @Override
     public RuleOperationModelType<WhenWebSocketEventDirectionModel, WhenWebSocketEventDirection> getType() {
         return WhenModelType.WebSocketEventDirection;
     }

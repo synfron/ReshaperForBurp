@@ -83,6 +83,11 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(filePath);
+    }
+
+    @Override
     public RuleOperationModelType<ThenSaveFileModel, ThenSaveFile> getType() {
         return ThenModelType.SaveFile;
     }

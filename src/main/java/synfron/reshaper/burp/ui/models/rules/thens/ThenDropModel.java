@@ -39,6 +39,11 @@ public class ThenDropModel extends ThenModel<ThenDropModel, ThenDrop> {
     }
 
     @Override
+    protected String getTargetName() {
+        return isDropMessage() ? "Yes" : "No";
+    }
+
+    @Override
     public RuleOperationModelType<ThenDropModel, ThenDrop> getType() {
         return ThenModelType.Drop;
     }

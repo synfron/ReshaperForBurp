@@ -73,6 +73,11 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     }
 
     @Override
+    protected String getTargetName() {
+        return destinationMessageValue.getName();
+    }
+
+    @Override
     public RuleOperationModelType<ThenSetValueModel, ThenSetValue> getType() {
         return ThenModelType.SetValue;
     }

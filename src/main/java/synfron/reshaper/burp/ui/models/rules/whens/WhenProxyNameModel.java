@@ -49,6 +49,11 @@ public class WhenProxyNameModel extends WhenModel<WhenProxyNameModel, WhenProxyN
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(proxyName);
+    }
+
+    @Override
     public RuleOperationModelType<WhenProxyNameModel, WhenProxyName> getType() {
         return WhenModelType.ProxyName;
     }

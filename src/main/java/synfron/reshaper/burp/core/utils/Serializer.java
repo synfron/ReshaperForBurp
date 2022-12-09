@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -44,7 +45,8 @@ public class Serializer {
     }
 
     private static ObjectMapper configureMapper(JsonSerializer<?>[] serializers, JsonDeserializer<?>[] deserializers) {
-        JsonMapper.Builder builder = JsonMapper.builder(new YAMLFactory());
+        JsonMapper.Builder builder = JsonMapper.builder(YAMLFactory.builder()
+                .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER).build());
         builder.serializationInclusion(JsonInclude.Include.NON_NULL);
         builder.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
         builder.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

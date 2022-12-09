@@ -125,6 +125,11 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     }
 
     @Override
+    protected String getTargetName() {
+        return dataDirection.name();
+    }
+
+    @Override
     public RuleOperationModelType<ThenBuildHttpMessageModel, ThenBuildHttpMessage> getType() {
         return ThenModelType.BuildHttpMessage;
     }

@@ -39,6 +39,11 @@ public class WhenMessageTypeModel extends WhenModel<WhenMessageTypeModel, WhenMe
     }
 
     @Override
+    protected String getTargetName() {
+        return messageType.name();
+    }
+
+    @Override
     public RuleOperationModelType<WhenMessageTypeModel, WhenMessageType> getType() {
         return WhenModelType.MessageType;
     }

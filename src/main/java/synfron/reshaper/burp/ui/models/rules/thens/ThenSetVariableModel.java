@@ -65,6 +65,11 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
     }
 
     @Override
+    protected String getTargetName() {
+        return VariableSourceEntry.getShortTag(targetSource, variableName);
+    }
+
+    @Override
     public RuleOperationModelType<ThenSetVariableModel, ThenSetVariable> getType() {
         return ThenModelType.SetVariable;
     }

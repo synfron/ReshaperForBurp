@@ -39,6 +39,11 @@ public class WhenMimeTypeModel extends WhenModel<WhenMimeTypeModel, WhenMimeType
     }
 
     @Override
+    protected String getTargetName() {
+        return mimeType.getName();
+    }
+
+    @Override
     public RuleOperationModelType<WhenMimeTypeModel, WhenMimeType> getType() {
         return WhenModelType.MimeType;
     }

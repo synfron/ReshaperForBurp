@@ -62,6 +62,11 @@ public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEnt
     }
 
     @Override
+    protected String getTargetName() {
+        return messageValue.getName();
+    }
+
+    @Override
     public RuleOperationModelType<WhenHasEntityModel, WhenHasEntity> getType() {
         return WhenModelType.HasEntity;
     }

@@ -39,6 +39,11 @@ public class ThenHighlightModel extends ThenModel<ThenHighlightModel, ThenHighli
     }
 
     @Override
+    protected String getTargetName() {
+        return color.name();
+    }
+
+    @Override
     public RuleOperationModelType<ThenHighlightModel, ThenHighlight> getType() {
         return ThenModelType.Highlight;
     }

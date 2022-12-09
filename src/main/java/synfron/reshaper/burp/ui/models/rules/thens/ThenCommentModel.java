@@ -12,7 +12,7 @@ import java.util.List;
 public class ThenCommentModel extends ThenModel<ThenCommentModel, ThenComment> {
 
     @Getter
-    private String text;
+    private String text = "";
 
     public ThenCommentModel(ProtocolType protocolType, ThenComment then, Boolean isNew) {
         super(protocolType, then, isNew);
@@ -48,6 +48,11 @@ public class ThenCommentModel extends ThenModel<ThenCommentModel, ThenComment> {
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(text);
     }
 
     @Override

@@ -59,6 +59,11 @@ public class ThenRunRulesModel extends ThenModel<ThenRunRulesModel, ThenRunRules
     }
 
     @Override
+    protected String getTargetName() {
+        return runSingle ? abbreviateTargetName(ruleName) : "All";
+    }
+
+    @Override
     public RuleOperationModelType<ThenRunRulesModel, ThenRunRules> getType() {
         return ThenModelType.RunRules;
     }

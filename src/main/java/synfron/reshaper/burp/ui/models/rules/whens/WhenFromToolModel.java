@@ -39,6 +39,11 @@ public class WhenFromToolModel extends WhenModel<WhenFromToolModel, WhenFromTool
     }
 
     @Override
+    protected String getTargetName() {
+        return tool.name();
+    }
+
+    @Override
     public RuleOperationModelType<WhenFromToolModel, WhenFromTool> getType() {
         return WhenModelType.FromTool;
     }

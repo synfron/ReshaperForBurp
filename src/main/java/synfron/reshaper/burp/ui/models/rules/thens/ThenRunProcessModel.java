@@ -155,6 +155,11 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(command);
+    }
+
+    @Override
     public RuleOperationModelType<ThenRunProcessModel, ThenRunProcess> getType() {
         return ThenModelType.RunProcess;
     }

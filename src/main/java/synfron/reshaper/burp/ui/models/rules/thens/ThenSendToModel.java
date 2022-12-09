@@ -131,6 +131,11 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
     }
 
     @Override
+    protected String getTargetName() {
+        return sendTo.name();
+    }
+
+    @Override
     public RuleOperationModelType<ThenSendToModel, ThenSendTo> getType() {
         return ThenModelType.SendTo;
     }

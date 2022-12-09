@@ -6,6 +6,7 @@ import burp.api.montoya.http.HttpService;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.ProtocolType;
@@ -16,8 +17,8 @@ import synfron.reshaper.burp.core.utils.Url;
 public class HttpEventInfo extends EventInfo {
     @Getter
     private final HttpResponse initialHttpResponse;
-    @Getter
-    private final Annotations annotations;
+    @Getter @Setter
+    private Annotations annotations;
     @Getter
     private final HttpDataDirection initialDataDirection;
     @Getter
@@ -88,11 +89,6 @@ public class HttpEventInfo extends EventInfo {
 
     public void setHttpProtocol(String httpProtocol) {
         this.httpProtocol = httpProtocol;
-        changed = true;
-    }
-
-    public void setShouldDrop(boolean shouldDrop) {
-        this.shouldDrop = shouldDrop;
         changed = true;
     }
 

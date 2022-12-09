@@ -17,6 +17,7 @@ import synfron.reshaper.burp.core.vars.Variables;
         @JsonSubTypes.Type(value = ThenDeleteValue.class),
         @JsonSubTypes.Type(value = ThenDeleteVariable.class),
         @JsonSubTypes.Type(value = ThenDrop.class),
+        @JsonSubTypes.Type(value = ThenIntercept.class),
         @JsonSubTypes.Type(value = ThenHighlight.class),
         @JsonSubTypes.Type(value = ThenComment.class),
         @JsonSubTypes.Type(value = ThenLog.class),
@@ -30,7 +31,8 @@ import synfron.reshaper.burp.core.vars.Variables;
         @JsonSubTypes.Type(value = ThenRunProcess.class),
         @JsonSubTypes.Type(value = ThenBuildHttpMessage.class),
         @JsonSubTypes.Type(value = ThenParseHttpMessage.class),
-        @JsonSubTypes.Type(value = ThenSendRequest.class)
+        @JsonSubTypes.Type(value = ThenSendRequest.class),
+        @JsonSubTypes.Type(value = ThenSendMessage.class)
 })
 public abstract class Then<T extends Then<T>> implements IRuleOperation<T> {
 

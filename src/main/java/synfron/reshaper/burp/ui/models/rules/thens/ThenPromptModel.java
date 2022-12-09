@@ -110,6 +110,11 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> impl
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(description);
+    }
+
+    @Override
     public RuleOperationModelType<ThenPromptModel, ThenPrompt> getType() {
         return ThenModelType.Prompt;
     }

@@ -63,6 +63,11 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(script);
+    }
+
+    @Override
     public RuleOperationModelType<ThenRunScriptModel, ThenRunScript> getType() {
         return ThenModelType.RunScript;
     }

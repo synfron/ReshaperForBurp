@@ -40,6 +40,11 @@ public class ThenSetEventDirectionModel extends ThenModel<ThenSetEventDirectionM
     }
 
     @Override
+    protected String getTargetName() {
+        return dataDirection.name();
+    }
+
+    @Override
     public RuleOperationModelType<ThenSetEventDirectionModel, ThenSetEventDirection> getType() {
         return ThenModelType.SetEventDirection;
     }

@@ -128,6 +128,7 @@ public class VariableString implements Serializable {
                         case File -> getFileText(eventInfo, variable.getName());
                         case Special -> variable.getName();
                         case CookieJar -> getCookie(variable.getName());
+                        case Annotation -> getAnnotation(eventInfo, variable.getName());
                         default -> null;
                     };
                     variableVals.add(value);
@@ -143,6 +144,18 @@ public class VariableString implements Serializable {
             }
         }
         return String.format(text, variableVals.toArray());
+    }
+
+    private String getAnnotation(EventInfo eventInfo, String name) {
+        MessageAnnotation annotation = EnumUtils.getEnumIgnoreCase(MessageAnnotation.class, name);
+        if (annotation != null && eventInfo instanceof HttpEventInfo) {
+            HttpEventInfo httpEventInfo = (HttpEventInfo) eventInfo;
+            return switch (annotation) {
+                case Comment -> httpEventInfo.getAnnotations().comment();
+                case HighlightColor -> StringUtils.capitalize(httpEventInfo.getAnnotations().highlightColor().name().toLowerCase());
+            };
+        }
+        return null;
     }
 
     private String getCookie(String locator) {

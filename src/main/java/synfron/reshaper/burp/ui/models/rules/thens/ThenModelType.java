@@ -33,6 +33,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenSendRequestModel, ThenSendRequest> SendRequest = new ThenModelType<>(ThenSendRequestModel.class, ThenType.SendRequest);
     public static final ThenModelType<ThenSendMessageModel, ThenSendMessage> SendMessage = new ThenModelType<>(ThenSendMessageModel.class, ThenType.SendMessage);
     public static final ThenModelType<ThenDropModel, ThenDrop> Drop = new ThenModelType<>(ThenDropModel.class, ThenType.Drop);
+    public static final ThenModelType<ThenInterceptModel, ThenIntercept> Intercept = new ThenModelType<>(ThenInterceptModel.class, ThenType.Intercept);
 
     private ThenModelType(Class<P> type, RuleOperationType<T> ruleOperationType) {
         super(type, ruleOperationType);
@@ -62,7 +63,8 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
                 ParseHttpMessage,
                 SendRequest,
                 SendMessage,
-                Drop
+                Drop,
+                Intercept
         ).filter(type -> protocolType == null || type.hasProtocolType(protocolType)).collect(Collectors.toList());
     }
 }

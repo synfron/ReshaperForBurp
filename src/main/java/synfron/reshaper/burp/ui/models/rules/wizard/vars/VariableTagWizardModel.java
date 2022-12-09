@@ -45,7 +45,8 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
           VariableSource.Message, new MessageVariableTagWizardModel(),
           VariableSource.File, new FileVariableTagWizardModel(),
           VariableSource.Special, new SpecialVariableTagWizardModel(),
-          VariableSource.CookieJar, new CookieJarVariableTagWizardModel()
+          VariableSource.CookieJar, new CookieJarVariableTagWizardModel(),
+          VariableSource.Annotation, new AnnotationVariableTagWizardModel()
         );
 
         tagModel = tagModelMap.get(variableSource);

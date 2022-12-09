@@ -53,6 +53,11 @@ public class ThenDelayModel extends ThenModel<ThenDelayModel, ThenDelay> {
     }
 
     @Override
+    protected String getTargetName() {
+        return delay;
+    }
+
+    @Override
     public RuleOperationModelType<ThenDelayModel, ThenDelay> getType() {
         return ThenModelType.Delay;
     }

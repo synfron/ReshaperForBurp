@@ -8,6 +8,7 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.Then;
@@ -40,6 +41,15 @@ public class ReshaperObj {
             return getVariable(((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables(), name);
         }
 
+        public String getSessionVariable(String name) {
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
+            if (eventInfo instanceof WebSocketEventInfo<?>) {
+                WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>) eventInfo;
+                return getVariable(webSocketEventInfo.getSessionVariables(), name);
+            }
+            return null;
+        }
+
         private String getVariable(Variables variables, String name) {
             Variable variable = variables.getOrDefault(name);
             return variable != null ?
@@ -61,12 +71,31 @@ public class ReshaperObj {
             ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(name).setValue(value);
         }
 
+        public void setSessionVariable(String name, String value) {
+            if (!VariableString.isValidVariableName(name)) {
+                throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
+            }
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
+            if (eventInfo instanceof WebSocketEventInfo<?>) {
+                WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>) eventInfo;
+                webSocketEventInfo.getSessionVariables().add(name).setValue(value);
+            }
+        }
+
         public void deleteGlobalVariable(String name) {
             GlobalVariables.get().remove(name);
         }
 
         public void deleteEventVariable(String name) {
             ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(name);
+        }
+
+        public void deleteSessionVariable(String name) {
+            EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
+            if (eventInfo instanceof WebSocketEventInfo<?>) {
+                WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>) eventInfo;
+                webSocketEventInfo.getSessionVariables().remove(name);
+            }
         }
     }
 
@@ -121,6 +150,7 @@ public class ReshaperObj {
                     ThenType.DeleteValue,
                     ThenType.DeleteVariable,
                     ThenType.Drop,
+                    ThenType.Intercept,
                     ThenType.Log,
                     ThenType.ParseHttpMessage,
                     ThenType.SendRequest,

@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.rules.whens;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.*;
 import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
@@ -41,6 +42,9 @@ public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleO
     private MatchType matchType = MatchType.Equals;
     @Getter
     @Setter
+    private boolean ignoreCase = false;
+    @Getter
+    @Setter
     public boolean useMessageValue = true;
 
     @Override
@@ -56,11 +60,11 @@ public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleO
             matchText = this.matchText.getText(eventInfo);
 
             isMatch = switch (matchType) {
-                case BeginsWith -> sourceText.startsWith(matchText);
-                case EndsWith -> sourceText.endsWith(matchText);
-                case Contains -> sourceText.contains(matchText);
-                case Equals -> sourceText.equals(matchText);
-                case Regex -> TextUtils.isMatch(sourceText, matchText);
+                case BeginsWith -> ignoreCase ? StringUtils.startsWithIgnoreCase(sourceText, matchText) : StringUtils.startsWith(sourceText, matchText);
+                case EndsWith -> ignoreCase ? StringUtils.endsWithIgnoreCase(sourceText, matchText) : StringUtils.endsWith(sourceText, matchText);
+                case Contains -> ignoreCase ? StringUtils.containsIgnoreCase(sourceText, matchText) : StringUtils.contains(sourceText, matchText);
+                case Equals -> ignoreCase ? StringUtils.equalsIgnoreCase(sourceText, matchText) : StringUtils.equals(sourceText, matchText);
+                case Regex -> TextUtils.isMatch(sourceText, matchText, ignoreCase);
             };
         } catch (Exception ignored) {
         }
@@ -68,7 +72,8 @@ public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleO
                 this, useMessageValue ? Arrays.asList(
                         Pair.of("messageValue", messageValue),
                         Pair.of("identifier", messageValue.isIdentifierRequired() ? VariableString.getTextOrDefault(eventInfo, identifier, null) : null),
-                        Pair.of("identifierPlacement", messageValue.isIdentifierRequired() ? identifierPlacement : null)
+                        Pair.of("identifierPlacement", messageValue.isIdentifierRequired() ? identifierPlacement : null),
+                        Pair.of("ignoreCase", ignoreCase)
                 ) : null, matchType, matchText, sourceText, isMatch
         );
         return isMatch;

@@ -14,6 +14,7 @@ public enum VariableSource {
     Global("g", false, ProtocolType.Any),
     Session("sn", false, ProtocolType.WebSocket),
     Message("m", true, ProtocolType.Any),
+    Annotation("a", true, ProtocolType.Http),
     File("f", true, ProtocolType.Any),
     Special("s", true, ProtocolType.Any),
     CookieJar("Cookie Jar", "cj", true, ProtocolType.Any);

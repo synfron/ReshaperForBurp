@@ -39,6 +39,11 @@ public class WhenContentTypeModel extends WhenModel<WhenContentTypeModel, WhenCo
     }
 
     @Override
+    protected String getTargetName() {
+        return contentType.getName();
+    }
+
+    @Override
     public RuleOperationModelType<WhenContentTypeModel, WhenContentType> getType() {
         return WhenModelType.ContentType;
     }

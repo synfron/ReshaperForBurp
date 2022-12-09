@@ -5,7 +5,6 @@ import synfron.reshaper.burp.ui.components.rules.RuleOperationContainerComponent
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenModelType;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +37,7 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.SendRequest, ThenSendRequestComponent.class);
         componentMap.put(ThenModelType.SendMessage, ThenSendMessageComponent.class);
         componentMap.put(ThenModelType.Drop, ThenDropComponent.class);
+        componentMap.put(ThenModelType.Intercept, ThenInterceptComponent.class);
     }
 
     public ThenContainerComponent(ProtocolType protocolType) {

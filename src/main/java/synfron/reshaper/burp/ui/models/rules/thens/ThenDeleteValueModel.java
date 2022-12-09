@@ -72,6 +72,11 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
     }
 
     @Override
+    protected String getTargetName() {
+        return messageValue.getName();
+    }
+
+    @Override
     public RuleOperationModelType<ThenDeleteValueModel, ThenDeleteValue> getType() {
         return ThenModelType.DeleteValue;
     }

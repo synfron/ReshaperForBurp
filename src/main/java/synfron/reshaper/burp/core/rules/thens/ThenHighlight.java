@@ -15,8 +15,14 @@ public class ThenHighlight extends Then<ThenHighlight> implements IHttpRuleOpera
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
-        ((HttpEventInfo)eventInfo).getAnnotations().withHighlightColor(color.highlightColor);
-        if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, false, color.getValue());
+        boolean hasError = true;
+        try {
+            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+            httpEventInfo.setAnnotations(httpEventInfo.getAnnotations().withHighlightColor(color.highlightColor));
+            hasError = false;
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, color.getValue());
+        }
         return RuleResponse.Continue;
     }
 

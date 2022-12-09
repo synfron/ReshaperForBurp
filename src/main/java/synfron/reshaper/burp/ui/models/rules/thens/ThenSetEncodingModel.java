@@ -53,6 +53,11 @@ public class ThenSetEncodingModel extends ThenModel<ThenSetEncodingModel, ThenSe
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(encoding);
+    }
+
+    @Override
     public RuleOperationModelType<ThenSetEncodingModel, ThenSetEncoding> getType() {
         return ThenModelType.SetEncoding;
     }

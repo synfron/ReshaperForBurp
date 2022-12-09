@@ -14,6 +14,9 @@ public class ThenSendMessage extends Then<ThenSendMessage> implements IWebSocket
 
     @Getter
     @Setter
+    private WebSocketDataDirection dataDirection = WebSocketDataDirection.Server;
+    @Getter
+    @Setter
     private VariableString message;
 
     @Override
@@ -21,7 +24,7 @@ public class ThenSendMessage extends Then<ThenSendMessage> implements IWebSocket
         boolean hasError = true;
         String value = null;
         try {
-            ((WebSocketEventInfo<?>)eventInfo).getMessageSender().accept(WebSocketDataDirection.Server, value = message.getText(eventInfo));
+            ((WebSocketEventInfo<?>)eventInfo).getMessageSender().accept(dataDirection, value = message.getText(eventInfo));
             hasError = false;
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, value);

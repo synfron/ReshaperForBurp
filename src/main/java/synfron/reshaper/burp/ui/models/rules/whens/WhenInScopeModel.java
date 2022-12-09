@@ -45,6 +45,11 @@ public class WhenInScopeModel extends WhenModel<WhenInScopeModel, WhenInScope> {
     }
 
     @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(url);
+    }
+
+    @Override
     public RuleOperationModelType<WhenInScopeModel, WhenInScope> getType() {
         return WhenModelType.InScope;
     }

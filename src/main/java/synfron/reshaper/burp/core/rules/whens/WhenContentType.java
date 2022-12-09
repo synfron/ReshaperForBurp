@@ -8,6 +8,7 @@ import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 
 public class WhenContentType extends When<WhenContentType> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
