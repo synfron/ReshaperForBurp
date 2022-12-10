@@ -1,5 +1,5 @@
 theme: jekyll-theme-cayman
 title: Reshaper for Burp
-description: Trigger actions and reshape HTTP request and response traffic using configurable rules
+description: Trigger actions and reshape HTTP request/response and WebSocket traffic using configurable rules
 kramdown:
   auto_ids: true

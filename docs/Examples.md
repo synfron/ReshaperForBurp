@@ -12,7 +12,7 @@
 
 In the example below, we are taking the `Authorization` header from `www.example.org` requests, storing it in a variable, and setting it on `www.example.com` requests.
 
-1. Open the `Rules` tab.
+1. Open the `HTTP Rules` tab.
 2. Create a Rule.
 3. Set the `Rule Name` to `Get www.example.org Authorization`.
 4. Add When -> `Event Direction` (if not already added).
@@ -43,7 +43,7 @@ In the example below, we are taking the `Authorization` header from `www.example
 
 In the example below, we are redirecting from `www.example.org` to `www.example.com` by setting the URL and using a message variable to make sure we keep the page path.
 
-1. Open the `Rules` tab.
+1. Open the `HTTP Rules` tab.
 2. Create or open a Rule.
 3. Set a `Rule Name` and add other Whens and Thens as needed.
 4. Add When -> `Event Direction` (if not already added).
@@ -59,7 +59,7 @@ In the example below, we are redirecting from `www.example.org` to `www.example.
 
 In the example below, we tell the browser to allow any origin by overriding the `Access-Control-Allow-Origin` response header.
 
-1. Open the `Rules` tab.
+1. Open the `HTTP Rules` tab.
 2. Create or open a Rule.
 3. Set a `Rule Name` and add other Whens and Thens as needed.
 4. Add When -> `Event Direction` (if not already added).
@@ -78,7 +78,7 @@ In the example below, we tell the browser to allow any origin by overriding the 
 2. Add a new Variable.
 3. Set a `Variable Name`. We will use `mockResponse` for this example.
 4. Paste the full response text (including headers and body) in `Variable Text`.
-4. Open the `Rules` tab.
+4. Open the `HTTP Rules` tab.
 5. Create or open a Rule.
 6. Set a `Rule Name` and add other Whens and Thens as needed.
 7. Add When -> `Event Direction` (if not already added).
@@ -97,7 +97,7 @@ The example of drop requests below works on all supported tools: Proxy, Repeater
 
 1. Open the `Settings` tab.
 2. Ensure the tool is selected under `Capture Traffic From:`
-3. Open the `Rules` tab.
+3. Open the `HTTP Rules` tab.
 4. Create or open a Rule.
 5. Set a `Rule Name` and add other Whens and Thens as needed.
 6. Add When -> `Event Direction` (if not already added).
