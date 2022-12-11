@@ -11,7 +11,8 @@ import synfron.reshaper.burp.core.rules.*;
 import java.util.stream.Stream;
 
 public class ThenRunRules extends Then<ThenRunRules> implements IHttpRuleOperation, IWebSocketRuleOperation {
-    private int cacheVersion;
+
+    private transient int cacheVersion;
     private transient Rule ruleCache = null;
     @Getter @Setter
     private boolean runSingle = true;

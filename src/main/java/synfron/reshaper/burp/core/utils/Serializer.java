@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import lombok.Getter;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -20,13 +22,17 @@ import java.io.StringWriter;
 import java.util.stream.Stream;
 
 public class Serializer {
+    @Getter
     private static ObjectMapper objectMapper;
     private static JsonFactory jsonFactory = new JsonFactory();
 
     static {
-        ObjectMapper objectMapper = configureMapper(new JsonDeserializer[] { new VariableStringDeserializer() });
+        VariableStringSerializer variableStringSerializer = new VariableStringSerializer();
+        VariableStringDeserializer variableStringDeserializer = new VariableStringDeserializer();
+        ObjectMapper objectMapper = configureMapper(new JsonSerializer[]{ variableStringSerializer }, new JsonDeserializer[] { variableStringDeserializer });
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(VariableString.class, new VariableStringDeserializer());
+        module.addSerializer(VariableString.class, variableStringSerializer);
+        module.addDeserializer(VariableString.class, variableStringDeserializer);
         objectMapper.registerModule(module);
 
         Serializer.objectMapper = objectMapper;
@@ -135,6 +141,22 @@ public class Serializer {
             return (parser.currentTokenId() == JsonTokenId.ID_STRING) ?
                     VariableString.getAsVariableString(parser.getText()) :
                     objectMapper.readValue(parser, VariableString.class);
+        }
+    }
+
+    private static class VariableStringSerializer extends JsonSerializer<VariableString> {
+        @Override
+        public Class<VariableString> handledType() {
+            return VariableString.class;
+        }
+
+        @Override
+        public void serialize(VariableString value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (value == null) {
+                gen.writeNull();
+            } else {
+                gen.writeString(value.toString());
+            }
         }
     }
 }

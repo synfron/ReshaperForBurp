@@ -25,7 +25,7 @@ public class Rule implements Serializable {
     @Getter
     private String name;
     @Getter
-    private boolean diagnosticsEnabled;
+    private transient boolean diagnosticsEnabled;
 
     public void setName(String name) {
         this.name = name;
