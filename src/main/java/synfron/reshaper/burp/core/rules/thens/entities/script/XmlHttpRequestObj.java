@@ -1,6 +1,10 @@
 package synfron.reshaper.burp.core.rules.thens.entities.script;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.message.requests.HttpRequest;
+import burp.api.montoya.http.message.responses.HttpResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +13,11 @@ import org.mozilla.javascript.ArrowFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeJavaObject;
-import synfron.reshaper.burp.core.messages.IEventInfo;
 import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
-import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
-import synfron.reshaper.burp.core.messages.entities.HttpResponseStatusLine;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
+import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
+import synfron.reshaper.burp.core.messages.entities.http.HttpResponseStatusLine;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
@@ -77,7 +81,7 @@ public class XmlHttpRequestObj {
         uriBuilder.setParameters(inputUriBuilder.getQueryParams());
         uriBuilder.setFragment(inputUriBuilder.getFragment());
         String request = String.format(requestTemplate, method, uriBuilder, requestUrl.getAuthority());
-        Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
+        Encoder encoder = ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
         requestMessage = new HttpRequestMessage(encoder.encode(request), encoder);
         setReadyState(OPENED);
     }
@@ -143,22 +147,24 @@ public class XmlHttpRequestObj {
             if (!Thread.interrupted()) {
                 try {
                     HttpRequestMessage requestMessage = this.requestMessage;
-                    Encoder encoder = ((IEventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
+                    Encoder encoder = ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
                     if (StringUtils.isNotEmpty(body)) {
                         requestMessage = new HttpRequestMessage(requestMessage.getValue(), encoder);
                         requestMessage.setBody(body);
                     }
                     boolean useHttps = !StringUtils.equalsIgnoreCase(requestUrl.getScheme(), "http");
-                    byte[] response = BurpExtender.getCallbacks().makeHttpRequest(
-                            requestUrl.getHost(),
-                            requestUrl.getPort() > 0 ? requestUrl.getPort() : (useHttps ? 443 : 80),
-                            useHttps,
-                            requestMessage.getValue()
-                    );
+                    HttpResponse response = BurpExtender.getApi().http().issueRequest(
+                            HttpRequest.httpRequest(ByteArray.byteArray(requestMessage.getValue()))
+                                    .withService(HttpService.httpService(
+                                            requestUrl.getHost(),
+                                            requestUrl.getPort() > 0 ? requestUrl.getPort() : (useHttps ? 443 : 80),
+                                            useHttps
+                                    ))
+                    ).httpResponse();
                     if (!dispatcher.isTimeoutReach() && this.executor == executor) {
                         this.executor = null;
                         dispatcher.execute(context -> {
-                            if (response != null && response.length != 0) {
+                            if (response != null) {
                                 responseURL = requestUrl.toString();
                                 responseMessage = new HttpResponseMessage(response, encoder);
                                 setReadyState(DONE);

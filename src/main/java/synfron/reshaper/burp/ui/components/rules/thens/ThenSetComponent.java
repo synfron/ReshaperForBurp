@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
@@ -11,6 +12,7 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends ThenSet<T>> extends ThenComponent<P, T> {
@@ -27,14 +29,15 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
     protected JComboBox<MessageValueType> destinationMessageValueType;
     protected JTextField destinationMessageValuePath;
 
-    public ThenSetComponent(P then) {
-        super(then);
+    public ThenSetComponent(ProtocolType protocolType, P then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
-        sourceMessageValue = createComboBox(MessageValue.values());
+        sourceMessageValue = createComboBox(Arrays.stream(MessageValue.values())
+                .filter(value -> value.isGettable(protocolType)).toArray(MessageValue[]::new));
         sourceIdentifier = createTextField(true);
         sourceIdentifierPlacement = createComboBox(GetItemPlacement.values());
         sourceMessageValueType = createComboBox(MessageValueType.values());

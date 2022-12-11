@@ -71,6 +71,12 @@ BuildHttpMessage
     destinationVariableName: string
 }
 ```
+Comment
+```
+{
+    text: string
+}
+```
 Delete Value
 ```
 {
@@ -97,10 +103,10 @@ Highlight
     color: "None" | "Red" | "Orange" | "Yellow" | "Green" | "Cyan" | "Blue" | "Pink" | "Magenta" | "Gray"
 }
 ```
-Comment
+Intercept
 ```
 {
-    text: string
+    interceptResponse: UserDefined | Disable | Intercept
 }
 ```
 Log
@@ -120,6 +126,13 @@ ParseHttpMessage
         destinationVariableSource: "Global" | "Event"
         destinationVariableName: string
     }]
+}
+```
+SendMessage
+```
+{
+    dataDirection: "Server" | "Client"
+    message: string
 }
 ```
 SendRequest
@@ -142,7 +155,7 @@ SendRequest
 SendTo
 ```
 {
-    sendTo: "Comparer" | "Intruder" | "Repeater" | "Spider" | "Browser"
+    sendTo: "Comparer" | "Intruder" | "Repeater" | "Browser"
     overrideDefaults: boolean
     host: string
     port: number
@@ -213,6 +226,14 @@ Parameters:
 
 name - Variable name.
 
+#### deleteSessionVariable(name)
+
+Delete an session variable.
+
+Parameters:
+
+name - Variable name.
+
 #### getEventVariable(name)
 
 Get the value of an event variable.
@@ -224,6 +245,14 @@ name - Variable name.
 #### getGlobalVariable(name)
 
 Get the value of a global variable.
+
+Parameters:
+
+name - Variable name.
+
+#### getSessionVariable(name)
+
+Get the value of a session variable.
 
 Parameters:
 
@@ -242,6 +271,16 @@ value - The new value.
 #### setGlobalVariable(name, value)
 
 Set the value of a global variable.
+
+Parameters:
+
+name - Variable name.
+
+value - The new value.
+
+#### setSessionVariable(name, value)
+
+Set the value of a session variable.
 
 Parameters:
 

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModel;
@@ -14,8 +15,8 @@ public abstract class WhenComponent<P extends WhenModel<P, T>, T extends When<T>
     protected JCheckBox useOrCondition;
     protected JCheckBox negate;
 
-    public WhenComponent(P model) {
-        super(model);
+    public WhenComponent(ProtocolType protocolType, P model) {
+        super(protocolType, model);
         setBorder(new CompoundBorder(
                 BorderFactory.createTitledBorder(String.format("When %s", model.getType().getName())),
                 BorderFactory.createEmptyBorder(4,4,4,4))

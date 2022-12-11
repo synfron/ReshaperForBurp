@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDelay;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -13,8 +14,8 @@ public class ThenDelayModel extends ThenModel<ThenDelayModel, ThenDelay> {
     @Getter
     private String delay;
 
-    public ThenDelayModel(ThenDelay then, Boolean isNew) {
-        super(then, isNew);
+    public ThenDelayModel(ProtocolType protocolType, ThenDelay then, Boolean isNew) {
+        super(protocolType, then, isNew);
         delay = VariableString.toString(then.getDelay(), delay);
     }
 
@@ -49,6 +50,11 @@ public class ThenDelayModel extends ThenModel<ThenDelayModel, ThenDelay> {
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return delay;
     }
 
     @Override

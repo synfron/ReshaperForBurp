@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.whens.When;
@@ -15,8 +16,8 @@ public abstract class WhenModel<P extends WhenModel<P, T>, T extends When<T>> ex
     @Getter
     private boolean useOrCondition;
 
-    public WhenModel(T ruleOperation, Boolean isNew) {
-        super(ruleOperation, isNew);
+    public WhenModel(ProtocolType protocolType, T ruleOperation, Boolean isNew) {
+        super(protocolType, ruleOperation, isNew);
         negate = ruleOperation.isNegate();
         useOrCondition = ruleOperation.isUseOrCondition();
     }
@@ -45,9 +46,10 @@ public abstract class WhenModel<P extends WhenModel<P, T>, T extends When<T>> ex
         return true;
     }
 
-    public static WhenModel<?, ?> getNewModel(RuleOperationModelType<?, ?> ruleOperationModelType) {
+    public static WhenModel<?, ?> getNewModel(ProtocolType protocolType, RuleOperationModelType<?, ?> ruleOperationModelType) {
         return (WhenModel<?, ?>) ObjectUtils.construct(
                 ruleOperationModelType.getType(),
+                protocolType,
                 ObjectUtils.construct(
                         ruleOperationModelType.getRuleOperationType().getType()
                 ),
@@ -55,12 +57,13 @@ public abstract class WhenModel<P extends WhenModel<P, T>, T extends When<T>> ex
         );
     }
 
-    public static WhenModel<?, ?> getModel(When<?> when) {
+    public static WhenModel<?, ?> getModel(ProtocolType protocolType, When<?> when) {
         return (WhenModel<?, ?>) ObjectUtils.construct(
-                WhenModelType.getTypes().stream()
+                WhenModelType.getTypes(ProtocolType.Any).stream()
                         .filter(type -> type.getRuleOperationType() == when.getType())
                         .findFirst()
                         .get().getType(),
+                protocolType,
                 when,
                 false
         );

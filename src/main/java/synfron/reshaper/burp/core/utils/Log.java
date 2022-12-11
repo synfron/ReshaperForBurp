@@ -1,10 +1,10 @@
 package synfron.reshaper.burp.core.utils;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.ByteArray;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -65,22 +65,24 @@ public class Log {
     private void printOutput(String text, boolean isError) {
         if (BurpExtender.getGeneralSettings().isLogInExtenderOutput()) {
             if (isError) {
-                BurpExtender.getCallbacks().printError(text);
+                BurpExtender.getApi().logging().logToError(text);
             } else {
-                BurpExtender.getCallbacks().printOutput(text);
+                BurpExtender.getApi().logging().logToOutput(text);
             }
         }
         printToDisplay(text);
     }
 
     private void printToDisplay(String text) {
-        BurpExtender.getLogTextEditor().setText(
-                TextUtils.bufferAppend(
-                        new String(BurpExtender.getLogTextEditor().getText(), StandardCharsets.UTF_8),
-                        text,
-                        "\n",
-                        BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
-                ).getBytes(StandardCharsets.UTF_8)
-        );
+        if (BurpExtender.getLogTextEditor() != null) {
+            BurpExtender.getLogTextEditor().setContents(ByteArray.byteArray(
+                    TextUtils.bufferAppend(
+                            new String(BurpExtender.getLogTextEditor().getContents().getBytes(), StandardCharsets.UTF_8),
+                            text,
+                            "\n",
+                            BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
+                    ).getBytes(StandardCharsets.UTF_8)
+            ));
+        }
     }
 }

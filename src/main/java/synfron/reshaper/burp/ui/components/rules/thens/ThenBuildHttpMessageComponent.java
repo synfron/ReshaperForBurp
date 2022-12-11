@@ -1,9 +1,10 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenBuildHttpMessage;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.components.rules.thens.buildhttpmessage.MessageValueSetterComponent;
@@ -16,22 +17,22 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMessageModel, ThenBuildHttpMessage> {
-    private JComboBox<DataDirection> dataDirection;
+    private JComboBox<HttpDataDirection> dataDirection;
     private JTextField starterHttpMessage;
     private JComboBox<VariableSource> destinationVariableSource;
     private JTextField destinationVariableName;
     private JPanel messageValueSettersComponent;
     private final IEventListener<PropertyChangedArgs> messageValueSetterChangedListener = this::onMessageValueSetterChanged;
 
-    public ThenBuildHttpMessageComponent(ThenBuildHttpMessageModel then) {
-        super(then);
+    public ThenBuildHttpMessageComponent(ProtocolType protocolType, ThenBuildHttpMessageModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
-        dataDirection = createComboBox(DataDirection.values());
+        dataDirection = createComboBox(HttpDataDirection.values());
         starterHttpMessage = createTextField(true);
-        destinationVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        destinationVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         destinationVariableName = createTextField(true);
         JButton addSetter = new JButton("Add Setter");
 
@@ -76,7 +77,7 @@ public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMe
         for (MessageValueSetterModel messageValueSetterModel : new ArrayList<>(model.getMessageValueSetters())) {
             removeMessageValueSetter(messageValueSetterModel);
         }
-        model.setDataDirection((DataDirection) dataDirection.getSelectedItem());
+        model.setDataDirection((HttpDataDirection) dataDirection.getSelectedItem());
 
         addMessageValueSetter();
     }

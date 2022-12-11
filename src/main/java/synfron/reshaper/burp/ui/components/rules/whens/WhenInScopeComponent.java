@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.WhenInScope;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenInScopeModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -10,8 +11,8 @@ import java.awt.event.ActionEvent;
 public class WhenInScopeComponent extends WhenComponent<WhenInScopeModel, WhenInScope> {
     private JTextField url;
 
-    public WhenInScopeComponent(WhenInScopeModel when) {
-        super(when);
+    public WhenInScopeComponent(ProtocolType protocolType, WhenInScopeModel when) {
+        super(protocolType, when);
         initComponent();
     }
 

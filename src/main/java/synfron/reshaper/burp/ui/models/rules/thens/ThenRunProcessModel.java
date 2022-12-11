@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunProcess;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
@@ -36,8 +37,8 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     @Getter
     private String captureVariableName;
 
-    public ThenRunProcessModel(ThenRunProcess then, Boolean isNew) {
-        super(then, isNew);
+    public ThenRunProcessModel(ProtocolType protocolType, ThenRunProcess then, Boolean isNew) {
+        super(protocolType, then, isNew);
         command = VariableString.toString(then.getCommand(), command);
         input = VariableString.toString(then.getInput(), input);
         waitForCompletion = then.isWaitForCompletion();
@@ -151,6 +152,11 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(command);
     }
 
     @Override

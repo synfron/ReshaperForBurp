@@ -2,9 +2,10 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenBuildHttpMessage;
 import synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage.MessageValueSetter;
 import synfron.reshaper.burp.core.vars.VariableSource;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageModel, ThenBuildHttpMessage> implements IVariableCreator {
 
     @Getter
-    private DataDirection dataDirection;
+    private HttpDataDirection dataDirection;
     @Getter
     private String starterHttpMessage;
     @Getter
@@ -32,8 +33,8 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
 
     private final IEventListener<PropertyChangedArgs> messageValueSetterChangedListener = this::onMessageValueSetterChanged;
 
-    public ThenBuildHttpMessageModel(ThenBuildHttpMessage then, Boolean isNew) {
-        super(then, isNew);
+    public ThenBuildHttpMessageModel(ProtocolType protocolType, ThenBuildHttpMessage then, Boolean isNew) {
+        super(protocolType, then, isNew);
         this.dataDirection = then.getDataDirection();
         this.starterHttpMessage = VariableString.toString(then.getStarterHttpMessage(), starterHttpMessage);
         this.messageValueSetters = then.getMessageValueSetters().stream()
@@ -59,7 +60,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
         return index;
     }
 
-    public void setDataDirection(DataDirection dataDirection) {
+    public void setDataDirection(HttpDataDirection dataDirection) {
         this.dataDirection = dataDirection;
         propertyChanged("dataDirection", dataDirection);
     }
@@ -121,6 +122,11 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return dataDirection.name();
     }
 
     @Override

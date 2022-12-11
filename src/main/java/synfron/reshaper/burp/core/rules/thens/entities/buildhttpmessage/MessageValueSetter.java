@@ -1,9 +1,8 @@
 package synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage;
 
 import lombok.Data;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -18,7 +17,7 @@ public class MessageValueSetter implements Serializable {
 
     public MessageValueSetter() {}
 
-    public MessageValueSetter(DataDirection dataDirection) {
-        destinationMessageValue = dataDirection == DataDirection.Request ? MessageValue.HttpRequestBody : MessageValue.HttpResponseBody;
+    public MessageValueSetter(HttpDataDirection dataDirection) {
+        destinationMessageValue = dataDirection == HttpDataDirection.Request ? MessageValue.HttpRequestBody : MessageValue.HttpResponseBody;
     }
 }

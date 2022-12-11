@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
 import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
@@ -10,37 +11,20 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel, ThenDeleteValue> {
     protected JComboBox<MessageValue> messageValue;
     protected JTextField identifier;
     protected JComboBox<DeleteItemPlacement> identifierPlacement;
-    private final Set<MessageValue> excludedMessageValues = new HashSet<>(List.of(
-            MessageValue.DestinationAddress,
-            MessageValue.DestinationPort,
-            MessageValue.HttpProtocol,
-            MessageValue.Url,
-            MessageValue.HttpRequestMessage,
-            MessageValue.HttpRequestMethod,
-            MessageValue.HttpResponseMessage,
-            MessageValue.HttpRequestStatusLine,
-            MessageValue.HttpResponseStatusLine,
-            MessageValue.SourceAddress,
-            MessageValue.HttpRequestUri,
-            MessageValue.HttpResponseStatusCode
-    ));
 
-    public ThenDeleteValueComponent(ThenDeleteValueModel then) {
-        super(then);
+    public ThenDeleteValueComponent(ProtocolType protocolType, ThenDeleteValueModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
         messageValue = createComboBox(Arrays.stream(MessageValue.values())
-                .filter(value -> !excludedMessageValues.contains(value))
+                .filter(value -> value.isDeletable(protocolType))
                 .toArray(MessageValue[]::new)
         );
         identifier = createTextField(true);

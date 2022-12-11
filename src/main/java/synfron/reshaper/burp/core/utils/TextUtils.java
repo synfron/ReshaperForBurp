@@ -1,12 +1,10 @@
 package synfron.reshaper.burp.core.utils;
 
-import burp.BurpExtender;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
 import net.minidev.json.JSONValue;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -86,8 +84,10 @@ public class TextUtils {
         return URLEncodedUtils.format(params, StandardCharsets.UTF_8);
     }
 
-    public static boolean isMatch(String text, String regex) {
-        Pattern pattern = Pattern.compile(regex);
+    public static boolean isMatch(String text, String regex, boolean ignoreCase) {
+        Pattern pattern = ignoreCase ?
+                Pattern.compile(regex, Pattern.CASE_INSENSITIVE) :
+                Pattern.compile(regex);
         return pattern.matcher(text).find();
     }
 

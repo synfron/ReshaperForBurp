@@ -3,10 +3,9 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
-import synfron.reshaper.burp.core.messages.MessageValueType;
+import synfron.reshaper.burp.core.messages.*;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.IItemPlacement;
@@ -17,9 +16,9 @@ import synfron.reshaper.burp.core.vars.VariableString;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class ThenSetValue extends ThenSet<ThenSetValue> {
+public class ThenSetValue extends ThenSet<ThenSetValue> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
-    private MessageValue destinationMessageValue = MessageValue.HttpRequestBody;
+    private MessageValue destinationMessageValue;
     @Getter @Setter
     private VariableString destinationIdentifier;
     @Getter @Setter
@@ -29,7 +28,7 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
         setUseMessageValue(false);
     }
 
-    public RuleResponse perform(IEventInfo eventInfo)
+    public RuleResponse perform(EventInfo eventInfo)
     {
         try {
             String replacementText = getReplacementValue(eventInfo);
@@ -40,7 +39,7 @@ public class ThenSetValue extends ThenSet<ThenSetValue> {
         return RuleResponse.Continue;
     }
 
-    private void setValue(IEventInfo eventInfo, String replacementText)
+    private void setValue(EventInfo eventInfo, String replacementText)
     {
         if (destinationMessageValueType != MessageValueType.Text) {
             String fullText = MessageValueHandler.getValue(

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenSetValue;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
@@ -10,6 +11,7 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, ThenSetValue> {
@@ -18,13 +20,14 @@ public class ThenSetValueComponent extends ThenSetComponent<ThenSetValueModel, T
     private JTextField destinationIdentifier;
     private JComboBox<SetItemPlacement> destinationIdentifierPlacement;
 
-    public ThenSetValueComponent(ThenSetValueModel then) {
-        super(then);
+    public ThenSetValueComponent(ProtocolType protocolType, ThenSetValueModel then) {
+        super(protocolType, then);
     }
 
     @Override
     protected List<Component> getExtendedComponents() {
-        destinationMessageValue = createComboBox(MessageValue.values());
+        destinationMessageValue = createComboBox(Arrays.stream(MessageValue.values())
+                .filter(value -> value.isSettable(protocolType)).toArray(MessageValue[]::new));
         destinationIdentifier = createTextField(true);
         destinationIdentifierPlacement = createComboBox(SetItemPlacement.values());
 

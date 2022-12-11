@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenLog;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -11,10 +12,10 @@ import java.util.List;
 public class ThenLogModel extends ThenModel<ThenLogModel, ThenLog> {
 
     @Getter
-    private String text;
+    private String text = "";
 
-    public ThenLogModel(ThenLog then, Boolean isNew) {
-        super(then, isNew);
+    public ThenLogModel(ProtocolType protocolType, ThenLog then, Boolean isNew) {
+        super(protocolType, then, isNew);
         text = VariableString.toString(then.getText(), text);
     }
 
@@ -47,6 +48,11 @@ public class ThenLogModel extends ThenModel<ThenLogModel, ThenLog> {
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(text);
     }
 
     @Override

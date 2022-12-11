@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -10,7 +11,10 @@ import java.util.Map;
 
 public abstract class RuleOperationContainerComponent extends JPanel {
 
-    public RuleOperationContainerComponent() {
+    private final ProtocolType protocolType;
+
+    public RuleOperationContainerComponent(ProtocolType protocolType) {
+        this.protocolType = protocolType;
         initComponent();
     }
 
@@ -29,7 +33,7 @@ public abstract class RuleOperationContainerComponent extends JPanel {
 
     private Component getComponent(RuleOperationModel<?,?> model) {
         Class<?> componentClass = getComponentMap().get(model.getType());
-        return (Component)ObjectUtils.construct(componentClass, model);
+        return (Component)ObjectUtils.construct(componentClass, protocolType, model);
     }
     
     protected abstract Map<RuleOperationModelType<?,?>, Class<?>> getComponentMap();

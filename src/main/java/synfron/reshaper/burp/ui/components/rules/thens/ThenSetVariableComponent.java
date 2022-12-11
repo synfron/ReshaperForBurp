@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSetVariable;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetVariableModel;
@@ -15,13 +16,13 @@ public class ThenSetVariableComponent extends ThenSetComponent<ThenSetVariableMo
     private JComboBox<VariableSource> targetSource;
     private JTextField variableName;
 
-    public ThenSetVariableComponent(ThenSetVariableModel then) {
-        super(then);
+    public ThenSetVariableComponent(ProtocolType protocolType, ThenSetVariableModel then) {
+        super(protocolType, then);
     }
 
     @Override
     protected List<Component> getExtendedComponents() {
-        targetSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        targetSource = createComboBox(VariableSource.getAllSettables(protocolType));
         variableName = createTextField(true);
 
         targetSource.setSelectedItem(model.getTargetSource());

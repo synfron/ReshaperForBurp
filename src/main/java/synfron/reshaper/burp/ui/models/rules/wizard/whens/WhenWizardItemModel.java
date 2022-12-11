@@ -5,8 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
@@ -22,7 +22,7 @@ public class WhenWizardItemModel {
     @Getter
     private MessageValue messageValue;
     @Getter
-    private final IEventInfo eventInfo;
+    private final HttpEventInfo eventInfo;
     @Getter
     private Select<String> identifiers = new Select<>(Collections.emptyList(), null);
     @Getter
@@ -35,7 +35,7 @@ public class WhenWizardItemModel {
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
-    public WhenWizardItemModel(MessageValue messageValue, IEventInfo eventInfo) {
+    public WhenWizardItemModel(MessageValue messageValue, HttpEventInfo eventInfo) {
         this.eventInfo = eventInfo;
         setMessageValue(messageValue);
     }
@@ -108,7 +108,7 @@ public class WhenWizardItemModel {
     }
 
     public boolean requiresResponse() {
-        return messageValue.getDataDirection() == DataDirection.Response;
+        return messageValue.getDataDirection() == HttpDataDirection.Response;
     }
 
     public List<String> validate() {

@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
 import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.WhenFromTool;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -10,8 +11,8 @@ public class WhenFromToolModel extends WhenModel<WhenFromToolModel, WhenFromTool
     @Getter
     private BurpTool tool;
 
-    public WhenFromToolModel(WhenFromTool when, Boolean isNew) {
-        super(when, isNew);
+    public WhenFromToolModel(ProtocolType protocolType, WhenFromTool when, Boolean isNew) {
+        super(protocolType, when, isNew);
         tool = when.getTool();
     }
 
@@ -35,6 +36,11 @@ public class WhenFromToolModel extends WhenModel<WhenFromToolModel, WhenFromTool
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return tool.name();
     }
 
     @Override

@@ -6,7 +6,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
@@ -20,7 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class ThenSaveFile extends Then<ThenSaveFile> {
+public class ThenSaveFile extends Then<ThenSaveFile> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
     private VariableString filePath;
     @Getter @Setter
@@ -31,7 +33,7 @@ public class ThenSaveFile extends Then<ThenSaveFile> {
     private FileExistsAction fileExistsAction = FileExistsAction.Overwrite;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = true;
         String filePathValue = null;
         String textValue = null;

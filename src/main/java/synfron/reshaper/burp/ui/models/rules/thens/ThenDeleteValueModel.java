@@ -2,12 +2,14 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
 import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDeleteValue> {
@@ -19,9 +21,9 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
     @Getter
     private DeleteItemPlacement identifierPlacement;
 
-    public ThenDeleteValueModel(ThenDeleteValue then, Boolean isNew) {
-        super(then, isNew);
-        messageValue = then.getMessageValue();
+    public ThenDeleteValueModel(ProtocolType protocolType, ThenDeleteValue then, Boolean isNew) {
+        super(protocolType, then, isNew);
+        messageValue = then.getMessageValue() != null ? then.getMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isDeletable(protocolType)).findFirst().orElse(null);
         identifier = VariableString.toString(then.getIdentifier(), identifier);
         identifierPlacement = then.getIdentifierPlacement();
     }
@@ -67,6 +69,11 @@ public class ThenDeleteValueModel extends ThenModel<ThenDeleteValueModel, ThenDe
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return messageValue.getName();
     }
 
     @Override

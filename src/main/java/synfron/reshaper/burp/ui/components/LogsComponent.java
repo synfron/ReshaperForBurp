@@ -1,7 +1,8 @@
 package synfron.reshaper.burp.ui.components;
 
 import burp.BurpExtender;
-import burp.ITextEditor;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.ui.editor.RawEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +10,7 @@ import java.awt.event.ActionEvent;
 
 public class LogsComponent extends JPanel {
 
-    private final ITextEditor textEditor = BurpExtender.getLogTextEditor();
+    private final RawEditor textEditor = BurpExtender.getLogTextEditor();
 
     public LogsComponent() {
         initComponents();
@@ -18,7 +19,7 @@ public class LogsComponent extends JPanel {
     private void initComponents() {
         setLayout(new BorderLayout());
         if (textEditor != null) {
-            add(textEditor.getComponent(), BorderLayout.CENTER);
+            add(textEditor.uiComponent(), BorderLayout.CENTER);
             add(getActionBar(), BorderLayout.PAGE_END);
         }
     }
@@ -35,6 +36,6 @@ public class LogsComponent extends JPanel {
     }
 
     private void onClear(ActionEvent actionEvent) {
-        textEditor.setText(new byte[0]);
+        textEditor.setContents(ByteArray.byteArray(new byte[0]));
     }
 }

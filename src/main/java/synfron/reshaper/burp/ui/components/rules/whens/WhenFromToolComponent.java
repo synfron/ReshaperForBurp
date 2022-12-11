@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
 import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.WhenFromTool;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenFromToolModel;
 
@@ -10,8 +11,8 @@ import java.awt.event.ActionEvent;
 public class WhenFromToolComponent extends WhenComponent<WhenFromToolModel, WhenFromTool> {
     private JComboBox<BurpTool> tool;
 
-    public WhenFromToolComponent(WhenFromToolModel when) {
-        super(when);
+    public WhenFromToolComponent(ProtocolType protocolType, WhenFromToolModel when) {
+        super(protocolType, when);
         initComponent();
     }
 

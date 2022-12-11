@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.rules.whens.WhenContentType;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -10,8 +11,8 @@ public class WhenContentTypeModel extends WhenModel<WhenContentTypeModel, WhenCo
     @Getter
     private ContentType contentType;
 
-    public WhenContentTypeModel(WhenContentType when, Boolean isNew) {
-        super(when, isNew);
+    public WhenContentTypeModel(ProtocolType protocolType, WhenContentType when, Boolean isNew) {
+        super(protocolType, when, isNew);
         contentType = when.getContentType();
     }
 
@@ -35,6 +36,11 @@ public class WhenContentTypeModel extends WhenModel<WhenContentTypeModel, WhenCo
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return contentType.getName();
     }
 
     @Override

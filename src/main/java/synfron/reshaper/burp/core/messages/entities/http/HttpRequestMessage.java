@@ -1,32 +1,37 @@
-package synfron.reshaper.burp.core.messages.entities;
+package synfron.reshaper.burp.core.messages.entities.http;
 
-import burp.BurpExtender;
-import burp.IRequestInfo;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.http.message.headers.HttpHeader;
+import burp.api.montoya.http.message.requests.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.utils.Url;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HttpRequestMessage extends HttpEntity {
 
+    private HttpRequest httpRequest;
     private final byte[] request;
     private final Encoder encoder;
-    private IRequestInfo requestInfo;
     private boolean changed;
     private HttpRequestStatusLine statusLine;
     private HttpHeaders headers;
     private HttpBody body;
+    private boolean initialized;
+
+    public HttpRequestMessage(HttpRequest httpRequest, Encoder encoder) {
+        this.httpRequest = httpRequest;
+        this.request = httpRequest != null ? httpRequest.asBytes().getBytes() : new byte[0];
+        this.encoder = encoder;
+    }
 
     public HttpRequestMessage(byte[] request, Encoder encoder) {
-        this.request = request != null ? request : new byte[0];
+        this.request = request;
         this.encoder = encoder;
     }
 
@@ -38,23 +43,27 @@ public class HttpRequestMessage extends HttpEntity {
                 (body != null && body.isChanged());
     }
 
-    private IRequestInfo getRequestInfo() {
-        if (requestInfo == null) {
-            requestInfo = BurpExtender.getCallbacks().getHelpers().analyzeRequest(request);
+    private void initialize() {
+        if (!initialized) {
+            if (httpRequest == null) {
+                httpRequest = HttpRequest.httpRequest(ByteArray.byteArray(request));
+            }
             if (!encoder.isUseDefault() && encoder.isAutoSet() && !getContentType().isTextBased()) {
                 encoder.setEncoding("default", true);
             }
+            initialized = true;
         }
-        return requestInfo;
     }
 
     public ContentType getContentType() {
-        return ContentType.get(getRequestInfo().getContentType());
+        initialize();
+        return ContentType.get(httpRequest.contentType());
     }
 
     public HttpRequestStatusLine getStatusLine() {
         if (statusLine == null) {
-            statusLine = new HttpRequestStatusLine(getRequestInfo().getHeaders().stream().findFirst().orElse(""));
+            initialize();
+            statusLine = new HttpRequestStatusLine(httpRequest.headers().stream().map(HttpHeader::toString).findFirst().orElse(""));
         }
         return statusLine;
     }
@@ -66,7 +75,7 @@ public class HttpRequestMessage extends HttpEntity {
 
     public HttpHeaders getHeaders() {
         if (headers == null) {
-            headers = new HttpRequestHeaders(getRequestInfo().getHeaders().stream().skip(1).collect(Collectors.toList()));
+            headers = new HttpRequestHeaders(httpRequest.headers().stream().map(HttpHeader::toString).skip(1).collect(Collectors.toList()));
         }
         return headers;
     }
@@ -80,7 +89,7 @@ public class HttpRequestMessage extends HttpEntity {
 
     public HttpBody getBody() {
         if (this.body == null) {
-            byte[] body = Arrays.copyOfRange(request, getRequestInfo().getBodyOffset(), request.length);
+            byte[] body = httpRequest.body().getBytes();
             this.body = new HttpBody(body, encoder);
         }
         return this.body;
@@ -92,15 +101,10 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     public void setUrl(String urlStr) {
-        try {
-            URL url = new URL(urlStr);
-            setUrl(url);
-        } catch (MalformedURLException e) {
-            throw new WrappedException(e);
-        }
+        setUrl(new Url(urlStr));
     }
 
-    public void setUrl(URL url) {
+    public void setUrl(Url url) {
         getStatusLine().setUrl(url.getFile().startsWith("/") ? url.getFile() : "/" + url.getFile());
         getHeaders().setHeader("Host", url.getAuthority(), SetItemPlacement.Only);
     }
@@ -108,18 +112,19 @@ public class HttpRequestMessage extends HttpEntity {
     public byte[] getValue() {
         return !isChanged() ?
                 getAdjustedRequest(request) :
-                BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
-                        Stream.concat(Stream.of(getStatusLine().getValue()), getHeaders().getValue().stream()).collect(Collectors.toList()),
-                        getBody().getValue()
-                );
+                asHttpRequest().asBytes().getBytes();
+    }
+
+    public HttpRequest asHttpRequest() {
+        return HttpRequest.httpRequest(
+                null,
+                Stream.concat(Stream.of(getStatusLine().getValue()), getHeaders().getValue().stream()).collect(Collectors.toList()),
+                ByteArray.byteArray(getBody().getValue())
+        );
     }
 
     private byte[] getAdjustedRequest(byte[] request) {
-        IRequestInfo requestInfo = BurpExtender.getCallbacks().getHelpers().analyzeRequest(request);
-        return BurpExtender.getCallbacks().getHelpers().buildHttpMessage(
-                CollectionUtils.splitNewLines(requestInfo.getHeaders()),
-                Arrays.copyOfRange(request, requestInfo.getBodyOffset(), request.length)
-        );
+       return HttpRequest.httpRequest(ByteArray.byteArray(request)).asBytes().getBytes();
     }
 
     public String getText() {
