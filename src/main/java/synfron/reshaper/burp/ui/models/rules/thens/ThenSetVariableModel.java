@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSetVariable;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
@@ -18,8 +19,8 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
     @Getter
     private String variableName;
 
-    public ThenSetVariableModel(ThenSetVariable then, Boolean isNew) {
-        super(then, isNew);
+    public ThenSetVariableModel(ProtocolType protocolType, ThenSetVariable then, Boolean isNew) {
+        super(protocolType, then, isNew);
         targetSource = then.getTargetSource();
         variableName = VariableString.toString(then.getVariableName(), variableName);
         VariableCreatorRegistry.register(this);
@@ -61,6 +62,11 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return VariableSourceEntry.getShortTag(targetSource, variableName);
     }
 
     @Override

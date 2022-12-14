@@ -1,20 +1,21 @@
 package synfron.reshaper.burp.core.rules.thens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.vars.VariableString;
 
-public class ThenSetEncoding extends Then<ThenSetEncoding> {
+public class ThenSetEncoding extends Then<ThenSetEncoding> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter
     @Setter
     private VariableString encoding;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = false;
         String encodingValue = encoding.getText(eventInfo);
         try {

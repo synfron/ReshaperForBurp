@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenSetEncoding;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetEncodingModel;
@@ -10,8 +11,8 @@ import java.awt.event.ActionEvent;
 public class ThenSetEncodingComponent extends ThenComponent<ThenSetEncodingModel, ThenSetEncoding> {
     private JComboBox<String> encoding;
 
-    public ThenSetEncodingComponent(ThenSetEncodingModel then) {
-        super(then);
+    public ThenSetEncodingComponent(ProtocolType protocolType, ThenSetEncodingModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

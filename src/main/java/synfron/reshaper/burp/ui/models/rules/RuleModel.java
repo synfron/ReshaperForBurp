@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
@@ -26,36 +27,52 @@ public class RuleModel {
     @Getter
     private boolean autoRun;
     @Getter
+    private boolean isNew;
+    @Getter
     private String name;
     @Getter
     private final List<WhenModel<?,?>> whens;
     @Getter
     private final List<ThenModel<?,?>> thens;
     @Getter
+    private boolean diagnosticsEnabled;
+    @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     private final IEventListener<PropertyChangedArgs> ruleOperationChangedListener = this::onRuleOperationChanged;
+    private final IEventListener<PropertyChangedArgs> ruleChangedListener = this::onRuleChanged;
 
-    public RuleModel(Rule rule) {
-        this(rule, false);
+    public RuleModel(ProtocolType protocolType, Rule rule) {
+        this(protocolType, rule, false);
     }
 
-    public RuleModel(Rule rule, boolean isNew) {
+    public RuleModel(ProtocolType protocolType, Rule rule, boolean isNew) {
+        this.isNew = isNew;
         this.rule = rule;
         this.whens = Stream.of(rule.getWhens())
-                .map(when -> WhenModel.getModel(when).withListener(ruleOperationChangedListener))
+                .map(when -> WhenModel.getModel(protocolType, when).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
         this.thens = Stream.of(rule.getThens())
-                .map(then -> ThenModel.getModel(then).withListener(ruleOperationChangedListener))
+                .map(then -> ThenModel.getModel(protocolType, then).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
         this.name = rule.getName();
         this.enabled = rule.isEnabled();
         this.autoRun = rule.isAutoRun();
+        this.diagnosticsEnabled = rule.isDiagnosticsEnabled();
         this.saved = !isNew;
+
+        rule.withListener(ruleChangedListener);
     }
 
     private void onRuleOperationChanged(PropertyChangedArgs args) {
         if (args.getName().equals("saved") && !((boolean) args.getValue())) {
             setSaved(false);
+        }
+    }
+
+    private void onRuleChanged(PropertyChangedArgs args) {
+        if (args.getName().equals("diagnosticsEnabled")) {
+            diagnosticsEnabled = rule.isDiagnosticsEnabled();
+            propertyChangedEvent.invoke(new PropertyChangedArgs(this, "diagnosticsEnabled", diagnosticsEnabled));
         }
     }
 
@@ -87,6 +104,7 @@ public class RuleModel {
     public void setSaved(boolean saved) {
         if (saved != this.saved) {
             this.saved = saved;
+            this.isNew = !saved && this.isNew;
             propertyChangedEvent.invoke(new PropertyChangedArgs(this, "saved", saved));
         }
     }
@@ -109,8 +127,7 @@ public class RuleModel {
         errors.addAll(thens.stream()
                 .flatMap(model -> model.validate().stream()
                         .map(error -> String.format("%s: %s", model.getRuleOperation().getType().getName(), error))
-                )
-                .collect(Collectors.toList())
+                ).collect(Collectors.toList())
         );
         return errors;
     }
@@ -143,6 +160,6 @@ public class RuleModel {
 
     @Override
     public String toString() {
-        return StringUtils.defaultIfEmpty(name, "untitled") + (saved ? "" : " *");
+        return StringUtils.defaultIfEmpty(name, "untitled") + (saved ? "" : " *") + (diagnosticsEnabled ? " (Debug)" : "");
     }
 }

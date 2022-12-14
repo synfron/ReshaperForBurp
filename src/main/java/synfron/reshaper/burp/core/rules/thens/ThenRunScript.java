@@ -2,20 +2,22 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.script.Dispatcher;
 import synfron.reshaper.burp.core.rules.thens.entities.script.Environment;
 
 
-public class ThenRunScript extends Then<ThenRunScript> {
+public class ThenRunScript extends Then<ThenRunScript> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
     private String script;
     @Getter @Setter
     private int maxExecutionSeconds = 10;
 
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = false;
         RuleResponse ruleResponse = RuleResponse.Continue;
         try {

@@ -61,17 +61,17 @@ public class MimeType {
         return String.join(", ", names);
     }
 
-    public static MimeType get(String name) {
-        return switch (name.toLowerCase()) {
-            case "html" -> Html;
-            case "script" -> Script;
-            case "css" -> Css;
-            case "json" -> Json;
-            case "svg" -> Svg;
-            case "xml" -> OtherXml;
-            case "text" -> OtherText;
-            case "image", "jpeg", "png", "gif", "bmp" -> Image;
-            case "app" -> OtherBinary;
+    public static MimeType get(burp.api.montoya.http.MimeType mimeType) {
+        return switch (mimeType) {
+            case HTML -> Html;
+            case SCRIPT -> Script;
+            case CSS -> Css;
+            case JSON -> Json;
+            case IMAGE_SVG_XML -> Svg;
+            case XML -> OtherXml;
+            case PLAIN_TEXT, YAML, RTF -> OtherText;
+            case IMAGE_UNKNOWN, IMAGE_JPEG, IMAGE_PNG, IMAGE_GIF, IMAGE_BMP, IMAGE_TIFF -> Image;
+            case APPLICATION_FLASH, APPLICATION_UNKNOWN, LEGACY_SER_AMF, SOUND, VIDEO -> OtherBinary;
             default -> Unknown;
         };
     }

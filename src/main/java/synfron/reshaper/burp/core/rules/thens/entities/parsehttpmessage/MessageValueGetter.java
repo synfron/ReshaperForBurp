@@ -1,10 +1,9 @@
 package synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage;
 
 import lombok.Data;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -20,7 +19,7 @@ public class MessageValueGetter implements Serializable {
 
     public MessageValueGetter() {}
 
-    public MessageValueGetter(DataDirection dataDirection) {
-        sourceMessageValue = dataDirection == DataDirection.Request ? MessageValue.HttpRequestBody : MessageValue.HttpResponseBody;
+    public MessageValueGetter(HttpDataDirection dataDirection) {
+        sourceMessageValue = dataDirection == HttpDataDirection.Request ? MessageValue.HttpRequestBody : MessageValue.HttpResponseBody;
     }
 }

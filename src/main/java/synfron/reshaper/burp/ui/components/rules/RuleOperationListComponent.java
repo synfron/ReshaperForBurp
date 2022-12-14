@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
@@ -14,9 +15,11 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,?>> extends JPanel implements IFormComponent {
+    protected final ProtocolType protocolType;
     protected final RuleModel model;
     protected JList<T> operationsList;
     protected DefaultListModel<T> operationsListModel;
@@ -25,7 +28,8 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private RuleOperationContainerComponent ruleOperationContainer;
     private final IEventListener<PropertyChangedArgs> ruleOperationChangedListener = this::onRuleOperationChanged;
 
-    public RuleOperationListComponent(RuleModel model) {
+    public RuleOperationListComponent(ProtocolType protocolType, RuleModel model) {
+        this.protocolType = protocolType;
         this.model = model;
         setModelChangedListeners();
         initComponent();
@@ -118,7 +122,9 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private Component getAddOperation() {
         JPanel container = new JPanel();
 
-        operationSelector = createComboBox(getRuleOperationModelTypes().toArray(new RuleOperationModelType<?,?>[0]));
+        operationSelector = createComboBox(getRuleOperationModelTypes().stream()
+                .sorted(Comparator.comparing(RuleOperationModelType::getName))
+                .toArray(RuleOperationModelType[]::new));
         JButton add = new JButton("Add");
 
         add.addActionListener(this::onAdd);

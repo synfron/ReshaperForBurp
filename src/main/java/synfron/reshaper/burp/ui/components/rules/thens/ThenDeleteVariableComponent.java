@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteVariable;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDeleteVariableModel;
@@ -12,13 +13,13 @@ public class ThenDeleteVariableComponent extends ThenComponent<ThenDeleteVariabl
     private JComboBox<VariableSource> targetSource;
     private JTextField variableName;
 
-    public ThenDeleteVariableComponent(ThenDeleteVariableModel then) {
-        super(then);
+    public ThenDeleteVariableComponent(ProtocolType protocolType, ThenDeleteVariableModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
-        targetSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        targetSource = createComboBox(VariableSource.getAllSettables(protocolType));
         variableName = createTextField(true);
 
         targetSource.setSelectedItem(model.getTargetSource());

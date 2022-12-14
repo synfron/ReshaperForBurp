@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
 import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
@@ -15,8 +16,8 @@ public class ThenSaveFileComponent extends ThenComponent<ThenSaveFileModel, Then
     private JComboBox<String> encoding;
     private JComboBox<FileExistsAction> fileExistsAction;
 
-    public ThenSaveFileComponent(ThenSaveFileModel then) {
-        super(then);
+    public ThenSaveFileComponent(ProtocolType protocolType, ThenSaveFileModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

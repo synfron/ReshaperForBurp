@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.WhenProxyName;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -12,8 +13,8 @@ public class WhenProxyNameModel extends WhenModel<WhenProxyNameModel, WhenProxyN
     @Getter
     private String proxyName;
 
-    public WhenProxyNameModel(WhenProxyName when, Boolean isNew) {
-        super(when, isNew);
+    public WhenProxyNameModel(ProtocolType protocolType, WhenProxyName when, Boolean isNew) {
+        super(protocolType, when, isNew);
         proxyName = when.getProxyName();
     }
 
@@ -45,6 +46,11 @@ public class WhenProxyNameModel extends WhenModel<WhenProxyNameModel, WhenProxyN
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(proxyName);
     }
 
     @Override

@@ -3,20 +3,40 @@ package synfron.reshaper.burp.core.utils;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import lombok.Getter;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.stream.Stream;
 
 public class Serializer {
+    @Getter
     private static ObjectMapper objectMapper;
+    private static JsonFactory jsonFactory = new JsonFactory();
+
+    static {
+        VariableStringSerializer variableStringSerializer = new VariableStringSerializer();
+        VariableStringDeserializer variableStringDeserializer = new VariableStringDeserializer();
+        ObjectMapper objectMapper = configureMapper(new JsonSerializer[]{ variableStringSerializer }, new JsonDeserializer[] { variableStringDeserializer });
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(VariableString.class, variableStringSerializer);
+        module.addDeserializer(VariableString.class, variableStringDeserializer);
+        objectMapper.registerModule(module);
+
+        Serializer.objectMapper = objectMapper;
+    }
 
     private static ObjectMapper configureMapper(JsonDeserializer<?>[] deserializers) {
         return configureMapper(new JsonSerializer[0], deserializers);
@@ -31,7 +51,8 @@ public class Serializer {
     }
 
     private static ObjectMapper configureMapper(JsonSerializer<?>[] serializers, JsonDeserializer<?>[] deserializers) {
-        JsonMapper.Builder builder = JsonMapper.builder();
+        JsonMapper.Builder builder = JsonMapper.builder(YAMLFactory.builder()
+                .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER).build());
         builder.serializationInclusion(JsonInclude.Include.NON_NULL);
         builder.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
         builder.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -57,18 +78,6 @@ public class Serializer {
         module.addDeserializer(type, (JsonDeserializer<? extends T>)deserializer);
     }
 
-    private static ObjectMapper getObjectMapper() {
-        if (objectMapper == null) {
-            ObjectMapper objectMapper = configureMapper(new JsonDeserializer[] { new VariableStringDeserializer() });
-            SimpleModule module = new SimpleModule();
-            module.addDeserializer(VariableString.class, new VariableStringDeserializer());
-            objectMapper.registerModule(module);
-
-            Serializer.objectMapper = objectMapper;
-        }
-        return objectMapper;
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> T copy(T source) {
         return deserialize(serialize(source, false), (Class<T>)source.getClass());
@@ -76,9 +85,22 @@ public class Serializer {
 
     public static String serialize(Object value, boolean prettyPrint) {
         try  {
+            StringWriter stringWriter = new StringWriter();
+            (prettyPrint ?
+                    objectMapper.writer().withDefaultPrettyPrinter() :
+                    objectMapper.writer()
+            ).writeValue(jsonFactory.createGenerator(stringWriter), value);
+            return stringWriter.toString();
+        } catch (IOException e) {
+            throw new WrappedException(e);
+        }
+    }
+
+    public static String serializeYaml(Object value, boolean prettyPrint) {
+        try  {
             return (prettyPrint ?
-                    getObjectMapper().writer().withDefaultPrettyPrinter() :
-                    getObjectMapper().writer()
+                    objectMapper.writer().withDefaultPrettyPrinter() :
+                    objectMapper.writer()
             ).writeValueAsString(value);
         } catch (IOException e) {
             throw new WrappedException(e);
@@ -90,7 +112,7 @@ public class Serializer {
             return null;
         }
         try {
-            return getObjectMapper().readValue(json, typeReference);
+            return objectMapper.readValue(json, typeReference);
         } catch (IOException e) {
             throw new WrappedException(e);
         }
@@ -101,7 +123,7 @@ public class Serializer {
             return null;
         }
         try {
-            return getObjectMapper().readValue(json, clazz);
+            return objectMapper.readValue(json, clazz);
         } catch (IOException e) {
             throw new WrappedException(e);
         }
@@ -119,6 +141,22 @@ public class Serializer {
             return (parser.currentTokenId() == JsonTokenId.ID_STRING) ?
                     VariableString.getAsVariableString(parser.getText()) :
                     objectMapper.readValue(parser, VariableString.class);
+        }
+    }
+
+    private static class VariableStringSerializer extends JsonSerializer<VariableString> {
+        @Override
+        public Class<VariableString> handledType() {
+            return VariableString.class;
+        }
+
+        @Override
+        public void serialize(VariableString value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (value == null) {
+                gen.writeNull();
+            } else {
+                gen.writeString(value.toString());
+            }
         }
     }
 }

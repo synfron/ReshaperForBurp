@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunScript;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -15,8 +16,8 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
     @Getter
     private String maxExecutionSeconds;
 
-    public ThenRunScriptModel(ThenRunScript then, Boolean isNew) {
-        super(then, isNew);
+    public ThenRunScriptModel(ProtocolType protocolType, ThenRunScript then, Boolean isNew) {
+        super(protocolType, then, isNew);
         script = then.getScript();
         maxExecutionSeconds = TextUtils.toString(then.getMaxExecutionSeconds());
     }
@@ -59,6 +60,11 @@ public class ThenRunScriptModel extends ThenModel<ThenRunScriptModel, ThenRunScr
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(script);
     }
 
     @Override

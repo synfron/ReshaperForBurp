@@ -4,15 +4,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
-import synfron.reshaper.burp.core.vars.*;
+import synfron.reshaper.burp.core.vars.Variable;
+import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.Variables;
 
 import java.util.Arrays;
 
-public class ThenEvaluate extends Then<ThenEvaluate> {
+public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter
     @Setter
     private VariableString x;
@@ -28,18 +33,18 @@ public class ThenEvaluate extends Then<ThenEvaluate> {
     private VariableString destinationVariableName;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = true;
         String result = null;
+        Double value1 = null;
+        Double value2 = null;
         try {
-            Variables variables = switch (destinationVariableSource) {
-                case Event -> eventInfo.getVariables();
-                case Global -> GlobalVariables.get();
-                default -> null;
-            };
+            Variables variables = getVariables(destinationVariableSource, eventInfo);
             if (variables != null) {
                 Variable variable = variables.add(destinationVariableName.getText(eventInfo));
-                result = evaluate(eventInfo);
+                value1 = operation.getInputs() > 0 ? VariableString.getDoubleOrDefault(eventInfo, x, null) : null;
+                value2 = operation.getInputs() > 1 ? VariableString.getDoubleOrDefault(eventInfo, y, null) : null;
+                result = evaluate(value1, value2);
                 if (result != null) {
                     variable.setValue(result);
                 }
@@ -47,8 +52,8 @@ public class ThenEvaluate extends Then<ThenEvaluate> {
             hasError = result == null;
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                    Pair.of("X", VariableString.getTextOrDefault(eventInfo, x, null)),
-                    Pair.of("Y", VariableString.getTextOrDefault(eventInfo, y, null)),
+                    Pair.of("X", value1),
+                    Pair.of("Y", value2),
                     Pair.of("destinationVariableSource", destinationVariableSource),
                     Pair.of("destinationVariableName", VariableString.getTextOrDefault(eventInfo, destinationVariableName, null)),
                     Pair.of("result", result)
@@ -57,9 +62,7 @@ public class ThenEvaluate extends Then<ThenEvaluate> {
         return RuleResponse.Continue;
     }
 
-    private String evaluate(IEventInfo eventInfo) {
-        Double value1 = operation.getInputs() > 0 ? VariableString.getDoubleOrDefault(eventInfo, x, null) : null;
-        Double value2 = operation.getInputs() > 1 ? VariableString.getDoubleOrDefault(eventInfo, y, null) : null;
+    private String evaluate(Double value1, Double value2) {
         String result = null;
         if ((operation.getInputs() == 1 && value1 != null)
                 || (operation.getInputs() == 2 && value1 != null && value2 != null)) {

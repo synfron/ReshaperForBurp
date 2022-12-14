@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDrop;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDropModel;
 
@@ -9,8 +10,8 @@ import java.awt.event.ActionEvent;
 public class ThenDropComponent extends ThenComponent<ThenDropModel, ThenDrop> {
     private JCheckBox dropMessage;
 
-    public ThenDropComponent(ThenDropModel then) {
-        super(then);
+    public ThenDropComponent(ProtocolType protocolType, ThenDropModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

@@ -1,8 +1,9 @@
 package synfron.reshaper.burp.ui.utils;
 
-import burp.IContextMenuFactory;
-import burp.IContextMenuInvocation;
-import synfron.reshaper.burp.core.messages.EventInfo;
+import burp.api.montoya.http.message.HttpRequestResponse;
+import burp.api.montoya.ui.contextmenu.ContextMenuEvent;
+import burp.api.montoya.ui.contextmenu.ContextMenuItemsProvider;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.ui.components.rules.wizard.whens.WhenWizardOptionPane;
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
@@ -12,17 +13,18 @@ import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.List;
 
-public class ContextMenuHandler implements IContextMenuFactory {
+public class ContextMenuHandler implements ContextMenuItemsProvider {
 
     @Override
-    public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
+    public List<JMenuItem> provideMenuItems(ContextMenuEvent event) {
         JMenuItem menuItem = new JMenuItem("Create Rule");
-        menuItem.addActionListener(actionEvent -> onCreateRule(invocation, actionEvent));
-        return invocation.getSelectedMessages().length == 1 ? Collections.singletonList(menuItem) : Collections.emptyList();
+        menuItem.addActionListener(actionEvent -> onCreateRule(event.selectedRequestResponses(), actionEvent));
+        return event.selectedRequestResponses().size() == 1 ? Collections.singletonList(menuItem) : Collections.emptyList();
     }
 
-    private void onCreateRule(IContextMenuInvocation invocation, ActionEvent actionEvent) {
-        openWhenWizard(new WhenWizardModel(new EventInfo(null, null, invocation.getSelectedMessages()[0])));
+    private void onCreateRule(List<HttpRequestResponse> selectedItems, ActionEvent actionEvent) {
+        HttpRequestResponse httpRequestResponse = selectedItems.get(0);
+        openWhenWizard(new WhenWizardModel(new HttpEventInfo(null, null, httpRequestResponse.httpRequest(), httpRequestResponse.httpResponse(), httpRequestResponse.messageAnnotations())));
     }
 
     private void openWhenWizard(WhenWizardModel model) {

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenEvaluate;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
 import synfron.reshaper.burp.core.vars.VariableSource;
@@ -17,8 +18,8 @@ public class ThenEvaluateComponent extends ThenComponent<ThenEvaluateModel, Then
     private JComboBox<VariableSource> destinationVariableSource;
     private JTextField destinationVariableName;
 
-    public ThenEvaluateComponent(ThenEvaluateModel then) {
-        super(then);
+    public ThenEvaluateComponent(ProtocolType protocolType, ThenEvaluateModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
@@ -26,7 +27,7 @@ public class ThenEvaluateComponent extends ThenComponent<ThenEvaluateModel, Then
         x = createTextField(true);
         operation = createComboBox(Operation.values());
         y = createTextField(true);
-        destinationVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        destinationVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         destinationVariableName = createTextField(true);
 
         x.setText(model.getX());

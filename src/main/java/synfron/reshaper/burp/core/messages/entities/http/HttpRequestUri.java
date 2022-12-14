@@ -1,9 +1,8 @@
-package synfron.reshaper.burp.core.messages.entities;
+package synfron.reshaper.burp.core.messages.entities.http;
 
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import synfron.reshaper.burp.core.exceptions.WrappedException;

@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
@@ -12,13 +14,13 @@ import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.Arrays;
 
-public class ThenDelay extends Then<ThenDelay> {
+public class ThenDelay extends Then<ThenDelay> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter
     @Setter
     private VariableString delay;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = false;
         try {
             Thread.sleep(ObjectUtils.defaultIfNull(delay.getInt(eventInfo), 0));

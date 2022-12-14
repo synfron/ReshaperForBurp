@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenEvaluate;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
 import synfron.reshaper.burp.core.vars.VariableSource;
@@ -25,8 +26,8 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     @Getter
     private String destinationVariableName;
 
-    public ThenEvaluateModel(ThenEvaluate then, Boolean isNew) {
-        super(then, isNew);
+    public ThenEvaluateModel(ProtocolType protocolType, ThenEvaluate then, Boolean isNew) {
+        super(protocolType, then, isNew);
         this.x = VariableString.toString(then.getX(), x);
         this.operation = then.getOperation();
         this.y = VariableString.toString(then.getY(), y);
@@ -96,6 +97,11 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return operation.getName();
     }
 
     @Override

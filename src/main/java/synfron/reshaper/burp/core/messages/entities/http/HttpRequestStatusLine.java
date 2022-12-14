@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.core.messages.entities;
+package synfron.reshaper.burp.core.messages.entities.http;
 
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.utils.CollectionUtils;

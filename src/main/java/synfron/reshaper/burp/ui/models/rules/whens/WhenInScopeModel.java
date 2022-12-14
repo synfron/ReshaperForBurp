@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.WhenInScope;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -13,8 +13,8 @@ public class WhenInScopeModel extends WhenModel<WhenInScopeModel, WhenInScope> {
     @Getter
     private String url;
 
-    public WhenInScopeModel(WhenInScope when, Boolean isNew) {
-        super(when, isNew);
+    public WhenInScopeModel(ProtocolType protocolType, WhenInScope when, Boolean isNew) {
+        super(protocolType, when, isNew);
         url = VariableString.toString(when.getUrl(), url);
     }
 
@@ -42,6 +42,11 @@ public class WhenInScopeModel extends WhenModel<WhenInScopeModel, WhenInScope> {
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(url);
     }
 
     @Override

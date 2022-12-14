@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.core.messages.entities;
+package synfron.reshaper.burp.core.messages.entities.http;
 
 import lombok.Getter;
 import lombok.Setter;

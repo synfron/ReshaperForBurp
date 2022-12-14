@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
@@ -10,6 +11,7 @@ import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMatchesText> {
@@ -18,6 +20,8 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     private String sourceText = "";
     @Getter
     private String matchText = "";
+    @Getter
+    private boolean ignoreCase;
     @Getter
     private MessageValue messageValue;
     @Getter
@@ -33,11 +37,12 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     @Getter
     public boolean useMessageValue;
 
-    public WhenMatchesTextModel(WhenMatchesText when, Boolean isNew) {
-        super(when, isNew);
+    public WhenMatchesTextModel(ProtocolType protocolType, WhenMatchesText when, Boolean isNew) {
+        super(protocolType, when, isNew);
         sourceText = VariableString.toString(when.getSourceText(), sourceText);
+        ignoreCase = when.isIgnoreCase();
         matchText = VariableString.toString(when.getMatchText(), matchText);
-        messageValue = when.getMessageValue();
+        messageValue = when.getMessageValue() != null ? when.getMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isGettable(protocolType)).findFirst().orElse(null);
         identifier = VariableString.toString(when.getIdentifier(), identifier);
         identifierPlacement = when.getIdentifierPlacement();
         messageValueType = when.getMessageValueType();
@@ -64,6 +69,11 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     public void setMatchText(String matchText) {
         this.matchText = matchText;
         propertyChanged("matchText", matchText);
+    }
+
+    public void setIgnoreCase(boolean ignoreCase) {
+        this.ignoreCase = ignoreCase;
+        propertyChanged("ignoreCase", ignoreCase);
     }
 
     public void setMessageValue(MessageValue messageValue) {
@@ -108,6 +118,7 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
         ruleOperation.setIdentifierPlacement(identifierPlacement);
         ruleOperation.setSourceText(VariableString.getAsVariableString(sourceText));
         ruleOperation.setMatchText(VariableString.getAsVariableString(matchText));
+        ruleOperation.setIgnoreCase(ignoreCase);
         ruleOperation.setMessageValue(messageValue);
         ruleOperation.setMessageValueType(messageValueType);
         ruleOperation.setMessageValuePath(VariableString.getAsVariableString(messageValuePath));
@@ -123,6 +134,11 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(matchText);
     }
 
     @Override

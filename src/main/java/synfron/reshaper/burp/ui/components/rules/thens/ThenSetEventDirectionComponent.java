@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.rules.thens.ThenSetEventDirection;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSetEventDirectionModel;
 
@@ -8,15 +9,15 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 public class ThenSetEventDirectionComponent extends ThenComponent<ThenSetEventDirectionModel, ThenSetEventDirection> {
-    private JComboBox<DataDirection> dataDirection;
+    private JComboBox<HttpDataDirection> dataDirection;
 
-    public ThenSetEventDirectionComponent(ThenSetEventDirectionModel then) {
-        super(then);
+    public ThenSetEventDirectionComponent(ProtocolType protocolType, ThenSetEventDirectionModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
-        dataDirection = createComboBox(DataDirection.values());
+        dataDirection = createComboBox(HttpDataDirection.values());
 
         dataDirection.setSelectedItem(model.getDataDirection());
 
@@ -27,6 +28,6 @@ public class ThenSetEventDirectionComponent extends ThenComponent<ThenSetEventDi
     }
 
     private void onSetEventDirectionChanged(ActionEvent actionEvent) {
-        model.setDataDirection((DataDirection) dataDirection.getSelectedItem());
+        model.setDataDirection((HttpDataDirection) dataDirection.getSelectedItem());
     }
 }

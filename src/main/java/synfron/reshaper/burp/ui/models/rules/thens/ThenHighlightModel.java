@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenHighlight;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
@@ -9,8 +10,8 @@ public class ThenHighlightModel extends ThenModel<ThenHighlightModel, ThenHighli
     @Getter
     private ThenHighlight.HighlightColor color;
 
-    public ThenHighlightModel(ThenHighlight then, Boolean isNew) {
-        super(then, isNew);
+    public ThenHighlightModel(ProtocolType protocolType, ThenHighlight then, Boolean isNew) {
+        super(protocolType, then, isNew);
         color = then.getColor();
     }
 
@@ -35,6 +36,11 @@ public class ThenHighlightModel extends ThenModel<ThenHighlightModel, ThenHighli
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return color.name();
     }
 
     @Override
