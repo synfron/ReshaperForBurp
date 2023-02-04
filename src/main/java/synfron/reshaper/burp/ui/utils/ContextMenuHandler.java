@@ -9,6 +9,7 @@ import synfron.reshaper.burp.ui.components.rules.wizard.whens.WhenWizardOptionPa
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 public class ContextMenuHandler implements ContextMenuItemsProvider {
 
     @Override
-    public List<JMenuItem> provideMenuItems(ContextMenuEvent event) {
+    public List<Component> provideMenuItems(ContextMenuEvent event) {
         JMenuItem menuItem = new JMenuItem("Create Rule");
         menuItem.addActionListener(actionEvent -> onCreateRule(event.selectedRequestResponses(), actionEvent));
         return event.selectedRequestResponses().size() == 1 ? Collections.singletonList(menuItem) : Collections.emptyList();
@@ -24,7 +25,7 @@ public class ContextMenuHandler implements ContextMenuItemsProvider {
 
     private void onCreateRule(List<HttpRequestResponse> selectedItems, ActionEvent actionEvent) {
         HttpRequestResponse httpRequestResponse = selectedItems.get(0);
-        openWhenWizard(new WhenWizardModel(new HttpEventInfo(null, null, httpRequestResponse.httpRequest(), httpRequestResponse.httpResponse(), httpRequestResponse.messageAnnotations())));
+        openWhenWizard(new WhenWizardModel(new HttpEventInfo(null, null, httpRequestResponse.request(), httpRequestResponse.response(), httpRequestResponse.annotations())));
     }
 
     private void openWhenWizard(WhenWizardModel model) {

@@ -92,10 +92,10 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                         ));
                     }
 
-                    HttpResponse httpResponse = BurpExtender.getApi().http().issueRequest(
+                    HttpResponse httpResponse = BurpExtender.getApi().http().sendRequest(
                             newEventInfo.asHttpRequest(),
                             HttpMode.AUTO
-                    ).httpResponse();
+                    ).response();
                     response.set(httpResponse);
                 } catch (Exception e) {
                     Log.get().withMessage("Failure sending request").withException(e).logErr();
@@ -114,7 +114,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                         0;
                 failed = !complete || (failOnErrorStatusCode && (statusCode == 0 || (statusCode >= 400 && statusCode < 600)));
                 if (captureOutput && (!failed || captureAfterFailure)) {
-                    output = response.get() != null ? new HttpResponseMessage(response.get().asBytes().getBytes(), eventInfo.getEncoder()).getText() : "";
+                    output = response.get() != null ? new HttpResponseMessage(response.get().toByteArray().getBytes(), eventInfo.getEncoder()).getText() : "";
                     setVariable(captureVariableSource, eventInfo, captureVariableName, output);
                 }
             }

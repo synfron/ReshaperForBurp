@@ -3,17 +3,15 @@ package synfron.reshaper.burp.core;
 import burp.BurpExtender;
 import burp.api.montoya.core.Annotations;
 import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.core.ToolSource;
 import burp.api.montoya.core.ToolType;
-import burp.api.montoya.http.HttpHandler;
 import burp.api.montoya.http.HttpService;
-import burp.api.montoya.http.RequestResult;
-import burp.api.montoya.http.ResponseResult;
-import burp.api.montoya.http.message.HttpRequestResponse;
+import burp.api.montoya.http.handler.*;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
+import burp.api.montoya.http.sessions.ActionResult;
 import burp.api.montoya.http.sessions.SessionHandlingAction;
-import burp.api.montoya.proxy.*;
+import burp.api.montoya.http.sessions.SessionHandlingActionData;
+import burp.api.montoya.proxy.http.*;
 import lombok.Getter;
 import lombok.Setter;
 import net.jodah.expiringmap.ExpiringMap;
@@ -23,12 +21,12 @@ import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.rules.RulesEngine;
 import synfron.reshaper.burp.core.utils.Log;
+import synfron.reshaper.burp.core.utils.ObjectUtils;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +36,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HttpConnector implements
-        ProxyHttpRequestHandler,
-        ProxyHttpResponseHandler,
-        HttpHandler,
-        SessionHandlingAction
-{
+        SessionHandlingAction,
+        ProxyRequestHandler,
+        ProxyResponseHandler,
+        HttpHandler {
 
     private static final AtomicInteger lastMessageId = new AtomicInteger(1);
     @Getter
@@ -153,7 +150,7 @@ public class HttpConnector implements
                 httpRequest.httpService().port() == serverSocket.getLocalPort() &&
                 httpRequest.httpService().host().equals(serverSocket.getInetAddress().getHostAddress())
         ) {
-            int reshaperId = Integer.parseInt(httpRequest.headers().get(1).value());
+            int reshaperId = Integer.parseInt(httpRequest.headers().get(0).value());
             HttpEventInfo requestEventInfo = continuationMap.remove(reshaperId);
             httpRequest = requestEventInfo.getInitialHttpRequest();
         }
@@ -234,18 +231,20 @@ public class HttpConnector implements
 
     private void sendToSelf(int messageId, HttpEventInfo eventInfo) {
         HttpRequestMessage requestMessage = eventInfo.getHttpRequestMessage();
-        List<String> headers = new ArrayList<>();
-        headers.add(requestMessage.getStatusLine().getValue());
-        headers.add(String.format("%s: %s", "Reshaper-ID", messageId));
-        headers.addAll(requestMessage.getHeaders().getValue());
+        List<String> headers = requestMessage.getHeaders().getValue();
+        headers.add(0, "Reshaper-ID: " + messageId);
+        byte[] modifiedRequest = ObjectUtils.asHttpMessage(
+                requestMessage.getStatusLine().getValue(),
+                headers,
+                requestMessage.getBody().getValue()
+        );
         HttpRequest httpRequest = HttpRequest.httpRequest(
                 HttpService.httpService(
                         serverSocket.getInetAddress().getHostAddress(),
                         serverSocket.getLocalPort(),
                         false
                 ),
-                headers,
-                ByteArray.byteArray(requestMessage.getBody().getValue())
+                ByteArray.byteArray(modifiedRequest)
         );
         continuationMap.put(messageId, eventInfo);
         eventInfo.setHttpRequestOverride(httpRequest);
@@ -257,73 +256,73 @@ public class HttpConnector implements
     }
 
     @Override
-    public RequestResult handleHttpRequest(HttpRequest request, Annotations annotations, ToolSource toolSource) {
-        if (!toolSource.isFromTool(ToolType.PROXY)) {
-            BurpTool burpTool = getBurpToolIfEnabled(toolSource.toolType());
-            if (burpTool != null && burpTool != BurpTool.Proxy) {
-                HttpEventInfo eventInfo = asEventInfo(true, burpTool, request, null, annotations);
-                processEvent(true, eventInfo, false);
-                return RequestResult.requestResult(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
-            }
+    public ProxyRequestReceivedAction handleRequestReceived(InterceptedRequest interceptedRequest) {
+        if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
+            HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Proxy, interceptedRequest, null, interceptedRequest.annotations(), interceptedRequest.listenerInterface(), interceptedRequest.sourceIpAddress());
+            return processEvent(true, eventInfo, true).asProxyRequestAction();
         }
-        return RequestResult.requestResult(request, annotations);
+        else {
+            return ProxyRequestReceivedAction.continueWith(interceptedRequest, interceptedRequest.annotations());
+        }
     }
 
     @Override
-    public ResponseResult handleHttpResponse(HttpResponse response, HttpRequest initiatingRequest, Annotations annotations, ToolSource toolSource) {
-        if (toolSource.toolType() != ToolType.PROXY) {
-            BurpTool burpTool = getBurpToolIfEnabled(toolSource.toolType());
+    public RequestToBeSentAction handleHttpRequestToBeSent(HttpRequestToBeSent requestToBeSent) {
+        if (!requestToBeSent.toolSource().isFromTool(ToolType.PROXY)) {
+            BurpTool burpTool = getBurpToolIfEnabled(requestToBeSent.toolSource().toolType());
             if (burpTool != null && burpTool != BurpTool.Proxy) {
-                HttpEventInfo eventInfo = asEventInfo(false, burpTool, initiatingRequest, response, annotations);
-                processEvent(false, eventInfo, false);
-                return ResponseResult.responseResult(eventInfo.asHttpResponse(), eventInfo.getAnnotations());
+                HttpEventInfo eventInfo = asEventInfo(true, burpTool, requestToBeSent, null, requestToBeSent.annotations());
+                processEvent(true, eventInfo, false);
+                return RequestToBeSentAction.continueWith(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
             }
         }
-        return ResponseResult.responseResult(response, annotations);
+        return RequestToBeSentAction.continueWith(requestToBeSent);
+    }
+
+    @Override
+    public ActionResult performAction(SessionHandlingActionData actionData) {
+        HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Session, actionData.request(), null, actionData.annotations());
+        processEvent(true, eventInfo, false);
+        return ActionResult.actionResult(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
+    }
+
+    @Override
+    public ProxyRequestToBeSentAction handleRequestToBeSent(InterceptedRequest interceptedRequest) {
+        return ProxyRequestToBeSentAction.continueWith(interceptedRequest);
+    }
+
+    @Override
+    public ProxyResponseReceivedAction handleResponseReceived(InterceptedResponse interceptedResponse) {
+        if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
+            HttpEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, interceptedResponse.initiatingRequest(), interceptedResponse, interceptedResponse.annotations());
+            return processEvent(false, eventInfo, true).asProxyResponseAction();
+        }
+        else {
+            return ProxyResponseReceivedAction.continueWith(interceptedResponse);
+        }
+    }
+
+    @Override
+    public ResponseReceivedAction handleHttpResponseReceived(HttpResponseReceived responseReceived) {
+        if (responseReceived.toolSource().toolType() != ToolType.PROXY) {
+            BurpTool burpTool = getBurpToolIfEnabled(responseReceived.toolSource().toolType());
+            if (burpTool != null && burpTool != BurpTool.Proxy) {
+                HttpEventInfo eventInfo = asEventInfo(false, burpTool, responseReceived.initiatingRequest(), responseReceived, responseReceived.annotations());
+                processEvent(false, eventInfo, false);
+                return ResponseReceivedAction.continueWith(eventInfo.asHttpResponse(), eventInfo.getAnnotations());
+            }
+        }
+        return ResponseReceivedAction.continueWith(responseReceived);
+    }
+
+    @Override
+    public ProxyResponseToBeSentAction handleResponseToBeSent(InterceptedResponse interceptedResponse) {
+        return ProxyResponseToBeSentAction.continueWith(interceptedResponse);
     }
 
     @Override
     public String name() {
         return "Reshaper";
-    }
-
-    @Override
-    public RequestResult handle(HttpRequest currentRequest, Annotations annotations, List<HttpRequestResponse> macroRequestResponses) {
-        HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Session, currentRequest, null, annotations);
-        processEvent(true, eventInfo, false);
-        return RequestResult.requestResult(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
-    }
-
-    @Override
-    public RequestInitialInterceptResult handleReceivedRequest(InterceptedHttpRequest interceptedRequest, Annotations annotations) {
-        if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
-            HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Proxy, interceptedRequest, null, annotations, interceptedRequest.listenerInterface(), interceptedRequest.sourceIpAddress());
-            return processEvent(true, eventInfo, true).asRequestInterceptResult();
-        }
-        else {
-            return RequestInitialInterceptResult.followUserRules(interceptedRequest, annotations);
-        }
-    }
-
-    @Override
-    public RequestFinalInterceptResult handleRequestToIssue(InterceptedHttpRequest interceptedRequest, Annotations annotations) {
-        return RequestFinalInterceptResult.continueWith(interceptedRequest, annotations);
-    }
-
-    @Override
-    public ResponseInitialInterceptResult handleReceivedResponse(InterceptedHttpResponse interceptedResponse, HttpRequest initiatingRequest, Annotations annotations) {
-        if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
-            HttpEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, initiatingRequest, interceptedResponse, annotations);
-            return processEvent(false, eventInfo, true).asResponseInterceptResult();
-        }
-        else {
-            return ResponseInitialInterceptResult.followUserRules(interceptedResponse, annotations);
-        }
-    }
-
-    @Override
-    public ResponseFinalInterceptResult handleResponseToReturn(InterceptedHttpResponse interceptedResponse, HttpRequest initiatingRequest, Annotations annotations) {
-        return ResponseFinalInterceptResult.continueWith(interceptedResponse, annotations);
     }
 
     public static class EventResult {
@@ -348,21 +347,21 @@ public class HttpConnector implements
             return eventInfo.getAnnotations();
         }
 
-        public RequestInitialInterceptResult asRequestInterceptResult() {
+        public ProxyRequestReceivedAction asProxyRequestAction() {
             return switch (interceptResponse) {
-                case UserDefined -> RequestInitialInterceptResult.followUserRules(getRequest(), getAnnotations());
-                case Drop -> RequestInitialInterceptResult.drop();
-                case Intercept -> RequestInitialInterceptResult.intercept(getRequest(), getAnnotations());
-                case Disable -> RequestInitialInterceptResult.doNotIntercept(getRequest(), getAnnotations());
+                case UserDefined -> ProxyRequestReceivedAction.continueWith(getRequest(), getAnnotations());
+                case Drop -> ProxyRequestReceivedAction.drop();
+                case Intercept -> ProxyRequestReceivedAction.intercept(getRequest(), getAnnotations());
+                case Disable -> ProxyRequestReceivedAction.doNotIntercept(getRequest(), getAnnotations());
             };
         }
 
-        public ResponseInitialInterceptResult asResponseInterceptResult() {
+        public ProxyResponseReceivedAction asProxyResponseAction() {
             return switch (interceptResponse) {
-                case UserDefined -> ResponseInitialInterceptResult.followUserRules(getResponse(), getAnnotations());
-                case Drop -> ResponseInitialInterceptResult.drop();
-                case Intercept -> ResponseInitialInterceptResult.intercept(getResponse(), getAnnotations());
-                case Disable -> ResponseInitialInterceptResult.doNotIntercept(getResponse(), getAnnotations());
+                case UserDefined -> ProxyResponseReceivedAction.continueWith(getResponse(), getAnnotations());
+                case Drop -> ProxyResponseReceivedAction.drop();
+                case Intercept -> ProxyResponseReceivedAction.intercept(getResponse(), getAnnotations());
+                case Disable -> ProxyResponseReceivedAction.doNotIntercept(getResponse(), getAnnotations());
             };
         }
     }

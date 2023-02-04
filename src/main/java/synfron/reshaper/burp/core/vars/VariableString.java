@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
-import burp.api.montoya.http.message.cookies.Cookie;
+import burp.api.montoya.http.message.Cookie;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -151,7 +151,7 @@ public class VariableString implements Serializable {
         if (annotation != null && eventInfo instanceof HttpEventInfo) {
             HttpEventInfo httpEventInfo = (HttpEventInfo) eventInfo;
             return switch (annotation) {
-                case Comment -> httpEventInfo.getAnnotations().comment();
+                case Comment -> httpEventInfo.getAnnotations().notes();
                 case HighlightColor -> StringUtils.capitalize(httpEventInfo.getAnnotations().highlightColor().name().toLowerCase());
             };
         }

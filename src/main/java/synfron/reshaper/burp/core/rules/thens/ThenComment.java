@@ -19,7 +19,7 @@ public class ThenComment extends Then<ThenComment> implements IHttpRuleOperation
         boolean hasError = true;
         try {
             HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
-            httpEventInfo.setAnnotations(httpEventInfo.getAnnotations().withComment(text.getText(eventInfo)));
+            httpEventInfo.setAnnotations(httpEventInfo.getAnnotations().withNotes(text.getText(eventInfo)));
             hasError = false;
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, VariableString.getTextOrDefault(eventInfo, text, null));

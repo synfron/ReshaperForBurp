@@ -121,7 +121,7 @@ public class HttpEventInfo extends EventInfo {
 
     public HttpRequest asHttpRequest() {
         return httpRequestOverride != null ? httpRequestOverride : (isChanged() || initialHttpRequest == null ?
-                HttpRequest.httpRequest(ByteArray.byteArray(httpRequestMessage.getValue()))
+                httpRequestMessage.asAdjustedHttpRequest()
                         .withService(HttpService.httpService(
                                 destinationAddress,
                                 destinationPort,
