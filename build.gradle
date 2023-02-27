@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.synfron.reshaper.burp'
-version '2.0.1'
+version '2.0.1-next'
 
 targetCompatibility = '17'
 sourceCompatibility = '17'
@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    implementation 'net.portswigger.burp.extensions:montoya-api:1.0.0'
+    implementation 'net.portswigger.burp.extensions:montoya-api:2023.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.0'
     testImplementation 'org.mockito:mockito-core:4.8.0'

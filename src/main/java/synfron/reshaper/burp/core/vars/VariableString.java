@@ -136,7 +136,7 @@ public class VariableString implements Serializable {
                     Variable value = switch (variable.getVariableSource()) {
                         case Global -> GlobalVariables.get().getOrDefault(variable.getName());
                         case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
-                        case Session -> eventInfo instanceof WebSocketEventInfo<?> ? ((WebSocketEventInfo<?>)eventInfo).getSessionVariables().getOrDefault(variable.getName()) : null;
+                        case Session -> eventInfo.getSessionVariables().getOrDefault(variable.getName());
                         default -> null;
                     };
                     variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
@@ -148,11 +148,10 @@ public class VariableString implements Serializable {
 
     private String getAnnotation(EventInfo eventInfo, String name) {
         MessageAnnotation annotation = EnumUtils.getEnumIgnoreCase(MessageAnnotation.class, name);
-        if (annotation != null && eventInfo instanceof HttpEventInfo) {
-            HttpEventInfo httpEventInfo = (HttpEventInfo) eventInfo;
+        if (annotation != null && eventInfo.getAnnotations() != null) {
             return switch (annotation) {
-                case Comment -> httpEventInfo.getAnnotations().notes();
-                case HighlightColor -> StringUtils.capitalize(httpEventInfo.getAnnotations().highlightColor().name().toLowerCase());
+                case Comment -> eventInfo.getAnnotations().notes();
+                case HighlightColor -> StringUtils.capitalize(eventInfo.getAnnotations().highlightColor().name().toLowerCase());
             };
         }
         return null;

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.core.messages;
 
+import burp.api.montoya.core.Annotations;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -7,26 +8,21 @@ import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.vars.Variables;
 
-import java.util.function.BiConsumer;
-
 public class WebSocketEventInfo<T> extends EventInfo {
     @Getter
     private final WebSocketMessageType messageType;
-    @Getter
-    private final Variables sessionVariables;
     @Getter
     private WebSocketDataDirection dataDirection;
     @Getter
     private final WebSocketDataDirection initialDataDirection;
     @Getter
-    private BiConsumer<WebSocketDataDirection, String> messageSender;
+    private WebSocketMessageSender messageSender;
     @Getter
     private T data;
 
-    public WebSocketEventInfo(WebSocketMessageType messageType, Variables sessionVariables, WebSocketDataDirection dataDirection, BurpTool burpTool, BiConsumer<WebSocketDataDirection, String> messageSender, HttpRequest httpRequest, T data) {
-        super(burpTool, httpRequest);
+    public WebSocketEventInfo(WebSocketMessageType messageType, WebSocketDataDirection dataDirection, BurpTool burpTool, WebSocketMessageSender messageSender, HttpRequest httpRequest, Annotations annotations, T data, Variables sessionVariables) {
+        super(burpTool, httpRequest, annotations, sessionVariables);
         this.messageType = messageType;
-        this.sessionVariables = sessionVariables;
         this.initialDataDirection = dataDirection;
         this.dataDirection = dataDirection;
         this.httpProtocol = httpRequest.httpService().secure() ? "wss" : "ws";

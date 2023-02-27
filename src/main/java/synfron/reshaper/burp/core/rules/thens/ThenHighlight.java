@@ -3,12 +3,12 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 
-public class ThenHighlight extends Then<ThenHighlight> implements IHttpRuleOperation {
+public class ThenHighlight extends Then<ThenHighlight> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter
     @Setter
     private HighlightColor color = HighlightColor.None;
@@ -17,9 +17,10 @@ public class ThenHighlight extends Then<ThenHighlight> implements IHttpRuleOpera
     public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = true;
         try {
-            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
-            httpEventInfo.setAnnotations(httpEventInfo.getAnnotations().withHighlightColor(color.highlightColor));
-            hasError = false;
+            if (eventInfo.getAnnotations() != null) {
+                eventInfo.getAnnotations().setHighlightColor(color.highlightColor);
+                hasError = false;
+            }
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, hasError, color.getValue());
         }

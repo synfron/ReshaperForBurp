@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.core;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.Annotations;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.ToolType;
 import burp.api.montoya.http.message.requests.HttpRequest;
@@ -10,12 +11,11 @@ import lombok.Getter;
 import lombok.Setter;
 import synfron.reshaper.burp.core.messages.WebSocketDataDirection;
 import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
+import synfron.reshaper.burp.core.messages.WebSocketMessageSender;
 import synfron.reshaper.burp.core.messages.WebSocketMessageType;
 import synfron.reshaper.burp.core.rules.RulesEngine;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.Variables;
-
-import java.util.function.BiConsumer;
 
 public class WebSocketConnector implements
         ProxyWebSocketCreationHandler,
@@ -47,7 +47,7 @@ public class WebSocketConnector implements
 
     private class WebSocketMessageConnector implements ProxyMessageHandler, MessageHandler {
 
-        private final BiConsumer<WebSocketDataDirection, String> messageSender;
+        private final WebSocketMessageSender messageSender;
         private final HttpRequest httpRequest;
 
         private final BurpTool burpTool;
@@ -56,25 +56,20 @@ public class WebSocketConnector implements
 
         public WebSocketMessageConnector(BurpTool burpTool, ProxyWebSocket webSocket, HttpRequest httpRequest) {
             this.burpTool = burpTool;
-            this.messageSender = (WebSocketDataDirection dataDirection, String message) -> webSocket.sendTextMessage(message, dataDirection.toDirection());
+            this.messageSender = new WebSocketMessageSender(webSocket);
             this.httpRequest = httpRequest;
         }
 
         public WebSocketMessageConnector(BurpTool burpTool, WebSocket webSocket, HttpRequest httpRequest) {
             this.burpTool = burpTool;
-            this.messageSender = (WebSocketDataDirection dataDirection, String message) -> {
-                if (dataDirection == WebSocketDataDirection.Client && burpTool != BurpTool.Proxy) {
-                    throw new UnsupportedOperationException("Can only send client messages for Proxy WebSocket connections");
-                }
-                webSocket.sendTextMessage(message);
-            };
+            this.messageSender = new WebSocketMessageSender(webSocket);
             this.httpRequest = httpRequest;
         }
 
         @Override
         public TextMessageReceivedAction handleTextMessageReceived(InterceptedTextMessage interceptedTextMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, interceptedTextMessage.payload(), interceptedTextMessage.direction());
+                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, interceptedTextMessage.annotations(), interceptedTextMessage.payload(), interceptedTextMessage.direction());
                 return processEvent(eventInfo).asProxyTextAction();
             }
             return TextMessageReceivedAction.continueWith(interceptedTextMessage);
@@ -83,7 +78,7 @@ public class WebSocketConnector implements
         @Override
         public TextMessageAction handleTextMessage(TextMessage textMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, textMessage.payload(), textMessage.direction());
+                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, null, textMessage.payload(), textMessage.direction());
                 return processEvent(eventInfo).asTextAction();
             }
             return TextMessageAction.continueWith(textMessage);
@@ -92,7 +87,7 @@ public class WebSocketConnector implements
         @Override
         public BinaryMessageReceivedAction handleBinaryMessageReceived(InterceptedBinaryMessage interceptedBinaryMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, interceptedBinaryMessage.payload().getBytes(), interceptedBinaryMessage.direction());
+                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, interceptedBinaryMessage.annotations(), interceptedBinaryMessage.payload().getBytes(), interceptedBinaryMessage.direction());
                 return processEvent(eventInfo).asProxyBinaryAction();
             }
             return BinaryMessageReceivedAction.continueWith(interceptedBinaryMessage);
@@ -101,21 +96,16 @@ public class WebSocketConnector implements
         @Override
         public BinaryMessageAction handleBinaryMessage(BinaryMessage binaryMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, binaryMessage.payload().getBytes(), binaryMessage.direction());
+                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, null, binaryMessage.payload().getBytes(), binaryMessage.direction());
                 return processEvent(eventInfo).asBinaryAction();
             }
             return BinaryMessageAction.continueWith(binaryMessage);
         }
 
-        private <T> WebSocketEventInfo<T> asEventInfo(WebSocketMessageType messageType, T data, Direction direction) {
+        private <T> WebSocketEventInfo<T> asEventInfo(WebSocketMessageType messageType, Annotations annotations, T data, Direction direction) {
             WebSocketEventInfo<T> eventInfo = new WebSocketEventInfo<>(
                     messageType,
-                    sessionVariables,
-                    WebSocketDataDirection.from(direction),
-                    burpTool,
-                    messageSender,
-                    httpRequest,
-                    data
+                    WebSocketDataDirection.from(direction), burpTool, messageSender, httpRequest, annotations, data, sessionVariables
             );
             eventInfo.getDiagnostics().setEventEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
             return eventInfo;

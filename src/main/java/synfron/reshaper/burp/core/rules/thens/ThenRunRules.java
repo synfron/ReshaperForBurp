@@ -8,6 +8,7 @@ import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.rules.*;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public class ThenRunRules extends Then<ThenRunRules> implements IHttpRuleOperation, IWebSocketRuleOperation {
@@ -52,7 +53,7 @@ public class ThenRunRules extends Then<ThenRunRules> implements IHttpRuleOperati
             ruleCache = Stream.of(rulesEngine.getRulesRegistry().getRules())
                     .filter(rule -> StringUtils.isNotEmpty(rule.getName()) && rule.getName().equals(ruleName))
                     .findFirst()
-                    .get();
+                    .orElseThrow(() -> new NoSuchElementException(String.format("Rule '%s' not found", ruleName)));
             cacheVersion = rulesEngine.getRulesRegistry().getVersion();
         }
         return ruleCache;
