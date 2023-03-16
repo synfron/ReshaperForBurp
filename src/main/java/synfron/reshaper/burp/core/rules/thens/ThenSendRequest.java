@@ -68,16 +68,14 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
             executor.submit(() -> {
                 try {
                     HttpEventInfo newEventInfo = new HttpEventInfo(eventInfo);
-                    boolean useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
                     if (!VariableString.isEmpty(request)) {
                         newEventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(this.request.getText(eventInfo)));
                     }
                     if (!VariableString.isEmpty(url)) {
                         newEventInfo.setUrl(url.getText(eventInfo));
-                        useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
                     }
                     if (!VariableString.isEmpty(protocol)) {
-                        useHttps = !StringUtils.equalsIgnoreCase(protocol.getText(eventInfo), "http");
+                        newEventInfo.setHttpProtocol(protocol.getText(eventInfo));
                     }
                     if (!VariableString.isEmpty(address)) {
                         newEventInfo.setDestinationAddress(address.getText(eventInfo));
@@ -87,7 +85,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                                 eventInfo,
                                 this.port,
                                 (newEventInfo.getDestinationPort() == null || newEventInfo.getDestinationPort() == 0) ?
-                                        (useHttps ? 443 : 80) :
+                                        (newEventInfo.isSecure() ? 443 : 80) :
                                         newEventInfo.getDestinationPort()
                         ));
                     }

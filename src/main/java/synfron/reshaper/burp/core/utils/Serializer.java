@@ -138,9 +138,14 @@ public class Serializer {
         @Override
         public VariableString deserialize(JsonParser parser, DeserializationContext context) throws IOException {
             ObjectMapper objectMapper = configureMapper();
-            return (parser.currentTokenId() == JsonTokenId.ID_STRING) ?
-                    VariableString.getAsVariableString(parser.getText()) :
-                    objectMapper.readValue(parser, VariableString.class);
+            return switch (parser.currentTokenId()) {
+                case JsonTokenId.ID_STRING,
+                        JsonTokenId.ID_FALSE,
+                        JsonTokenId.ID_TRUE,
+                        JsonTokenId.ID_NUMBER_FLOAT,
+                        JsonTokenId.ID_NUMBER_INT -> VariableString.getAsVariableString(parser.getText());
+                default -> objectMapper.readValue(parser, VariableString.class);
+            };
         }
     }
 

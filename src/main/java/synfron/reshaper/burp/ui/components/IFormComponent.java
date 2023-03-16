@@ -23,6 +23,10 @@ import static java.awt.Component.TOP_ALIGNMENT;
 public interface IFormComponent {
 
     default Component getLabeledField(String label, Component innerComponent) {
+        return getLabeledField(label, innerComponent, true);
+    }
+
+    default Component getLabeledField(String label, Component innerComponent, boolean span) {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout());
         container.setBorder(null);
@@ -32,7 +36,7 @@ public interface IFormComponent {
         }
 
         container.add(new JLabel(label), "wrap");
-        container.add(innerComponent);
+        container.add(innerComponent, span ? "grow, push, span" : "");
         return container;
     }
 
@@ -72,6 +76,10 @@ public interface IFormComponent {
 
     default JTextPane createTextPane() {
         return addContextMenu(addUndo(new JTextPane()), false, getProtocolType());
+    }
+
+    default <T extends JTextComponent> T createTextComponent(T textComponent) {
+        return addContextMenu(addUndo(textComponent), false, getProtocolType());
     }
 
     private static <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags, ProtocolType protocolType) {
