@@ -68,16 +68,14 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
             executor.submit(() -> {
                 try {
                     HttpEventInfo newEventInfo = new HttpEventInfo(eventInfo);
-                    boolean useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
                     if (!VariableString.isEmpty(request)) {
                         newEventInfo.setHttpRequestMessage(eventInfo.getEncoder().encode(this.request.getText(eventInfo)));
                     }
                     if (!VariableString.isEmpty(url)) {
                         newEventInfo.setUrl(url.getText(eventInfo));
-                        useHttps = !StringUtils.equalsIgnoreCase(newEventInfo.getHttpProtocol(), "http");
                     }
                     if (!VariableString.isEmpty(protocol)) {
-                        useHttps = !StringUtils.equalsIgnoreCase(protocol.getText(eventInfo), "http");
+                        newEventInfo.setHttpProtocol(protocol.getText(eventInfo));
                     }
                     if (!VariableString.isEmpty(address)) {
                         newEventInfo.setDestinationAddress(address.getText(eventInfo));
@@ -87,15 +85,15 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                                 eventInfo,
                                 this.port,
                                 (newEventInfo.getDestinationPort() == null || newEventInfo.getDestinationPort() == 0) ?
-                                        (useHttps ? 443 : 80) :
+                                        (newEventInfo.isSecure() ? 443 : 80) :
                                         newEventInfo.getDestinationPort()
                         ));
                     }
 
-                    HttpResponse httpResponse = BurpExtender.getApi().http().issueRequest(
+                    HttpResponse httpResponse = BurpExtender.getApi().http().sendRequest(
                             newEventInfo.asHttpRequest(),
                             HttpMode.AUTO
-                    ).httpResponse();
+                    ).response();
                     response.set(httpResponse);
                 } catch (Exception e) {
                     Log.get().withMessage("Failure sending request").withException(e).logErr();
@@ -114,7 +112,7 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                         0;
                 failed = !complete || (failOnErrorStatusCode && (statusCode == 0 || (statusCode >= 400 && statusCode < 600)));
                 if (captureOutput && (!failed || captureAfterFailure)) {
-                    output = response.get() != null ? new HttpResponseMessage(response.get().asBytes().getBytes(), eventInfo.getEncoder()).getText() : "";
+                    output = response.get() != null ? new HttpResponseMessage(response.get().toByteArray().getBytes(), eventInfo.getEncoder()).getText() : "";
                     setVariable(captureVariableSource, eventInfo, captureVariableName, output);
                 }
             }

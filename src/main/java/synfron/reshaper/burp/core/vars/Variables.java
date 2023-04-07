@@ -13,8 +13,16 @@ public class Variables {
     protected final CollectionChangedEvent collectionChangedEvent = new CollectionChangedEvent();
     protected HashMap<CaseInsensitiveString, Variable> variables = new HashMap<>();
 
+    public static Variables defaultVariables(Variables variables) {
+        return variables != null ? variables : new Variables();
+    }
+
     public List<Variable> getValues() {
         return new ArrayList<>(variables.values());
+    }
+
+    public int size() {
+        return variables.size();
     }
 
     public Variable add(String name)

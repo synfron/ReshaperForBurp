@@ -59,7 +59,7 @@ public class ContentType {
         return ids.length == 1 ? ids[0] : Unknown.getId();
     }
 
-    public static ContentType get(burp.api.montoya.http.ContentType contentType) {
+    public static ContentType get(burp.api.montoya.http.message.ContentType contentType) {
         return switch (contentType) {
             case AMF -> Amf;
             case XML -> Xml;

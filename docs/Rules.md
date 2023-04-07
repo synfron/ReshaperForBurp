@@ -161,9 +161,9 @@ Destination Variable Name - The name of the variable to hold the built HTTP mess
 
 ### Comment
 
-Add a comment to the request/response line in the HTTP history
+Add a comment to the line item in the HTTP/WebSocket history
 
-Availability: HTTP
+Availability: HTTP, WebSocket
 
 #### Fields
 
@@ -231,13 +231,13 @@ Y - Second value. Only available for certain operations. Supports variable tags.
 
 ### Highlight
 
-Highlight the request/response line in the HTTP history
+Highlight the line item in the HTTP/WebSocket history
 
-Availability: HTTP
+Availability: HTTP, WebSocket
 
 #### Fields
 
-Color - The color used to highlight the request/response line.
+Color - The color used to highlight the line item.
 
 ### Intercept
 

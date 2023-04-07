@@ -12,9 +12,9 @@ import java.util.stream.Stream;
 public enum VariableSource {
     Event("e", false, ProtocolType.Any),
     Global("g", false, ProtocolType.Any),
-    Session("sn", false, ProtocolType.WebSocket),
+    Session("sn", false, ProtocolType.Any),
     Message("m", true, ProtocolType.Any),
-    Annotation("a", true, ProtocolType.Http),
+    Annotation("a", true, ProtocolType.Any),
     File("f", true, ProtocolType.Any),
     Special("s", true, ProtocolType.Any),
     CookieJar("Cookie Jar", "cj", true, ProtocolType.Any);

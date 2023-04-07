@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
 import burp.BurpExtender;
-import burp.api.montoya.http.message.cookies.Cookie;
+import burp.api.montoya.http.message.Cookie;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
