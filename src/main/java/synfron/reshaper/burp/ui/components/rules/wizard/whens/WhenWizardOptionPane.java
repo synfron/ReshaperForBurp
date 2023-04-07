@@ -96,9 +96,9 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         WhenWizardItemModel itemModel = model.addItem()
                 .withListener(whenWizardItemChangedListener);
         whenWizardItemsComponent.add(new WhenWizardItemComponent(
+                model.getEventInfo().getProtocolType(),
                 itemModel,
-                deletable
-        ), "wrap");
+                deletable), "wrap");
         whenWizardItemsComponent.revalidate();
         whenWizardItemsComponent.repaint();
     }
@@ -114,7 +114,7 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         boolean deletableItem = false;
         for (WhenWizardItemModel item : model.getItems()) {
             item.withListener(whenWizardItemChangedListener);
-            whenWizardItemsComponent.add(new WhenWizardItemComponent(item, deletableItem), "wrap");
+            whenWizardItemsComponent.add(new WhenWizardItemComponent(model.getEventInfo().getProtocolType(), item, deletableItem), "wrap");
             deletableItem = true;
         }
         return whenWizardItemsComponent;
