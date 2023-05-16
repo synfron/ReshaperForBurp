@@ -1,8 +1,10 @@
 package synfron.reshaper.burp.core.messages;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.Annotations;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import lombok.Getter;
+import lombok.Setter;
 import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.InterceptResponse;
 import synfron.reshaper.burp.core.ProtocolType;
@@ -15,6 +17,8 @@ import synfron.reshaper.burp.core.vars.Variables;
 public abstract class EventInfo {
     @Getter
     protected final HttpRequest initialHttpRequest;
+    @Getter @Setter
+    private Annotations annotations;
     @Getter
     protected final BurpTool burpTool;
     @Getter
@@ -32,22 +36,28 @@ public abstract class EventInfo {
     @Getter
     protected final Variables variables = new Variables();
     @Getter
+    private final Variables sessionVariables;
+    @Getter
     protected final Encoder encoder = new Encoder(BurpExtender.getGeneralSettings().getDefaultEncoding());
     protected boolean changed;
     @Getter
     protected final IDiagnostics diagnostics = new Diagnostics();
 
-    public EventInfo(BurpTool burpTool, HttpRequest httpRequest) {
+    public EventInfo(BurpTool burpTool, HttpRequest httpRequest, Annotations annotations, Variables sessionVariables) {
+        this.sessionVariables = sessionVariables;
         this.burpTool = burpTool;
         this.initialHttpRequest = httpRequest;
+        this.annotations = annotations;
         httpRequestMessage = new HttpRequestMessage(httpRequest, encoder);
         destinationPort = httpRequest.httpService().port();
         destinationAddress = httpRequest.httpService().host();
     }
 
     protected EventInfo(EventInfo sourceEventInfo) {
+        this.sessionVariables = sourceEventInfo.getSessionVariables();
         this.burpTool = sourceEventInfo.getBurpTool();
         this.initialHttpRequest = null;
+        this.annotations = null;
         this.encoder.setEncoding(sourceEventInfo.getEncoder().getEncoding(), sourceEventInfo.getEncoder().isAutoSet());
         httpRequestMessage = new HttpRequestMessage(sourceEventInfo.getHttpRequestMessage().getValue(), encoder);
         httpProtocol = sourceEventInfo.getHttpProtocol();

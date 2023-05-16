@@ -61,7 +61,7 @@ public class MimeType {
         return String.join(", ", names);
     }
 
-    public static MimeType get(burp.api.montoya.http.MimeType mimeType) {
+    public static MimeType get(burp.api.montoya.http.message.MimeType mimeType) {
         return switch (mimeType) {
             case HTML -> Html;
             case SCRIPT -> Script;

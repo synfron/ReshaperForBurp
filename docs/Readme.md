@@ -40,7 +40,7 @@ Break - Stop Rules or then action processing
 
 Build HTTP Message - Build an HTTP request or response message and store the full text in a variable
 
-Comment - Add a comment to the request/response line in the HTTP history
+Comment - Add a comment to the line item in the HTTP/WebSocket history
 
 Delay - Delay further processing/sending of the HTTP/WebSocket event
 
@@ -52,7 +52,7 @@ Drop - Have Burp drop the connection
 
 Evaluate - Perform operations on values
 
-Highlight - Highlight the request/response line in the HTTP history
+Highlight - Highlight the line item in the HTTP/WebSocket history
 
 Intercept - Intercept the message in the Proxy interceptor
 
@@ -97,14 +97,14 @@ Share values across different Rules while processing the same event or all event
 ### Build JAR with IntelliJ
 
 1. Open IntelliJ.
-2. Create a new project (Gradle) from existing source using Java 15.
+2. Create a new project (Gradle) from existing source using Java 17.
 3. Once the project is created/open, wait for IntelliJ to process Gradle dependencies.
 4. Run the `jar` Gradle build task from the Gradle tool window/sidebar. The JAR will be placed in the `build\libs` directory.
 
 ### Build JAR with CLI
 
-1. Install Java 15.
-2. Install Gradle v6.8.
+1. Install Java 17.
+2. Install Gradle v7.4.
 3. Run the `gradle --refresh-dependencies build` command.
 4. Run the `gradle build jar` command. The JAR will be placed in the `build\libs` directory.
 

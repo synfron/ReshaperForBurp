@@ -55,7 +55,7 @@ public class BurpExtender implements BurpExtension, ExtensionUnloadingHandler {
             api.http().registerHttpHandler(httpConnector);
             api.http().registerSessionHandlingAction(httpConnector);
             api.extension().registerUnloadingHandler(this);
-            api.websockets().registerWebSocketCreationHandler(webSocketConnector);
+            api.websockets().registerWebSocketCreatedHandler(webSocketConnector);
             api.userInterface().registerContextMenuItemsProvider(contextMenuHandler);
             Log.get().withMessage("Reshaper started").log();
 

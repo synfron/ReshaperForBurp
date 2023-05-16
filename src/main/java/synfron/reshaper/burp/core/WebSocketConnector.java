@@ -1,25 +1,25 @@
 package synfron.reshaper.burp.core;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.Annotations;
 import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.core.ToolSource;
 import burp.api.montoya.core.ToolType;
 import burp.api.montoya.http.message.requests.HttpRequest;
-import burp.api.montoya.internal.ObjectFactoryLocator;
-import burp.api.montoya.proxy.*;
+import burp.api.montoya.proxy.websocket.*;
 import burp.api.montoya.websocket.*;
 import lombok.Getter;
 import lombok.Setter;
 import synfron.reshaper.burp.core.messages.WebSocketDataDirection;
-import synfron.reshaper.burp.core.messages.WebSocketMessageType;
 import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
+import synfron.reshaper.burp.core.messages.WebSocketMessageSender;
+import synfron.reshaper.burp.core.messages.WebSocketMessageType;
 import synfron.reshaper.burp.core.rules.RulesEngine;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.Variables;
 
-import java.util.function.BiConsumer;
-
-public class WebSocketConnector implements ProxyWebSocketCreationHandler, WebSocketCreationHandler {
+public class WebSocketConnector implements
+        ProxyWebSocketCreationHandler,
+        WebSocketCreatedHandler {
     @Getter
     private final RulesEngine rulesEngine = new RulesEngine();
 
@@ -29,25 +29,25 @@ public class WebSocketConnector implements ProxyWebSocketCreationHandler, WebSoc
     }
 
     @Override
-    public void handleWebSocketCreated(ProxyWebSocket proxyWebSocket, HttpRequest httpRequest) {
+    public void handleWebSocketCreation(ProxyWebSocketCreation webSocketCreation) {
         if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy) && BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-            proxyWebSocket.registerHandler(new WebSocketMessageConnector(BurpTool.Proxy, proxyWebSocket, httpRequest));
+            webSocketCreation.proxyWebSocket().registerProxyMessageHandler(new WebSocketMessageConnector(BurpTool.Proxy, webSocketCreation.proxyWebSocket(), webSocketCreation.upgradeRequest()));
         }
     }
 
     @Override
-    public void handleWebSocketCreated(WebSocket webSocket, HttpRequest httpRequest, ToolSource toolSource) {
-        if (!toolSource.isFromTool(ToolType.PROXY)) {
-            BurpTool burpTool = getBurpToolIfEnabled(toolSource.toolType());
+    public void handleWebSocketCreated(WebSocketCreated webSocketCreated) {
+        if (!webSocketCreated.toolSource().isFromTool(ToolType.PROXY)) {
+            BurpTool burpTool = getBurpToolIfEnabled(webSocketCreated.toolSource().toolType());
             if (burpTool != null && burpTool != BurpTool.Proxy && BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                webSocket.registerHandler(new WebSocketMessageConnector(BurpTool.Proxy, webSocket, httpRequest));
+                webSocketCreated.webSocket().registerMessageHandler(new WebSocketMessageConnector(BurpTool.Proxy, webSocketCreated.webSocket(), webSocketCreated.upgradeRequest()));
             }
         }
     }
 
-    private class WebSocketMessageConnector implements ProxyWebSocketHandler, WebSocketHandler {
+    private class WebSocketMessageConnector implements ProxyMessageHandler, MessageHandler {
 
-        private final BiConsumer<WebSocketDataDirection, String> messageSender;
+        private final WebSocketMessageSender messageSender;
         private final HttpRequest httpRequest;
 
         private final BurpTool burpTool;
@@ -56,66 +56,56 @@ public class WebSocketConnector implements ProxyWebSocketCreationHandler, WebSoc
 
         public WebSocketMessageConnector(BurpTool burpTool, ProxyWebSocket webSocket, HttpRequest httpRequest) {
             this.burpTool = burpTool;
-            this.messageSender = (WebSocketDataDirection dataDirection, String message) -> webSocket.sendTextMessage(message, dataDirection.toDirection());
+            this.messageSender = new WebSocketMessageSender(webSocket);
             this.httpRequest = httpRequest;
         }
 
         public WebSocketMessageConnector(BurpTool burpTool, WebSocket webSocket, HttpRequest httpRequest) {
             this.burpTool = burpTool;
-            this.messageSender = (WebSocketDataDirection dataDirection, String message) -> {
-                if (dataDirection == WebSocketDataDirection.Client && burpTool != BurpTool.Proxy) {
-                    throw new UnsupportedOperationException("Can only send client messages for Proxy WebSocket connections");
-                }
-                webSocket.sendTextMessage(message);
-            };
+            this.messageSender = new WebSocketMessageSender(webSocket);
             this.httpRequest = httpRequest;
         }
 
         @Override
-        public ProxyWebSocketInitialInterceptTextMessage handleTextMessageReceived(String text, Direction direction) {
+        public TextMessageReceivedAction handleTextMessageReceived(InterceptedTextMessage interceptedTextMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, text, direction);
-                return processEvent(eventInfo).asTextProxyInterceptResult();
+                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, interceptedTextMessage.annotations(), interceptedTextMessage.payload(), interceptedTextMessage.direction());
+                return processEvent(eventInfo).asProxyTextAction();
             }
-            return ObjectFactoryLocator.FACTORY.proxyWebSocketTextMessage(text, InitialInterceptAction.FOLLOW_USER_RULES);
+            return TextMessageReceivedAction.continueWith(interceptedTextMessage);
         }
 
         @Override
-        public WebSocketTextMessage handleTextMessage(String text, Direction direction) {
+        public TextMessageAction handleTextMessage(TextMessage textMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, text, direction);
-                return processEvent(eventInfo).asTextInterceptResult();
+                WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, null, textMessage.payload(), textMessage.direction());
+                return processEvent(eventInfo).asTextAction();
             }
-            return WebSocketTextMessage.continueWithTextMessage(text);
+            return TextMessageAction.continueWith(textMessage);
         }
 
         @Override
-        public ProxyWebSocketInitialInterceptBinaryMessage handleBinaryMessageReceived(ByteArray byteArray, Direction direction) {
+        public BinaryMessageReceivedAction handleBinaryMessageReceived(InterceptedBinaryMessage interceptedBinaryMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, byteArray.getBytes(), direction);
-                return processEvent(eventInfo).asBinaryProxyInterceptResult();
+                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, interceptedBinaryMessage.annotations(), interceptedBinaryMessage.payload().getBytes(), interceptedBinaryMessage.direction());
+                return processEvent(eventInfo).asProxyBinaryAction();
             }
-            return ObjectFactoryLocator.FACTORY.proxyWebSocketBinaryMessage(byteArray, InitialInterceptAction.FOLLOW_USER_RULES);
+            return BinaryMessageReceivedAction.continueWith(interceptedBinaryMessage);
         }
 
         @Override
-        public WebSocketBinaryMessage handleBinaryMessage(ByteArray byteArray, Direction direction) {
+        public BinaryMessageAction handleBinaryMessage(BinaryMessage binaryMessage) {
             if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
-                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, byteArray.getBytes(), direction);
-                return processEvent(eventInfo).asBinaryInterceptResult();
+                WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, null, binaryMessage.payload().getBytes(), binaryMessage.direction());
+                return processEvent(eventInfo).asBinaryAction();
             }
-            return WebSocketBinaryMessage.continueWithBinaryMessage(byteArray);
+            return BinaryMessageAction.continueWith(binaryMessage);
         }
 
-        private <T> WebSocketEventInfo<T> asEventInfo(WebSocketMessageType messageType, T data, Direction direction) {
+        private <T> WebSocketEventInfo<T> asEventInfo(WebSocketMessageType messageType, Annotations annotations, T data, Direction direction) {
             WebSocketEventInfo<T> eventInfo = new WebSocketEventInfo<>(
                     messageType,
-                    sessionVariables,
-                    WebSocketDataDirection.from(direction),
-                    burpTool,
-                    messageSender,
-                    httpRequest,
-                    data
+                    WebSocketDataDirection.from(direction), burpTool, messageSender, httpRequest, annotations, data, sessionVariables
             );
             eventInfo.getDiagnostics().setEventEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
             return eventInfo;
@@ -143,18 +133,17 @@ public class WebSocketConnector implements ProxyWebSocketCreationHandler, WebSoc
         }
 
         @Override
-        public ProxyWebSocketFinalInterceptTextMessage handleTextMessageToBeIssued(String text, Direction direction) {
-            return ProxyWebSocketFinalInterceptTextMessage.continueWithTextMessage(text);
+        public TextMessageToBeSentAction handleTextMessageToBeSent(InterceptedTextMessage interceptedTextMessage) {
+            return TextMessageToBeSentAction.continueWith(interceptedTextMessage);
         }
 
         @Override
-        public ProxyWebSocketFinalInterceptBinaryMessage handleBinaryMessageToBeIssued(ByteArray byteArray, Direction direction) {
-            return ProxyWebSocketFinalInterceptBinaryMessage.continueWithBinaryMessage(byteArray);
+        public BinaryMessageToBeSentAction handleBinaryMessageToBeSent(InterceptedBinaryMessage interceptedBinaryMessage) {
+            return BinaryMessageToBeSentAction.continueWith(interceptedBinaryMessage);
         }
 
         @Override
         public void onClose() {
-            ProxyWebSocketHandler.super.onClose();
         }
     }
 
@@ -172,39 +161,39 @@ public class WebSocketConnector implements ProxyWebSocketCreationHandler, WebSoc
             return eventInfo.getData();
         }
 
-        public ProxyWebSocketInitialInterceptTextMessage asTextProxyInterceptResult() {
+        public TextMessageReceivedAction asProxyTextAction() {
             return switch (interceptResponse) {
                 case UserDefined ->
-                        ObjectFactoryLocator.FACTORY.proxyWebSocketTextMessage((String) eventInfo.getData(), InitialInterceptAction.FOLLOW_USER_RULES);
-                case Disable -> ProxyWebSocketInitialInterceptTextMessage.doNotInterceptTextMessage((String) eventInfo.getData());
-                case Drop -> ProxyWebSocketInitialInterceptTextMessage.dropTextMessage();
-                case Intercept -> ProxyWebSocketInitialInterceptTextMessage.interceptTextMessage((String) eventInfo.getData());
+                        TextMessageReceivedAction.continueWith((String) eventInfo.getData());
+                case Disable -> TextMessageReceivedAction.doNotIntercept((String) eventInfo.getData());
+                case Drop -> TextMessageReceivedAction.drop();
+                case Intercept -> TextMessageReceivedAction.intercept((String) eventInfo.getData());
             };
         }
 
-        public WebSocketTextMessage asTextInterceptResult() {
+        public TextMessageAction asTextAction() {
             return switch (interceptResponse) {
                 case UserDefined, Disable, Intercept ->
-                        WebSocketTextMessage.continueWithTextMessage((String)getData());
-                case Drop -> WebSocketTextMessage.dropTextMessage();
+                        TextMessageAction.continueWith((String)getData());
+                case Drop -> TextMessageAction.drop();
             };
         }
 
-        public ProxyWebSocketInitialInterceptBinaryMessage asBinaryProxyInterceptResult() {
+        public BinaryMessageReceivedAction asProxyBinaryAction() {
             return switch (interceptResponse) {
                 case UserDefined ->
-                        ObjectFactoryLocator.FACTORY.proxyWebSocketBinaryMessage(ByteArray.byteArray((byte[]) eventInfo.getData()), InitialInterceptAction.FOLLOW_USER_RULES);
-                case Disable -> ProxyWebSocketInitialInterceptBinaryMessage.doNotInterceptBinaryMessage(ByteArray.byteArray((byte[]) eventInfo.getData()));
-                case Drop -> ProxyWebSocketInitialInterceptBinaryMessage.dropBinaryMessage();
-                case Intercept -> ProxyWebSocketInitialInterceptBinaryMessage.interceptBinaryMessage(ByteArray.byteArray((byte[]) eventInfo.getData()));
+                        BinaryMessageReceivedAction.continueWith(ByteArray.byteArray((byte[]) eventInfo.getData()));
+                case Disable -> BinaryMessageReceivedAction.doNotIntercept(ByteArray.byteArray((byte[]) eventInfo.getData()));
+                case Drop -> BinaryMessageReceivedAction.drop();
+                case Intercept -> BinaryMessageReceivedAction.intercept(ByteArray.byteArray((byte[]) eventInfo.getData()));
             };
         }
 
-        public WebSocketBinaryMessage asBinaryInterceptResult() {
+        public BinaryMessageAction asBinaryAction() {
             return switch (interceptResponse) {
                 case UserDefined, Disable, Intercept ->
-                        WebSocketBinaryMessage.continueWithBinaryMessage(ByteArray.byteArray((byte[]) getData()));
-                case Drop -> WebSocketBinaryMessage.dropBinaryMessage();
+                        BinaryMessageAction.continueWith(ByteArray.byteArray((byte[]) getData()));
+                case Drop -> BinaryMessageAction.drop();
             };
         }
     }

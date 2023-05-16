@@ -1,9 +1,7 @@
 package synfron.reshaper.burp.core.rules.thens.entities.script;
 
 import burp.BurpExtender;
-import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.HttpService;
-import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -153,14 +151,14 @@ public class XmlHttpRequestObj {
                         requestMessage.setBody(body);
                     }
                     boolean useHttps = !StringUtils.equalsIgnoreCase(requestUrl.getScheme(), "http");
-                    HttpResponse response = BurpExtender.getApi().http().issueRequest(
-                            HttpRequest.httpRequest(ByteArray.byteArray(requestMessage.getValue()))
+                    HttpResponse response = BurpExtender.getApi().http().sendRequest(
+                            requestMessage.asAdjustedHttpRequest()
                                     .withService(HttpService.httpService(
                                             requestUrl.getHost(),
                                             requestUrl.getPort() > 0 ? requestUrl.getPort() : (useHttps ? 443 : 80),
                                             useHttps
                                     ))
-                    ).httpResponse();
+                    ).response();
                     if (!dispatcher.isTimeoutReach() && this.executor == executor) {
                         this.executor = null;
                         dispatcher.execute(context -> {

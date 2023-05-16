@@ -1,44 +1,48 @@
 <p>Trigger actions and reshape HTTP request and response traffic using configurable rules</p>
 
 <p>Rules</p>
-<p>Rules allow you to set actions to perform (called Thens) if HTTP messages/connections (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order.</p>
+<p>Rules allow you to set actions to perform (called Thens) if messages/connections (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order.</p>
 
 <p>Whens</p>
 <ul>
-	<li>Event Direction - If the HTTP message is a Request or Response</li>
-	<li>Has Entity - If the HTTP event contains a certain entity</li>
-	<li>Matches Text - If a value (text, variable, or HTTP event entity) matches a value</li>
 	<li>Content Type - If the HTTP request body is reported to match specified content types</li>
+	<li>Event Direction - If the HTTP message is a Request or Response, or if the WebSocket message is directed toward the client or server</li>
+	<li>From Tool - If the HTTP/WebSocket message is from a specific Burp tool</li>
+	<li>Has Entity - If the HTTP/WebSocket event contains a certain message value entity</li>
+	<li>In Scope - If the URL is in the suite-wide scope</li>
+	<li>Matches Text - If a value (text, variable, or HTTP/WebSocket message value entity) matches a value</li>
+	<li>Message Type - If the WebSocket message is text or binary</li>
 	<li>MIME Type - If the HTTP response body is reported to match specified MIME types</li>
 	<li>Proxy Name - If received by a certain Burp proxy listener</li>
-	<li>From Tool - If the HTTP message is from a specific Burp tool</li>
-	<li>In Scope - If the URL is in the suite-wide scope</li>
 </ul>
 
 <p>Thens</p>
 <ul>
-	<li>Break - Stop rules or then action processing</li>
-	<li>Delay - Delay further processing/sending of the HTTP event</li>
-	<li>Log - Log message to the Burp extension console</li>
-	<li>Highlight - Highlight the request/response line in the HTTP history</li>
-	<li>Comment - Add a comment to the request/response line in the HTTP history</li>
-	<li>Prompt - Get text via a prompt dialog</li>
-	<li>Run Rules - Run a specific rule or all auto-run rules</li>
-	<li>Run Script - Execute a JavaScript script</li>
-	<li>Evaluate - Perform operations on values</li>
-	<li>Set Event Direction - Change whether to send a request or to send a response at the end of processing</li>
-	<li>Set Encoding - Set the encoding used to read and write bytes of the HTTP request or response body</li>
-	<li>Set Value - Set the value of an HTTP event using another value (text, variable, or HTTP event entity)</li>
-	<li>Delete Value - Remove an HTTP message entity</li>
-	<li>Set Variable - Set a variable using another value (text, variable, or HTTP event entity)</li>
-	<li>Delete Variable - Delete a variable</li>
-	<li>Save File - Save text to a file</li>
-	<li>Send To - Send data to other Burp tools or the system default browser</li>
-	<li>Run Process - Execute a command in a separate process</li>
-	<li>Build HTTP Message - Build an HTTP request or response message and store the full text in a variable</li>
-	<li>Parse HTTP Message - Extract values from an HTTP request or response message and store the values in variable</li>
-	<li>Send Request - Send a separate HTTP request</li>
-	<li>Drop - Have Burp drop the connection</li>
+	<li>Break - Stop Rules or then action processing<li>
+	<li>Build HTTP Message - Build an HTTP request or response message and store the full text in a variable<li>
+	<li>Comment - Add a comment to the line item in the HTTP/WebSocket history<li>
+	<li>Delay - Delay further processing/sending of the HTTP/WebSocket event<li>
+	<li>Delete Value - Remove an HTTP message entity<li>
+	<li>Delete Variable - Delete a variable<li>
+	<li>Drop - Have Burp drop the connection<li>
+	<li>Evaluate - Perform operations on values<li>
+	<li>Highlight - Highlight the line item in the HTTP/WebSocket history<li>
+	<li>Intercept - Intercept the message in the Proxy interceptor<li>
+	<li>Log - Log message to the Burp extension console<li>
+	<li>Parse HTTP Message - Extract values from an HTTP request or response message and store the values in variable<li>
+	<li>Prompt - Get text via a prompt dialog<li>
+	<li>Run Process - Execute a command in a separate process<li>
+	<li>Run Rules - Run a specific Rule or all auto-run Rules<li>
+	<li>Run Script - Execute a JavaScript script<li>
+	<li>Save File - Save text to a file<li>
+	<li>Set Encoding - Set the encoding used to read and write bytes of the HTTP request or response body, or WebSocket message<li>
+	<li>Set Event Direction - Change whether to send a request or to send a response at the end of processing<li>
+	<li>Set Value - Set the value of an HTTP/WebSocket event using another value (text, variable, or HTTP/WebSocket event<li>
+	<li>entity)
+	<li>Set Variable - Set a variable using another value (text, variable, or HTTP/WebSocket event entity)
+	<li>Send Message - Send a separate WebSocket message<li>
+	<li>Send Request - Send a separate HTTP request<li>
+	<li>Send To - Send data to other Burp tools or the system default browser<li>
 </ul>
 
 <p>Variables</p>
