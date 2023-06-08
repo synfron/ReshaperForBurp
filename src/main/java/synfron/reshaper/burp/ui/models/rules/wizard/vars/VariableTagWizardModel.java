@@ -41,10 +41,12 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
         tagModelMap = Map.of(
           VariableSource.Event, new EventVariableTagWizardModel(variableSourceEntries),
           VariableSource.Global, new GlobalVariableTagWizardModel(variableSourceEntries),
+          VariableSource.Session, new SessionVariableTagWizardModel(variableSourceEntries),
           VariableSource.Message, new MessageVariableTagWizardModel(),
           VariableSource.File, new FileVariableTagWizardModel(),
           VariableSource.Special, new SpecialVariableTagWizardModel(),
-          VariableSource.CookieJar, new CookieJarVariableTagWizardModel()
+          VariableSource.CookieJar, new CookieJarVariableTagWizardModel(),
+          VariableSource.Annotation, new AnnotationVariableTagWizardModel()
         );
 
         tagModel = tagModelMap.get(variableSource);

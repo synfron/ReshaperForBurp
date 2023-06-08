@@ -1,7 +1,8 @@
 package synfron.reshaper.burp.ui.components.rules.thens.buildhttpmessage;
 
 import net.miginfocom.swing.MigLayout;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.ui.components.IFormComponent;
@@ -18,14 +19,14 @@ import java.util.stream.Stream;
 public class MessageValueSetterComponent extends JPanel implements IFormComponent {
 
     private final MessageValueSetterModel model;
-    private final DataDirection dataDirection;
+    private final HttpDataDirection dataDirection;
     private final boolean deletable;
     private JComboBox<MessageValue> destinationMessageValue;
     private JTextField destinationIdentifier;
     private JComboBox<SetItemPlacement> destinationIdentifierPlacement;
     private JTextField sourceText;
 
-    public MessageValueSetterComponent(MessageValueSetterModel model, DataDirection dataDirection, boolean deletable) {
+    public MessageValueSetterComponent(MessageValueSetterModel model, HttpDataDirection dataDirection, boolean deletable) {
         this.dataDirection = dataDirection;
         this.deletable = deletable;
         setBorder(new CompoundBorder(
@@ -42,7 +43,7 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
         sourceText = createTextField(true);
         destinationMessageValue = createComboBox(
                 Stream.of(MessageValue.values())
-                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isMessageSettable())
+                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isInnerLevelSettable(ProtocolType.Http))
                         .toArray(MessageValue[]::new)
         );
         destinationIdentifier = createTextField(true);

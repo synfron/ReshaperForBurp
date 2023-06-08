@@ -3,7 +3,6 @@ package synfron.reshaper.burp.core.messages;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,11 +59,16 @@ public class ContentType {
         return ids.length == 1 ? ids[0] : Unknown.getId();
     }
 
-    public static ContentType get(String name) {
-        return getValues().stream()
-                .filter(contentType -> contentType.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
+    public static ContentType get(burp.api.montoya.http.message.ContentType contentType) {
+        return switch (contentType) {
+            case AMF -> Amf;
+            case XML -> Xml;
+            case JSON -> Json;
+            case NONE -> None;
+            case MULTIPART -> MultiPart;
+            case URL_ENCODED -> UrlEncoded;
+            case UNKNOWN -> Unknown;
+        };
     }
 
     public static ContentType get(int id) {

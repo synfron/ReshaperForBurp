@@ -3,11 +3,13 @@ package synfron.reshaper.burp.core.rules.thens;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
-import synfron.reshaper.burp.core.messages.entities.HttpRequestMessage;
-import synfron.reshaper.burp.core.messages.entities.HttpResponseMessage;
+import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
+import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage.MessageValueSetter;
@@ -19,9 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
+public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
-    private DataDirection dataDirection = DataDirection.Request;
+    private HttpDataDirection dataDirection = HttpDataDirection.Request;
     @Getter @Setter
     private VariableString starterHttpMessage;
     @Getter @Setter
@@ -31,16 +33,13 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
     @Getter @Setter
     private VariableString destinationVariableName;
 
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         try {
-            Variables variables = switch (destinationVariableSource) {
-                case Event -> eventInfo.getVariables();
-                case Global -> GlobalVariables.get();
-                default -> null;
-            };
+            String value = dataDirection == HttpDataDirection.Request ? buildRequestMessage(eventInfo) : buildResponseMessage(eventInfo);
+            Variables variables = getVariables(destinationVariableSource, eventInfo);
             if (variables != null) {
                 Variable variable = variables.add(destinationVariableName.getText(eventInfo));
-                variable.setValue(dataDirection == DataDirection.Request ? buildRequestMessage(eventInfo) : buildResponseMessage(eventInfo));
+                variable.setValue(value);
             }
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Stream.concat(
                     Stream.of(
@@ -66,7 +65,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
         return RuleResponse.Continue;
     }
 
-    private String buildRequestMessage(IEventInfo eventInfo) {
+    private String buildRequestMessage(EventInfo eventInfo) {
         HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, starterHttpMessage, "")
         ), eventInfo.getEncoder());
@@ -83,7 +82,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> {
         return httpRequestMessage.getText();
     }
 
-    private String buildResponseMessage(IEventInfo eventInfo) {
+    private String buildResponseMessage(EventInfo eventInfo) {
         HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, starterHttpMessage, "")
         ), eventInfo.getEncoder());

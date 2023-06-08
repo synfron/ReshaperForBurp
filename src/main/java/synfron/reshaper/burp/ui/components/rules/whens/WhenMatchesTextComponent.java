@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.MatchType;
@@ -11,6 +12,7 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel, WhenMatchesText> {
@@ -22,16 +24,19 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
     private JTextField messageValuePath;
     protected JTextField sourceText;
     protected JTextField matchText;
+    protected JCheckBox ignoreCase;
     protected JComboBox<MatchType> matchType;
 
-    public WhenMatchesTextComponent(WhenMatchesTextModel when) {
-        super(when);
+    public WhenMatchesTextComponent(ProtocolType protocolType, WhenMatchesTextModel when) {
+        super(protocolType, when);
         initComponent();
     }
 
     private void initComponent() {
         useMessageValue = new JCheckBox("Use Message Value");
-        messageValue = createComboBox(MessageValue.values());
+        messageValue = createComboBox(Arrays.stream(MessageValue.values())
+                .filter(value -> value.isGettable(protocolType))
+                .toArray(MessageValue[]::new));
         identifier = createTextField(true);
         identifierPlacement = createComboBox(GetItemPlacement.values());
         sourceText = createTextField(true);
@@ -39,6 +44,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         messageValuePath = createTextField(true);
         matchType = createComboBox(MatchType.values());
         matchText = createTextField(true);
+        ignoreCase = new JCheckBox("Ignore Case");
 
         useMessageValue.setSelected(model.isUseMessageValue());
         messageValue.setSelectedItem(model.getMessageValue());
@@ -49,6 +55,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         messageValuePath.setText(model.getMessageValuePath());
         matchType.setSelectedItem(model.getMatchType());
         matchText.setText(model.getMatchText());
+        ignoreCase.setSelected(model.isIgnoreCase());
 
         useMessageValue.addActionListener(this::onUseMessageValueChanged);
         messageValue.addActionListener(this::onMessageValueChanged);
@@ -59,6 +66,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         messageValuePath.getDocument().addDocumentListener(new DocumentActionListener(this::onMessageValuePathChanged));
         matchType.addActionListener(this::onMatchTypeChanged);
         matchText.getDocument().addDocumentListener(new DocumentActionListener(this::onMatchTextChanged));
+        ignoreCase.addActionListener(this::onIgnoreCaseChanged);
 
         mainContainer.add(useMessageValue, "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -89,6 +97,7 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         ), "wrap");
         mainContainer.add(getLabeledField("Match Type", matchType), "wrap");
         mainContainer.add(getLabeledField("Match Text", matchText), "wrap");
+        mainContainer.add(ignoreCase, "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
         mainContainer.add(getPaddedButton(validate));
     }
@@ -127,5 +136,9 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
 
     private void onMatchTextChanged(ActionEvent actionEvent) {
         model.setMatchText(matchText.getText());
+    }
+
+    private void onIgnoreCaseChanged(ActionEvent actionEvent) {
+        model.setIgnoreCase(ignoreCase.isSelected());
     }
 }

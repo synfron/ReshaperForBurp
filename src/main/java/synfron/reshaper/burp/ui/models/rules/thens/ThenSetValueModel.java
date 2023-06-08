@@ -2,12 +2,14 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenSetValue;
 import synfron.reshaper.burp.core.utils.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetValue> {
@@ -19,9 +21,9 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     @Getter
     private SetItemPlacement destinationIdentifierPlacement;
 
-    public ThenSetValueModel(ThenSetValue then, Boolean isNew) {
-        super(then, isNew);
-        destinationMessageValue = then.getDestinationMessageValue();
+    public ThenSetValueModel(ProtocolType protocolType, ThenSetValue then, Boolean isNew) {
+        super(protocolType, then, isNew);
+        destinationMessageValue = then.getDestinationMessageValue() != null ? then.getDestinationMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isSettable(protocolType)).findFirst().orElse(null);;
         destinationIdentifier = VariableString.toString(then.getDestinationIdentifier(), destinationIdentifier);
         destinationIdentifierPlacement = then.getDestinationIdentifierPlacement();
     }
@@ -68,6 +70,11 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return destinationMessageValue.getName();
     }
 
     @Override

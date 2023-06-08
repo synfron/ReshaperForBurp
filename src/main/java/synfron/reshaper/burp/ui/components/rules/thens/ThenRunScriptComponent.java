@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunScript;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenRunScriptModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -10,26 +11,26 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, ThenRunScript> {
-    private JTextPane script;
+    private JTextArea script;
     private JTextField maxExecutionSeconds;
 
-    public ThenRunScriptComponent(ThenRunScriptModel then) {
-        super(then);
+    public ThenRunScriptComponent(ProtocolType protocolType, ThenRunScriptModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
+        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         mainContainer.setLayout(new BorderLayout());
-        JScrollPane scrollPane = new JScrollPane();
-        script = createTextPane();
-        scrollPane.setViewportView(script);
+        script = createTextComponent(new JTextArea());
+        script.setLineWrap(true);
 
         script.setText(model.getScript());
 
         script.getDocument().addDocumentListener(new DocumentActionListener(this::onScriptChanged));
 
-        mainContainer.add(new JLabel("Script *"), BorderLayout.PAGE_START);
-        mainContainer.add(scrollPane, BorderLayout.CENTER);
+        mainContainer.add(getLabeledField("Script *", script, true), BorderLayout.CENTER);
         mainContainer.add(getOtherFields(), BorderLayout.PAGE_END);
     }
 

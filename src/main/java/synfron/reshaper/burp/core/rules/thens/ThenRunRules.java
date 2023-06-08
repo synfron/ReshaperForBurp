@@ -4,24 +4,30 @@ import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.rules.Rule;
-import synfron.reshaper.burp.core.rules.RuleOperationType;
-import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.rules.RulesEngine;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
+import synfron.reshaper.burp.core.rules.*;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-public class ThenRunRules extends Then<ThenRunRules> {
-    private int cacheVersion;
+public class ThenRunRules extends Then<ThenRunRules> implements IHttpRuleOperation, IWebSocketRuleOperation {
+
+    private transient int cacheVersion;
     private transient Rule ruleCache = null;
     @Getter @Setter
     private boolean runSingle = true;
     @Getter @Setter
     private String ruleName;
 
-    public RuleResponse perform(IEventInfo eventInfo) {
-        RulesEngine rulesEngine = BurpExtender.getConnector().getRulesEngine();
+    private RulesEngine getRulesEngine(EventInfo eventInfo) {
+        return (eventInfo instanceof HttpEventInfo) ?
+                BurpExtender.getHttpConnector().getRulesEngine() :
+                BurpExtender.getWebSocketConnector().getRulesEngine();
+    }
+
+    public RuleResponse perform(EventInfo eventInfo) {
+        RulesEngine rulesEngine = getRulesEngine(eventInfo);
         RuleResponse ruleResponse;
         if (runSingle) {
             Rule rule;
@@ -47,7 +53,7 @@ public class ThenRunRules extends Then<ThenRunRules> {
             ruleCache = Stream.of(rulesEngine.getRulesRegistry().getRules())
                     .filter(rule -> StringUtils.isNotEmpty(rule.getName()) && rule.getName().equals(ruleName))
                     .findFirst()
-                    .get();
+                    .orElseThrow(() -> new NoSuchElementException(String.format("Rule '%s' not found", ruleName)));
             cacheVersion = rulesEngine.getRulesRegistry().getVersion();
         }
         return ruleCache;

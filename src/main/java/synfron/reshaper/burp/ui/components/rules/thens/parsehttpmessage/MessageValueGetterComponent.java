@@ -1,7 +1,8 @@
 package synfron.reshaper.burp.ui.components.rules.thens.parsehttpmessage;
 
 import net.miginfocom.swing.MigLayout;
-import synfron.reshaper.burp.core.messages.DataDirection;
+import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
@@ -19,7 +20,8 @@ import java.util.stream.Stream;
 public class MessageValueGetterComponent extends JPanel implements IFormComponent {
 
     private final MessageValueGetterModel model;
-    private final DataDirection dataDirection;
+    private final ProtocolType protocolType;
+    private final HttpDataDirection dataDirection;
     private final boolean deletable;
     private JComboBox<MessageValue> sourceMessageValue;
     private JTextField sourceIdentifier;
@@ -27,7 +29,8 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
     private JComboBox<VariableSource> destinationVariableSource;
     private JTextField destinationVariableName;
 
-    public MessageValueGetterComponent(MessageValueGetterModel model, DataDirection dataDirection, boolean deletable) {
+    public MessageValueGetterComponent(ProtocolType protocolType, MessageValueGetterModel model, HttpDataDirection dataDirection, boolean deletable) {
+        this.protocolType = protocolType;
         this.dataDirection = dataDirection;
         this.deletable = deletable;
         setBorder(new CompoundBorder(
@@ -43,12 +46,12 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
 
         sourceMessageValue = createComboBox(
                 Stream.of(MessageValue.values())
-                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isMessageGettable())
+                        .filter(messageValue -> messageValue.getDataDirection() == dataDirection && messageValue.isInnerLevelGettable(ProtocolType.Http))
                         .toArray(MessageValue[]::new)
         );
         sourceIdentifier = createTextField(true);
         sourceIdentifierPlacement = createComboBox(GetItemPlacement.values());
-        destinationVariableSource = createComboBox(new VariableSource[] { VariableSource.Event, VariableSource.Global });
+        destinationVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         destinationVariableName = createTextField(true);
 
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());

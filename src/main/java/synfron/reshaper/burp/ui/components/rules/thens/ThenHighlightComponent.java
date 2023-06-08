@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenHighlight;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenHighlightModel;
 
@@ -9,8 +10,8 @@ import java.awt.event.ActionEvent;
 public class ThenHighlightComponent extends ThenComponent<ThenHighlightModel, ThenHighlight> {
     private JComboBox<ThenHighlight.HighlightColor> color;
 
-    public ThenHighlightComponent(ThenHighlightModel then) {
-        super(then);
+    public ThenHighlightComponent(ProtocolType protocolType, ThenHighlightModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

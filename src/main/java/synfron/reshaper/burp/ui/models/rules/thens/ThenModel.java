@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.thens.Then;
@@ -9,8 +10,8 @@ import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 public abstract class ThenModel<P extends ThenModel<P, T>, T extends Then<T>> extends RuleOperationModel<P, T> {
 
-    public ThenModel(T ruleOperation, Boolean isNew) {
-        super(ruleOperation, isNew);
+    public ThenModel(ProtocolType protocolType, T ruleOperation, Boolean isNew) {
+        super(protocolType, ruleOperation, isNew);
     }
 
     public ThenModel<?,?> withListener(IEventListener<PropertyChangedArgs> listener) {
@@ -18,9 +19,10 @@ public abstract class ThenModel<P extends ThenModel<P, T>, T extends Then<T>> ex
         return this;
     }
 
-    public static ThenModel<?,?> getNewModel(RuleOperationModelType<?,?> ruleOperationProxyType) {
+    public static ThenModel<?,?> getNewModel(ProtocolType protocolType, RuleOperationModelType<?,?> ruleOperationProxyType) {
         return (ThenModel<?, ?>) ObjectUtils.construct(
                 ruleOperationProxyType.getType(),
+                protocolType,
                 ObjectUtils.construct(
                         ruleOperationProxyType.getRuleOperationType().getType()
                 ),
@@ -28,12 +30,13 @@ public abstract class ThenModel<P extends ThenModel<P, T>, T extends Then<T>> ex
         );
     }
 
-    public static ThenModel<?,?> getModel(Then<?> then) {
+    public static ThenModel<?,?> getModel(ProtocolType protocolType, Then<?> then) {
         return (ThenModel<?, ?>) ObjectUtils.construct(
-                ThenModelType.getTypes().stream()
+                ThenModelType.getTypes(ProtocolType.Any).stream()
                         .filter(type -> type.getRuleOperationType() == then.getType())
                         .findFirst()
                         .get().getType(),
+                protocolType,
                 then,
                 false
         );

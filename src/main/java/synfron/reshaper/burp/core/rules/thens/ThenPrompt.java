@@ -7,16 +7,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.events.MessageArgs;
 import synfron.reshaper.burp.core.events.message.*;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.vars.*;
+import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class ThenPrompt extends Then<ThenPrompt> {
+public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
     private VariableString description;
     @Getter @Setter
@@ -31,7 +34,7 @@ public class ThenPrompt extends Then<ThenPrompt> {
     private VariableString captureVariableName;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = false;
         boolean failed = false;
         boolean complete = false;
@@ -54,7 +57,7 @@ public class ThenPrompt extends Then<ThenPrompt> {
             if (messageWaiter.waitForMessage(failAfterInMilliseconds, TimeUnit.MILLISECONDS)) {
                 output = messageWaiter.getMessage().getResponse();
                 if (output != null) {
-                    setVariable(eventInfo, captureVariableName, output);
+                    setVariable(captureVariableSource, eventInfo, captureVariableName, output);
                 } else {
                     failed = true;
                 }
@@ -84,18 +87,6 @@ public class ThenPrompt extends Then<ThenPrompt> {
                 ));
         }
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
-    }
-
-    private void setVariable(IEventInfo eventInfo, String variableName, String value) {
-        Variables variables = switch (captureVariableSource) {
-            case Event -> eventInfo.getVariables();
-            case Global -> GlobalVariables.get();
-            default -> null;
-        };
-        if (variables != null) {
-            Variable variable = variables.add(variableName);
-            variable.setValue(value);
-        }
     }
 
     @Override

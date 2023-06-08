@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.ThenBreak;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenBreakModel;
@@ -10,8 +11,8 @@ import java.awt.event.ActionEvent;
 public class ThenBreakComponent extends ThenComponent<ThenBreakModel, ThenBreak> {
     private JComboBox<RuleResponse> breakType;
 
-    public ThenBreakComponent(ThenBreakModel then) {
-        super(then);
+    public ThenBreakComponent(ProtocolType protocolType, ThenBreakModel then) {
+        super(protocolType, then);
         initComponent();
     }
 

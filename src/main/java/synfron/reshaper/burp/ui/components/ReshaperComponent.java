@@ -5,7 +5,7 @@
  */
 package synfron.reshaper.burp.ui.components;
 
-import burp.ITab;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.ui.components.rules.RulesTabComponent;
 import synfron.reshaper.burp.ui.components.settings.SettingsTabComponent;
 import synfron.reshaper.burp.ui.components.vars.VariablesTabComponent;
@@ -13,7 +13,7 @@ import synfron.reshaper.burp.ui.components.vars.VariablesTabComponent;
 import javax.swing.*;
 import java.awt.*;
 
-public class ReshaperComponent extends JPanel implements ITab {
+public class ReshaperComponent extends JPanel {
 
     public ReshaperComponent() {
         initComponents();
@@ -27,20 +27,11 @@ public class ReshaperComponent extends JPanel implements ITab {
     private JTabbedPane getTabs() {
         JTabbedPane tabs = new JTabbedPane();
 
-        tabs.addTab("Rules", new RulesTabComponent());
+        tabs.addTab("HTTP Rules", new RulesTabComponent(ProtocolType.Http));
+        tabs.addTab("WebSocket Rules", new RulesTabComponent(ProtocolType.WebSocket));
         tabs.addTab("Global Variables", new VariablesTabComponent());
         tabs.addTab("Logs", new LogsComponent());
         tabs.addTab("Settings", new SettingsTabComponent());
         return tabs;
-    }
-
-    @Override
-    public String getTabCaption() {
-        return "Reshaper";
-    }
-
-    @Override
-    public Component getUiComponent() {
-        return this;
     }
 }

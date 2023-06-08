@@ -1,8 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.thens;
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.util.CharsetUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenSetEncoding;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -15,8 +14,8 @@ public class ThenSetEncodingModel extends ThenModel<ThenSetEncodingModel, ThenSe
     @Getter
     private String encoding;
 
-    public ThenSetEncodingModel(ThenSetEncoding then, Boolean isNew) {
-        super(then, isNew);
+    public ThenSetEncodingModel(ProtocolType protocolType, ThenSetEncoding then, Boolean isNew) {
+        super(protocolType, then, isNew);
         encoding = VariableString.toString(then.getEncoding(), encoding);
     }
 
@@ -51,6 +50,11 @@ public class ThenSetEncodingModel extends ThenModel<ThenSetEncodingModel, ThenSe
         }
         setValidated(true);
         return true;
+    }
+
+    @Override
+    protected String getTargetName() {
+        return abbreviateTargetName(encoding);
     }
 
     @Override

@@ -5,10 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.messages.*;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.Select;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -22,7 +19,7 @@ public class WhenWizardItemModel {
     @Getter
     private MessageValue messageValue;
     @Getter
-    private final IEventInfo eventInfo;
+    private final EventInfo eventInfo;
     @Getter
     private Select<String> identifiers = new Select<>(Collections.emptyList(), null);
     @Getter
@@ -35,7 +32,7 @@ public class WhenWizardItemModel {
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
-    public WhenWizardItemModel(MessageValue messageValue, IEventInfo eventInfo) {
+    public WhenWizardItemModel(MessageValue messageValue, EventInfo eventInfo) {
         this.eventInfo = eventInfo;
         setMessageValue(messageValue);
     }
@@ -58,7 +55,7 @@ public class WhenWizardItemModel {
 
     private void resetText() {
         try {
-            text = !hasLongValue(messageValue) ? MessageValueHandler.getValue(
+            text = !hasLongTextValue(messageValue) ? MessageValueHandler.getValue(
                     eventInfo,
                     messageValue,
                     identifiers.getSelectedOption() == null ? null : VariableString.getAsVariableString(identifiers.getSelectedOption(), false),
@@ -70,7 +67,7 @@ public class WhenWizardItemModel {
         propertyChanged("text", text);
     }
 
-    private boolean hasLongValue(MessageValue messageValue) {
+    private boolean hasLongTextValue(MessageValue messageValue) {
         return switch (messageValue) {
             case HttpRequestBody, HttpRequestHeaders, HttpRequestMessage, HttpResponseBody, HttpResponseHeaders, HttpResponseMessage -> true;
             default -> false;
@@ -108,7 +105,7 @@ public class WhenWizardItemModel {
     }
 
     public boolean requiresResponse() {
-        return messageValue.getDataDirection() == DataDirection.Response;
+        return messageValue.getDataDirection() == HttpDataDirection.Response;
     }
 
     public List<String> validate() {

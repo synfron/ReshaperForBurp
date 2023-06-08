@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
-import burp.ICookie;
+import burp.api.montoya.http.message.Cookie;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -9,10 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.messages.*;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.Log;
@@ -42,9 +39,10 @@ public class VariableString implements Serializable {
     }
 
     public static CSVFormat getParamFormat() {
-        return CSVFormat.DEFAULT.withDelimiter(':')
-                .withAllowMissingColumnNames(true)
-                .withEscape('\\');
+        return CSVFormat.DEFAULT.builder().setDelimiter(':')
+                .setAllowMissingColumnNames(true)
+                .setEscape('\\')
+                .build();
     }
 
     public static boolean isValidVariableName(String name) {
@@ -107,17 +105,17 @@ public class VariableString implements Serializable {
         }
     }
 
-    public Integer getInt(IEventInfo eventInfo)
+    public Integer getInt(EventInfo eventInfo)
     {
         return TextUtils.asInt(getText(eventInfo));
     }
 
-    public Double getDouble(IEventInfo eventInfo)
+    public Double getDouble(EventInfo eventInfo)
     {
         return TextUtils.asDouble(getText(eventInfo));
     }
 
-    public String getText(IEventInfo eventInfo)
+    public String getText(EventInfo eventInfo)
     {
         List<String> variableVals = new ArrayList<>();
         for (VariableSourceEntry variable : variables)
@@ -130,6 +128,7 @@ public class VariableString implements Serializable {
                         case File -> getFileText(eventInfo, variable.getName());
                         case Special -> variable.getName();
                         case CookieJar -> getCookie(variable.getName());
+                        case Annotation -> getAnnotation(eventInfo, variable.getName());
                         default -> null;
                     };
                     variableVals.add(value);
@@ -137,6 +136,7 @@ public class VariableString implements Serializable {
                     Variable value = switch (variable.getVariableSource()) {
                         case Global -> GlobalVariables.get().getOrDefault(variable.getName());
                         case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
+                        case Session -> eventInfo.getSessionVariables().getOrDefault(variable.getName());
                         default -> null;
                     };
                     variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
@@ -146,6 +146,17 @@ public class VariableString implements Serializable {
         return String.format(text, variableVals.toArray());
     }
 
+    private String getAnnotation(EventInfo eventInfo, String name) {
+        MessageAnnotation annotation = EnumUtils.getEnumIgnoreCase(MessageAnnotation.class, name);
+        if (annotation != null && eventInfo.getAnnotations() != null) {
+            return switch (annotation) {
+                case Comment -> eventInfo.getAnnotations().notes();
+                case HighlightColor -> StringUtils.capitalize(eventInfo.getAnnotations().highlightColor().name().toLowerCase());
+            };
+        }
+        return null;
+    }
+
     private String getCookie(String locator) {
         try {
             String[] parts = locator.split(":", 3);
@@ -153,23 +164,24 @@ public class VariableString implements Serializable {
             String name = parts[1];
             String path = CollectionUtils.elementAtOrDefault(parts, 2);
             if (Arrays.stream(parts).anyMatch(part -> part.startsWith("\""))) {
-                CSVParser csvParser = CSVParser.parse(locator, getParamFormat());
-                CSVRecord record = csvParser.getRecords().get(0);
-                if (record.size() == 2) {
-                    domain = record.get(0);
-                    name = record.get(1);
-                    path = null;
-                } else if (record.size() == 3) {
-                    domain = record.get(0);
-                    name = record.get(1);
-                    path = record.get(2);
+                try (CSVParser csvParser = CSVParser.parse(locator, getParamFormat())) {
+                    CSVRecord record = csvParser.getRecords().get(0);
+                    if (record.size() == 2) {
+                        domain = record.get(0);
+                        name = record.get(1);
+                        path = null;
+                    } else if (record.size() == 3) {
+                        domain = record.get(0);
+                        name = record.get(1);
+                        path = record.get(2);
+                    }
                 }
             }
-            for (ICookie cookie : BurpExtender.getCallbacks().getCookieJarContents()) {
-                if (cookie.getDomain().equals(domain)
-                        && cookie.getName().equals(name)
-                        && (path == null || StringUtils.defaultString(cookie.getPath()).equals(path))) {
-                    return cookie.getValue();
+            for (Cookie cookie : BurpExtender.getApi().http().cookieJar().cookies()) {
+                if (cookie.domain().equals(domain)
+                        && cookie.name().equals(name)
+                        && (path == null || StringUtils.defaultString(cookie.path()).equals(path))) {
+                    return cookie.value();
                 }
             }
         } catch (Exception e) {
@@ -180,7 +192,7 @@ public class VariableString implements Serializable {
         return "";
     }
 
-    private String getFileText(IEventInfo eventInfo, String locator) {
+    private String getFileText(EventInfo eventInfo, String locator) {
         try {
             String[] variableNameParts = locator.split(":", 2);
             File file = new File(variableNameParts[1]);
@@ -210,7 +222,7 @@ public class VariableString implements Serializable {
             return null;
     }
 
-    private String getMessageVariable(IEventInfo eventInfo, String locator) {
+    private String getMessageVariable(EventInfo eventInfo, String locator) {
         String[] variableNameParts = locator.split(":", 2);
         MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
         String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
@@ -223,23 +235,23 @@ public class VariableString implements Serializable {
         return null;
     }
 
-    public static String getTextOrDefault(IEventInfo eventInfo, VariableString variableString, String defaultValue) {
+    public static String getTextOrDefault(EventInfo eventInfo, VariableString variableString, String defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 StringUtils.defaultIfEmpty(variableString.getText(eventInfo), defaultValue) :
                 defaultValue;
     }
 
-    public static String getText(IEventInfo eventInfo, VariableString variableString) {
+    public static String getText(EventInfo eventInfo, VariableString variableString) {
         return variableString != null ? variableString.getText(eventInfo) : null;
     }
 
-    public static Integer getIntOrDefault(IEventInfo eventInfo, VariableString variableString, Integer defaultValue) {
+    public static Integer getIntOrDefault(EventInfo eventInfo, VariableString variableString, Integer defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 variableString.getInt(eventInfo) :
                 defaultValue;
     }
 
-    public static Double getDoubleOrDefault(IEventInfo eventInfo, VariableString variableString, Double defaultValue) {
+    public static Double getDoubleOrDefault(EventInfo eventInfo, VariableString variableString, Double defaultValue) {
         return variableString != null && !variableString.isEmpty() ?
                 variableString.getDouble(eventInfo) :
                 defaultValue;

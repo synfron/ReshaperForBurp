@@ -2,7 +2,9 @@ package synfron.reshaper.burp.ui.components;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
 import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
@@ -21,6 +23,10 @@ import static java.awt.Component.TOP_ALIGNMENT;
 public interface IFormComponent {
 
     default Component getLabeledField(String label, Component innerComponent) {
+        return getLabeledField(label, innerComponent, true);
+    }
+
+    default Component getLabeledField(String label, Component innerComponent, boolean span) {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout());
         container.setBorder(null);
@@ -30,7 +36,7 @@ public interface IFormComponent {
         }
 
         container.add(new JLabel(label), "wrap");
-        container.add(innerComponent);
+        container.add(innerComponent, span ? "grow, push, span" : "");
         return container;
     }
 
@@ -48,12 +54,16 @@ public interface IFormComponent {
         return comboBox;
     }
 
+    private ProtocolType getProtocolType() {
+        return this instanceof RuleOperationComponent<?, ?> ? ((RuleOperationComponent<?, ?>)this).getProtocolType() : ProtocolType.Any;
+    }
+
     default JTextField createTextField(boolean supportsVariableTags) {
         JTextField textField = new JTextField();
         textField.setColumns(20);
         textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
         textField.setAlignmentX(LEFT_ALIGNMENT);
-        return addContextMenu(addUndo(textField), supportsVariableTags);
+        return addContextMenu(addUndo(textField), supportsVariableTags, getProtocolType());
     }
 
     default Component getPaddedButton(JButton button) {
@@ -65,10 +75,14 @@ public interface IFormComponent {
     }
 
     default JTextPane createTextPane() {
-        return addContextMenu(addUndo(new JTextPane()), false);
+        return addContextMenu(addUndo(new JTextPane()), false, getProtocolType());
     }
 
-    private static <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags) {
+    default <T extends JTextComponent> T createTextComponent(T textComponent) {
+        return addContextMenu(addUndo(textComponent), false, getProtocolType());
+    }
+
+    private static <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags, ProtocolType protocolType) {
         JPopupMenu popupMenu = new JPopupMenu();
 
         Action cut = new DefaultEditorKit.CutAction();
@@ -87,7 +101,7 @@ public interface IFormComponent {
         popupMenu.add(selectAll);
 
         if (supportsVariableTags) {
-            Action addVariableTag =  new ActionPerformedListener(event -> insertVariableTag(textComponent));
+            Action addVariableTag =  new ActionPerformedListener(event -> insertVariableTag(textComponent, protocolType));
             addVariableTag.putValue(Action.NAME, "Insert Variable Tag");
             popupMenu.addSeparator();
             popupMenu.add(addVariableTag);
@@ -98,10 +112,10 @@ public interface IFormComponent {
         return textComponent;
     }
 
-    private static <T extends JTextComponent> void insertVariableTag(T textComponent) {
+    private static <T extends JTextComponent> void insertVariableTag(T textComponent, ProtocolType protocolType) {
         VariableTagWizardModel model = new VariableTagWizardModel();
         do {
-            ModalPrompter.open(model, ignored -> VariableTagWizardOptionPane.showDialog(model), false);
+            ModalPrompter.open(model, ignored -> VariableTagWizardOptionPane.showDialog(model, protocolType), false);
         } while (model.isInvalidated() && !model.isDismissed());
         if (!model.isDismissed()) {
             String tag = model.getTag();

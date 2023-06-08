@@ -7,15 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
-import synfron.reshaper.burp.core.messages.DataDirection;
-import synfron.reshaper.burp.core.messages.IEventInfo;
-import synfron.reshaper.burp.core.messages.MessageValue;
+import synfron.reshaper.burp.core.messages.*;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
-import synfron.reshaper.burp.core.rules.whens.When;
-import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
-import synfron.reshaper.burp.core.rules.whens.WhenHasEntity;
-import synfron.reshaper.burp.core.rules.whens.WhenMatchesText;
+import synfron.reshaper.burp.core.rules.RulesRegistry;
+import synfron.reshaper.burp.core.rules.whens.*;
 import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.utils.IPrompterModel;
@@ -28,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     @Getter
-    private final IEventInfo eventInfo;
+    private final EventInfo eventInfo;
     @Getter
     private String ruleName;
     @Getter
@@ -44,7 +40,7 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     @Setter @Getter
     private ModalPrompter<WhenWizardModel> modalPrompter;
 
-    public WhenWizardModel(IEventInfo eventInfo) {
+    public WhenWizardModel(EventInfo eventInfo) {
         this.eventInfo = eventInfo;
     }
 
@@ -133,14 +129,26 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
                     whens.addLast(when);
                 }
             }
-            WhenEventDirection direction = new WhenEventDirection();
-            direction.setDataDirection(requiresResponse ? DataDirection.Response : DataDirection.Request);
-            whens.addFirst(direction);
-            rule.setName(ruleName);
-            rule.setEnabled(false);
-            rule.setAutoRun(true);
-            rule.setWhens(whens.toArray(When[]::new));
-            BurpExtender.getConnector().getRulesEngine().getRulesRegistry().addRule(rule);
+            RulesRegistry rulesRegistry = null;
+            if (eventInfo instanceof HttpEventInfo) {
+                WhenEventDirection direction = new WhenEventDirection();
+                direction.setDataDirection(requiresResponse ? HttpDataDirection.Response : HttpDataDirection.Request);
+                whens.addFirst(direction);
+                rulesRegistry = BurpExtender.getHttpConnector().getRulesEngine().getRulesRegistry();
+            } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
+                WhenWebSocketEventDirection direction = new WhenWebSocketEventDirection();
+                direction.setDataDirection(webSocketEventInfo.getDataDirection());
+                whens.addFirst(direction);
+                rulesRegistry = BurpExtender.getWebSocketConnector().getRulesEngine().getRulesRegistry();
+            }
+
+            if (rulesRegistry != null) {
+                rule.setName(ruleName);
+                rule.setEnabled(false);
+                rule.setAutoRun(true);
+                rule.setWhens(whens.toArray(When[]::new));
+                rulesRegistry.addRule(rule);
+            }
             setInvalidated(false);
             return true;
         }

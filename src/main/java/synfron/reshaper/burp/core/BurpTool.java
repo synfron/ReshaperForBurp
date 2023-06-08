@@ -1,28 +1,26 @@
 package synfron.reshaper.burp.core;
 
-import burp.IBurpExtenderCallbacks;
-import lombok.Getter;
-
-import java.util.Arrays;
+import burp.api.montoya.core.ToolType;
 
 public enum BurpTool {
-    Proxy(IBurpExtenderCallbacks.TOOL_PROXY),
-    Repeater(IBurpExtenderCallbacks.TOOL_REPEATER),
-    Intruder(IBurpExtenderCallbacks.TOOL_INTRUDER),
-    Target(IBurpExtenderCallbacks.TOOL_TARGET),
-    Spider(IBurpExtenderCallbacks.TOOL_SPIDER),
-    Scanner(IBurpExtenderCallbacks.TOOL_SCANNER),
-    Extender(IBurpExtenderCallbacks.TOOL_EXTENDER),
-    Session(null);
+    Proxy,
+    Repeater,
+    Intruder,
+    Target,
+    Scanner,
+    Extender,
+    Session,
+    WebSockets;
 
-    @Getter
-    private final Integer id;
-
-    BurpTool(Integer id) {
-        this.id = id;
-    }
-
-    public static BurpTool getById(int id) {
-        return Arrays.stream(values()).filter(tool -> tool.getId() == id).findFirst().orElse(null);
+    public static BurpTool from(ToolType toolType) {
+        return switch (toolType) {
+            case PROXY -> Proxy;
+            case TARGET -> Target;
+            case SCANNER -> Scanner;
+            case INTRUDER -> Intruder;
+            case REPEATER -> Repeater;
+            case EXTENSIONS -> Extender;
+            case SUITE, SEQUENCER, RECORDED_LOGIN_REPLAYER, COMPARER, DECODER, LOGGER -> null;
+        };
     }
 }

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSendTo;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSendToModel;
@@ -8,6 +9,7 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSendTo> {
@@ -20,13 +22,16 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
     private JTextField value;
     private JTextField url;
 
-    public ThenSendToComponent(ThenSendToModel then) {
-        super(then);
+    public ThenSendToComponent(ProtocolType protocolType, ThenSendToModel then) {
+        super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
-        sendTo = createComboBox(SendToOption.values());
+        sendTo = createComboBox(Arrays.stream(SendToOption.values())
+                .filter(value -> value != SendToOption.Spider)
+                .toArray(SendToOption[]::new)
+        );
         overrideDefaults = new JCheckBox("Override Defaults");
         host = createTextField(true);
         port = createTextField(true);
@@ -96,8 +101,7 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 getLabeledField("URL", url),
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
-                        sendTo.getSelectedItem() == SendToOption.Spider ||
-                                sendTo.getSelectedItem() == SendToOption.Browser
+                        sendTo.getSelectedItem() == SendToOption.Browser
                 )
         ), "wrap");
         mainContainer.add(getPaddedButton(validate));

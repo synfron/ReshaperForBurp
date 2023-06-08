@@ -7,7 +7,9 @@ import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Log;
@@ -21,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class ThenRunProcess extends Then<ThenRunProcess> {
+public class ThenRunProcess extends Then<ThenRunProcess> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter @Setter
     private VariableString command;
     @Getter @Setter
@@ -46,7 +48,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
     private VariableString captureVariableName;
 
     @Override
-    public RuleResponse perform(IEventInfo eventInfo) {
+    public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = false;
         boolean failed = false;
         boolean complete = false;
@@ -95,7 +97,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     output = stringWriter.toString();
-                    setVariable(eventInfo, captureVariableName, output);
+                    setVariable(captureVariableSource, eventInfo, captureVariableName, output);
                 }
             }
 
@@ -122,19 +124,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
     }
 
-    private void setVariable(IEventInfo eventInfo, String variableName, String value) {
-        Variables variables = switch (captureVariableSource) {
-            case Event -> eventInfo.getVariables();
-            case Global -> GlobalVariables.get();
-            default -> null;
-        };
-        if (variables != null) {
-            Variable variable = variables.add(variableName);
-            variable.setValue(value);
-        }
-    }
-
-    private String getVariableName(IEventInfo eventInfo) {
+    private String getVariableName(EventInfo eventInfo) {
         String captureVariableName = null;
         if (captureOutput && StringUtils.isEmpty(captureVariableName = this.captureVariableName.getText(eventInfo))) {
             throw new IllegalArgumentException("Invalid variable name");
@@ -142,7 +132,7 @@ public class ThenRunProcess extends Then<ThenRunProcess> {
         return captureVariableName;
     }
 
-    private int getFailAfter(IEventInfo eventInfo) {
+    private int getFailAfter(EventInfo eventInfo) {
         int failAfter = 0;
         if (waitForCompletion && (failAfter = this.failAfter.getInt(eventInfo)) <= 0) {
             throw new IllegalArgumentException("Invalid wait limit value");

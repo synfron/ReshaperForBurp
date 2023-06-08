@@ -1,11 +1,13 @@
 package synfron.reshaper.burp.core.utils;
 
+import burp.BurpExtender;
+import burp.api.montoya.utilities.ByteUtils;
+import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Objects;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class ObjectUtils {
@@ -19,12 +21,25 @@ public class ObjectUtils {
         }
     }
 
-    public static URL getUrl(String protocol, String host, int port, String path) throws MalformedURLException {
-        return new URL(
-                protocol,
-                host,
-                (Objects.equals(protocol, "http") && port == 80) || (Objects.equals(protocol, "https") && port == 443) ? -1 : port,
-                path
-        );
+    public static byte[] asHttpMessage(String statusLine, List<String> headers, byte[] body) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ByteUtils byteUtils = BurpExtender.getApi().utilities().byteUtils();
+        int appendIndex = 0;
+        if (StringUtils.isNotEmpty(statusLine)) {
+            byteArrayOutputStream.writeBytes(byteUtils.convertFromString(statusLine));
+            appendIndex++;
+        }
+        for (int headerIndex = 0; headerIndex < headers.size(); headerIndex++) {
+            if (headerIndex != appendIndex) {
+                byteArrayOutputStream.writeBytes(byteUtils.convertFromString("\r\n"));
+            }
+            byteArrayOutputStream.writeBytes(byteUtils.convertFromString(headers.get(headerIndex)));
+            appendIndex++;
+        }
+        byteArrayOutputStream.writeBytes(byteUtils.convertFromString("\r\n\r\n"));
+        if (body != null && body.length > 0) {
+            byteArrayOutputStream.writeBytes(body);
+        }
+        return byteArrayOutputStream.toByteArray();
     }
 }

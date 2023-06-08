@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
 import burp.BurpExtender;
-import burp.ICookie;
+import burp.api.montoya.http.message.Cookie;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
@@ -11,13 +11,16 @@ import synfron.reshaper.burp.core.utils.Select;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CookieJarVariableTagWizardModel implements IVariableTagWizardModel {
 
     @Getter
     private final Select<String> domains;
+    private final List<Cookie> cookies;
     @Getter
     private Select<String> names;
     @Getter
@@ -27,8 +30,9 @@ public class CookieJarVariableTagWizardModel implements IVariableTagWizardModel 
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
     public CookieJarVariableTagWizardModel() {
-        List<String> domains = BurpExtender.getCallbacks().getCookieJarContents().stream()
-                .map(ICookie::getDomain)
+        this.cookies = BurpExtender.getApi() != null ? BurpExtender.getApi().http().cookieJar().cookies() : Collections.emptyList();
+        List<String> domains = this.cookies.stream()
+                .map(Cookie::domain)
                 .filter(StringUtils::isNotEmpty)
                 .distinct()
                 .collect(Collectors.toList());
@@ -43,9 +47,9 @@ public class CookieJarVariableTagWizardModel implements IVariableTagWizardModel 
     }
 
     private void resetNames() {
-        List<String> names = BurpExtender.getCallbacks().getCookieJarContents().stream()
-                .filter(cookie -> cookie.getDomain().equals(this.domains.getSelectedOption()))
-                .map(ICookie::getName)
+        List<String> names = this.cookies.stream()
+                .filter(cookie -> cookie.domain().equals(this.domains.getSelectedOption()))
+                .map(Cookie::name)
                 .filter(StringUtils::isNotEmpty)
                 .distinct()
                 .collect(Collectors.toList());
@@ -55,9 +59,9 @@ public class CookieJarVariableTagWizardModel implements IVariableTagWizardModel 
     }
 
     private void resetPaths() {
-        List<String> paths = BurpExtender.getCallbacks().getCookieJarContents().stream()
-                .filter(cookie -> cookie.getDomain().equals(this.domains.getSelectedOption()) && cookie.getDomain().equals(this.names.getSelectedOption()))
-                .map(ICookie::getPath)
+        List<String> paths = this.cookies.stream()
+                .filter(cookie -> cookie.domain().equals(this.domains.getSelectedOption()) && cookie.domain().equals(this.names.getSelectedOption()))
+                .map(Cookie::path)
                 .filter(StringUtils::isNotEmpty)
                 .distinct()
                 .collect(Collectors.toList());

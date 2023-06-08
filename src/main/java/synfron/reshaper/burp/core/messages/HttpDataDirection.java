@@ -1,6 +1,6 @@
 package synfron.reshaper.burp.core.messages;
 
-public enum DataDirection {
+public enum HttpDataDirection {
     Request,
     Response
 }

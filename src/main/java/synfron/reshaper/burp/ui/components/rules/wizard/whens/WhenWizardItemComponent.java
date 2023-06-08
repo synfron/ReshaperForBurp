@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.wizard.whens;
 
 import net.miginfocom.swing.MigLayout;
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardItemModel;
@@ -11,9 +12,11 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public class WhenWizardItemComponent extends JPanel implements IFormComponent {
+    private final ProtocolType protocolType;
     private final WhenWizardItemModel model;
     private final boolean deletable;
     private JComboBox<MessageValue> messageValue;
@@ -21,7 +24,8 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
     private JComboBox<WhenWizardMatchType> matchType;
     private JTextField text;
 
-    public WhenWizardItemComponent(WhenWizardItemModel model, boolean deletable) {
+    public WhenWizardItemComponent(ProtocolType protocolType, WhenWizardItemModel model, boolean deletable) {
+        this.protocolType = protocolType;
         this.model = model;
         this.deletable = deletable;
         initComponent();
@@ -31,7 +35,8 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
         setLayout(new BorderLayout());
         JPanel container = new JPanel(new MigLayout());
 
-        messageValue = createComboBox(MessageValue.values());
+        messageValue = createComboBox(Arrays.stream(MessageValue.values())
+                .filter(value -> value.isGettable(protocolType)).toArray(MessageValue[]::new));
         identifier = createComboBox(model.getIdentifiers().getOptions().toArray(new String[0]));
         matchType = createComboBox(WhenWizardMatchType.values());
         text = createTextField(true);

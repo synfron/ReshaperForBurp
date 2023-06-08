@@ -121,7 +121,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
     }
 
     private Component getGitHubLink() {
-        JLabel githubLink = new JLabel("Help");
+        JLabel githubLink = new JLabel("Help | View on GitHub");
         githubLink.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         Font font = githubLink.getFont();
         Map attributes = font.getAttributes();
@@ -130,6 +130,18 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
         githubLink.addMouseListener(new MouseListener() {
             private final Color originalColor = githubLink.getForeground();
+            private Color hoverColor;
+
+            private Color getHoverColor() {
+                if (hoverColor == null) {
+                    int halfByte = 128;
+                    int newRed = (halfByte + originalColor.getRed()) / 2;
+                    int newGreen = (halfByte + originalColor.getGreen()) / 2;
+                    int newBlue = (halfByte + originalColor.getBlue()) / 2;
+                    hoverColor = new Color(newRed, newGreen, newBlue);
+                }
+                return hoverColor;
+            }
 
             @SneakyThrows
             @Override
@@ -145,7 +157,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                githubLink.setForeground(new Color(0, 0, 0xC0));
+                githubLink.setForeground(getHoverColor());
             }
 
             @Override

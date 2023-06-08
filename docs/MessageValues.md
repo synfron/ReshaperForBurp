@@ -1,11 +1,17 @@
 # Message Values
 
+Message values are values that are extracted from components of the HTTP message, WebSocket message, or connection details associated with an event that is being processed by Rules.
+
+Note: HTTP message values that are accessible by WebSocket Rule operations refer to components of the originating ws:// or wss:// request that triggered the establishment of the WebSocket connection.
+
 * auto-gen TOC:
   {:toc}
 
 ## Source Address 
 
 Key: SourceAddress
+
+Rule Availability: HTTP
 
 Example: `127.0.0.1`
 
@@ -15,11 +21,15 @@ Host name without port.
 
 Key: DestinationAddress
 
+Rule Availability: HTTP, WebSocket
+
 Example: `www.example.com`
 
 ## Destination Port 
 
 Key: DestinationPort
+
+Rule Availability: HTTP, WebSocket
 
 Example: `80`
 
@@ -29,15 +39,27 @@ Example: `80`
 
 Key: HttpProtocol
 
+Rule Availability: HTTP, WebSocket
+
 ## URL 
 
 Key: URL
 
+Rule Availability: HTTP, WebSocket
+
 Example: `http://www.example.com/index.html?query=test`
+
+## WebSocket Message
+
+Key: WebSocketMessage
+
+Rule Availability: WebSocket
 
 ## Request Message 
 
 Key: HttpRequestMessage
+
+Rule Availability: HTTP, WebSocket
 
 Example:
 ```
@@ -57,11 +79,15 @@ Cache-Control: no-cache
 
 Key: HttpRequestStatusLine
 
+Rule Availability: HTTP, WebSocket
+
 Example: `GET /path/to/page/index.html?claim=reset&type=plain HTTP/1.1`
 
 ## Request Method 
 
 Key: HttpRequestMethod
+
+Rule Availability: HTTP, WebSocket
 
 Example: `GET`
 
@@ -69,11 +95,15 @@ Example: `GET`
 
 Key: HttpRequestUri
 
+Rule Availability: HTTP, WebSocket
+
 Example: `/path/to/page/index.html?claim=reset&type=plain`
 
 ## Request URI Path 
 
 Key: HttpRequestUriPath
+
+Rule Availability: HTTP, WebSocket
 
 Example: `/path/to/page/index.html` from `/path/to/page/index.html?claim=reset&type=plain`
 
@@ -81,17 +111,23 @@ Example: `/path/to/page/index.html` from `/path/to/page/index.html?claim=reset&t
 
 Key: HttpRequestUriQueryParameters
 
+Rule Availability: HTTP, WebSocket
+
 Example: `claim=reset&type=plain` from `/path/to/page/index.html?claim=reset&type=plain`
 
 ## Request URI Query Parameter 
 
 Key: HttpRequestUriQueryParameter
 
+Rule Availability: HTTP, WebSocket
+
 Example: Returns `plain` using identifier `type` given the request URI `/path/to/page/index.html?claim=reset&type=plain`
 
 ## Request Headers 
 
 Key: HttpRequestHeaders
+
+Rule Availability: HTTP, WebSocket
 
 Example:
 ```
@@ -111,6 +147,8 @@ Cache-Control: no-cache
 
 Key: HttpRequestHeader
 
+Rule Availability: HTTP, WebSocket
+
 Example: Based request header `Accept-Encoding: gzip, deflate`, this returns `gzip, deflate` using identifier `Accept-Encoding`
 
 Example: `gzip, deflate` at identifier `Accept-Encoding`
@@ -119,15 +157,21 @@ Example: `gzip, deflate` at identifier `Accept-Encoding`
 
 Key: HttpRequestCookie
 
+Rule Availability: HTTP, WebSocket
+
 Example: For cookie header `Cookie: AID=2Zy8`, this returns `2Zy8` using identifier `AID`
 
 ## Request Body 
 
 Key: HttpRequestBody
 
+Rule Availability: HTTP, WebSocket
+
 ## Response Message 
 
 Key: HttpResponseMessage
+
+Rule Availability: HTTP
 
 Example:
 ```
@@ -150,11 +194,15 @@ Connection: close
 
 Key: HttpResponseStatusLine
 
+Rule Availability: HTTP
+
 Example: `HTTP/1.1 404 Not Found`
 
 ## Response Status Code 
 
 Key: HttpResponseStatusCode
+
+Rule Availability: HTTP
 
 Example: `404`
 
@@ -162,11 +210,17 @@ Example: `404`
 
 Key: HttpResponseStatusMessage
 
+Rule Availability: HTTP
+
 Example: `Not Found`
 
 ## Response Headers 
 
-Key: HttpResponseHeaders - Example:
+Key: HttpResponseHeaders
+
+Rule Availability: HTTP
+
+Example:
 ```
 HTTP/1.1 404 Not Found
 Accept-Ranges: bytes
@@ -188,14 +242,20 @@ Connection: close
 
 Key: HttpResponseHeader
 
+Rule Availability: HTTP
+
 Example: Based response header `Cache-Control: max-age=604800`, this returns `max-age=604800` using identifier `Cache-Control`
 
 ## Response Cookie 
 
-Key: HttpResponseCookie 
+Key: HttpResponseCookie
+
+Rule Availability: HTTP
 
 Example: For cookie header `Set-Cookie: AID=2Zy8`, this returns `2Zy8` using identifier `AID`
 
 ## Response Body 
 
 Key: HttpResponseBody
+
+Rule Availability: HTTP

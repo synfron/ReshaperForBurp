@@ -1,30 +1,32 @@
 package synfron.reshaper.burp.core.rules.thens;
 
 import burp.BurpExtender;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.message.requests.HttpRequest;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.messages.IEventInfo;
+import synfron.reshaper.burp.core.messages.EventInfo;
+import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
+import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.core.utils.ObjectUtils;
-import synfron.reshaper.burp.core.utils.TextUtils;
+import synfron.reshaper.burp.core.utils.Url;
+import synfron.reshaper.burp.core.utils.UrlUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 
-public class ThenSendTo extends Then<ThenSendTo> {
+public class ThenSendTo extends Then<ThenSendTo> implements IHttpRuleOperation, IWebSocketRuleOperation {
 
     @Getter @Setter
     private SendToOption sendTo = SendToOption.Repeater;
@@ -43,19 +45,18 @@ public class ThenSendTo extends Then<ThenSendTo> {
     @Getter @Setter
     private VariableString url;
 
-    public RuleResponse perform(IEventInfo eventInfo)
+    public RuleResponse perform(EventInfo eventInfo)
     {
         switch (sendTo) {
             case Comparer -> sendToComparer(eventInfo);
             case Intruder -> sendToIntruder(eventInfo);
             case Repeater -> sendToRepeater(eventInfo);
-            case Spider -> sendToSpider(eventInfo);
             case Browser -> sendToBrowser(eventInfo);
         }
         return RuleResponse.Continue;
     }
 
-    private void sendToIntruder(IEventInfo eventInfo) {
+    private void sendToIntruder(EventInfo eventInfo) {
         String host = null;
         int port = 0;
         boolean isHttps = false;
@@ -81,7 +82,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                 isHttps = StringUtils.equalsIgnoreCase(eventInfo.getHttpProtocol(), "https");
                 request = eventInfo.getHttpRequestMessage().getValue();
             }
-            BurpExtender.getCallbacks().sendToIntruder(host, port, isHttps, request);
+            BurpExtender.getApi().intruder().sendToIntruder(HttpRequest.httpRequest(HttpService.httpService(host, port, isHttps), ByteArray.byteArray(request)));
         } catch (Exception e) {
             hasError = true;
             throw e;
@@ -96,7 +97,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToRepeater(IEventInfo eventInfo) {
+    private void sendToRepeater(EventInfo eventInfo) {
         String host = null;
         int port = 0;
         boolean isHttps = false;
@@ -122,7 +123,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                 isHttps = StringUtils.equalsIgnoreCase(eventInfo.getHttpProtocol(), "https");
                 request = eventInfo.getHttpRequestMessage().getValue();
             }
-            BurpExtender.getCallbacks().sendToRepeater(host, port, isHttps, request, null);
+            BurpExtender.getApi().repeater().sendToRepeater(HttpRequest.httpRequest(HttpService.httpService(host, port, isHttps), ByteArray.byteArray(request)));
         } catch (Exception e) {
             hasError = true;
             throw e;
@@ -137,7 +138,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToComparer(IEventInfo eventInfo) {
+    private void sendToComparer(EventInfo eventInfo) {
         byte[] data = null;
         boolean hasError = false;
         try {
@@ -151,7 +152,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
             } else {
                 data = eventInfo.getHttpRequestMessage().getValue();
             }
-            BurpExtender.getCallbacks().sendToComparer(data);
+            BurpExtender.getApi().comparer().sendToComparer(ByteArray.byteArray(data));
         } catch (Exception e) {
             hasError = true;
             throw e;
@@ -163,43 +164,14 @@ public class ThenSendTo extends Then<ThenSendTo> {
         }
     }
 
-    private void sendToSpider(IEventInfo eventInfo) {
-        URL url = null;
+    private void sendToBrowser(EventInfo eventInfo) {
+        Url url = null;
         boolean hasError = false;
         try {
             if (overrideDefaults && this.url != null && !this.url.isEmpty()) {
-                url = new URL(this.url.getText(eventInfo));
+                url = new Url(this.url.getText(eventInfo));
             } else {
-                url = ObjectUtils.getUrl(
-                        eventInfo.getHttpProtocol().toLowerCase(),
-                        eventInfo.getDestinationAddress(),
-                        eventInfo.getDestinationPort(),
-                        eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getValue()
-                );
-            }
-            BurpExtender.getCallbacks().sendToSpider(url);
-        } catch (MalformedURLException e) {
-            hasError = true;
-            throw new WrappedException(e);
-        } catch (Exception e) {
-            hasError = true;
-            throw e;
-        } finally {
-            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                    Pair.of("sendTo", sendTo),
-                    Pair.of("url", url)
-            ));
-        }
-    }
-
-    private void sendToBrowser(IEventInfo eventInfo) {
-        URL url = null;
-        boolean hasError = false;
-        try {
-            if (overrideDefaults && this.url != null && !this.url.isEmpty()) {
-                url = new URL(this.url.getText(eventInfo));
-            } else {
-                url = ObjectUtils.getUrl(
+                url = UrlUtils.getUrl(
                         eventInfo.getHttpProtocol().toLowerCase(),
                         eventInfo.getDestinationAddress(),
                         eventInfo.getDestinationPort(),
@@ -207,7 +179,7 @@ public class ThenSendTo extends Then<ThenSendTo> {
                 );
             }
             openBrowser(url.toURI());
-        } catch (URISyntaxException | IOException e) {
+        } catch (IOException e) {
             hasError = true;
             throw new WrappedException(e);
         } catch (Exception e) {

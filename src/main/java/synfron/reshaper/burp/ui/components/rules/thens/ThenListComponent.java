@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
+import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationListComponent;
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class ThenListComponent extends RuleOperationListComponent<ThenModel<?,?>> {
 
-    public ThenListComponent(RuleModel model) {
-        super(model);
+    public ThenListComponent(ProtocolType protocolType, RuleModel model) {
+        super(protocolType, model);
     }
 
     @Override
@@ -24,16 +25,16 @@ public class ThenListComponent extends RuleOperationListComponent<ThenModel<?,?>
 
     @Override
     protected List<RuleOperationModelType<?,?>> getRuleOperationModelTypes() {
-        return Collections.unmodifiableList(ThenModelType.getTypes());
+        return Collections.unmodifiableList(ThenModelType.getTypes(protocolType));
     }
 
     @Override
     protected ThenModel<?, ?> getNewModel(RuleOperationModelType<?,?> ruleOperationModelType) {
-        return ThenModel.getNewModel(ruleOperationModelType);
+        return ThenModel.getNewModel(protocolType, ruleOperationModelType);
     }
 
     @Override
     protected <R extends IRuleOperation<?>> ThenModel<?, ?> getModel(R then) {
-        return ThenModel.getModel((Then<?>)then);
+        return ThenModel.getModel(protocolType, (Then<?>)then);
     }
 }

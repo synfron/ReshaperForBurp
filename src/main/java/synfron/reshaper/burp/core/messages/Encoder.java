@@ -104,11 +104,11 @@ public class Encoder {
     }
 
     private byte[] defaultEncode(String text) {
-        return BurpExtender.getCallbacks().getHelpers().stringToBytes(StringUtils.defaultString(text));
+        return BurpExtender.getApi().utilities().byteUtils().convertFromString(StringUtils.defaultString(text));
     }
 
     private String defaultDecode(byte[] data) {
-        return BurpExtender.getCallbacks().getHelpers().bytesToString(ObjectUtils.defaultIfNull(data, new byte[0]));
+        return BurpExtender.getApi().utilities().byteUtils().convertToString(ObjectUtils.defaultIfNull(data, new byte[0]));
     }
 
     private String autoDetectDecode(byte[] data) {
