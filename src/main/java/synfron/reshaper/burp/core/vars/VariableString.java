@@ -2,12 +2,14 @@ package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
 import burp.api.montoya.http.message.Cookie;
+import burp.api.montoya.http.message.HttpRequestResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.*;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
@@ -57,8 +59,7 @@ public class VariableString implements Serializable {
         return variableString == null || variableString.isEmpty();
     }
 
-    public String toString()
-    {
+    public String toString() {
         return String.format(text, variables.stream().map(VariableSourceEntry::getTag).toArray());
     }
 
@@ -77,14 +78,12 @@ public class VariableString implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public static VariableString getAsVariableString(String str, boolean requiresParsing)
-    {
+    public static VariableString getAsVariableString(String str, boolean requiresParsing) {
         if (str == null) {
             return null;
         }
         str = str.replace("%", "%%");
-        if (requiresParsing)
-        {
+        if (requiresParsing) {
             List<VariableSourceEntry> variableSourceEntries = new ArrayList<>();
             Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
             str = pattern.matcher(str).replaceAll(match -> {
@@ -98,28 +97,22 @@ public class VariableString implements Serializable {
                 return "%s";
             });
             return new VariableString(str, variableSourceEntries);
-        }
-        else
-        {
+        } else {
             return new VariableString(str, Collections.emptyList());
         }
     }
 
-    public Integer getInt(EventInfo eventInfo)
-    {
+    public Integer getInt(EventInfo eventInfo) {
         return TextUtils.asInt(getText(eventInfo));
     }
 
-    public Double getDouble(EventInfo eventInfo)
-    {
+    public Double getDouble(EventInfo eventInfo) {
         return TextUtils.asDouble(getText(eventInfo));
     }
 
-    public String getText(EventInfo eventInfo)
-    {
+    public String getText(EventInfo eventInfo) {
         List<String> variableVals = new ArrayList<>();
-        for (VariableSourceEntry variable : variables)
-        {
+        for (VariableSourceEntry variable : variables) {
             VariableSource variableSource = variable.getVariableSource();
             if (variableSource != null) {
                 if (variableSource.isAccessor()) {
@@ -129,6 +122,7 @@ public class VariableString implements Serializable {
                         case Special -> variable.getName();
                         case CookieJar -> getCookie(variable.getName());
                         case Annotation -> getAnnotation(eventInfo, variable.getName());
+                        case Macro -> getMacro(eventInfo, variable.getName());
                         default -> null;
                     };
                     variableVals.add(value);
@@ -144,6 +138,33 @@ public class VariableString implements Serializable {
             }
         }
         return String.format(text, variableVals.toArray());
+    }
+
+    private String getMacro(EventInfo eventInfo, String locator) {
+        String[] variableNameParts = locator.split(":", 3);
+        if (variableNameParts.length > 1) {
+            int macroItemIndex = NumberUtils.toInt(variableNameParts[0], 0) - 1;
+            MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, variableNameParts[1]);
+            String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 2, "");
+            if (macroItemIndex >= 0 && messageValue != null) {
+                HttpRequestResponse requestResponse = CollectionUtils.elementAtOrDefault(eventInfo.getMacros(), macroItemIndex);
+                HttpEventInfo macroEventInfo = new HttpEventInfo(
+                        HttpDataDirection.Response,
+                        eventInfo.getBurpTool(),
+                        null,
+                        requestResponse.request(),
+                        requestResponse.response(),
+                        requestResponse.annotations(),
+                        new Variables()
+                );
+                return StringUtils.defaultString(MessageValueHandler.getValue(
+                        macroEventInfo,
+                        messageValue,
+                        VariableString.getAsVariableString(identifier, false), GetItemPlacement.Last
+                ));
+            }
+        }
+        return null;
     }
 
     private String getAnnotation(EventInfo eventInfo, String name) {
@@ -227,10 +248,9 @@ public class VariableString implements Serializable {
         MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
         String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
         if (messageValue != null) {
-            String value = StringUtils.defaultString(
+            return StringUtils.defaultString(
                     MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false), GetItemPlacement.Last)
             );
-            return value;
         }
         return null;
     }

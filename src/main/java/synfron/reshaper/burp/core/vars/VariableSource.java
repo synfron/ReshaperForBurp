@@ -14,6 +14,7 @@ public enum VariableSource {
     Global("g", false, ProtocolType.Any),
     Session("sn", false, ProtocolType.Any),
     Message("m", true, ProtocolType.Any),
+    Macro("mc", true, ProtocolType.Http),
     Annotation("a", true, ProtocolType.Any),
     File("f", true, ProtocolType.Any),
     Special("s", true, ProtocolType.Any),

@@ -31,6 +31,7 @@ public class VariableTagWizardContainerComponent extends JPanel {
                 case File -> new FileVariableTagWizardComponent((FileVariableTagWizardModel) model);
                 case Special -> new SpecialVariableTagWizardComponent((SpecialVariableTagWizardModel) model);
                 case CookieJar -> new CookieJarVariableTagWizardComponent((CookieJarVariableTagWizardModel) model);
+                case Macro -> new MacroVariableTagWizardComponent((MacroVariableTagWizardModel) model, protocolType);
             };
             add(component);
         }

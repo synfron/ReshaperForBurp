@@ -35,7 +35,7 @@ Variables can be read by Whens and Thens when a variable tag is specified in sup
 
 For example, if Global variable named `firstName` has the value `John` and variable named `lastName` has the value `Smith`. A field with the value `{{global:firstName}}'s full name is {{global:firstName}} {{global:lastName}}` will be read as `John's full name is John Smith`.
 
-**Message Variable Tag (message, m):** `{{message:messageValueKey}}` or `{{message:messageValueKey:identifier}}` (e.g. `{{message:httprequesturi}}`, `{{message:httprequestheader:Host}}`). See [Message Values](MessageValues.html#)
+**Message Variable Tag (message, m):** `{{message:messageValueKey}}` or `{{message:messageValueKey:identifier}}` (e.g. `{{message:httprequesturi}}`, `{{message:httprequestheader:Host}}`). See [Message Values](MessageValues.html#) to determine the appropriate values for `messageValueKey` and `identifier`.
 
 **Annotation Variable Tag (annotation, a):** `{{annotation:comment}}` to get the current comment or `{{annotation:highlightcolor}}` to get the current highlight color of the line item in HTTP or WebSocket history for this event.
 
@@ -44,6 +44,8 @@ For example, if Global variable named `firstName` has the value `John` and varia
 **Special Character Tag (special, s):** `{{s:specialCharacterSequences}}`. Examples: `{{s:n}}` (new line), `{{s:rn}}` (carriage return + new line), `{{s:u00A9}}` (Copyright symbol)
 
 **Cookie Jar Tag (cookiejar, cj):** `{{cookiejar:domain:name}}` or `{{cookiejar:domain:name:path}}`. Example: `{{cookiejar:example.com:tracker:/}}`
+
+**Macro (macro, mc):** `{{macro:macroItemNumber:messageValueKey}}` or `{{macro:macroItemNumber:messageValueKey:identifier}}`. This tag is only applicable when Reshaper is invoked by a session handling rule marco post-run action. See [Message Values](MessageValues.html#) to determine the appropriate values for `messageValueKey` and `identifier`.
 
 
 {% endraw %}

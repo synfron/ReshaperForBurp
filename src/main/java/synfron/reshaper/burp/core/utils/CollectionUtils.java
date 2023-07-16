@@ -2,11 +2,9 @@ package synfron.reshaper.burp.core.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.rules.Rule;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,8 +18,20 @@ public class CollectionUtils {
         return array != null && array.length > index ? array[index] : defaultValue;
     }
 
+    public static <T> T elementAtOrDefault(List<T> list, int index) {
+        return elementAtOrDefault(list, index, null);
+    }
+
+    public static <T> T elementAtOrDefault(List<T> list, int index, T defaultValue) {
+        return list != null && list.size() > index ? list.get(index) : defaultValue;
+    }
+
     public static byte[] defaultIfEmpty(byte[] array, byte[] defaultArray) {
         return (array != null && array.length > 0) ? array : defaultArray;
+    }
+
+    public static <T> List<T> defaultIfNull(List<T> list) {
+        return list != null ? list : List.of();
     }
 
     public static <T> boolean hasAny(List<T> list) {
@@ -37,7 +47,7 @@ public class CollectionUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T[] move(T[] array, T item, int currentIndex, int newIndex) {
+    public static <T> T[] move(T[] array, int currentIndex, int newIndex) {
         if (currentIndex - newIndex == 1 || currentIndex - newIndex == -1) {
             T[] newArray = ArrayUtils.clone(array);
             ArrayUtils.swap(newArray, currentIndex, newIndex);

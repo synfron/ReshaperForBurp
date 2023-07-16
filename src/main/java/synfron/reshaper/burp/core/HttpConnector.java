@@ -20,6 +20,7 @@ import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.rules.RulesEngine;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.core.vars.Variables;
@@ -295,6 +296,7 @@ public class HttpConnector implements
     @Override
     public ActionResult performAction(SessionHandlingActionData actionData) {
         HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Session, null, actionData.request(), null, actionData.annotations());
+        eventInfo.setMacros(CollectionUtils.defaultIfNull(actionData.macroRequestResponses()));
         processEvent(true, eventInfo, false);
         return ActionResult.actionResult(eventInfo.asHttpRequest(), eventInfo.getAnnotations());
     }

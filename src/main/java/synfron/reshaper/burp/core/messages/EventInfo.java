@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.messages;
 
 import burp.BurpExtender;
 import burp.api.montoya.core.Annotations;
+import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,8 @@ import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
 import synfron.reshaper.burp.core.rules.diagnostics.IDiagnostics;
 import synfron.reshaper.burp.core.utils.UrlUtils;
 import synfron.reshaper.burp.core.vars.Variables;
+
+import java.util.List;
 
 public abstract class EventInfo {
     @Getter
@@ -33,6 +36,8 @@ public abstract class EventInfo {
     protected InterceptResponse defaultInterceptResponse = InterceptResponse.UserDefined;
     @Getter
     protected HttpRequestMessage httpRequestMessage;
+    @Getter @Setter
+    protected List<HttpRequestResponse> macros = List.of();
     @Getter
     protected final Variables variables = new Variables();
     @Getter

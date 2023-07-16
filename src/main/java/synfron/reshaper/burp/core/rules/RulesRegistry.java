@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.*;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class RulesRegistry {
         if (rule != null) {
             int currentIndex = ArrayUtils.indexOf(rules, rule);
             if (currentIndex > 0) {
-                rules = CollectionUtils.move(rules, rule, currentIndex, --currentIndex);
+                rules = CollectionUtils.move(rules, currentIndex, --currentIndex);
                 version++;
                 collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Move, currentIndex + 1, currentIndex, rule));
             }
@@ -73,7 +72,7 @@ public class RulesRegistry {
             int currentIndex = ArrayUtils.indexOf(rules, rule);
             if (currentIndex < rules.length - 1)
             {
-                rules = CollectionUtils.move(rules, rule, currentIndex, ++currentIndex);
+                rules = CollectionUtils.move(rules, currentIndex, ++currentIndex);
                 version++;
                 collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Move, currentIndex - 1, currentIndex, rule));
             }

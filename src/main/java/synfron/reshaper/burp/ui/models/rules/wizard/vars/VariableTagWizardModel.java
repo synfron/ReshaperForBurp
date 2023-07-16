@@ -43,6 +43,7 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
           VariableSource.Global, new GlobalVariableTagWizardModel(variableSourceEntries),
           VariableSource.Session, new SessionVariableTagWizardModel(variableSourceEntries),
           VariableSource.Message, new MessageVariableTagWizardModel(),
+          VariableSource.Macro, new MacroVariableTagWizardModel(),
           VariableSource.File, new FileVariableTagWizardModel(),
           VariableSource.Special, new SpecialVariableTagWizardModel(),
           VariableSource.CookieJar, new CookieJarVariableTagWizardModel(),
@@ -86,10 +87,9 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
 
     @Override
     public String getTag() {
-        String tag = validate().isEmpty() ?
+        return validate().isEmpty() ?
                 tagModel.getTag() :
                 null;
-        return tag;
     }
 
     @Override
