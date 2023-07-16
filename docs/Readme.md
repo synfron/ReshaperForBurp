@@ -97,14 +97,14 @@ Share values across different Rules while processing the same event or all event
 ### Build JAR with IntelliJ
 
 1. Open IntelliJ.
-2. Create a new project (Gradle) from existing source using Java 15.
+2. Create a new project (Gradle) from existing source using Java 17.
 3. Once the project is created/open, wait for IntelliJ to process Gradle dependencies.
 4. Run the `jar` Gradle build task from the Gradle tool window/sidebar. The JAR will be placed in the `build\libs` directory.
 
 ### Build JAR with CLI
 
-1. Install Java 15.
-2. Install Gradle v6.8.
+1. Install Java 17.
+2. Install Gradle v7.4.
 3. Run the `gradle --refresh-dependencies build` command.
 4. Run the `gradle build jar` command. The JAR will be placed in the `build\libs` directory.
 
