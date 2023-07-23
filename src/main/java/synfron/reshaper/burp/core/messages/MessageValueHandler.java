@@ -3,8 +3,8 @@ package synfron.reshaper.burp.core.messages;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.Collections;

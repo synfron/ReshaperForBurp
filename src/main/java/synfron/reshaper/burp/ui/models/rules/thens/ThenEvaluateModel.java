@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenEvaluate;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -25,6 +26,12 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     private VariableSource destinationVariableSource;
     @Getter
     private String destinationVariableName;
+    @Getter
+    private SetListItemPlacement itemPlacement;
+    @Getter
+    private String delimiter = "{{s:n}}";
+    @Getter
+    private String index;
 
     public ThenEvaluateModel(ProtocolType protocolType, ThenEvaluate then, Boolean isNew) {
         super(protocolType, then, isNew);
@@ -33,6 +40,9 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         this.y = VariableString.toString(then.getY(), y);
         this.destinationVariableSource = then.getDestinationVariableSource();
         this.destinationVariableName = VariableString.toString(then.getDestinationVariableName(), destinationVariableName);
+        this.itemPlacement = then.getItemPlacement();
+        this.delimiter = VariableString.toString(then.getDelimiter(), delimiter);
+        this.index = VariableString.toString(then.getIndex(), index);
         VariableCreatorRegistry.register(this);
     }
 
@@ -61,6 +71,21 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         propertyChanged("destinationVariableName", destinationVariableName);
     }
 
+    public void setItemPlacement(SetListItemPlacement itemPlacement) {
+        this.itemPlacement = itemPlacement;
+        propertyChanged("itemPlacement", itemPlacement);
+    }
+
+    public void setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
+        propertyChanged("delimiter", delimiter);
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+        propertyChanged("index", index);
+    }
+
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(x)) {
@@ -74,6 +99,13 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         } else if (!VariableString.isValidVariableName(destinationVariableName)) {
             errors.add("Destination Variable Name is invalid");
         }
+        if (destinationVariableSource.isList() && itemPlacement.isHasIndexSetter()) {
+            if (StringUtils.isEmpty(index)) {
+                errors.add("Index is required");
+            } else if (!VariableString.isPotentialInt(index)) {
+                errors.add("Index must be an integer");
+            }
+        }
         return errors;
     }
 
@@ -86,6 +118,9 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         ruleOperation.setY(VariableString.getAsVariableString(y));
         ruleOperation.setDestinationVariableSource(destinationVariableSource);
         ruleOperation.setDestinationVariableName(VariableString.getAsVariableString(destinationVariableName));
+        ruleOperation.setItemPlacement(itemPlacement);
+        ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
+        ruleOperation.setIndex(VariableString.getAsVariableString(index));
         setValidated(true);
         return true;
     }

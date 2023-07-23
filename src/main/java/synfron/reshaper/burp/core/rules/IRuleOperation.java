@@ -11,11 +11,20 @@ public interface IRuleOperation<T extends IRuleOperation<T>> extends Serializabl
     RuleOperationType<T> getType();
 
     IRuleOperation<?> copy();
+
+    default boolean isGroup() {
+        return false;
+    }
+
+    default int groupSize() {
+        return 0;
+    }
+
     default Variables getVariables(VariableSource variableSource, EventInfo eventInfo) {
         return switch (variableSource) {
-            case Event -> eventInfo.getVariables();
-            case Global -> GlobalVariables.get();
-            case Session -> eventInfo.getSessionVariables();
+            case Event, EventList -> eventInfo.getVariables();
+            case Global, GlobalList -> GlobalVariables.get();
+            case Session, SessionList -> eventInfo.getSessionVariables();
             default -> null;
         };
     }

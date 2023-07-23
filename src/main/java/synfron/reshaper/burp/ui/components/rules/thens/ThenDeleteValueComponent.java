@@ -3,7 +3,7 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteValue;
-import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
+import synfron.reshaper.burp.core.rules.DeleteItemPlacement;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenDeleteValueModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;

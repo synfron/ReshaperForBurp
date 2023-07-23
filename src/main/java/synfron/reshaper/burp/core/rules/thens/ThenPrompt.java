@@ -12,6 +12,7 @@ import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -32,6 +33,12 @@ public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, 
     private VariableSource captureVariableSource = VariableSource.Global;
     @Getter @Setter
     private VariableString captureVariableName;
+    @Getter @Setter
+    private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;
+    @Getter @Setter
+    private VariableString delimiter;
+    @Getter @Setter
+    private VariableString index;
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
@@ -57,7 +64,15 @@ public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, 
             if (messageWaiter.waitForMessage(failAfterInMilliseconds, TimeUnit.MILLISECONDS)) {
                 output = messageWaiter.getMessage().getResponse();
                 if (output != null) {
-                    setVariable(captureVariableSource, eventInfo, captureVariableName, output);
+                    setVariable(
+                            captureVariableSource,
+                            eventInfo,
+                            captureVariableName,
+                            itemPlacement,
+                            VariableString.getTextOrDefault(eventInfo, delimiter, "\n"),
+                            VariableString.getIntOrDefault(eventInfo, index, 0),
+                            output
+                    );
                 } else {
                     failed = true;
                 }
@@ -82,6 +97,9 @@ public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, 
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", captureVariableSource),
                         Pair.of("captureVariableName", captureVariableName),
+                        Pair.of("itemPlacement", captureVariableSource.isList() ? itemPlacement : null),
+                        Pair.of("delimiter", captureVariableSource.isList() && itemPlacement.isHasDelimiterSetter() ? VariableString.getTextOrDefault(eventInfo, delimiter, null) : null),
+                        Pair.of("index", captureVariableSource.isList() && itemPlacement.isHasIndexSetter() ? VariableString.getTextOrDefault(eventInfo, index, null) : null),
                         Pair.of("exceededWait", !complete),
                         Pair.of("failed", failed)
                 ));

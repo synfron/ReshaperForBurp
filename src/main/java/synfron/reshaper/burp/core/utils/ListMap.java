@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
+import synfron.reshaper.burp.core.rules.DeleteItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ListMap<K, V> {

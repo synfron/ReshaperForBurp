@@ -32,21 +32,30 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements 
     private VariableSource destinationVariableSource = VariableSource.Global;
     @Getter @Setter
     private VariableString destinationVariableName;
+    @Getter @Setter
+    private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;
+    @Getter @Setter
+    private VariableString delimiter;
+    @Getter @Setter
+    private VariableString index;
 
     public RuleResponse perform(EventInfo eventInfo) {
         try {
             String value = dataDirection == HttpDataDirection.Request ? buildRequestMessage(eventInfo) : buildResponseMessage(eventInfo);
             Variables variables = getVariables(destinationVariableSource, eventInfo);
             if (variables != null) {
-                Variable variable = variables.add(destinationVariableName.getText(eventInfo));
-                variable.setValue(value);
+                Variable variable = variables.add(Variables.asKey(destinationVariableName.getText(eventInfo), destinationVariableSource.isList()));
+                variable.setValue(itemPlacement, VariableString.getTextOrDefault(eventInfo, delimiter, "\n"), VariableString.getIntOrDefault(eventInfo, index, 0), value);
             }
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, false, Stream.concat(
                     Stream.of(
                             Pair.of("dataDirection", dataDirection.toString()),
                             Pair.of("starterHttpMessage", VariableString.getTextOrDefault(eventInfo, starterHttpMessage, null)),
                             Pair.of("destinationVariableSource", destinationVariableSource.toString()),
-                            Pair.of("destinationVariableName", VariableString.getTextOrDefault(eventInfo, destinationVariableName, null))
+                            Pair.of("destinationVariableName", VariableString.getTextOrDefault(eventInfo, destinationVariableName, null)),
+                            Pair.of("itemPlacement", destinationVariableSource.isList() ? itemPlacement : null),
+                            Pair.of("delimiter", destinationVariableSource.isList() && itemPlacement.isHasDelimiterSetter() ? VariableString.getTextOrDefault(eventInfo, delimiter, null) : null),
+                            Pair.of("index", destinationVariableSource.isList() && itemPlacement.isHasIndexSetter() ? VariableString.getTextOrDefault(eventInfo, index, null) : null)
                     ),
                     messageValueSetters.stream().map(messageValueSetter -> Pair.of(
                             VariableSourceEntry.getTag(

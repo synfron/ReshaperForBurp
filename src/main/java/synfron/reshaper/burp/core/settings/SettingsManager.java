@@ -9,6 +9,7 @@ import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.utils.Serializer;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
+import synfron.reshaper.burp.core.vars.Variables;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,6 +82,6 @@ public class SettingsManager {
     public static void resetData() {
         Arrays.stream(getHttpRulesRegistry().getRules()).forEach(rule -> getHttpRulesRegistry().deleteRule(rule));
         Arrays.stream(getWebSocketRulesRegistry().getRules()).forEach(rule -> getWebSocketRulesRegistry().deleteRule(rule));
-        GlobalVariables.get().getValues().forEach(variable -> GlobalVariables.get().remove(variable.getName()));
+        GlobalVariables.get().getValues().forEach(variable -> GlobalVariables.get().remove(Variables.asKey(variable.getName(), variable.isList())));
     }
 }

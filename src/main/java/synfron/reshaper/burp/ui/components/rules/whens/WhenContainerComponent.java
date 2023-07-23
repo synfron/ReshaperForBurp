@@ -24,6 +24,7 @@ public class WhenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(WhenModelType.ProxyName, WhenProxyNameComponent.class);
         componentMap.put(WhenModelType.FromTool, WhenFromToolComponent.class);
         componentMap.put(WhenModelType.InScope, WhenInScopeComponent.class);
+        componentMap.put(WhenModelType.Repeat, WhenRepeatComponent.class);
     }
 
     public WhenContainerComponent(ProtocolType protocolType) {

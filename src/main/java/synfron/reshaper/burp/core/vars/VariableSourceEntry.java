@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.vars;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -35,13 +36,27 @@ public class VariableSourceEntry implements Serializable {
         return StringUtils.isNotEmpty(tag) ? tag : getTag(variableSource, name);
     }
 
-    public static String getTag(VariableSource variableSource, String name) {
-        return String.format("{{%s:%s}}", variableSource.toString().toLowerCase(), name);
+    public static String getTag(VariableSource variableSource, String name, GetListItemPlacement itemPlacement, Integer index) {
+        return getTag(
+                variableSource,
+                name,
+                itemPlacement.toString(),
+                itemPlacement.isHasIndexSetter() ? TextUtils.toString(index) : null
+        );
+    }
+
+    public static String getTag(VariableSource variableSource, String name, SetListItemPlacement itemPlacement, Integer index) {
+        return getTag(
+                variableSource,
+                name,
+                itemPlacement != null ? itemPlacement.toString() : null,
+                itemPlacement != null && itemPlacement.isHasIndexSetter() ? TextUtils.toString(index) : null
+        );
     }
 
     public static String getTag(VariableSource variableSource, String... names) {
         return String.format("{{%s}}", Stream.concat(
-                Stream.of(StringUtils.defaultString(variableSource.toString().toLowerCase())),
+                Stream.of(StringUtils.defaultString(variableSource.name().toLowerCase())),
                 Arrays.stream(names).map(name -> StringUtils.defaultIfEmpty(name, null))
         ).filter(Objects::nonNull).collect(Collectors.joining(":")));
     }
@@ -55,5 +70,14 @@ public class VariableSourceEntry implements Serializable {
                 Stream.of(StringUtils.defaultString(variableSource.getShortName())),
                 Arrays.stream(names).map(name -> StringUtils.defaultIfEmpty(name, null))
         ).filter(Objects::nonNull).collect(Collectors.joining(":")));
+    }
+
+    public static String getShortTag(VariableSource variableSource, String name, GetListItemPlacement itemPlacement, Integer index) {
+        return getShortTag(
+                variableSource,
+                name,
+                itemPlacement != null ? itemPlacement.toString() : null,
+                itemPlacement != null && itemPlacement.isHasIndexSetter() ? TextUtils.toString(index) : null
+        );
     }
 }

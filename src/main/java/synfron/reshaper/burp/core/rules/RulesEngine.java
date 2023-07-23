@@ -3,52 +3,14 @@ package synfron.reshaper.burp.core.rules;
 import lombok.Getter;
 import org.mozilla.javascript.RhinoException;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.rules.thens.Then;
-import synfron.reshaper.burp.core.rules.whens.When;
+import synfron.reshaper.burp.core.rules.thens.IThenGroup;
+import synfron.reshaper.burp.core.rules.whens.IWhenGroup;
 import synfron.reshaper.burp.core.utils.Log;
 
-public class RulesEngine {
+public class RulesEngine implements IWhenGroup, IThenGroup {
 
     @Getter
     private final RulesRegistry rulesRegistry = new RulesRegistry();
-
-    private boolean match(When<?>[] whens, EventInfo eventInfo)
-    {
-        boolean  isMatch = true;
-        boolean  first = true;
-        for (When<?> when : whens)
-        {
-            if (!isMatch && !when.isUseOrCondition())
-            {
-                break;
-            }
-            if (when.isUseOrCondition() && !first)
-            {
-                isMatch |= when.isMatch(eventInfo) == !when.isNegate();
-            }
-            else
-            {
-                isMatch &= when.isMatch(eventInfo) == !when.isNegate();
-            }
-            first = false;
-        }
-        return isMatch;
-    }
-
-    private RuleResponse perform(Then<?>[] thens, EventInfo eventInfo)
-    {
-        RuleResponse thenResult = RuleResponse.Continue;
-        for (Then<?> then : thens)
-        {
-            RuleResponse result = then.perform(eventInfo);
-            thenResult = thenResult.or(result);
-            if (result.hasFlags(RuleResponse.BreakThens) || result.hasFlags(RuleResponse.BreakRules))
-            {
-                break;
-            }
-        }
-        return thenResult;
-    }
 
     public RuleResponse run(EventInfo eventInfo)
     {
@@ -80,7 +42,7 @@ public class RulesEngine {
         if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logStart(rule);
         try
         {
-            if (rule.isEnabled() && match(rule.getWhens(), eventInfo))
+            if (rule.isEnabled() && isMatch(rule.getWhens(), eventInfo))
             {
                 thenResult = thenResult.or(perform(rule.getThens(), eventInfo));
             }

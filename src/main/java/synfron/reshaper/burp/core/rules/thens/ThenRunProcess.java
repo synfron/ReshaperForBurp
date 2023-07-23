@@ -46,6 +46,12 @@ public class ThenRunProcess extends Then<ThenRunProcess> implements IHttpRuleOpe
     private VariableSource captureVariableSource = VariableSource.Global;
     @Getter @Setter
     private VariableString captureVariableName;
+    @Getter @Setter
+    private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;
+    @Getter @Setter
+    private VariableString delimiter;
+    @Getter @Setter
+    private VariableString index;
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
@@ -97,7 +103,15 @@ public class ThenRunProcess extends Then<ThenRunProcess> implements IHttpRuleOpe
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     output = stringWriter.toString();
-                    setVariable(captureVariableSource, eventInfo, captureVariableName, output);
+                    setVariable(
+                            captureVariableSource,
+                            eventInfo,
+                            captureVariableName,
+                            itemPlacement,
+                            VariableString.getTextOrDefault(eventInfo, delimiter, "\n"),
+                            VariableString.getIntOrDefault(eventInfo, index, 0),
+                            output
+                    );
                 }
             }
 
@@ -116,6 +130,9 @@ public class ThenRunProcess extends Then<ThenRunProcess> implements IHttpRuleOpe
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
                         Pair.of("captureVariableName", waitForCompletion && captureOutput ? captureVariableName : null),
+                        Pair.of("itemPlacement", captureVariableSource.isList() ? itemPlacement : null),
+                        Pair.of("delimiter", captureVariableSource.isList() && itemPlacement.isHasDelimiterSetter() ? VariableString.getTextOrDefault(eventInfo, delimiter, null) : null),
+                        Pair.of("index", captureVariableSource.isList() && itemPlacement.isHasIndexSetter() ? VariableString.getTextOrDefault(eventInfo, index, null) : null),
                         Pair.of("exceededWait", waitForCompletion ? !complete : null),
                         Pair.of("failed", waitForCompletion ? failed : null),
                         Pair.of("exitCode", waitForCompletion ? exitCode : null)

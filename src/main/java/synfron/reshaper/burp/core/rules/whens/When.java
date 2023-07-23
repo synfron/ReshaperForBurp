@@ -16,7 +16,9 @@ import synfron.reshaper.burp.core.utils.Serializer;
         @JsonSubTypes.Type(value = WhenContentType.class),
         @JsonSubTypes.Type(value = WhenMimeType.class),
         @JsonSubTypes.Type(value = WhenProxyName.class),
-        @JsonSubTypes.Type(value = WhenInScope.class)
+        @JsonSubTypes.Type(value = WhenMessageType.class),
+        @JsonSubTypes.Type(value = WhenInScope.class),
+        @JsonSubTypes.Type(value = WhenRepeat.class)
 })
 public abstract class When<T extends When<T>> implements IRuleOperation<T> {
 

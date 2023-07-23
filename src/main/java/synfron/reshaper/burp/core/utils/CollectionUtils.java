@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ public class CollectionUtils {
     }
 
     public static <T> T elementAtOrDefault(T[] array, int index, T defaultValue) {
-        return array != null && array.length > index ? array[index] : defaultValue;
+        return array != null && index >= 0 && array.length > index ? array[index] : defaultValue;
     }
 
     public static <T> T elementAtOrDefault(List<T> list, int index) {
@@ -23,7 +24,63 @@ public class CollectionUtils {
     }
 
     public static <T> T elementAtOrDefault(List<T> list, int index, T defaultValue) {
+        return list != null && index >= 0 && list.size() > index ? list.get(index) : defaultValue;
+    }
+
+    public static <T> T lastOrDefault(List<T> list) {
+        return lastOrDefault(list, null);
+    }
+
+    public static <T> T lastOrDefault(List<T> list, T defaultValue) {
+        int index = list != null ? list.size() - 1 : -1;
+        return list != null && index >= 0 ? list.get(index) : defaultValue;
+    }
+
+    public static <T> T firstOrDefault(List<T> list) {
+        return firstOrDefault(list, null);
+    }
+
+    public static <T> T firstOrDefault(List<T> list, T defaultValue) {
+        int index = 0;
         return list != null && list.size() > index ? list.get(index) : defaultValue;
+    }
+
+    public static void remove(List<?> list, int index) {
+        if (index > 0 && index < list.size()) {
+            list.remove(index);
+        }
+    }
+
+    public static void removeFirst(List<?> list) {
+        remove(list, 0);
+    }
+
+    public static void removeLast(List<?> list) {
+        remove(list, list.size() - 1);
+    }
+
+    public static <T> void set(List<T> list, int index, T value) {
+        if (index == list.size()) {
+            list.add(value);
+        } else {
+            list.set(index, value);
+        }
+    }
+
+    public static <T> void setFirst(List<T> list, T value) {
+        if (list.isEmpty()) {
+            list.add(value);
+        } else {
+            list.set(0, value);
+        }
+    }
+
+    public static <T> void setLast(List<T> list, T value) {
+        if (list.isEmpty()) {
+            list.add(value);
+        } else {
+            list.set(list.size() - 1, value);
+        }
     }
 
     public static byte[] defaultIfEmpty(byte[] array, byte[] defaultArray) {
@@ -43,7 +100,7 @@ public class CollectionUtils {
     }
 
     public static List<String> splitNewLines(List<String> values) {
-        return splitNewLines(values.stream()).collect(Collectors.toList());
+        return splitNewLines(values.stream()).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @SuppressWarnings("unchecked")
@@ -78,5 +135,12 @@ public class CollectionUtils {
         }
         result[newIndex] = array[currentIndex];
         return result;
+    }
+
+    public static <T> List<T> subList(List<T> list, int startIndex, int count) {
+        if (startIndex >= list.size()) {
+            return List.of();
+        }
+        return list.subList(startIndex, Math.min(startIndex + count, list.size()));
     }
 }

@@ -8,8 +8,8 @@ import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.utils.IItemPlacement;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.rules.IItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 

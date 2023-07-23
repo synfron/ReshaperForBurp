@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.core.utils;
+package synfron.reshaper.burp.core.rules;
 
 public enum GetItemPlacement implements IItemPlacement {
     First,

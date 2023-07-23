@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.vars;
 
 import lombok.SneakyThrows;
+import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.ui.components.IFormComponent;
@@ -20,7 +21,9 @@ public class VariableComponent extends JPanel implements IFormComponent {
     private final VariableModel model;
     private JTextField variableName;
     private JTextPane variableText;
+    private JTextField delimiter;
     private JCheckBox persistent;
+    private JCheckBox removeCarriageReturnsOnSave;
     private JButton save;
     private final IEventListener<PropertyChangedArgs> variablePropertyChangedListener = this::onVariablePropertyChanged;
 
@@ -33,6 +36,8 @@ public class VariableComponent extends JPanel implements IFormComponent {
     private void onVariablePropertyChanged(PropertyChangedArgs propertyChangedArgs) {
         if ("this".equals(propertyChangedArgs.getName())) {
             variableText.setText(model.getValue());
+            removeCarriageReturnsOnSave.setSelected(model.isRemoveCarriageReturnsOnSave());
+            delimiter.setText(model.getDelimiter());
             persistent.setSelected(model.isPersistent());
         } else if ("saved".equals(propertyChangedArgs.getName())) {
             setSaveButtonState();
@@ -42,7 +47,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
     private void initComponent() {
         setLayout(new BorderLayout());
 
-        add(getVariableNameBox(), BorderLayout.PAGE_START);
+        add(getTopBar(), BorderLayout.PAGE_START);
         add(getVariableTextBox(), BorderLayout.CENTER);
         add(getActionBar(), BorderLayout.PAGE_END);
     }
@@ -57,14 +62,25 @@ public class VariableComponent extends JPanel implements IFormComponent {
         }
     }
 
+    private Component getTopBar() {
+        JPanel container = new JPanel(new MigLayout());
+        container.add(getVariableNameBox(), "wrap");
+        if (model.isList()) {
+            delimiter = createTextField(false);
+            delimiter.setText(model.getDelimiter());
+            delimiter.getDocument().addDocumentListener(new DocumentActionListener(this::onDelimiterChanged));
+            container.add(new JLabel("Delimiter *"), "wrap");
+            container.add(delimiter);
+        }
+        return container;
+    }
+
     private Component getVariableNameBox() {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
         variableName = createTextField(false);
         variableName.setText(model.getName());
-        variableName.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         variableName.setAlignmentX(Component.LEFT_ALIGNMENT);
         variableName.setColumns(20);
         variableName.setMaximumSize(variableName.getPreferredSize());
@@ -84,7 +100,6 @@ public class VariableComponent extends JPanel implements IFormComponent {
         variableText.setText(model.getValue());
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         scrollPane.setViewportView(variableText);
 
         variableText.getDocument().addDocumentListener(new DocumentActionListener(this::onVariableTextChanged));
@@ -92,6 +107,10 @@ public class VariableComponent extends JPanel implements IFormComponent {
         container.add(new JLabel("Variable Text"), BorderLayout.PAGE_START);
         container.add(scrollPane, BorderLayout.CENTER);
         return container;
+    }
+
+    private void onDelimiterChanged(ActionEvent actionEvent) {
+        model.setDelimiter(delimiter.getText());
     }
 
     private void onVariableTextChanged(ActionEvent actionEvent) {
@@ -103,14 +122,19 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
         JPanel buttonSection = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
+        removeCarriageReturnsOnSave = new JCheckBox("Remove Carriage Returns on Save");
         persistent = new JCheckBox("Persistent");
+
+        removeCarriageReturnsOnSave.setSelected(model.isRemoveCarriageReturnsOnSave());
         persistent.setSelected(model.isPersistent());
         save = new JButton("Save");
         setSaveButtonState();
 
+        removeCarriageReturnsOnSave.addActionListener(this::onRemoveCarriageReturnsOnSaveChanged);
         persistent.addActionListener(this::onPersistentChanged);
         save.addActionListener(this::onSave);
 
+        buttonSection.add(removeCarriageReturnsOnSave);
         buttonSection.add(persistent);
         buttonSection.add(save);
 
@@ -171,6 +195,10 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
     private void onVariableNameChanged(ActionEvent actionEvent) {
         model.setName(variableName.getText());
+    }
+
+    private void onRemoveCarriageReturnsOnSaveChanged(ActionEvent actionEvent) {
+        model.setRemoveCarriageReturnsOnSave(removeCarriageReturnsOnSave.isSelected());
     }
 
     private void onPersistentChanged(ActionEvent actionEvent) {

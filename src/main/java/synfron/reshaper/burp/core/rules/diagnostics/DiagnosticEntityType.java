@@ -8,7 +8,11 @@ public enum DiagnosticEntityType {
     StartRule(1, 1),
     EndRule(1, -1),
     When(2, 1),
-    Then(2, 1);
+    Then(2, 1),
+    StartGroupContainer(2, 1),
+    EndGroupContainer(2, -1),
+    StartGroup(3, 1),
+    EndGroup(3, -1);
 
     @Getter
     private final int level;

@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenRunProcess;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -36,6 +37,12 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     private VariableSource captureVariableSource;
     @Getter
     private String captureVariableName;
+    @Getter
+    private SetListItemPlacement itemPlacement;
+    @Getter
+    private String delimiter = "{{s:n}}";
+    @Getter
+    private String index;
 
     public ThenRunProcessModel(ProtocolType protocolType, ThenRunProcess then, Boolean isNew) {
         super(protocolType, then, isNew);
@@ -50,6 +57,9 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         captureAfterFailure = then.isCaptureAfterFailure();
         captureVariableSource = then.getCaptureVariableSource();
         captureVariableName = VariableString.toString(then.getCaptureVariableName(), captureVariableName);
+        itemPlacement = then.getItemPlacement();
+        delimiter = VariableString.toString(then.getDelimiter(), delimiter);
+        index = VariableString.toString(then.getIndex(), index);
         VariableCreatorRegistry.register(this);
     }
 
@@ -108,6 +118,21 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         propertyChanged("captureVariableName", captureVariableName);
     }
 
+    public void setItemPlacement(SetListItemPlacement itemPlacement) {
+        this.itemPlacement = itemPlacement;
+        propertyChanged("itemPlacement", itemPlacement);
+    }
+
+    public void setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
+        propertyChanged("delimiter", delimiter);
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+        propertyChanged("index", index);
+    }
+
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(command)) {
@@ -122,6 +147,13 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
             errors.add("Capture Variable Name is required");
         } else  if (waitForCompletion && captureOutput && !VariableString.isValidVariableName(captureVariableName)) {
             errors.add("Capture Variable Name is invalid");
+        }
+        if (waitForCompletion && captureOutput && captureVariableSource.isList() && itemPlacement.isHasIndexSetter()) {
+            if (StringUtils.isEmpty(index)) {
+                errors.add("Index is required");
+            } else if (!VariableString.isPotentialInt(index)) {
+                errors.add("Index must be an integer");
+            }
         }
         return errors;
     }
@@ -141,6 +173,9 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         ruleOperation.setCaptureAfterFailure(captureAfterFailure);
         ruleOperation.setCaptureVariableSource(captureVariableSource);
         ruleOperation.setCaptureVariableName(VariableString.getAsVariableString(captureVariableName));
+        ruleOperation.setItemPlacement(itemPlacement);
+        ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
+        ruleOperation.setIndex(VariableString.getAsVariableString(index));
         setValidated(true);
         return true;
     }

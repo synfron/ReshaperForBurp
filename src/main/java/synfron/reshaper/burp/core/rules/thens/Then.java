@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.utils.Serializer;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.Variables;
@@ -32,7 +33,8 @@ import synfron.reshaper.burp.core.vars.Variables;
         @JsonSubTypes.Type(value = ThenBuildHttpMessage.class),
         @JsonSubTypes.Type(value = ThenParseHttpMessage.class),
         @JsonSubTypes.Type(value = ThenSendRequest.class),
-        @JsonSubTypes.Type(value = ThenSendMessage.class)
+        @JsonSubTypes.Type(value = ThenSendMessage.class),
+        @JsonSubTypes.Type(value = ThenRepeat.class)
 })
 public abstract class Then<T extends Then<T>> implements IRuleOperation<T> {
 
@@ -43,11 +45,12 @@ public abstract class Then<T extends Then<T>> implements IRuleOperation<T> {
         return Serializer.copy(this);
     }
 
-    protected void setVariable(VariableSource variableSource, EventInfo eventInfo, String variableName, String value) {
+    protected void setVariable(VariableSource variableSource, EventInfo eventInfo, String variableName, SetListItemPlacement itemPlacement, String delimiter, Integer index, String value) {
         Variables variables = getVariables(variableSource, eventInfo);
+        Variable variable;
         if (variables != null) {
-            Variable variable = variables.add(variableName);
-            variable.setValue(value);
+            variable = variables.add(Variables.asKey(variableName, variableSource.isList()));
+            variable.setValue(itemPlacement, delimiter, index, value);
         }
     }
 }

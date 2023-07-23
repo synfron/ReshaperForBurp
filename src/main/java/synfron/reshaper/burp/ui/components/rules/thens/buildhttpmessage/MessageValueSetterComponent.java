@@ -4,7 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.buildhttpmessage.MessageValueSetterModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;

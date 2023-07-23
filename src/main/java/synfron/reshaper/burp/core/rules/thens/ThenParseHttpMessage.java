@@ -13,6 +13,7 @@ import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage.MessageValueGetter;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.*;
 
 import java.util.ArrayList;
@@ -58,6 +59,8 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
+            String delimiter = VariableString.getTextOrDefault(eventInfo, messageValueGetter.getDelimiter(), "\n");
+            Integer index = VariableString.getIntOrDefault(eventInfo, messageValueGetter.getIndex(), 0);
             String value = MessageValueHandler.getRequestValue(
                     eventInfo,
                     httpRequestMessage,
@@ -65,7 +68,15 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
                     messageValueGetter.getSourceIdentifier(),
                     messageValueGetter.getSourceIdentifierPlacement()
             );
-            variables.add(setVariable(eventInfo, messageValueGetter.getDestinationVariableSource(), variableName, value));
+            variables.add(setVariable(
+                    eventInfo,
+                    messageValueGetter.getDestinationVariableSource(),
+                    variableName,
+                    messageValueGetter.getItemPlacement(),
+                    delimiter,
+                    index,
+                    value
+            ));
         }
         return variables;
     }
@@ -77,6 +88,8 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
+            String delimiter = VariableString.getTextOrDefault(eventInfo, messageValueGetter.getDelimiter(), "\n");
+            Integer index = VariableString.getIntOrDefault(eventInfo, messageValueGetter.getIndex(), 0);
             String value = MessageValueHandler.getResponseValue(
                     eventInfo,
                     httpResponseMessage,
@@ -84,19 +97,30 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
                     messageValueGetter.getSourceIdentifier(),
                     messageValueGetter.getSourceIdentifierPlacement()
             );
-            variables.add(setVariable(eventInfo, messageValueGetter.getDestinationVariableSource(), variableName, value));
+            variables.add(setVariable(
+                    eventInfo,
+                    messageValueGetter.getDestinationVariableSource(),
+                    variableName,
+                    messageValueGetter.getItemPlacement(),
+                    delimiter,
+                    index,
+                    value
+            ));
         }
         return variables;
     }
 
-    private Pair<String, String> setVariable(EventInfo eventInfo, VariableSource variableSource, String variableName, String value) {
-        Variables variables = getVariables(variableSource, eventInfo);
-        Variable variable;
-        if (variables != null) {
-            variable = variables.add(variableName);
-            variable.setValue(value);
-        }
-        return Pair.of(VariableSourceEntry.getTag(variableSource, variableName), value);
+    private Pair<String, String> setVariable(EventInfo eventInfo, VariableSource variableSource, String variableName, SetListItemPlacement itemPlacement, String delimiter, Integer index, String value) {
+        super.setVariable(variableSource, eventInfo, variableName, itemPlacement, delimiter, index, value);
+        return variableSource.isList() ?
+                Pair.of(VariableSourceEntry.getTag(
+                        variableSource,
+                        variableName,
+                        itemPlacement.toString(),
+                        itemPlacement.isHasIndexSetter() ?
+                                TextUtils.toString(index) : null
+                ), value) :
+                Pair.of(VariableSourceEntry.getTag(variableSource, variableName), value);
     }
 
     @Override

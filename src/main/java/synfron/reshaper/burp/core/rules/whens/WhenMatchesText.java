@@ -9,7 +9,7 @@ import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableString;
 

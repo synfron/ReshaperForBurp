@@ -3,7 +3,6 @@ package synfron.reshaper.burp.core.vars;
 import org.apache.commons.lang3.ObjectUtils;
 import synfron.reshaper.burp.core.events.CollectionChangedAction;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
-import synfron.reshaper.burp.core.utils.CaseInsensitiveString;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +28,9 @@ public class GlobalVariables extends Variables {
         variables = ObjectUtils.defaultIfNull(variables, Collections.emptyList());
         variables.forEach(variable -> {
             if (overwriteDuplicates) {
-                this.variables.put(new CaseInsensitiveString(variable.getName()), variable);
+                this.variables.put(Variables.asKey(variable.getName(), variable.isList()), variable);
             } else {
-                this.variables.computeIfAbsent(new CaseInsensitiveString(variable.getName()), name -> variable);
+                this.variables.computeIfAbsent(Variables.asKey(variable.getName(), variable.isList()), name -> variable);
             }
         });
         collectionChangedEvent.invoke(new CollectionChangedArgs(this, CollectionChangedAction.Reset));

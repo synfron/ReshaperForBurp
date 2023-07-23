@@ -10,14 +10,15 @@ import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.utils.Serializer;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Rule implements Serializable {
     @Getter
     private final transient PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     @Getter @Setter
-    private When<?>[] whens = new When<?>[0];
+    private List<? extends When<?>> whens = List.of();
     @Getter @Setter
-    private Then<?>[] thens = new Then<?>[0];
+    private List<? extends Then<?>> thens = List.of();
     @Getter
     private boolean enabled = true;
     @Getter

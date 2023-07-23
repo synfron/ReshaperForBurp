@@ -8,8 +8,8 @@ import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
-import synfron.reshaper.burp.core.utils.DeleteItemPlacement;
-import synfron.reshaper.burp.core.utils.IItemPlacement;
+import synfron.reshaper.burp.core.rules.DeleteItemPlacement;
+import synfron.reshaper.burp.core.rules.IItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 public class ThenDeleteValue extends Then<ThenDeleteValue> implements IHttpRuleOperation {

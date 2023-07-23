@@ -4,7 +4,8 @@ import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.HttpDataDirection;
 import synfron.reshaper.burp.core.messages.MessageValue;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.parsehttpmessage.MessageValueGetterModel;
@@ -28,6 +29,9 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
     protected JComboBox<GetItemPlacement> sourceIdentifierPlacement;
     private JComboBox<VariableSource> destinationVariableSource;
     private JTextField destinationVariableName;
+    private JComboBox<SetListItemPlacement> itemPlacement;
+    private JTextField delimiter;
+    private JTextField index;
 
     public MessageValueGetterComponent(ProtocolType protocolType, MessageValueGetterModel model, HttpDataDirection dataDirection, boolean deletable) {
         this.protocolType = protocolType;
@@ -53,18 +57,27 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
         sourceIdentifierPlacement = createComboBox(GetItemPlacement.values());
         destinationVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         destinationVariableName = createTextField(true);
+        itemPlacement = createComboBox(SetListItemPlacement.values());
+        delimiter = createTextField(true);
+        index = createTextField(true);
 
         sourceMessageValue.setSelectedItem(model.getSourceMessageValue());
         sourceIdentifier.setText(model.getSourceIdentifier());
         sourceIdentifierPlacement.setSelectedItem(model.getSourceIdentifierPlacement());
         destinationVariableSource.setSelectedItem(model.getDestinationVariableSource());
         destinationVariableName.setText(model.getDestinationVariableName());
+        itemPlacement.setSelectedItem(model.getItemPlacement());
+        delimiter.setText(model.getDelimiter());
+        index.setText(model.getIndex());
 
         sourceMessageValue.addActionListener(this::onSourceMessageValueChanged);
         sourceIdentifier.getDocument().addDocumentListener(new DocumentActionListener(this::onSourceIdentifierChanged));
         sourceIdentifierPlacement.addActionListener(this::onSourceIdentifierPlacementChanged);
         destinationVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onDestinationVariableNameChanged));
         destinationVariableSource.addActionListener(this::onDestinationVariableSourceChanged);
+        itemPlacement.addActionListener(this::onItemPlacementChanged);
+        delimiter.getDocument().addDocumentListener(new DocumentActionListener(this::onDelimiterChanged));
+        index.getDocument().addDocumentListener(new DocumentActionListener(this::onIndexChanged));
 
         add(getLabeledField("Message Value", sourceMessageValue), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -79,6 +92,17 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
         ), "wrap");
         add(getLabeledField("Destination Variable Source", destinationVariableSource), "wrap");
         add(getLabeledField("Destination Variable Name *", destinationVariableName), "wrap");
+        add(getLabeledField("Item Placement", itemPlacement), "wrap");
+        add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Delimiter *", delimiter),
+                itemPlacement,
+                () -> ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasDelimiterSetter()
+        ), "wrap");
+        add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Index *", index),
+                itemPlacement,
+                () -> ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
+        ), "wrap");
         if (deletable) {
             JButton delete = new JButton("Delete");
             delete.addActionListener(this::onDelete);
@@ -104,6 +128,18 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
 
     private void onDestinationVariableNameChanged(ActionEvent actionEvent) {
         model.setDestinationVariableName(destinationVariableName.getText());
+    }
+
+    private void onItemPlacementChanged(ActionEvent actionEvent) {
+        model.setItemPlacement((SetListItemPlacement)itemPlacement.getSelectedItem());
+    }
+
+    private void onDelimiterChanged(ActionEvent actionEvent) {
+        model.setDelimiter(delimiter.getText());
+    }
+
+    private void onIndexChanged(ActionEvent actionEvent) {
+        model.setIndex(index.getText());
     }
 
     private void onDelete(ActionEvent actionEvent) {

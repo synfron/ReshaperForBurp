@@ -2,7 +2,6 @@ package synfron.reshaper.burp.core.rules;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import synfron.reshaper.burp.core.messages.MimeType;
 
 import java.util.List;
 import java.util.stream.Collectors;

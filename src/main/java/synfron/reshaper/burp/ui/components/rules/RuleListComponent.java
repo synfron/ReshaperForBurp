@@ -7,7 +7,6 @@ import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.RulesRegistry;
-import synfron.reshaper.burp.core.rules.whens.When;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.core.rules.whens.WhenWebSocketEventDirection;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
@@ -21,6 +20,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -251,7 +251,7 @@ public class RuleListComponent extends JPanel {
     private Rule createNewRule() {
         Rule rule = new Rule();
         rule.setEnabled(false);
-        rule.setWhens(new When[]{protocolType == ProtocolType.Http ? new WhenEventDirection() : new WhenWebSocketEventDirection()});
+        rule.setWhens(List.of(protocolType == ProtocolType.Http ? new WhenEventDirection() : new WhenWebSocketEventDirection()));
         return rule;
     }
 }

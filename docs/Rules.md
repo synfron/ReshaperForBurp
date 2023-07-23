@@ -1,17 +1,59 @@
 # Rules
 
-Rules allow you to set actions to perform (called Thens) if a HTTP or WebSocket message (event) received by Burp Suite meet certain criteria (called Whens). Rules are processed in order. If the Rule is set to auto-run, the Rule will be run automatically when an HTTP or WebSocket event is received, otherwise it must be specifically triggered. Rules must be enabled to run at all.
+Rules allow you to set actions to perform (called Thens) if an HTTP or WebSocket message (event) received by Burp Suite meets certain criteria (called Whens). Rules are processed in order. If the Rule is set to auto-run, the Rule will be run automatically when an HTTP or WebSocket event is received, otherwise, it must be specifically triggered. Rules must be enabled to run at all.
 
 HTTP events are processed by Rules under the HTTP Rules tab. WebSocket events are processed by Rules under the WebSocket Rules tab.
 
 Note: HTTP message values that are accessible by WebSocket Rule operations refer to components of the originating ws:// or wss:// request that triggered the establishment of the WebSocket connection.
 
-* auto-gen TOC:
-{:toc}
+<!-- TOC -->
+
+- [Rules](#rules)
+	- [Whens](#whens)
+		- [Content Type](#content-type)
+		- [Event Direction](#event-direction)
+		- [From Tool](#from-tool)
+		- [Has Entity](#has-entity)
+		- [In Scope](#in-scope)
+		- [Matches Text](#matches-text)
+		- [Message Type](#message-type)
+		- [MIME Type](#mime-type)
+		- [Proxy Name](#proxy-name)
+		- [Repeat](#repeat)
+	- [Thens](#thens)
+		- [Break](#break)
+		- [Build HTTP Message](#build-http-message)
+		- [Comment](#comment)
+		- [Delay](#delay)
+		- [Delete Value](#delete-value)
+		- [Delete Variable](#delete-variable)
+		- [Drop](#drop)
+		- [Evaluate](#evaluate)
+		- [Highlight](#highlight)
+		- [Intercept](#intercept)
+		- [Log](#log)
+		- [Parse HTTP Message](#parse-http-message)
+		- [Prompt](#prompt)
+		- [Repeat](#repeat)
+		- [Run Process](#run-process)
+		- [Run Rules](#run-rules)
+		- [Run Script](#run-script)
+		- [Save File](#save-file)
+		- [Send Message](#send-message)
+		- [Send Request](#send-request)
+		- [Send To](#send-to)
+		- [Set Encoding](#set-encoding)
+		- [Set Event Direction](#set-event-direction)
+		- [Set Value](#set-value)
+		- [Set Variable](#set-variable)
+		- [Common Fields](#common-fields)
+	- [Debugging](#debugging)
+
+<!-- /TOC -->
 
 ## Whens
 
-Check if an event message meets certain criteria. Multiple Whens are checked in order and treated as AND conditions logically by default. If the relevant value does not match the constraints of the When (opposite if `Negate Result` is selected), unless the following When has specified to `Use OR Condition`, no further Whens are process for the current Rule and all Thens are skipped.
+Check if an event message meets certain criteria. Multiple Whens are checked in order and treated as AND conditions logically by default. If the relevant value does not match the constraints of the When (opposite if `Negate Result` is selected), unless the following When has specified to `Use OR Condition`, no further Whens are processed for the current Rule and all Thens are skipped.
 
 ### Content Type
 
@@ -123,6 +165,24 @@ Availability: HTTP
 
 Proxy Name - The Burp proxy listener interface (e.g. 127.0.0.1:8080)
 
+### Repeat
+
+Repeat a group of When constraints for each item in a list
+
+Availability: HTTP, WebSocket
+
+#### Fields
+
+Number of Following Whens Included - The number of When items immediately following this one that are a part of the repeat group. They will not run independently of the repeat group.
+
+Success Criteria - `Any Match`: Repeat for each item in the list until the When constraints in the group successfully match during any iteration. If so, report success. Otherwise, report failure; `All Match`: Repeat for each item in the list ensuring that the When constraints in the group successfully match during all iterations. If so, report success. Otherwise, report failure;
+
+List Variable Source - List variants of the Global, Event, or Session scope.
+
+List Variable Name - The name of the variable to repeat for each item of it. Supports variable tags.
+
+Item Event Variable Name - The name of the single item Event variable to store the current item of the list for each repeat iteration. Supports variable tags.
+
 ## Thens
 
 ### Break
@@ -155,7 +215,7 @@ Destination Identifier - The property of the HTTP message to set the value of. O
 
 Destination Identifier Placement - Placement of the value to set if there are multiple (i.e. First, Last, All, Only - Keep One, New - Add additional). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
-Destination Variable Source - Global or Event scope.
+Destination Variable Source - Single item or list variants of the Global, Event, or Session scope. See [Set List Variable](#set-list-variable) for fields that are available if a list variant is chosen.
 
 Destination Variable Name - The name of the variable to hold the built HTTP message. Supports variable tags.
 
@@ -201,9 +261,13 @@ Availability: HTTP, WebSocket
 
 #### Fields
 
-Variable Source - Global or Event scope.
+Variable Source - Single item or list variants of the Global, Event, or Session scope.
 
 Variable Name - The name of the variable to delete. Supports variable tags.
+
+Item Placement - `First`: Delete the first item in the list; `Last`: Delete the last item in the list; `Index`: Delete zero-based Nth item of the list; `All`: Delete the entire list variable. Only available if `Variable Source` is a list variant.
+
+Index - The zero-based index of the item to delete from the list. The index must already exist in the list. Only available if `Variable Source` is a list variant and `Item Placement` is `Index`. Supports variable tags.
 
 ### Drop
 
@@ -223,7 +287,7 @@ Availability: HTTP, WebSocket
 
 #### Fields
 
-X - First value.  Supports variable tags.
+X - First value. Supports variable tags.
 
 Operation - `Add`, `Subtract`, `Multiply`, `Divide By`, `Increment`, `Decrement`, `Mod`, `Abs`, `Round`, `Equals`, `Greater Than`, `Greater Than Or Equals`, `Less Than`, or `Less Than Or Equals`
 
@@ -243,13 +307,14 @@ Color - The color used to highlight the line item.
 
 Intercept the message in the Proxy interceptor
 
-Only relevant for Proxy tool captured events.
+Only relevant for Proxy tool-captured events.
 
 Availability: HTTP, WebSocket
 
 #### Fields
 
 Action - User Defined, Intercept, or Disable.
+
 ### Log
 
 Log message to the Burp extension console
@@ -262,7 +327,7 @@ Text - The text to log. Supports variable tags.
 
 ### Parse HTTP Message
 
-Extract values from an HTTP request or response message and store the values in variable.
+Extract values from an HTTP request or response message and store the values in a variable.
 
 Availability: HTTP, WebSocket
 
@@ -274,13 +339,13 @@ Message Value Getters - Get parts of the HTTP message.
 
 Source Text - The text to set in the message. Supports variable tags.
 
-Source Message Value - The HTTP message entity to extract a value from.
+Source Message Value - The HTTP message entity from which to extract a value.
 
 Source Identifier - The property of the HTTP entity to extract a value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
 Source Identifier Placement - Placement of the value to get if there are multiple (i.e. First, Last). Only available for certain [Message Values](MessageValues.html) (e.g. request header).
 
-Destination Variable Source - Global or Event scope.
+Destination Variable Source - Single item or list variants of the Global, Event, or Session scope. See [Set List Variable](#set-list-variable) for fields that are available if a list variant is chosen.
 
 Destination Variable Name - The name of the variable to hold the built HTTP message value. Supports variable tags.
 
@@ -300,9 +365,33 @@ Fail After (milliseconds) - Flag the request as failed after waiting the specifi
 
 Break After Failure - Do not run any other Thens or Rules for this event if the request was flagged as failed. Only available if `Wait for Completion` is selected.
 
-Capture Variable Source - Global or Event scope.
+Capture Variable Source - Single item or list variants of the Global, Event, or Session scope. See [Set List Variable](#set-list-variable) for fields that are available if a list variant is chosen.
 
-Capture Variable Name - The name of variable to store the response message. Supports variable tags.
+Capture Variable Name - The name of the variable to store the response message. Supports variable tags.
+
+### Repeat
+
+Repeat a group of Then actions by count, boolean value, or for each item in a list
+
+Availability: HTTP, WebSocket
+
+#### Fields
+
+Number of Following Thens Included - The number of Then items immediately following this one that are a part of the repeat group. They will not run independently of the repeat group.
+
+Repeat Condition - `Count`: Repeat a specified number of times; `Has Next Item`: Repeat for each item in a list variable; `While True`: Repeat while a value is true, y, 1, yes, or on.
+
+Count - Number of times to repeat. Only available if `Repeat Condition` is `Count`. Supports variable tags.
+
+List Variable Source - List variants of the Global, Event, or Session scope. Only available if `Repeat Condition` is `Has Next Item`.
+
+List Variable Name - The name of the variable to repeat for each item of it. Only available if `Repeat Condition` is `Has Next Item`. Supports variable tags.
+
+Item Event Variable Name - The name of the single item Event variable to store the current item of the list for each repeat iteration. Only available if `Repeat Condition` is `Has Next Item`. Supports variable tags.
+
+Boolean Value - Repeat while this value is `true`, `y`, `1`, `yes`, or `on`. Boolean Value should contain a variable tag whose value would change between the repeat iterations in order to avoid unexpected repeating. Only available if `Repeat Condition` is `While True`. Supports variable tags.
+
+Max Count - The max number of times to repeat in situations where `Boolean Value` never evaluates to a false equivalent value. Only available if `Repeat Condition` is `While True`.
 
 ### Run Process
 
@@ -330,9 +419,9 @@ Capture Output - Capture standard out of the process. Only available if `Wait fo
 
 Capture After Failure - Capture standard out even if the process is flagged as failed. Only available if `Wait for Completion` and `Capture Output` is selected.
 
-Capture Variable Source - Global or Event scope.
+Capture Variable Source - Single item or list variants of the Global, Event, or Session scope. See [Set List Variable](#set-list-variable) for fields that are available if a list variant is chosen.
 
-Capture Variable Name - The name of variable to store the captured output. Supports variable tags.
+Capture Variable Name - The name of the variable to store the captured output. Supports variable tags.
 
 ### Run Rules
 
@@ -352,7 +441,7 @@ Execute a JavaScript script
 
 Availability: HTTP, WebSocket
 
-The engine supports up to partial ES6/ES2015. Scripts have access to certain Reshaper specific functions. See [Scripting Library](ScriptingLibrary.html)
+The engine supports up to partial ES6/ES2015. Scripts have access to certain Reshaper-specific functions. See [Scripting Library](ScriptingLibrary.html)
 
 #### Fields
 
@@ -368,13 +457,13 @@ Availability: HTTP, WebSocket
 
 #### Fields
 
-File Path - File path of the file, include file name. Supports variable tags.
+File Path - File path of the file including the file name. Supports variable tags.
 
 Text - The text to save. Supports variable tags.
 
-Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
+Encoding - The charset/encoding of the file (e.g. UTF-8). Supports variable tags.
 
-File Exists Action - Action to do if the file already exist: None (Don't write), Overwrite, Append
+File Exists Action - Action to do if the file already exists: None (Don't write), Overwrite, Append
 
 ### Send Message
 
@@ -410,7 +499,7 @@ Wait for Completion - Wait for a response before continuing.
 
 Fail After (milliseconds) - Flag the request as failed after waiting the specified amount of time for the response. Only available if `Wait for Completion` is selected. Supports variable tags.
 
-Fail on Error Status Code - Flag the request as failed if the response returned a with a 4xx or 5xx HTTP status code. Only available if `Wait for Completion` is selected.
+Fail on Error Status Code - Flag the request as failed if the response returned a 4xx or 5xx HTTP status code. Only available if `Wait for Completion` is selected.
 
 Break After Failure - Do not run any other Thens or Rules for this event if the request was flagged as failed. Only available if `Wait for Completion` is selected.
 
@@ -418,13 +507,13 @@ Capture Output - Capture the HTTP response message. Only available if `Wait for 
 
 Capture After Failure - Capture the HTTP response message even if the request is flagged as failed. Only available if `Wait for Completion` and `Capture Output` is selected.
 
-Capture Variable Source - Global or Event scope.
+Capture Variable Source - Single item or list variants of the Global, Event, or Session scope. See [Set List Variable](#set-list-variable) for fields that are available if a list variant is chosen.
 
-Capture Variable Name - The name of variable to store the response message. Supports variable tags.
+Capture Variable Name - The name of the variable to store the response message. Supports variable tags.
 
 ### Send To
 
-Send data to other Burp tools or the system default browser
+Send data to other Burp tools or the system's default browser
 
 Availability: HTTP, WebSocket
 
@@ -434,17 +523,17 @@ Send To - Comparer, Intruder, Repeater, or Browser
 
 Override Defaults - Select to be able to override values to send to the given Burp tool
 
-Host - Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+Host - Leave empty to use the default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
 
-Port - Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+Port - Leave empty to use the default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
 
-Protocol - HTTP or HTTPS. Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+Protocol - HTTP or HTTPS. Leave empty to use the default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
 
-Request - Full HTTP request text. Leave empty to use default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
+Request - Full HTTP request text. Leave empty to use the default value. Only available for Intruder and Repeater and if `Override Defaults` is selected. Supports variable tags.
 
-Value - Value to compare. Leave empty to use default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
+Value - Value to compare. Leave empty to use the default value. Only available for Comparer and if `Override Defaults` is selected. Supports variable tags.
 
-URL - Leave empty to use default value. Only available for Browser, and `Override Defaults` is selected. Supports variable tags.
+URL - Leave empty to use the default value. Only available for Browser, and `Override Defaults` is selected. Supports variable tags.
 
 ### Set Encoding
 
@@ -454,7 +543,7 @@ Availability: HTTP, WebSocket
 
 #### Fields
 
-Encoding - The charset/encoding of the file (e.g. uft-8). Supports variable tags.
+Encoding - The charset/encoding of the file (e.g. UTF-8). Supports variable tags.
 
 ### Set Event Direction
 
@@ -478,7 +567,7 @@ Availability: HTTP, WebSocket
 
 Use Message Value - Use [Message Value](MessageValues.html) (HTTP/WebSocket event entity) as the source value. Otherwise, use the specified text.
 
-Source Message Value - The HTTP/WebSocket event entity to get the source value from. Only available if `Use Message Value` is selected.
+Source Message Value - The HTTP/WebSocket event entity from which to get the source value. Only available if `Use Message Value` is selected.
 
 Source Identifier - The property of the HTTP/WebSocket entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
@@ -492,9 +581,9 @@ Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a 
 
 Use Regex Replace - Use regex on the source value.
 
-Regex Pattern - The Regex pattern to run on the source value. If there is a successful match, a Regex replace is performed on the value using `Regex Replacement Text`. Only available if `Use Regex Replace` is selected. Supports variable tags.
+Regex Pattern - The Regex pattern to run on the source value. If there is a successful match, a Regex replacement is performed on the value using `Regex Replacement Text`. Only available if `Use Regex Replace` is selected. Supports variable tags.
 
-Regex Pattern - The replacement value to use in the Regex replace. Only available if `Use Regex Replace` is selected. Supports variable tags.
+Regex Pattern - The replacement value to use in the Regex replacement. Only available if `Use Regex Replace` is selected. Supports variable tags.
 
 Destination Message Value - The HTTP/WebSocket event entity to set the value of.
 
@@ -516,7 +605,7 @@ Availability: HTTP, WebSocket
 
 Use Message Value - Use [Message Value](MessageValues.html) (HTTP/WebSocket event entity) as the source value. Otherwise, use the specified text.
 
-Source Message Value - The HTTP/WebSocket event entity to get the source value from. Only available if `Use Message Value` is selected.
+Source Message Value - The HTTP/WebSocket event entity from which to get the source value. Only available if `Use Message Value` is selected.
 
 Source Identifier - The property of the HTTP/WebSocket entity to get the source value from. Only available for certain [Message Values](MessageValues.html) (e.g. request header). Supports variable tags.
 
@@ -530,11 +619,11 @@ Source Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a 
 
 Use Regex Replace - Use regex on the source value.
 
-Regex Pattern - The Regex pattern to run on the source value. If there is a successful match, a Regex replace is performed on the value using `Regex Replacement Text`. Only available if `Use Regex Replace` is selected. Supports variable tags.
+Regex Pattern - The Regex pattern to run on the source value. If there is a successful match, a Regex replacement is performed on the value using `Regex Replacement Text`. Only available if `Use Regex Replace` is selected. Supports variable tags.
 
-Regex Pattern - The replacement value to use in the Regex replace. Only available if `Use Regex Replace` is selected. Supports variable tags.
+Regex Pattern - The replacement value to use in the Regex replacement. Only available if `Use Regex Replace` is selected. Supports variable tags.
 
-Destination Variable Source - Global or Event scope.
+Destination Variable Source - Single item or list variants of the Global, Event, or Session scope. See [Set List Variable](#set-list-variable) for fields that are available if a list variant is chosen.
 
 Destination Variable Name - The name of the variable to set. Supports variable tags.
 
@@ -542,18 +631,32 @@ Destination Value Type - Declare that the value to set is Text, JSON (node), HTM
 
 Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
+### Common Fields
+
+#### Set List Variable
+
+The following fields are only available if the variable source is a list variant.
+
+Item Placement - `First`: Set/overwrite the first item in the list; `Last`: Set/overwrite the last item in the list; `Index`: Set/overwrite zero-based Nth item of the list; `Add First`: Insert as the first item in the list; `Add Last`: Insert as the last item in the list; `All`: Reset the list with a new delimited value;
+
+Index - The zero-based index to place the value in the list. The index must already exist in the list or be +1 beyond the last item in the list. Only available if `Item Placement` is `Index`. Supports variable tags.
+
+Delimiter - The delimiter used to split the value to create individual items in the list. Note, use special variable tags to specify characters like new lines. Only available if `Item Placement` is `All`. Supports variable tags.
+
+
 ## Debugging
 
-Rules can be debugged by enabling event diagnostics (*Settings > General > Enable Event Diagnostics*) to debug all Rules or by right-clicking the specific Rules you want to debug in the Rules list and selecting `Toggle Debug Logging` in the context menu. This will log details about the actions the Rule(s) have taken for each event (request, response, or WebSocket message) processed, including the result of When constraint checks, and the values that were used in Whens and Thens.
+Rules can be debugged by enabling event diagnostics (_Settings > General > Enable Event Diagnostics_) to debug all Rules or by right-clicking the specific Rules you want to debug in the Rules list and selecting `Toggle Debug Logging` in the context menu. This will log details about the actions the Rule(s) have taken for each event (request, response, or WebSocket message) processed, including the result of When constraint checks, and the values that were used in Whens and Thens.
 
 Example Diagnostic Output:
+
 ```
 Request: http://example.com/
 	Rule: Test
 		    When Event Direction('Request' equals 'Request') - PASS
 		AND When Matches Text('example.com' contains 'example') - PASS
-		    Then Set Value(destinationMessageValue='Request Header' destinationIdentifier='special' input='Mine') 
-		    Then Highlight('orange') 
+		    Then Set Value(destinationMessageValue='Request Header' destinationIdentifier='special' input='Mine')
+		    Then Highlight('orange')
 	End Rule
 End Request
 

@@ -6,7 +6,7 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueType;
 import synfron.reshaper.burp.core.rules.thens.ThenSet;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.Arrays;

@@ -32,6 +32,17 @@ public class Diagnostics implements IDiagnostics {
     private DiagnosticRecord endRecord;
 
     @Override
+    public int size() {
+        return records.size();
+    }
+
+    @Override
+    public void moveLast(int position) {
+        records.add(position, records.get(records.size() - 1));
+        records.remove(records.size() - 1);
+    }
+
+    @Override
     public void logCompare(When<?> when, List<? extends Pair<String, ? extends Serializable>> properties, MatchType matchType, Object matcher, Object value, boolean result) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.When, String.format(
                 "%-4sWhen %s(%s'%s' %s '%s') - %s\n",
@@ -64,6 +75,17 @@ public class Diagnostics implements IDiagnostics {
                 isLast(DiagnosticEntityType.When) ? toPrefix(when.isUseOrCondition()) : "",
                 when.getType().getName(),
                 toValuePhrase(values),
+                toResultPhrase(result, when.isNegate())
+        )));
+    }
+
+    @Override
+    public void logProperties(When<?> when, boolean result, List<? extends Pair<String, ? extends Serializable>> properties) {
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.Then, String.format(
+                "%-4sWhen %s(%s) %s\n",
+                isLast(DiagnosticEntityType.When) ? toPrefix(when.isUseOrCondition()) : "",
+                when.getType().getName(),
+                toPropertiesPhrase(properties),
                 toResultPhrase(result, when.isNegate())
         )));
     }
@@ -110,6 +132,26 @@ public class Diagnostics implements IDiagnostics {
     @Override
     public void logEnd(Rule rule) {
         getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndRule, "End Rule\n"));
+    }
+
+    @Override
+    public void logGroupContainerStart() {
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.StartGroupContainer,"\n"));
+    }
+
+    @Override
+    public void logGroupContainerEnd() {
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndGroupContainer, "\n"));
+    }
+
+    @Override
+    public void logGroupStart(String name) {
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.StartGroup, name + "\n"));
+    }
+
+    @Override
+    public void logGroupEnd(String name) {
+        getRecords().add(new DiagnosticRecord(DiagnosticEntityType.EndGroup, name + "\n"));
     }
 
     @Override

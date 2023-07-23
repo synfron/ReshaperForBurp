@@ -17,6 +17,7 @@ public class WhenType<T extends When<T>> extends RuleOperationType<T> {
     public static final WhenType<WhenProxyName> ProxyName = new WhenType<>("Proxy Name", WhenProxyName.class);
     public static final WhenType<WhenFromTool> FromTool = new WhenType<>("From Tool", WhenFromTool.class);
     public static final WhenType<WhenInScope> InScope = new WhenType<>("In Scope", WhenInScope.class);
+    public static final WhenType<WhenRepeat> Repeat = new WhenType<>("Repeat", WhenRepeat.class);
 
     private WhenType() {
         this(null, null);

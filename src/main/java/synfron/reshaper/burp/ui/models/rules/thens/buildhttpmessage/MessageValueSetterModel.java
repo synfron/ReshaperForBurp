@@ -7,7 +7,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.entities.buildhttpmessage.MessageValueSetter;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.ArrayList;

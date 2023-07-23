@@ -6,7 +6,7 @@ import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.*;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
 import synfron.reshaper.burp.core.utils.Select;
 import synfron.reshaper.burp.core.vars.VariableString;
 

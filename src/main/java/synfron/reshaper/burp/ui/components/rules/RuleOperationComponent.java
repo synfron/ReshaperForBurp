@@ -52,7 +52,7 @@ public abstract class RuleOperationComponent<P extends RuleOperationModel<P, T>,
     }
 
     private void onValidate(ActionEvent actionEvent) {
-        if (!model.persist()) {
+        if (!model.record()) {
             JOptionPane.showMessageDialog(this,
                     String.join("\n", model.validate()),
                     "Validation Error",

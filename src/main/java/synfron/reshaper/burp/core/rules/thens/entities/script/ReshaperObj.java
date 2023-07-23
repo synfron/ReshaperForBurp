@@ -8,15 +8,15 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.thens.ThenType;
-import synfron.reshaper.burp.core.utils.*;
-import synfron.reshaper.burp.core.vars.GlobalVariables;
-import synfron.reshaper.burp.core.vars.Variable;
-import synfron.reshaper.burp.core.vars.VariableString;
-import synfron.reshaper.burp.core.vars.Variables;
+import synfron.reshaper.burp.core.utils.Serializer;
+import synfron.reshaper.burp.core.utils.TextUtils;
+import synfron.reshaper.burp.core.vars.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,11 +41,33 @@ public class ReshaperObj {
             return getVariable(((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables(), name);
         }
 
+        public String[] getGlobalListVariable(String name) {
+            return getListVariable(GlobalVariables.get(), name);
+        }
+
+        public String[] getEventListVariable(String name) {
+            return getListVariable(((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables(), name);
+        }
+
+        public String[] getSessionListVariable(String name) {
+            return getListVariable(((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables(), name);
+        }
+
         private String getVariable(Variables variables, String name) {
             if (variables != null) {
-                Variable variable = variables.getOrDefault(name);
+                Variable variable = variables.getOrDefault(Variables.asKey(name, false));
                 return variable != null ?
                         TextUtils.toString(variable.getValue()) :
+                        null;
+            }
+            return null;
+        }
+
+        private String[] getListVariable(Variables variables, String name) {
+            if (variables != null) {
+                ListVariable variable = (ListVariable) variables.getOrDefault(Variables.asKey(name, true));
+                return variable != null ?
+                        variable.getValues().stream().map(TextUtils::toString).toArray(String[]::new) :
                         null;
             }
             return null;
@@ -55,33 +77,69 @@ public class ReshaperObj {
             if (!VariableString.isValidVariableName(name)) {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
-            GlobalVariables.get().add(name).setValue(value);
+            GlobalVariables.get().add(Variables.asKey(name, false)).setValue(value);
         }
 
         public void setEventVariable(String name, String value) {
             if (!VariableString.isValidVariableName(name)) {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
-            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(name).setValue(value);
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(Variables.asKey(name, false)).setValue(value);
         }
 
         public void setSessionVariable(String name, String value) {
             if (!VariableString.isValidVariableName(name)) {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
-            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().add(name).setValue(value);
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().add(Variables.asKey(name, false)).setValue(value);
+        }
+
+        public void setGlobalListVariable(String name, Object[] values, String delimiter) {
+            if (!VariableString.isValidVariableName(name)) {
+                throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
+            }
+            ListVariable variable = (ListVariable) GlobalVariables.get().add(Variables.asKey(name, true));
+            variable.setValues(values, delimiter);
+        }
+
+        public void setEventListVariable(String name, Object[] values, String delimiter) {
+            if (!VariableString.isValidVariableName(name)) {
+                throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
+            }
+            ListVariable variable = (ListVariable) ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(Variables.asKey(name, true));
+            variable.setValues(values, delimiter);
+        }
+
+        public void setSessionListVariable(String name, Object[] values, String delimiter) {
+            if (!VariableString.isValidVariableName(name)) {
+                throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
+            }
+            ListVariable variable = (ListVariable) ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().add(Variables.asKey(name, true));
+            variable.setValues(values, delimiter);
         }
 
         public void deleteGlobalVariable(String name) {
-            GlobalVariables.get().remove(name);
+            GlobalVariables.get().remove(Variables.asKey(name, false));
         }
 
         public void deleteEventVariable(String name) {
-            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(name);
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(Variables.asKey(name, false));
         }
 
         public void deleteSessionVariable(String name) {
-            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().remove(name);
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().remove(Variables.asKey(name, false));
+        }
+
+        public void deleteGlobalListVariable(String name) {
+            GlobalVariables.get().remove(Variables.asKey(name, true));
+        }
+
+        public void deleteEventListVariable(String name) {
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().remove(Variables.asKey(name, true));
+        }
+
+        public void deleteSessionListVariable(String name) {
+            ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().remove(Variables.asKey(name, true));
         }
     }
 

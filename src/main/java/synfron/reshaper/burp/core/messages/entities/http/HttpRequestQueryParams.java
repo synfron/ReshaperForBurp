@@ -3,6 +3,10 @@ package synfron.reshaper.burp.core.messages.entities.http;
 import lombok.Getter;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import synfron.reshaper.burp.core.rules.DeleteItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.IItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.*;
 
 import java.util.List;

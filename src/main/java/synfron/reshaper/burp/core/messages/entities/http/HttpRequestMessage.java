@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.Url;
 
 import java.util.Arrays;

@@ -65,7 +65,6 @@ public class RuleComponent extends JPanel implements IFormComponent {
         ruleName = createTextField(false);
 
         ruleName.setText(model.getName());
-        ruleName.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         ruleName.setAlignmentX(Component.LEFT_ALIGNMENT);
         ruleName.setColumns(20);
         ruleName.setMaximumSize(ruleName.getPreferredSize());

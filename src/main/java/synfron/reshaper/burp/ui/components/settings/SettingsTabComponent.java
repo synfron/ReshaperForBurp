@@ -265,7 +265,6 @@ public class SettingsTabComponent extends JPanel implements IFormComponent {
         return container;
     }
 
-
     private JSplitButton getExportDataButton() {
         JSplitButton exportData = new JSplitButton("Export Data    ");
 

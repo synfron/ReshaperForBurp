@@ -17,8 +17,8 @@ import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
 import synfron.reshaper.burp.core.messages.entities.http.HttpResponseStatusLine;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
-import synfron.reshaper.burp.core.utils.SetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.net.URI;

@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenSendRequest;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSendRequestModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
@@ -25,6 +26,9 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
     private JCheckBox captureAfterFailure;
     private JComboBox<VariableSource> captureVariableSource;
     private JTextField captureVariableName;
+    private JComboBox<SetListItemPlacement> itemPlacement;
+    private JTextField delimiter;
+    private JTextField index;
 
     public ThenSendRequestComponent(ProtocolType protocolType, ThenSendRequestModel then) {
         super(protocolType, then);
@@ -45,6 +49,9 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         captureAfterFailure = new JCheckBox("Capture After Failure");
         captureVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         captureVariableName = createTextField(true);
+        itemPlacement = createComboBox(SetListItemPlacement.values());
+        delimiter = createTextField(true);
+        index = createTextField(true);
 
         request.setText(model.getRequest());
         url.setText(model.getUrl());
@@ -59,6 +66,9 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         captureAfterFailure.setSelected(model.isCaptureAfterFailure());
         captureVariableSource.setSelectedItem(model.getCaptureVariableSource());
         captureVariableName.setText(model.getCaptureVariableName());
+        itemPlacement.setSelectedItem(model.getItemPlacement());
+        delimiter.setText(model.getDelimiter());
+        index.setText(model.getIndex());
 
         request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
         url.getDocument().addDocumentListener(new DocumentActionListener(this::onUrlChanged));
@@ -73,6 +83,9 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         captureAfterFailure.addActionListener(this::onCaptureAfterFailureChanged);
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
+        itemPlacement.addActionListener(this::onItemPlacementChanged);
+        delimiter.getDocument().addDocumentListener(new DocumentActionListener(this::onDelimiterChanged));
+        index.getDocument().addDocumentListener(new DocumentActionListener(this::onIndexChanged));
 
         mainContainer.add(getLabeledField("Request", request), "wrap");
         mainContainer.add(getLabeledField("URL", url), "wrap");
@@ -114,6 +127,21 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
                 getLabeledField("Capture Variable Name *", captureVariableName),
                 List.of(waitForCompletion, captureOutput),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected()
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Item Placement", itemPlacement),
+                List.of(waitForCompletion, captureOutput, captureVariableSource),
+                () -> waitForCompletion.isSelected() && captureOutput.isSelected() && ((VariableSource)captureVariableSource.getSelectedItem()).isList()
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Delimiter *", delimiter),
+                List.of(waitForCompletion, captureOutput, captureVariableSource, itemPlacement),
+                () -> waitForCompletion.isSelected() && captureOutput.isSelected() && ((VariableSource)captureVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasDelimiterSetter()
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Index *", index),
+                List.of(waitForCompletion, captureOutput, captureVariableSource, itemPlacement),
+                () -> waitForCompletion.isSelected() && captureOutput.isSelected() && ((VariableSource)captureVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
         mainContainer.add(getPaddedButton(validate));
     }
@@ -168,5 +196,17 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
 
     private void onCaptureVariableNameChanged(ActionEvent actionEvent) {
         model.setCaptureVariableName(captureVariableName.getText());
+    }
+
+    private void onItemPlacementChanged(ActionEvent actionEvent) {
+        model.setItemPlacement((SetListItemPlacement)itemPlacement.getSelectedItem());
+    }
+
+    private void onDelimiterChanged(ActionEvent actionEvent) {
+        model.setDelimiter(delimiter.getText());
+    }
+
+    private void onIndexChanged(ActionEvent actionEvent) {
+        model.setIndex(index.getText());
     }
 }

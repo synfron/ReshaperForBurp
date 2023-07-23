@@ -26,6 +26,9 @@ public class VariableTagWizardContainerComponent extends JPanel {
                 case Event -> new EventVariableTagWizardComponent((EventVariableTagWizardModel) model);
                 case Global -> new GlobalVariableTagWizardComponent((GlobalVariableTagWizardModel) model);
                 case Session -> new SessionVariableTagWizardComponent((SessionVariableTagWizardModel) model);
+                case EventList -> new EventListVariableTagWizardComponent((EventListVariableTagWizardModel) model);
+                case GlobalList -> new GlobalListVariableTagWizardComponent((GlobalListVariableTagWizardModel) model);
+                case SessionList -> new SessionListVariableTagWizardComponent((SessionListVariableTagWizardModel) model);
                 case Message -> new MessageVariableTagWizardComponent((MessageVariableTagWizardModel) model, protocolType);
                 case Annotation -> new AnnotationVariableTagWizardComponent((AnnotationVariableTagWizardModel) model);
                 case File -> new FileVariableTagWizardComponent((FileVariableTagWizardModel) model);

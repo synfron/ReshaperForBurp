@@ -51,6 +51,12 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
     private VariableSource captureVariableSource = VariableSource.Global;
     @Getter @Setter
     private VariableString captureVariableName;
+    @Getter @Setter
+    private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;
+    @Getter @Setter
+    private VariableString delimiter;
+    @Getter @Setter
+    private VariableString index;
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
@@ -113,7 +119,15 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                 failed = !complete || (failOnErrorStatusCode && (statusCode == 0 || (statusCode >= 400 && statusCode < 600)));
                 if (captureOutput && (!failed || captureAfterFailure)) {
                     output = response.get() != null ? new HttpResponseMessage(response.get().toByteArray().getBytes(), eventInfo.getEncoder()).getText() : "";
-                    setVariable(captureVariableSource, eventInfo, captureVariableName, output);
+                    setVariable(
+                            captureVariableSource,
+                            eventInfo,
+                            captureVariableName,
+                            itemPlacement,
+                            VariableString.getTextOrDefault(eventInfo, delimiter, "\n"),
+                            VariableString.getIntOrDefault(eventInfo, index, 0),
+                            output
+                    );
                 }
             }
         } catch (InterruptedException e) {
@@ -135,6 +149,9 @@ public class ThenSendRequest extends Then<ThenSendRequest> implements IHttpRuleO
                         Pair.of("output", output),
                         Pair.of("captureVariableSource", waitForCompletion && captureOutput ? captureVariableSource : null),
                         Pair.of("captureVariableName", waitForCompletion && captureOutput ? captureVariableName : null),
+                        Pair.of("itemPlacement", captureVariableSource.isList() ? itemPlacement : null),
+                        Pair.of("delimiter", captureVariableSource.isList() && itemPlacement.isHasDelimiterSetter() ? VariableString.getTextOrDefault(eventInfo, delimiter, null) : null),
+                        Pair.of("index", captureVariableSource.isList() && itemPlacement.isHasIndexSetter() ? VariableString.getTextOrDefault(eventInfo, index, null) : null),
                         Pair.of("exceededWait", waitForCompletion ? !complete : null),
                         Pair.of("failed", waitForCompletion ? failed : null),
                         Pair.of("exitCode", waitForCompletion ? statusCode : null)

@@ -20,6 +20,7 @@ public class WhenModelType<P extends WhenModel<P, T>, T extends When<T>> extends
     public static final WhenModelType<WhenProxyNameModel, WhenProxyName> ProxyName = new WhenModelType<>(WhenProxyNameModel.class, WhenType.ProxyName);
     public static final WhenModelType<WhenFromToolModel, WhenFromTool> FromTool = new WhenModelType<>(WhenFromToolModel.class, WhenType.FromTool);
     public static final WhenModelType<WhenInScopeModel, WhenInScope> InScope = new WhenModelType<>(WhenInScopeModel.class, WhenType.InScope);
+    public static final WhenModelType<WhenRepeatModel, WhenRepeat> Repeat = new WhenModelType<>(WhenRepeatModel.class, WhenType.Repeat);
 
     private WhenModelType(Class<P> type, RuleOperationType<T> ruleOperationType) {
         super(type, ruleOperationType);
@@ -36,7 +37,8 @@ public class WhenModelType<P extends WhenModel<P, T>, T extends When<T>> extends
                 MessageType,
                 ProxyName,
                 FromTool,
-                InScope
+                InScope,
+                Repeat
         ).filter(type -> type.hasProtocolType(protocolType)).collect(Collectors.toList());
     }
 }

@@ -10,10 +10,7 @@ import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
-import synfron.reshaper.burp.core.vars.Variable;
-import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableString;
-import synfron.reshaper.burp.core.vars.Variables;
+import synfron.reshaper.burp.core.vars.*;
 
 import java.util.Arrays;
 
@@ -31,6 +28,12 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
     private VariableSource destinationVariableSource = VariableSource.Global;
     @Getter @Setter
     private VariableString destinationVariableName;
+    @Getter @Setter
+    private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;
+    @Getter @Setter
+    private VariableString delimiter;
+    @Getter @Setter
+    private VariableString index;
 
     @Override
     public RuleResponse perform(EventInfo eventInfo) {
@@ -41,12 +44,12 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
         try {
             Variables variables = getVariables(destinationVariableSource, eventInfo);
             if (variables != null) {
-                Variable variable = variables.add(destinationVariableName.getText(eventInfo));
+                Variable variable = variables.add(Variables.asKey(destinationVariableName.getText(eventInfo), destinationVariableSource.isList()));
                 value1 = operation.getInputs() > 0 ? VariableString.getDoubleOrDefault(eventInfo, x, null) : null;
                 value2 = operation.getInputs() > 1 ? VariableString.getDoubleOrDefault(eventInfo, y, null) : null;
                 result = evaluate(value1, value2);
                 if (result != null) {
-                    variable.setValue(result);
+                    variable.setValue(itemPlacement, VariableString.getTextOrDefault(eventInfo, delimiter, "\n"), VariableString.getIntOrDefault(eventInfo, index, 0), result);
                 }
             }
             hasError = result == null;
@@ -56,6 +59,9 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
                     Pair.of("Y", value2),
                     Pair.of("destinationVariableSource", destinationVariableSource),
                     Pair.of("destinationVariableName", VariableString.getTextOrDefault(eventInfo, destinationVariableName, null)),
+                    Pair.of("itemPlacement", destinationVariableSource.isList() ? itemPlacement : null),
+                    Pair.of("delimiter", destinationVariableSource.isList() && itemPlacement.isHasDelimiterSetter() ? delimiter : null),
+                    Pair.of("index", destinationVariableSource.isList() && itemPlacement.isHasIndexSetter() ? VariableString.getTextOrDefault(eventInfo, index, null) : null),
                     Pair.of("result", result)
             ));
         }

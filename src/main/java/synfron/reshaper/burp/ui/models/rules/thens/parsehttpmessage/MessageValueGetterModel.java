@@ -7,7 +7,8 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.rules.thens.entities.parsehttpmessage.MessageValueGetter;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
+import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -28,6 +29,12 @@ public class MessageValueGetterModel {
     @Getter
     private String destinationVariableName;
     @Getter
+    private SetListItemPlacement itemPlacement;
+    @Getter
+    private String delimiter = "{{s:n}}";
+    @Getter
+    private String index;
+    @Getter
     protected boolean validated;
     @Getter
     protected boolean deleted;
@@ -41,6 +48,9 @@ public class MessageValueGetterModel {
         sourceIdentifierPlacement = messageValueGetter.getSourceIdentifierPlacement();
         destinationVariableSource = messageValueGetter.getDestinationVariableSource();
         destinationVariableName = VariableString.toString(messageValueGetter.getDestinationVariableName(), destinationVariableName);
+        itemPlacement = messageValueGetter.getItemPlacement();
+        delimiter = VariableString.toString(messageValueGetter.getDelimiter(), delimiter);
+        index = VariableString.toString(messageValueGetter.getIndex(), index);
     }
 
     public void setSourceMessageValue(MessageValue sourceMessageValue) {
@@ -66,6 +76,21 @@ public class MessageValueGetterModel {
     public void setDestinationVariableName(String destinationVariableName) {
         this.destinationVariableName = destinationVariableName;
         propertyChanged("destinationVariableName", destinationVariableName);
+    }
+
+    public void setItemPlacement(SetListItemPlacement itemPlacement) {
+        this.itemPlacement = itemPlacement;
+        propertyChanged("itemPlacement", itemPlacement);
+    }
+
+    public void setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
+        propertyChanged("delimiter", delimiter);
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+        propertyChanged("index", index);
     }
 
     public void setDeleted(boolean deleted) {
@@ -100,6 +125,13 @@ public class MessageValueGetterModel {
         } else if (!VariableString.isValidVariableName(destinationVariableName)) {
             errors.add("Destination Variable Name is invalid");
         }
+        if (destinationVariableSource.isList() && itemPlacement.isHasIndexSetter()) {
+            if (StringUtils.isEmpty(index)) {
+                errors.add("Index is required");
+            } else if (!VariableString.isPotentialInt(index)) {
+                errors.add("Index must be an integer");
+            }
+        }
         return errors;
     }
 
@@ -112,6 +144,9 @@ public class MessageValueGetterModel {
         messageValueGetter.setSourceIdentifierPlacement(sourceIdentifierPlacement);
         messageValueGetter.setDestinationVariableSource(destinationVariableSource);
         messageValueGetter.setDestinationVariableName(VariableString.getAsVariableString(destinationVariableName));
+        messageValueGetter.setItemPlacement(itemPlacement);
+        messageValueGetter.setDelimiter(VariableString.getAsVariableString(delimiter));
+        messageValueGetter.setIndex(VariableString.getAsVariableString(index));
         return true;
     }
 

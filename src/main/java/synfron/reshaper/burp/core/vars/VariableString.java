@@ -1,26 +1,15 @@
 package synfron.reshaper.burp.core.vars;
 
 import burp.BurpExtender;
-import burp.api.montoya.http.message.Cookie;
-import burp.api.montoya.http.message.HttpRequestResponse;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import synfron.reshaper.burp.core.messages.*;
-import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
+import synfron.reshaper.burp.core.vars.getters.VariableGetterProvider;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -40,15 +29,12 @@ public class VariableString implements Serializable {
         this.variables = variables;
     }
 
-    public static CSVFormat getParamFormat() {
-        return CSVFormat.DEFAULT.builder().setDelimiter(':')
-                .setAllowMissingColumnNames(true)
-                .setEscape('\\')
-                .build();
-    }
-
     public static boolean isValidVariableName(String name) {
         return StringUtils.isNotEmpty(name) && !Pattern.matches("\\{\\{|}}", name);
+    }
+
+    public boolean hasVariables() {
+        return !variables.isEmpty();
     }
 
     public boolean isEmpty() {
@@ -115,142 +101,19 @@ public class VariableString implements Serializable {
         for (VariableSourceEntry variable : variables) {
             VariableSource variableSource = variable.getVariableSource();
             if (variableSource != null) {
-                if (variableSource.isAccessor()) {
-                    String value = switch (variable.getVariableSource()) {
-                        case Message -> getMessageVariable(eventInfo, variable.getName());
-                        case File -> getFileText(eventInfo, variable.getName());
-                        case Special -> variable.getName();
-                        case CookieJar -> getCookie(variable.getName());
-                        case Annotation -> getAnnotation(eventInfo, variable.getName());
-                        case Macro -> getMacro(eventInfo, variable.getName());
-                        default -> null;
-                    };
-                    variableVals.add(value);
-                } else {
-                    Variable value = switch (variable.getVariableSource()) {
-                        case Global -> GlobalVariables.get().getOrDefault(variable.getName());
-                        case Event -> eventInfo.getVariables().getOrDefault(variable.getName());
-                        case Session -> eventInfo.getSessionVariables().getOrDefault(variable.getName());
-                        default -> null;
-                    };
-                    variableVals.add(value != null ? TextUtils.toString(value.getValue()) : null);
-                }
+                variableVals.add(VariableGetterProvider.get(variableSource).getText(variable, eventInfo));
             }
         }
         return String.format(text, variableVals.toArray());
     }
 
-    private String getMacro(EventInfo eventInfo, String locator) {
-        String[] variableNameParts = locator.split(":", 3);
-        if (variableNameParts.length > 1) {
-            int macroItemIndex = NumberUtils.toInt(variableNameParts[0], 0) - 1;
-            MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, variableNameParts[1]);
-            String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 2, "");
-            if (macroItemIndex >= 0 && messageValue != null) {
-                HttpRequestResponse requestResponse = CollectionUtils.elementAtOrDefault(eventInfo.getMacros(), macroItemIndex);
-                HttpEventInfo macroEventInfo = new HttpEventInfo(
-                        HttpDataDirection.Response,
-                        eventInfo.getBurpTool(),
-                        null,
-                        requestResponse.request(),
-                        requestResponse.response(),
-                        requestResponse.annotations(),
-                        new Variables()
-                );
-                return StringUtils.defaultString(MessageValueHandler.getValue(
-                        macroEventInfo,
-                        messageValue,
-                        VariableString.getAsVariableString(identifier, false), GetItemPlacement.Last
-                ));
-            }
-        }
-        return null;
-    }
-
-    private String getAnnotation(EventInfo eventInfo, String name) {
-        MessageAnnotation annotation = EnumUtils.getEnumIgnoreCase(MessageAnnotation.class, name);
-        if (annotation != null && eventInfo.getAnnotations() != null) {
-            return switch (annotation) {
-                case Comment -> eventInfo.getAnnotations().notes();
-                case HighlightColor -> StringUtils.capitalize(eventInfo.getAnnotations().highlightColor().name().toLowerCase());
-            };
-        }
-        return null;
-    }
-
-    private String getCookie(String locator) {
+    private static String getSpecialChar(String sequences) {
         try {
-            String[] parts = locator.split(":", 3);
-            String domain = parts[0];
-            String name = parts[1];
-            String path = CollectionUtils.elementAtOrDefault(parts, 2);
-            if (Arrays.stream(parts).anyMatch(part -> part.startsWith("\""))) {
-                try (CSVParser csvParser = CSVParser.parse(locator, getParamFormat())) {
-                    CSVRecord record = csvParser.getRecords().get(0);
-                    if (record.size() == 2) {
-                        domain = record.get(0);
-                        name = record.get(1);
-                        path = null;
-                    } else if (record.size() == 3) {
-                        domain = record.get(0);
-                        name = record.get(1);
-                        path = record.get(2);
-                    }
-                }
-            }
-            for (Cookie cookie : BurpExtender.getApi().http().cookieJar().cookies()) {
-                if (cookie.domain().equals(domain)
-                        && cookie.name().equals(name)
-                        && (path == null || StringUtils.defaultString(cookie.path()).equals(path))) {
-                    return cookie.value();
-                }
-            }
+            return TextUtils.parseSpecialChars(sequences);
         } catch (Exception e) {
             if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
-                Log.get().withMessage(String.format("Invalid use of cookie jar variable tag: %s", VariableSourceEntry.getTag(VariableSource.CookieJar, locator))).withException(e).logErr();
+                Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, sequences))).withException(e).logErr();
             }
-        }
-        return "";
-    }
-
-    private String getFileText(EventInfo eventInfo, String locator) {
-        try {
-            String[] variableNameParts = locator.split(":", 2);
-            File file = new File(variableNameParts[1]);
-            String encoding = variableNameParts[0];
-            Encoder encoder = new Encoder(encoding);
-            if (encoder.isUseDefault() || encoder.isUseAutoDetect()) {
-                byte[] fileBytes = FileUtils.readFileToByteArray(file);
-                return encoder.decode(fileBytes);
-            }
-            return FileUtils.readFileToString(file, encoding);
-        } catch (Exception e) {
-            if (eventInfo.getDiagnostics().isEnabled()) {
-                Log.get().withMessage(String.format("Error reading file with variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, locator))).withException(e).logErr();
-            }
-        }
-        return null;
-    }
-
-    private static String getSpecialChar(String sequences) {
-            try {
-                return TextUtils.parseSpecialChars(sequences);
-            } catch (Exception e) {
-                if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
-                    Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, sequences))).withException(e).logErr();
-                }
-            }
-            return null;
-    }
-
-    private String getMessageVariable(EventInfo eventInfo, String locator) {
-        String[] variableNameParts = locator.split(":", 2);
-        MessageValue messageValue = EnumUtils.getEnumIgnoreCase(MessageValue.class, CollectionUtils.elementAtOrDefault(variableNameParts, 0, ""));
-        String identifier = CollectionUtils.elementAtOrDefault(variableNameParts, 1, "");
-        if (messageValue != null) {
-            return StringUtils.defaultString(
-                    MessageValueHandler.getValue(eventInfo, messageValue, VariableString.getAsVariableString(identifier, false), GetItemPlacement.Last)
-            );
         }
         return null;
     }
@@ -266,14 +129,16 @@ public class VariableString implements Serializable {
     }
 
     public static Integer getIntOrDefault(EventInfo eventInfo, VariableString variableString, Integer defaultValue) {
-        return variableString != null && !variableString.isEmpty() ?
-                variableString.getInt(eventInfo) :
+        Integer value;
+        return variableString != null && !variableString.isEmpty() && (value = variableString.getInt(eventInfo)) != null ?
+                value :
                 defaultValue;
     }
 
     public static Double getDoubleOrDefault(EventInfo eventInfo, VariableString variableString, Double defaultValue) {
-        return variableString != null && !variableString.isEmpty() ?
-                variableString.getDouble(eventInfo) :
+        Double value;
+        return variableString != null && !variableString.isEmpty() && (value = variableString.getDouble(eventInfo)) != null ?
+                value :
                 defaultValue;
     }
 

@@ -8,11 +8,11 @@ import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.*;
+import synfron.reshaper.burp.core.rules.GetItemPlacement;
 import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.rules.whens.*;
-import synfron.reshaper.burp.core.utils.GetItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.utils.IPrompterModel;
 import synfron.reshaper.burp.ui.utils.ModalPrompter;
@@ -20,7 +20,6 @@ import synfron.reshaper.burp.ui.utils.ModalPrompter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     @Getter
@@ -68,7 +67,7 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
         if (StringUtils.isEmpty(ruleName)) {
             errors.add("Rule Name is required");
         }
-        errors.addAll(items.stream().flatMap(item -> item.validate().stream()).collect(Collectors.toList()));
+        errors.addAll(items.stream().flatMap(item -> item.validate().stream()).toList());
         return errors;
     }
 
@@ -146,7 +145,7 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
                 rule.setName(ruleName);
                 rule.setEnabled(false);
                 rule.setAutoRun(true);
-                rule.setWhens(whens.toArray(When[]::new));
+                rule.setWhens(whens.stream().toList());
                 rulesRegistry.addRule(rule);
             }
             setInvalidated(false);

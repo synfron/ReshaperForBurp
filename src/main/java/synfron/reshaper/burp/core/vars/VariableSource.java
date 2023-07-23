@@ -10,33 +10,39 @@ import java.util.stream.Stream;
 
 @Getter
 public enum VariableSource {
-    Event("e", false, ProtocolType.Any),
-    Global("g", false, ProtocolType.Any),
-    Session("sn", false, ProtocolType.Any),
-    Message("m", true, ProtocolType.Any),
-    Macro("mc", true, ProtocolType.Http),
-    Annotation("a", true, ProtocolType.Any),
-    File("f", true, ProtocolType.Any),
-    Special("s", true, ProtocolType.Any),
-    CookieJar("Cookie Jar", "cj", true, ProtocolType.Any);
+    Event("e", false, ProtocolType.Any, false),
+    Global("g", false, ProtocolType.Any, false),
+    Session("sn", false, ProtocolType.Any, false),
+    EventList("Event List", "el", false, ProtocolType.Any, true),
+    GlobalList("Global List", "gl", false, ProtocolType.Any, true),
+    SessionList("Session List", "sl", false, ProtocolType.Any, true),
+    Message("m", true, ProtocolType.Any, false),
+    Macro("mc", true, ProtocolType.Http, false),
+    Annotation("a", true, ProtocolType.Any, false),
+    File("f", true, ProtocolType.Any, false),
+    Special("s", true, ProtocolType.Any, false),
+    CookieJar("Cookie Jar", "cj", true, ProtocolType.Any, false);
 
     private final String displayName;
     private final String shortName;
     private final boolean accessor;
     private final ProtocolType protocolType;
+    private final boolean isList;
 
-    VariableSource(String displayName, String shortName, boolean accessor, ProtocolType protocolType) {
+    VariableSource(String displayName, String shortName, boolean accessor, ProtocolType protocolType, boolean isList) {
         this.displayName = displayName;
         this.shortName = shortName;
         this.accessor = accessor;
         this.protocolType = protocolType;
+        this.isList = isList;
     }
 
-    VariableSource(String shortName, boolean accessor, ProtocolType protocolType) {
+    VariableSource(String shortName, boolean accessor, ProtocolType protocolType, boolean isList) {
         this.displayName = this.name();
         this.shortName = shortName;
         this.accessor = accessor;
         this.protocolType = protocolType;
+        this.isList = isList;
     }
 
     public static List<String> getSupportedNames() {

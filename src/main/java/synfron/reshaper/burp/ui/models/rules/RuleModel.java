@@ -15,7 +15,6 @@ import synfron.reshaper.burp.ui.models.rules.whens.WhenModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RuleModel {
     @Getter
@@ -48,10 +47,10 @@ public class RuleModel {
     public RuleModel(ProtocolType protocolType, Rule rule, boolean isNew) {
         this.isNew = isNew;
         this.rule = rule;
-        this.whens = Stream.of(rule.getWhens())
+        this.whens = rule.getWhens().stream()
                 .map(when -> WhenModel.getModel(protocolType, when).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
-        this.thens = Stream.of(rule.getThens())
+        this.thens = rule.getThens().stream()
                 .map(then -> ThenModel.getModel(protocolType, then).withListener(ruleOperationChangedListener))
                 .collect(Collectors.toList());
         this.name = rule.getName();
@@ -121,13 +120,12 @@ public class RuleModel {
         errors.addAll(whens.stream()
                 .flatMap(model -> model.validate().stream()
                         .map(error -> String.format("%s: %s", model.getRuleOperation().getType().getName(), error))
-                )
-                .collect(Collectors.toList())
+                ).toList()
         );
         errors.addAll(thens.stream()
                 .flatMap(model -> model.validate().stream()
                         .map(error -> String.format("%s: %s", model.getRuleOperation().getType().getName(), error))
-                ).collect(Collectors.toList())
+                ).toList()
         );
         return errors;
     }
@@ -143,12 +141,12 @@ public class RuleModel {
 
         rule.setWhens(whens.stream()
                 .map(model -> (When<?>)model.getRuleOperation())
-                .toArray(When[]::new)
+                .toList()
         );
 
         rule.setThens(thens.stream()
                 .map(model -> (Then<?>)model.getRuleOperation())
-                .toArray(Then[]::new)
+                .toList()
         );
 
         rule.setName(name);

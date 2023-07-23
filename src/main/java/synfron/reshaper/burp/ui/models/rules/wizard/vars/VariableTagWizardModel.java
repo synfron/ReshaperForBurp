@@ -38,16 +38,19 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
     public VariableTagWizardModel() {
         List<VariableSourceEntry> variableSourceEntries = VariableCreatorRegistry.getVariableEntries();
 
-        tagModelMap = Map.of(
-          VariableSource.Event, new EventVariableTagWizardModel(variableSourceEntries),
-          VariableSource.Global, new GlobalVariableTagWizardModel(variableSourceEntries),
-          VariableSource.Session, new SessionVariableTagWizardModel(variableSourceEntries),
-          VariableSource.Message, new MessageVariableTagWizardModel(),
-          VariableSource.Macro, new MacroVariableTagWizardModel(),
-          VariableSource.File, new FileVariableTagWizardModel(),
-          VariableSource.Special, new SpecialVariableTagWizardModel(),
-          VariableSource.CookieJar, new CookieJarVariableTagWizardModel(),
-          VariableSource.Annotation, new AnnotationVariableTagWizardModel()
+        tagModelMap = Map.ofEntries(
+                Map.entry(VariableSource.Event, new EventVariableTagWizardModel(variableSourceEntries)),
+                Map.entry(VariableSource.Global, new GlobalVariableTagWizardModel(variableSourceEntries)),
+                Map.entry(VariableSource.Session, new SessionVariableTagWizardModel(variableSourceEntries)),
+                Map.entry(VariableSource.EventList, new EventListVariableTagWizardModel(variableSourceEntries)),
+                Map.entry(VariableSource.GlobalList, new GlobalListVariableTagWizardModel(variableSourceEntries)),
+                Map.entry(VariableSource.SessionList, new SessionListVariableTagWizardModel(variableSourceEntries)),
+                Map.entry(VariableSource.Message, new MessageVariableTagWizardModel()),
+                Map.entry(VariableSource.Macro, new MacroVariableTagWizardModel()),
+                Map.entry(VariableSource.File, new FileVariableTagWizardModel()),
+                Map.entry(VariableSource.Special, new SpecialVariableTagWizardModel()),
+                Map.entry(VariableSource.CookieJar, new CookieJarVariableTagWizardModel()),
+                Map.entry(VariableSource.Annotation, new AnnotationVariableTagWizardModel())
         );
 
         tagModel = tagModelMap.get(variableSource);

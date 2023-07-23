@@ -2,13 +2,21 @@
 
 ## Custom Variables
 
-Custom variables allow the sharing of values between Rules and are scoped at the Global, Session, or Event level. Global, Session, and Event variables can be set by Thens or in the UI (Global variables only). Custom variables are only accessible within Reshaper and are readable by Whens and Thens.
+Custom variables allow the sharing of values between Rules and are scoped at the Global, Session, or Event level. They can be set by Thens or in the UI (Global variables only). Custom variables are only accessible within Reshaper and are readable by Whens and Thens.
 
-Event variables are shared among Rules processing a single HTTP event (either request or response).
+### List Variables
 
-Global variables are shared among Rules across all events for as long as the extension is loaded or until the variables are deleted. Global variables can be set to be Persistent in the Global Variables tab of Reshaper. Persistent variables will be saved and reloaded between Reshaper sessions.
+List variables are a collection of multiple values. The values can be accessed and modified by first item, last item, index, or as a single concatenated value with each item joined by a delimiter.
 
-Session variables are shared among Rules processing the same HTTP request and response, or all WebSocket events within the same WebSocket connection.
+### Types
+
+Event scoped variables are shared among Rules processing a single HTTP event (either request or response).
+
+Global scoped variables are shared among Rules across all events for as long as the extension is loaded or until the variables are deleted. 
+
+The Global Variables tab provides a way to manage Global and Global List variables. You can toggle between adding a single or list variable using the Add button's dropdown. When a list variable is selected for edit, a delimiter field is provided which is used to determine how to divide the entered text into multiple items in the list. The variables can also be set to be Persistent which enables them to be saved and reloaded between Reshaper sessions.
+
+Session scoped variables are shared among Rules processing the same HTTP request and response, or all WebSocket events within the same WebSocket connection.
 
 ## Accessor Variables
 
@@ -29,9 +37,15 @@ Variables can be read by Whens and Thens when a variable tag is specified in sup
 
 **Event Variable Tag (event, e):** `{{event:MyVariableName}}`
 
+**Event List Variable Tag (eventlist, el):** `{{eventlist:MyVariableName}}` or `{{eventlist:MyVariableName:all}}`: Full text (All items concatenated), `{{eventlist:MyVariableName:first}}`: First item, `{{eventlist:MyVariableName:last}}`: Last item, `{{eventlist:MyVariableName:3}}`: Item at index 3 (can be index value), `{{eventlist:MyVariableName:size}}`: Count of items
+
 **Global Variable Tag (global, g):** `{{global:MyVariableName}}`
 
+**Global List Variable Tag (globallist, el):** `{{globallist:MyVariableName}}` or `{{globallist:MyVariableName:all}}`: Full text (All items concatenated), `{{globallist:MyVariableName:first}}`: First item, `{{globallist:MyVariableName:last}}`: Last item, `{{globallist:MyVariableName:3}}`: Item at index 3 (can be index value), `{{globallist:MyVariableName:size}}`: Count of items
+
 **Session Variable Tag (session, sn):** `{{session:MyVariableName}}`
+
+**Session List Variable Tag (sessionlist, el):** `{{sessionlist:MyVariableName}}` or `{{sessionlist:MyVariableName:all}}`: Full text (All items concatenated), `{{sessionlist:MyVariableName:first}}`: First item, `{{sessionlist:MyVariableName:last}}`: Last item, `{{sessionlist:MyVariableName:3}}`: Item at index 3 (can be index value), `{{sessionlist:MyVariableName:size}}`: Count of items
 
 For example, if Global variable named `firstName` has the value `John` and variable named `lastName` has the value `Smith`. A field with the value `{{global:firstName}}'s full name is {{global:firstName}} {{global:lastName}}` will be read as `John's full name is John Smith`.
 

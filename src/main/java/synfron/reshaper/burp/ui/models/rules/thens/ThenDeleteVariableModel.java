@@ -4,9 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenDeleteVariable;
-import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableSourceEntry;
-import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.*;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
@@ -17,11 +15,17 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
     private VariableSource targetSource;
     @Getter
     private String variableName;
+    @Getter
+    private DeleteListItemPlacement itemPlacement;
+    @Getter
+    private String index;
 
     public ThenDeleteVariableModel(ProtocolType protocolType, ThenDeleteVariable then, Boolean isNew) {
         super(protocolType, then, isNew);
         targetSource = then.getTargetSource();
         variableName = VariableString.toString(then.getVariableName(), variableName);
+        itemPlacement = then.getItemPlacement();
+        index = VariableString.toString(then.getIndex(), index);
     }
 
     public void setTargetSource(VariableSource targetSource) {
@@ -34,12 +38,29 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
         propertyChanged("variableName", variableName);
     }
 
+    public void setItemPlacement(DeleteListItemPlacement itemPlacement) {
+        this.itemPlacement = itemPlacement;
+        propertyChanged("itemPlacement", itemPlacement);
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+        propertyChanged("index", index);
+    }
+
     public List<String> validate() {
         List<String> errors = super.validate();
         if (StringUtils.isEmpty(variableName)) {
             errors.add("Variable Name is required");
         } else if (!VariableString.isValidVariableName(variableName)) {
             errors.add("Variable Name is invalid");
+        }
+        if (targetSource.isList() && itemPlacement.isHasIndexSetter()) {
+            if (StringUtils.isEmpty(index)) {
+                errors.add("Index is required");
+            } else if (!VariableString.isPotentialInt(index)) {
+                errors.add("Index must be an integer");
+            }
         }
         return errors;
     }
@@ -50,6 +71,8 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
         }
         ruleOperation.setTargetSource(targetSource);
         ruleOperation.setVariableName(VariableString.getAsVariableString(variableName));
+        ruleOperation.setItemPlacement(itemPlacement);
+        ruleOperation.setIndex(VariableString.getAsVariableString(index));
         setValidated(true);
         return true;
     }
