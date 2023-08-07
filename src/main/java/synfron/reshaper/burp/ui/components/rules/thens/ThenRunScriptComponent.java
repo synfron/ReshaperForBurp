@@ -44,7 +44,6 @@ public class ThenRunScriptComponent extends ThenComponent<ThenRunScriptModel, Th
         maxExecutionSeconds.getDocument().addDocumentListener(new DocumentActionListener(this::onMaxExecutionSecondsChanged));
 
         container.add(getLabeledField("Max Execution (secs) *", maxExecutionSeconds), "wrap");
-        container.add(getPaddedButton(validate));
         return container;
     }
 

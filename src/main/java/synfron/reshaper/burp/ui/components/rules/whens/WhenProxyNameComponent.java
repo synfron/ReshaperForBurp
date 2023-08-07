@@ -25,7 +25,6 @@ public class WhenProxyNameComponent extends WhenComponent<WhenProxyNameModel, Wh
 
         mainContainer.add(getLabeledField("Proxy Name *", proxyName), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onProxyNameChanged(ActionEvent actionEvent) {

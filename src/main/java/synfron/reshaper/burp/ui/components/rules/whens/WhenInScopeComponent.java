@@ -25,7 +25,6 @@ public class WhenInScopeComponent extends WhenComponent<WhenInScopeModel, WhenIn
 
         mainContainer.add(getLabeledField("URL", url), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onUrlChanged(ActionEvent actionEvent) {

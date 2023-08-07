@@ -25,7 +25,6 @@ public class WhenFromToolComponent extends WhenComponent<WhenFromToolModel, When
 
         mainContainer.add(getLabeledField("Tool", tool), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onToolChanged(ActionEvent actionEvent) {

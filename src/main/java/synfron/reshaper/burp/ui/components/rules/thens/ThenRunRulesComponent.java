@@ -50,7 +50,6 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
                 runSingle,
                 () -> runSingle.isSelected()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onRunSingleChanged(ActionEvent actionEvent) {

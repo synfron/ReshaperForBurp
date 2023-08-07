@@ -104,7 +104,6 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                         sendTo.getSelectedItem() == SendToOption.Browser
                 )
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onSendToChanged(ActionEvent actionEvent) {

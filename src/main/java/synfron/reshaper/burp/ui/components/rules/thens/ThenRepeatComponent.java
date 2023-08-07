@@ -101,7 +101,6 @@ public class ThenRepeatComponent extends ThenComponent<ThenRepeatModel, ThenRepe
                 repeatCondition,
                 () -> repeatCondition.getSelectedItem() == RepeatCondition.WhileTrue
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onListVariableSourceChanged(ActionEvent actionEvent) {

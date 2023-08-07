@@ -25,7 +25,6 @@ public class WhenMessageTypeComponent extends WhenComponent<WhenMessageTypeModel
 
         mainContainer.add(getLabeledField("Message Type", messageType), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onMessageTypeChanged(ActionEvent actionEvent) {

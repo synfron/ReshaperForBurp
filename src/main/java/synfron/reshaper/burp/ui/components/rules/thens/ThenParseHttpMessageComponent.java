@@ -42,7 +42,6 @@ public class ThenParseHttpMessageComponent extends ThenComponent<ThenParseHttpMe
         mainContainer.add(getLabeledField("HTTP Message", httpMessage), "wrap");
         mainContainer.add(getLabeledField("Message Value Getters", getMessageValueGetterList()), "wrap");
         mainContainer.add(getPaddedButton(addGetter), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private JPanel getMessageValueGetterList() {

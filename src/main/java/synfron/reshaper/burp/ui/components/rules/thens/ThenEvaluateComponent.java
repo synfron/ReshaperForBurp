@@ -80,7 +80,6 @@ public class ThenEvaluateComponent extends ThenComponent<ThenEvaluateModel, Then
                 List.of(destinationVariableSource, itemPlacement),
                 () -> ((VariableSource)destinationVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onXChanged(ActionEvent actionEvent) {

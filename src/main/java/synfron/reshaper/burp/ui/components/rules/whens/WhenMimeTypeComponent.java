@@ -77,7 +77,6 @@ public class WhenMimeTypeComponent extends WhenComponent<WhenMimeTypeModel, When
         optionsContainer.add(unknown, "wrap");
 
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onHtmlChanged(ActionEvent actionEvent) {

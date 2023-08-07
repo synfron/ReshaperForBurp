@@ -1,6 +1,6 @@
 # Rules
 
-Rules allow you to set actions to perform (called Thens) if an HTTP or WebSocket message (event) received by Burp Suite meets certain criteria (called Whens). Rules are processed in order. If the Rule is set to auto-run, the Rule will be run automatically when an HTTP or WebSocket event is received, otherwise, it must be specifically triggered. Rules must be enabled to run at all.
+Rules allow you to set actions to perform (called Thens) if an HTTP or WebSocket message (event) received by Burp Suite meets certain criteria (called Whens). Rules are processed in order. If the Rule is set to `Auto-Run`, the Rule will be run automatically when an HTTP or WebSocket event is received, otherwise, it must be specifically triggered. Rules must be `Enabled` to run at all.
 
 HTTP events are processed by Rules under the HTTP Rules tab. WebSocket events are processed by Rules under the WebSocket Rules tab.
 
@@ -46,7 +46,10 @@ Note: HTTP message values that are accessible by WebSocket Rule operations refer
 		- [Set Event Direction](#set-event-direction)
 		- [Set Value](#set-value)
 		- [Set Variable](#set-variable)
-		- [Common Fields](#common-fields)
+	- [Common Fields](#common-fields)
+		- [Additional When Fields](#additional-when-fields)
+		- [Set List Variable](#set-list-variable)
+		- [Other Fields](#other-fields)
 	- [Debugging](#debugging)
 
 <!-- /TOC -->
@@ -631,9 +634,15 @@ Destination Value Type - Declare that the value to set is Text, JSON (node), HTM
 
 Destination Value Path - Specify a JSON path for JSON, a CSS selector for HTML, or a param name for Params to get a value from within the original value and then use this value instead. Only available if `Destination Value Type` is JSON, HTML, or Params. Supports variable tags.
 
-### Common Fields
+## Common Fields
 
-#### Set List Variable
+### Additional When Fields
+
+Use OR Condition - By default, all Whens must report as a successful match for any Thens in the Rule to be evaluated. Once one When reports failure, none of the remaining Whens in the Rule are evaluated. However, if this is checked, the current When will be evaluated even if the previous When reported failure. If this When reports success, the failure of the previous When is ignored.
+
+Negate Result - If checked, a successful match will be reported as a failure, and an unsuccessful match will be reported as a success.
+
+### Set List Variable
 
 The following fields are only available if the variable source is a list variant.
 
@@ -643,6 +652,13 @@ Index - The zero-based index to place the value in the list. The index must alre
 
 Delimiter - The delimiter used to split the value to create individual items in the list. Note, use special variable tags to specify characters like new lines. Only available if `Item Placement` is `All`. Supports variable tags.
 
+### Other Fields
+
+Auto-Run - If checked, the Rule will be evaluated for every event Reshaper is enabled to handle. If unchecked, the Rule will only run if explicitly triggered by a Then Run Rule.
+
+Enabled - If unchecked, the Rule is marked inactive and will not be evaluated under any condition.
+
+Save - Any changes to Rules in the UI do not become live and are not persisted until the Save button is clicked. Upon hitting the Save button, all fields are validated to ensure value requirements are met. If validation issues are found, details of the issues are displayed, and the changes will remain unsaved.
 
 ## Debugging
 

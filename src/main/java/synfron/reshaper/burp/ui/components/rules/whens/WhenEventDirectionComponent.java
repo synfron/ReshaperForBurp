@@ -25,7 +25,6 @@ public class WhenEventDirectionComponent extends WhenComponent<WhenEventDirectio
 
         mainContainer.add(getLabeledField("Event Direction", dataDirection), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onDataDirectionChanged(ActionEvent actionEvent) {

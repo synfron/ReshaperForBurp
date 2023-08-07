@@ -143,7 +143,6 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
                 List.of(waitForCompletion, captureOutput, captureVariableSource, itemPlacement),
                 () -> waitForCompletion.isSelected() && captureOutput.isSelected() && ((VariableSource)captureVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onRequestChanged(ActionEvent actionEvent) {

@@ -39,7 +39,6 @@ public class WhenHasEntityComponent extends WhenComponent<WhenHasEntityModel, Wh
                 () -> ((MessageValue)messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onMessageValueChanged(ActionEvent actionEvent) {

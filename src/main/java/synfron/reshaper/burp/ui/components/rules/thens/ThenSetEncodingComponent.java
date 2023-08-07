@@ -24,7 +24,6 @@ public class ThenSetEncodingComponent extends ThenComponent<ThenSetEncodingModel
         encoding.addActionListener(this::onEncodingChanged);
 
         mainContainer.add(getLabeledField("Encoding", encoding), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onEncodingChanged(ActionEvent actionEvent) {

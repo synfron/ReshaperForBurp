@@ -23,7 +23,6 @@ public class ThenHighlightComponent extends ThenComponent<ThenHighlightModel, Th
         color.addActionListener(this::onColorChanged);
 
         mainContainer.add(getLabeledField("Color", color), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onColorChanged(ActionEvent actionEvent) {

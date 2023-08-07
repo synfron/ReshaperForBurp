@@ -62,7 +62,6 @@ public class WhenContentTypeComponent extends WhenComponent<WhenContentTypeModel
         optionsContainer.add(unknown);
 
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onNoneChanged(ActionEvent actionEvent) {

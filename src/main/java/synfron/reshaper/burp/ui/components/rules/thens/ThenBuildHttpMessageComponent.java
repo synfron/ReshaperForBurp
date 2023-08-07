@@ -83,7 +83,6 @@ public class ThenBuildHttpMessageComponent extends ThenComponent<ThenBuildHttpMe
                 List.of(destinationVariableSource, itemPlacement),
                 () -> ((VariableSource)destinationVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private JPanel getMessageValueSetterList() {

@@ -80,7 +80,6 @@ public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenProm
                 List.of(captureVariableSource, itemPlacement),
                 () -> ((VariableSource)captureVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onDescriptionChanged(ActionEvent actionEvent) {

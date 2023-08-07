@@ -49,7 +49,6 @@ public class ThenDeleteValueComponent extends ThenComponent<ThenDeleteValueModel
                 messageValue,
                 () -> ((MessageValue) messageValue.getSelectedItem()).isIdentifierRequired()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onMessageValueChanged(ActionEvent actionEvent) {

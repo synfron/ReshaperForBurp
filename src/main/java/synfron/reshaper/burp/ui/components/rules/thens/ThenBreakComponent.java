@@ -24,7 +24,6 @@ public class ThenBreakComponent extends ThenComponent<ThenBreakModel, ThenBreak>
         breakType.addActionListener(this::onBreakTypeChanged);
 
         mainContainer.add(getLabeledField("Break Type", breakType), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onBreakTypeChanged(ActionEvent actionEvent) {

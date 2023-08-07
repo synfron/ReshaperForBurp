@@ -99,7 +99,6 @@ public class WhenMatchesTextComponent extends WhenComponent<WhenMatchesTextModel
         mainContainer.add(getLabeledField("Match Text", matchText), "wrap");
         mainContainer.add(ignoreCase, "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onMatchTypeChanged(ActionEvent actionEvent) {

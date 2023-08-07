@@ -23,7 +23,6 @@ public class ThenDropComponent extends ThenComponent<ThenDropModel, ThenDrop> {
         dropMessage.addActionListener(this::onDropMessageChanged);
 
         mainContainer.add(dropMessage, "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onDropMessageChanged(ActionEvent actionEvent) {

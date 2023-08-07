@@ -24,7 +24,6 @@ public class ThenInterceptComponent extends ThenComponent<ThenInterceptModel, Th
         interceptResponse.addActionListener(this::onInterceptResponseChanged);
 
         mainContainer.add(getLabeledField("Action", interceptResponse), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onInterceptResponseChanged(ActionEvent actionEvent) {

@@ -51,7 +51,6 @@ public class ThenDeleteVariableComponent extends ThenComponent<ThenDeleteVariabl
                 List.of(targetSource, itemPlacement),
                 () -> ((VariableSource) targetSource.getSelectedItem()).isList() && ((DeleteListItemPlacement) itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onTargetSourceChanged(ActionEvent actionEvent) {

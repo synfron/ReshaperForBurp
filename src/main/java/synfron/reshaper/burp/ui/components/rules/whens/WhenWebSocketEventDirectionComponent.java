@@ -25,7 +25,6 @@ public class WhenWebSocketEventDirectionComponent extends WhenComponent<WhenWebS
 
         mainContainer.add(getLabeledField("Event Direction", dataDirection), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onDataDirectionChanged(ActionEvent actionEvent) {

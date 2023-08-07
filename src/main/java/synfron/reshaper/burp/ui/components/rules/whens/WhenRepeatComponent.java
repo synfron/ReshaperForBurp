@@ -51,7 +51,6 @@ public class WhenRepeatComponent extends WhenComponent<WhenRepeatModel, WhenRepe
         mainContainer.add(getLabeledField("List Variable Name *", listVariableName), "wrap");
         mainContainer.add(getLabeledField("Item Event Variable Name *", entryVariableName), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onListVariableSourceChanged(ActionEvent actionEvent) {

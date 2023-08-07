@@ -24,7 +24,6 @@ public class ThenLogComponent extends ThenComponent<ThenLogModel, ThenLog> {
         text.getDocument().addDocumentListener(new DocumentActionListener(this::onTextChanged));
 
         mainContainer.add(getLabeledField("Text *", text), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onTextChanged(ActionEvent actionEvent) {

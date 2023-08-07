@@ -120,7 +120,6 @@ public abstract class ThenSetComponent<P extends ThenSetModel<P, T>, T extends T
                 destinationMessageValueType,
                 () -> destinationMessageValueType.getSelectedItem() != MessageValueType.Text
         ), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onUseMessageValueChanged(ActionEvent actionEvent) {

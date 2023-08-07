@@ -38,7 +38,6 @@ public class ThenSendMessageComponent extends ThenComponent<ThenSendMessageModel
         mainContainer.add(getLabeledField("Event Direction", dataDirection), "wrap");
         mainContainer.add(getLabeledField("Message Type", messageType), "wrap");
         mainContainer.add(getLabeledField("Message", message), "wrap");
-        mainContainer.add(getPaddedButton(validate));
     }
 
     private void onSetEventDirectionChanged(ActionEvent actionEvent) {
