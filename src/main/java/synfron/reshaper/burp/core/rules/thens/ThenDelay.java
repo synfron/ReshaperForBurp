@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
@@ -27,6 +28,7 @@ public class ThenDelay extends Then<ThenDelay> implements IHttpRuleOperation, IW
         } catch (InterruptedException e) {
             Log.get().withMessage("Delay interrupted").withException(e).logErr();
             hasError = true;
+            throw new WrappedException(e);
         } catch (Exception e) {
             hasError = true;
             throw e;

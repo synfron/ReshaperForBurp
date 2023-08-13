@@ -35,6 +35,7 @@ public class ThenSetValue extends ThenSet<ThenSetValue> implements IHttpRuleOper
             setValue(eventInfo, replacementText);
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, true, Collections.emptyList());
+            throw e;
         }
         return RuleResponse.Continue;
     }

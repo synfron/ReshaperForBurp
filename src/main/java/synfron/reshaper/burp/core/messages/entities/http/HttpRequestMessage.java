@@ -75,6 +75,7 @@ public class HttpRequestMessage extends HttpEntity {
 
     public HttpHeaders getHeaders() {
         if (headers == null) {
+            initialize();
             headers = new HttpRequestHeaders(httpRequest.headers().stream().map(HttpHeader::toString).collect(Collectors.toList()));
         }
         return headers;
@@ -93,6 +94,7 @@ public class HttpRequestMessage extends HttpEntity {
 
     public HttpBody getBody() {
         if (this.body == null) {
+            initialize();
             byte[] body = httpRequest.body().getBytes();
             this.body = new HttpBody(body, encoder);
         }

@@ -48,6 +48,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
             ).collect(Collectors.toList()));
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, true, Collections.emptyList());
+            throw e;
         }
         return RuleResponse.Continue;
     }

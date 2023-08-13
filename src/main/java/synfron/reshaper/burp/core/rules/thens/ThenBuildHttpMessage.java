@@ -70,6 +70,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements 
             ).collect(Collectors.toList()));
         } catch (Exception e) {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, true, Collections.emptyList());
+            throw e;
         }
         return RuleResponse.Continue;
     }
