@@ -8,7 +8,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "isList")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "isList", defaultImpl = Variable.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Variable.class, name = "false"),
         @JsonSubTypes.Type(value = ListVariable.class, name = "true")

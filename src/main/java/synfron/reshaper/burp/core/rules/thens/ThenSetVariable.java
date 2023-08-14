@@ -51,7 +51,7 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> implements IHttpRu
             Variable variable = variables.add(Variables.asKey(variableName.getText(eventInfo), targetSource.isList()));
             if (destinationMessageValuePath != null && destinationMessageValueType != MessageValueType.Text && variable.hasValue())
             {
-                String value = StringUtils.defaultString(TextUtils.toString(variable.getValue(IListItemPlacement.toGet(itemPlacement), index.getInt(eventInfo))));
+                String value = StringUtils.defaultString(TextUtils.toString(variable.getValue(IListItemPlacement.toGet(itemPlacement), VariableString.getIntOrDefault(eventInfo, index, null))));
                 switch (destinationMessageValueType) {
                     case Json -> replacementText = TextUtils.setJsonValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);
                     case Html -> replacementText = TextUtils.setHtmlValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);

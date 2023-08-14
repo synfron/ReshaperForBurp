@@ -37,7 +37,9 @@ public class VariableComponent extends JPanel implements IFormComponent {
         if ("this".equals(propertyChangedArgs.getName())) {
             variableText.setText(model.getValue());
             removeCarriageReturnsOnSave.setSelected(model.isRemoveCarriageReturnsOnSave());
-            delimiter.setText(model.getDelimiter());
+            if (model.isList()) {
+                delimiter.setText(model.getDelimiter());
+            }
             persistent.setSelected(model.isPersistent());
         } else if ("saved".equals(propertyChangedArgs.getName())) {
             setSaveButtonState();

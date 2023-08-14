@@ -16,7 +16,7 @@ public class WebSocketEventInfo<T> extends EventInfo {
     @Getter
     private final WebSocketDataDirection initialDataDirection;
     @Getter
-    private WebSocketMessageSender messageSender;
+    private final WebSocketMessageSender messageSender;
     @Getter
     private T data;
 
@@ -35,6 +35,7 @@ public class WebSocketEventInfo<T> extends EventInfo {
         changed = true;
     }
 
+    @SuppressWarnings("unchecked")
     public void setText(String text) {
         if (data instanceof String) {
             this.data = (T) text;

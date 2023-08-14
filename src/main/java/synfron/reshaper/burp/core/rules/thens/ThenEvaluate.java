@@ -2,6 +2,7 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
@@ -10,6 +11,7 @@ import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.evaluate.Operation;
+import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.*;
 
 import java.util.Arrays;
@@ -39,15 +41,22 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
     public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = true;
         String result = null;
-        Double value1 = null;
-        Double value2 = null;
+        Object value1 = null;
+        Object value2 = null;
         try {
             Variables variables = getVariables(destinationVariableSource, eventInfo);
             if (variables != null) {
                 Variable variable = variables.add(Variables.asKey(destinationVariableName.getText(eventInfo), destinationVariableSource.isList()));
-                value1 = operation.getInputs() > 0 ? VariableString.getDoubleOrDefault(eventInfo, x, null) : null;
-                value2 = operation.getInputs() > 1 ? VariableString.getDoubleOrDefault(eventInfo, y, null) : null;
-                result = evaluate(value1, value2);
+                if (operation.isNumeric()) {
+                    value1 = operation.getInputs() > 0 ? VariableString.getDoubleOrDefault(eventInfo, x, null) : null;
+                    value2 = operation.getInputs() > 1 ? VariableString.getDoubleOrDefault(eventInfo, y, null) : null;
+                    result = evaluate((Double)value1, (Double)value2);
+                }
+                else {
+                    value1 = operation.getInputs() > 0 ? VariableString.getTextOrDefault(eventInfo, x, "") : null;
+                    value2 = operation.getInputs() > 1 ? VariableString.getTextOrDefault(eventInfo, y, "") : null;
+                    result = evaluate((String)value1, (String)value2);
+                }
                 if (result != null) {
                     variable.setValue(itemPlacement, VariableString.getTextOrDefault(eventInfo, delimiter, "\n"), VariableString.getIntOrDefault(eventInfo, index, 0), result);
                 }
@@ -55,8 +64,8 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
             hasError = result == null;
         } finally {
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                    Pair.of("X", value1),
-                    Pair.of("Y", value2),
+                    Pair.of("X", TextUtils.toString(value1)),
+                    Pair.of("Y", TextUtils.toString(value2)),
                     Pair.of("destinationVariableSource", destinationVariableSource),
                     Pair.of("destinationVariableName", VariableString.getTextOrDefault(eventInfo, destinationVariableName, null)),
                     Pair.of("itemPlacement", destinationVariableSource.isList() ? itemPlacement : null),
@@ -66,6 +75,22 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
             ));
         }
         return RuleResponse.Continue;
+    }
+
+    private String evaluate(String value1, String value2) {
+        String result = null;
+        if (operation.getMinInputs() == 0
+                || (operation.getMinInputs() == 1 && value1 != null)
+                || (operation.getMinInputs() == 2 && value1 != null && value2 != null)) {
+            result = switch (operation) {
+                case Equals -> toString(StringUtils.equals(value1, value2));
+                case NotEquals -> toString(!StringUtils.equals(value1, value2));
+                case Contains -> toString(StringUtils.contains(value1, value2));
+                case Not -> toString(BooleanUtils.toBoolean(value1));
+                default -> null;
+            };
+        }
+        return result;
     }
 
     private String evaluate(Double value1, Double value2) {
@@ -79,7 +104,6 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
                 case DivideBy -> toString(value1 / value2);
                 case Increment -> toString(value1 + 1);
                 case Decrement -> toString(value1 - 1);
-                case Equals -> toString(value1.equals(value2));
                 case GreaterThan -> toString(value1 > value2);
                 case GreaterThanOrEquals -> toString(value1 >= value2);
                 case LessThan -> toString(value1 < value2);
@@ -87,6 +111,7 @@ public class ThenEvaluate extends Then<ThenEvaluate> implements IHttpRuleOperati
                 case Abs -> toString(Math.abs(value1));
                 case Mod -> toString(value1 % value2);
                 case Round -> toString(Math.round(value1));
+                default -> null;
             };
         }
         return result;

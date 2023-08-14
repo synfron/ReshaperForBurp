@@ -92,16 +92,20 @@ public class MessageValueGetterComponent extends JPanel implements IFormComponen
         ), "wrap");
         add(getLabeledField("Destination Variable Source", destinationVariableSource), "wrap");
         add(getLabeledField("Destination Variable Name *", destinationVariableName), "wrap");
-        add(getLabeledField("Item Placement", itemPlacement), "wrap");
+        add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Item Placement", itemPlacement),
+                destinationVariableSource,
+                () -> ((VariableSource)destinationVariableSource.getSelectedItem()).isList()
+        ), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Delimiter *", delimiter),
                 itemPlacement,
-                () -> ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasDelimiterSetter()
+                () -> ((VariableSource)destinationVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasDelimiterSetter()
         ), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Index *", index),
                 itemPlacement,
-                () -> ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
+                () -> ((VariableSource)destinationVariableSource.getSelectedItem()).isList() && ((SetListItemPlacement)itemPlacement.getSelectedItem()).isHasIndexSetter()
         ), "wrap");
         if (deletable) {
             JButton delete = new JButton("Delete");
