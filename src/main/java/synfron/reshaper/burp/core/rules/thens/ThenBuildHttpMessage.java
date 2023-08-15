@@ -106,7 +106,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements 
                     messageValueSetter.getSourceText().getText(eventInfo)
             );
         }
-        return httpResponseMessage.toString();
+        return httpResponseMessage.getText();
     }
 
     @Override
