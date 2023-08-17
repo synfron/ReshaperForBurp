@@ -29,7 +29,6 @@ public class VariableListComponent extends JPanel {
     private final IEventListener<PropertyChangedArgs> variableModelChangedListener = this::onVariableModelChanged;
     private final IEventListener<PropertyChangedArgs> newVariableModelChangedListener = this::onNewVariableModelChanged;
     private JRadioButtonMenuItem listVariable;
-    private boolean removeCarriageReturnsOnSave;
 
     public VariableListComponent() {
         initComponent();
@@ -40,7 +39,7 @@ public class VariableListComponent extends JPanel {
 
         variableListModel = new DefaultListModel<>();
         variableListModel.addAll(GlobalVariables.get().getValues().stream()
-                .map(variable -> new VariableModel(variable, removeCarriageReturnsOnSave).withListener(variableModelChangedListener))
+                .map(variable -> new VariableModel(variable).withListener(variableModelChangedListener))
                 .collect(Collectors.toList()));
 
         variableList = new JList<>(variableListModel);
@@ -107,7 +106,7 @@ public class VariableListComponent extends JPanel {
     }
 
     private void onAdd(ActionEvent actionEvent) {
-        VariableModel model = new VariableModel(listVariable.isSelected(), removeCarriageReturnsOnSave).withListener(newVariableModelChangedListener);
+        VariableModel model = new VariableModel(listVariable.isSelected()).withListener(newVariableModelChangedListener);
         variableListModel.addElement(model);
         variableList.setSelectedValue(model, true);
     }
@@ -124,9 +123,6 @@ public class VariableListComponent extends JPanel {
             case "name" -> {
                 int index = variableListModel.indexOf(model);
                 variableListModel.set(index, model);
-            }
-            case "removeCarriageReturnsOnSave" -> {
-                this.removeCarriageReturnsOnSave = model.isRemoveCarriageReturnsOnSave();
             }
         }
     }
@@ -153,16 +149,16 @@ public class VariableListComponent extends JPanel {
             Variable item = (Variable) collectionChangedArgs.getItem();
             switch (collectionChangedArgs.getAction()) {
                 case Add -> {
-                    VariableModel variableModel = new VariableModel(item, removeCarriageReturnsOnSave).withListener(variableModelChangedListener);
+                    VariableModel variableModel = new VariableModel(item).withListener(variableModelChangedListener);
                     variableListModel.addElement(variableModel);
                     defaultSelect();
                 }
                 case Remove -> {
-                    variableListModel.removeElement(new VariableModel(item, removeCarriageReturnsOnSave));
+                    variableListModel.removeElement(new VariableModel(item));
                     defaultSelect();
                 }
                 case Update -> {
-                    int index = variableListModel.indexOf(new VariableModel(item, removeCarriageReturnsOnSave));
+                    int index = variableListModel.indexOf(new VariableModel(item));
                     if (index >= 0) {
                         VariableModel model = variableListModel.get(index);
                         variableListModel.set(index, model);
@@ -180,7 +176,7 @@ public class VariableListComponent extends JPanel {
                             GlobalVariables.get().getValues().stream()
                                     .map(variable -> variableModelMap.containsKey(variable) ?
                                             variableModelMap.get(variable) :
-                                            new VariableModel(variable, removeCarriageReturnsOnSave).withListener(variableModelChangedListener)
+                                            new VariableModel(variable).withListener(variableModelChangedListener)
                                     ),
                             draftModels
                     ).collect(Collectors.toList()));
@@ -199,9 +195,6 @@ public class VariableListComponent extends JPanel {
                     variableListModel.set(index, model);
                 }
             }
-            case "removeCarriageReturnsOnSave" -> {
-                this.removeCarriageReturnsOnSave = model.isRemoveCarriageReturnsOnSave();
-            }
         }
     }
 
@@ -209,8 +202,7 @@ public class VariableListComponent extends JPanel {
         this.variableContainer = variableContainer;
 
         if (variableListModel.size() == 0) {
-            VariableModel variableModel = new VariableModel(listVariable.isSelected(), removeCarriageReturnsOnSave).withListener(newVariableModelChangedListener);
-            variableModel.setRemoveCarriageReturnsOnSave(removeCarriageReturnsOnSave);
+            VariableModel variableModel = new VariableModel(listVariable.isSelected()).withListener(newVariableModelChangedListener);
             variableListModel.addElement(variableModel);
         }
         defaultSelect();

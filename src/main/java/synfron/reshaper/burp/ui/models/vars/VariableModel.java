@@ -25,8 +25,9 @@ public class VariableModel {
     private String delimiter = "";
     @Getter
     private boolean isList;
+
     @Getter
-    private boolean removeCarriageReturnsOnSave;
+    private VariableValueType valueType = VariableValueType.Text;
     @Getter
     private boolean persistent;
     @Getter
@@ -35,17 +36,16 @@ public class VariableModel {
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     private final IEventListener<PropertyChangedArgs> variableChanged = this::onVariableChanged;
 
-    public VariableModel(boolean isList, boolean removeCarriageReturnsOnSave) {
+    public VariableModel(boolean isList) {
         this.isList = isList;
-        this.removeCarriageReturnsOnSave = removeCarriageReturnsOnSave;
         delimiter = StringEscapeUtils.escapeJava("\n");
         saved = false;
     }
 
-    public VariableModel(Variable variable, boolean removeCarriageReturnsOnSave) {
-        this.removeCarriageReturnsOnSave = removeCarriageReturnsOnSave;
+    public VariableModel(Variable variable) {
         this.variable = variable.withListener(variableChanged);
         name = variable.getName();
+        valueType = variable.getValueType();
         value = StringUtils.defaultString(TextUtils.toString(variable.getValue()));
         if (variable instanceof ListVariable listVariable) {
             isList = true;
@@ -93,9 +93,9 @@ public class VariableModel {
         propertyChanged("value", value);
     }
 
-    public void setRemoveCarriageReturnsOnSave(boolean removeCarriageReturnsOnSave) {
-        this.removeCarriageReturnsOnSave = removeCarriageReturnsOnSave;
-        propertyChanged("removeCarriageReturnsOnSave", removeCarriageReturnsOnSave);
+    public void setValueType(VariableValueType valueType) {
+        this.valueType = valueType;
+        propertyChanged("valueType", valueType);
     }
 
     public void setDelimiter(String delimiter) {
@@ -134,7 +134,8 @@ public class VariableModel {
         if (isList) {
             ((ListVariable)variable).setDelimiter(StringEscapeUtils.unescapeJava(delimiter));
         }
-        variable.setValue(removeCarriageReturnsOnSave ? value.replace("\r", "") : value);
+        variable.setValue(value);
+        variable.setValueType(valueType);
         variable.setPersistent(persistent);
         setSaved(true);
         return saved;

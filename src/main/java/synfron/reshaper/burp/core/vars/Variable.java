@@ -25,6 +25,9 @@ public class Variable {
     @Getter
     protected final String name;
 
+    @Getter
+    private VariableValueType valueType = VariableValueType.Text;
+
     private Variable() {
         this(null);
     }
@@ -46,6 +49,11 @@ public class Variable {
     public void setValue(SetListItemPlacement itemPlacement, String delimiter, Integer index, Object value) {
         this.value = value;
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, "value", value));
+    }
+
+    public void setValueType(VariableValueType valueType) {
+        this.valueType = valueType;
+        propertyChangedEvent.invoke(new PropertyChangedArgs(this, "valueType", valueType));
     }
 
     public void setPersistent(boolean persistent) {
