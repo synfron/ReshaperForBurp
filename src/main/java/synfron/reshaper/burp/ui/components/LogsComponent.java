@@ -2,7 +2,7 @@ package synfron.reshaper.burp.ui.components;
 
 import burp.BurpExtender;
 import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.ui.editor.RawEditor;
+import burp.api.montoya.ui.editor.WebSocketMessageEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 
 public class LogsComponent extends JPanel {
 
-    private final RawEditor textEditor = BurpExtender.getLogTextEditor();
+    private final WebSocketMessageEditor textEditor = BurpExtender.getLogTextEditor();
 
     public LogsComponent() {
         initComponents();

@@ -7,9 +7,9 @@ import burp.api.montoya.http.message.requests.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.messages.Encoder;
+import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
-import synfron.reshaper.burp.core.rules.SetItemPlacement;
 import synfron.reshaper.burp.core.utils.Url;
 
 import java.util.Arrays;
@@ -25,8 +25,6 @@ public class HttpRequestMessage extends HttpEntity {
     private HttpHeaders headers;
     private HttpBody body;
     private boolean initialized;
-
-    private final String headersWarning = "Sanity Check - Warning: Headers are empty because header lines are missing carriage returns.";
 
     public HttpRequestMessage(HttpRequest httpRequest, Encoder encoder) {
         this.httpRequest = httpRequest;
@@ -50,8 +48,8 @@ public class HttpRequestMessage extends HttpEntity {
     private void initialize() {
         if (!initialized) {
             if (httpRequest == null) {
-                httpRequest = HttpRequest.httpRequest(ByteArray.byteArray(request));
                 sanityCheckHeaders();
+                httpRequest = HttpRequest.httpRequest(ByteArray.byteArray(request));
             }
             if (!encoder.isUseDefault() && encoder.isAutoSet() && !getContentType().isTextBased()) {
                 encoder.setEncoding("default", true);
@@ -61,12 +59,15 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     private void sanityCheckHeaders() {
-        if (httpRequest.headers().isEmpty() && BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
-            String headers = httpRequest.toByteArray().subArray(0, Math.min(httpRequest.bodyOffset(), httpRequest.toByteArray().length())).toString();
-            int lfCount = StringUtils.countMatches(headers, '\n');
-            int crCount = StringUtils.countMatches(headers, '\r');
-            if (lfCount != crCount) {
-                Log.get().withMessage(headersWarning).log();
+        if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
+            for (int byteIndex = 0; byteIndex < request.length; byteIndex++) {
+                if (request[byteIndex] == '\r') {
+                    break;
+                } else if (request[byteIndex] == '\n') {
+                    String headersWarning = "Sanity Check - Warning: First line of a raw request with value '%s' has a line feed without a carriage return, and may result in missing headers.";
+                    Log.get().withMessage(String.format(headersWarning, ByteArray.byteArray(Arrays.copyOfRange(request, 0, byteIndex)))).log();
+                    break;
+                }
             }
         }
     }

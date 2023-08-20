@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.core.messages.entities.http;
 
+import burp.BurpExtender;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.responses.HttpResponse;
@@ -7,6 +8,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.MimeType;
+import synfron.reshaper.burp.core.utils.Log;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -47,12 +49,27 @@ public class HttpResponseMessage extends HttpEntity {
     private void initialize() {
         if (!initialized) {
             if (httpResponse == null) {
+                sanityCheckHeaders();
                 httpResponse = HttpResponse.httpResponse(ByteArray.byteArray(response));
             }
             if (!encoder.isUseDefault() && encoder.isAutoSet() && !getMimeType().isTextBased()) {
                 encoder.setEncoding("default", true);
             }
             initialized = true;
+        }
+    }
+
+    private void sanityCheckHeaders() {
+        if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
+            for (int byteIndex = 0; byteIndex < response.length; byteIndex++) {
+                if (response[byteIndex] == '\r') {
+                    break;
+                } else if (response[byteIndex] == '\n') {
+                    String headersWarning = "Sanity Check - Warning: First line of a raw response with value '%s' has a line feed without a carriage return, and may result in missing headers.";
+                    Log.get().withMessage(String.format(headersWarning, ByteArray.byteArray(Arrays.copyOfRange(response, 0, byteIndex)))).log();
+                    break;
+                }
+            }
         }
     }
 

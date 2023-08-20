@@ -4,7 +4,7 @@ import burp.api.montoya.BurpExtension;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.extension.ExtensionUnloadingHandler;
 import burp.api.montoya.ui.editor.EditorOptions;
-import burp.api.montoya.ui.editor.RawEditor;
+import burp.api.montoya.ui.editor.WebSocketMessageEditor;
 import lombok.Getter;
 import synfron.reshaper.burp.core.HttpConnector;
 import synfron.reshaper.burp.core.ProtocolType;
@@ -27,7 +27,7 @@ public class BurpExtender implements BurpExtension, ExtensionUnloadingHandler {
     @Getter
     private final static WebSocketConnector webSocketConnector = new WebSocketConnector();
     @Getter
-    private static RawEditor logTextEditor;
+    private static WebSocketMessageEditor logTextEditor;
     @Getter
     private static final GeneralSettings generalSettings = new GeneralSettings();
     @Getter
@@ -40,7 +40,7 @@ public class BurpExtender implements BurpExtension, ExtensionUnloadingHandler {
         try {
             BurpExtender.api = api;
 
-            logTextEditor = api.userInterface().createRawEditor(EditorOptions.READ_ONLY);
+            logTextEditor = api.userInterface().createWebSocketMessageEditor(EditorOptions.READ_ONLY);
 
             SettingsManager.loadSettings();
 

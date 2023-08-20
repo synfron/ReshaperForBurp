@@ -4,7 +4,10 @@ import burp.BurpExtender;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
-import burp.api.montoya.ui.editor.*;
+import burp.api.montoya.ui.editor.Editor;
+import burp.api.montoya.ui.editor.HttpRequestEditor;
+import burp.api.montoya.ui.editor.HttpResponseEditor;
+import burp.api.montoya.ui.editor.WebSocketMessageEditor;
 import lombok.SneakyThrows;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.events.IEventListener;
@@ -23,6 +26,7 @@ import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 
 public class VariableComponent extends JPanel implements IFormComponent {
     private final VariableModel model;
@@ -33,7 +37,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
     private JCheckBox persistent;
     private JButton save;
     private final IEventListener<PropertyChangedArgs> variablePropertyChangedListener = this::onVariablePropertyChanged;
-    private JScrollPane scrollPane;
+    private JPanel variableTextContainer;
 
     public VariableComponent(VariableModel model) {
         this.model = model;
@@ -49,17 +53,19 @@ public class VariableComponent extends JPanel implements IFormComponent {
         }
     }
 
-    private void setModelVariableText() {
-        switch (model.getValueType()) {
-            case Text -> model.setValue(((WebSocketMessageEditor)variableText).getContents().toString());
-            case Request -> model.setValue(((HttpRequestEditor)variableText).getRequest().toString());
-            case Response -> model.setValue(((HttpResponseEditor)variableText).getResponse().toString());
-        }
+    private String getVariableText() {
+        return switch (model.getValueType()) {
+            case Text -> ((WebSocketMessageEditor) variableText).getContents().toString();
+            case Request -> ((HttpRequestEditor) variableText).getRequest().toString();
+            case Response -> ((HttpResponseEditor) variableText).getResponse().toString();
+        };
     }
 
     private void onVariablePropertyChanged(PropertyChangedArgs propertyChangedArgs) {
         if ("this".equals(propertyChangedArgs.getName())) {
-            setEditorVariableText(model.getValue());
+            if (!Objects.equals(model.getValue(), getVariableText())) {
+                setEditorVariableText(model.getValue());
+            }
             if (model.isList()) {
                 delimiter.setText(model.getDelimiter());
             }
@@ -117,12 +123,12 @@ public class VariableComponent extends JPanel implements IFormComponent {
         JPanel container = new JPanel(new BorderLayout());
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        scrollPane = new JScrollPane();
+        variableTextContainer = new JPanel(new BorderLayout());
 
         recreateVariableText();
 
         container.add(new JLabel("Variable Text"), BorderLayout.PAGE_START);
-        container.add(scrollPane, BorderLayout.CENTER);
+        container.add(variableTextContainer, BorderLayout.CENTER);
         return container;
     }
 
@@ -134,7 +140,8 @@ public class VariableComponent extends JPanel implements IFormComponent {
         }
         setEditorVariableText(model.getValue());
 
-        scrollPane.setViewportView(variableText.uiComponent());
+        variableTextContainer.removeAll();
+        variableTextContainer.add(variableText.uiComponent());
 
         new DocumentListenerFinder(variableText.uiComponent(), new DocumentActionListener(this::onVariableTextChanged));
     }
@@ -148,7 +155,11 @@ public class VariableComponent extends JPanel implements IFormComponent {
     }
 
     private void onVariableTextChanged(ActionEvent actionEvent) {
-        setModelVariableText();
+        SwingUtilities.invokeLater(() -> {
+            if (!model.isSaved() || !Objects.equals(getVariableText(), model.getValue())) {
+                model.setValue(getVariableText());
+            }
+        });
     }
 
     private Component getActionBar() {
@@ -174,6 +185,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
         return actionBar;
     }
 
+    @SuppressWarnings("unchecked")
     private Component getGitHubLink() {
         JLabel githubLink = new JLabel("Help | View on GitHub");
         githubLink.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
@@ -233,7 +245,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
     private void onSave(ActionEvent actionEvent) {
         model.setName(variableName.getText());
-        setModelVariableText();
+        model.setValue(getVariableText());
         model.setPersistent(persistent.isSelected());
         if (!model.save()) {
             JOptionPane.showMessageDialog(this,

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.translate.CharSequenceTranslator;
+import org.apache.commons.text.translate.LookupTranslator;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
@@ -14,10 +16,7 @@ import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Diagnostics implements IDiagnostics {
@@ -30,6 +29,18 @@ public class Diagnostics implements IDiagnostics {
     private boolean eventEnabled;
     private DiagnosticRecord startRecord;
     private DiagnosticRecord endRecord;
+
+    private static final CharSequenceTranslator EscapeChars;
+    static {
+        final Map<CharSequence, CharSequence> escapeCharsMap = Map.of(
+                "'", "\\'",
+                "\\", "\\\\",
+                "\n", "\\n",
+                "\r", "\\r",
+                "\t", "\\t"
+        );
+        EscapeChars = new LookupTranslator(escapeCharsMap);
+    }
 
     @Override
     public int size() {
@@ -120,7 +131,7 @@ public class Diagnostics implements IDiagnostics {
     private String toPropertiesPhrase(List<? extends Pair<String, ? extends Serializable>> properties) {
         return properties != null ? properties.stream()
                 .filter(pair -> pair.getRight() != null)
-                .map(pair -> String.format("%s='%s'", pair.getLeft(), toValuePhrase(pair.getRight())))
+                .map(pair -> String.format("%s='%s'", EscapeChars.translate(pair.getLeft()), toValuePhrase(pair.getRight())))
                 .collect(Collectors.joining(" ")) : "";
     }
 
@@ -244,9 +255,9 @@ public class Diagnostics implements IDiagnostics {
     }
 
     private String toValuePhrase(Object... values) {
-        return StringUtils.stripEnd(Arrays.stream(values)
+        return EscapeChars.translate(StringUtils.stripEnd(Arrays.stream(values)
                 .map(value -> StringUtils.abbreviate(Objects.toString(value, ""), getDiagnosticValueMaxLength()))
-                .collect(Collectors.joining(":")), ":");
+                .collect(Collectors.joining(":")), ":"));
     }
 
     private String toMatchPhrase(MatchType matchType, boolean negated) {
