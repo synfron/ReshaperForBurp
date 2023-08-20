@@ -1,8 +1,8 @@
 package synfron.reshaper.burp.ui.components;
 
 import burp.BurpExtender;
-import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.ui.editor.WebSocketMessageEditor;
+import synfron.reshaper.burp.core.utils.BurpUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,6 +36,6 @@ public class LogsComponent extends JPanel {
     }
 
     private void onClear(ActionEvent actionEvent) {
-        textEditor.setContents(ByteArray.byteArray(new byte[0]));
+        textEditor.setContents(BurpUtils.current.toByteArray(new byte[0]));
     }
 }

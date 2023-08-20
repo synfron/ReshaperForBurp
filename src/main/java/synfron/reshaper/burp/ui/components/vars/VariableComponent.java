@@ -1,9 +1,6 @@
 package synfron.reshaper.burp.ui.components.vars;
 
 import burp.BurpExtender;
-import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.http.message.requests.HttpRequest;
-import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.ui.editor.Editor;
 import burp.api.montoya.ui.editor.HttpRequestEditor;
 import burp.api.montoya.ui.editor.HttpResponseEditor;
@@ -12,6 +9,7 @@ import lombok.SneakyThrows;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.core.utils.BurpUtils;
 import synfron.reshaper.burp.core.vars.VariableValueType;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
@@ -47,9 +45,9 @@ public class VariableComponent extends JPanel implements IFormComponent {
 
     private void setEditorVariableText(String text) {
         switch (model.getValueType()) {
-            case Text -> ((WebSocketMessageEditor)variableText).setContents(ByteArray.byteArray(text));
-            case Request -> ((HttpRequestEditor)variableText).setRequest(HttpRequest.httpRequest(text));
-            case Response -> ((HttpResponseEditor)variableText).setResponse(HttpResponse.httpResponse(text));
+            case Text -> ((WebSocketMessageEditor)variableText).setContents(BurpUtils.current.toByteArray(text));
+            case Request -> ((HttpRequestEditor)variableText).setRequest(BurpUtils.current.toHttpRequest(text));
+            case Response -> ((HttpResponseEditor)variableText).setResponse(BurpUtils.current.toHttpResponse(text));
         }
     }
 

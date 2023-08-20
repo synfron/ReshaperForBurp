@@ -5,6 +5,8 @@
  */
 package synfron.reshaper.burp.ui;
 
+import burp.BurpExtender;
+import synfron.reshaper.burp.core.utils.BurpUtils;
 import synfron.reshaper.burp.ui.components.ReshaperComponent;
 
 import javax.swing.*;
@@ -18,6 +20,8 @@ public class Window extends JFrame {
 
     public Window() {
         super("Reshaper");
+        BurpUtils.current = new Api.BurpUtilsImpl();
+        new BurpExtender().initialize(new Api());
         initComponents();
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(dimension.width / 2, dimension.height / 2);
@@ -28,4 +32,5 @@ public class Window extends JFrame {
     private void initComponents() {
         add(new ReshaperComponent());
     }
+
 }

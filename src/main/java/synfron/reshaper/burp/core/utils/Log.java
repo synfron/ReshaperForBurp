@@ -75,7 +75,7 @@ public class Log {
 
     private void printToDisplay(String text) {
         if (BurpExtender.getLogTextEditor() != null) {
-            BurpExtender.getLogTextEditor().setContents(ByteArray.byteArray(
+            BurpExtender.getLogTextEditor().setContents(BurpUtils.current.toByteArray(
                     TextUtils.bufferAppend(
                             new String(BurpExtender.getLogTextEditor().getContents().getBytes(), StandardCharsets.UTF_8),
                             text,
