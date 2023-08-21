@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+group 'com.synfron.reshaper.burp'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation files(System.getenv("BURP_JAR_PATH"))
+    implementation project(":extension")
+}

@@ -32,6 +32,8 @@ MIME Type - If the HTTP response body is reported to match specified MIME types
 
 Proxy Name - If received by a certain Burp proxy listener
 
+Repeat - Repeat a group of When constraints for each item in a list
+
 [More](https://synfron.github.io/ReshaperForBurp/Rules.html#whens)
 
 ### Thens
@@ -62,6 +64,8 @@ Parse HTTP Message - Extract values from an HTTP request or response message and
 
 Prompt - Get text via a prompt dialog
 
+Repeat - Repeat a group of Then actions by count, boolean value, or for each item in a list
+
 Run Process - Execute a command in a separate process
 
 Run Rules - Run a specific Rule or all auto-run Rules
@@ -82,7 +86,7 @@ Send Message - Send a separate WebSocket message
 
 Send Request - Send a separate HTTP request
 
-Send To - Send data to other Burp tools or the system default browser
+Send To - Send data to other Burp tools or the system's default browser
 
 [More](https://synfron.github.io/ReshaperForBurp/Rules.html#thens)
 
