@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.ui;
+package synfron.reshaper.burp.runner;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.burpsuite.BurpSuite;

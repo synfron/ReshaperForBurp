@@ -1,2 +1,5 @@
 rootProject.name = 'reshaper-for-burp'
+include 'extension'
+include 'runner'
+include 'debug'
 
