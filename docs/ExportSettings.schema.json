@@ -19,7 +19,14 @@
         "variables": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/Variable"
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/Variable"
+                    },
+                    {
+                        "$ref": "#/definitions/ListVariable"
+                    }
+                ]
             }
         }
     },
@@ -58,6 +65,9 @@
                             },
                             {
                                 "$ref": "#/definitions/WhenProxyName"
+                            },
+                            {
+                                "$ref": "#/definitions/WhenRepeat"
                             },
                             {
                                 "$ref": "#/definitions/WhenWebSocketEventDirection"
@@ -107,6 +117,9 @@
                             },
                             {
                                 "$ref": "#/definitions/ThenPrompt"
+                            },
+                            {
+                                "$ref": "#/definitions/ThenRepeat"
                             },
                             {
                                 "$ref": "#/definitions/ThenRunProcess"
@@ -583,6 +596,67 @@
                 "useOrCondition"
             ]
         },
+        "WhenRepeat": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "@class": {
+                    "type": "string",
+                    "enum": [
+                        ".WhenRepeat"
+                    ],
+                    "default": ".WhenRepeat"
+                },
+                "negate": {
+                    "type": "boolean"
+                },
+                "useOrCondition": {
+                    "type": "boolean"
+                },
+                "subGroupCount": {
+                    "type": "integer"
+                },
+                "listVariableSource": {
+                    "type": "string",
+                    "enum": [
+                        "Event",
+                        "Global",
+                        "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
+                        "Message",
+                        "Macro",
+                        "Annotation",
+                        "File",
+                        "Special",
+                        "CookieJar"
+                    ]
+                },
+                "listVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "successCriteria": {
+                    "type": "string",
+                    "enum": [
+                        "AnyMatch",
+                        "AllMatch"
+                    ]
+                },
+                "entryVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                }
+            },
+            "title": ".WhenRepeat",
+            "required": [
+                "@class",
+                "negate",
+                "useOrCondition",
+                "subGroupCount"
+            ]
+        },
         "WhenWebSocketEventDirection": {
             "type": "object",
             "additionalProperties": false,
@@ -684,7 +758,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -692,6 +770,24 @@
                     ]
                 },
                 "destinationVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -873,7 +969,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -881,6 +981,19 @@
                     ]
                 },
                 "variableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All"
+                    ]
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -955,7 +1068,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -963,6 +1080,24 @@
                     ]
                 },
                 "destinationVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -1136,7 +1271,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -1144,6 +1283,24 @@
                     ]
                 },
                 "destinationVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -1181,7 +1338,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -1191,12 +1352,96 @@
                 "captureVariableName": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
             },
             "title": ".ThenPrompt",
             "required": [
                 "@class",
                 "breakAfterFailure"
+            ]
+        },
+        "ThenRepeat": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "@class": {
+                    "type": "string",
+                    "enum": [
+                        ".ThenRepeat"
+                    ],
+                    "default": ".ThenRepeat"
+                },
+                "subGroupCount": {
+                    "type": "integer"
+                },
+                "repeatCondition": {
+                    "type": "string",
+                    "enum": [
+                        "Count",
+                        "HasNextItem",
+                        "WhileTrue"
+                    ]
+                },
+                "count": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "listVariableSource": {
+                    "type": "string",
+                    "enum": [
+                        "Event",
+                        "Global",
+                        "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
+                        "Message",
+                        "Macro",
+                        "Annotation",
+                        "File",
+                        "Special",
+                        "CookieJar"
+                    ]
+                },
+                "listVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "entryVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "booleanValue": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "maxCount": {
+                    "type": "integer"
+                }
+            },
+            "title": ".ThenRepeat",
+            "required": [
+                "@class",
+                "subGroupCount",
+                "maxCount"
             ]
         },
         "ThenRunProcess": {
@@ -1246,7 +1491,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -1254,6 +1503,24 @@
                     ]
                 },
                 "captureVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -1372,6 +1639,13 @@
                         "Client"
                     ]
                 },
+                "messageType": {
+                    "type": "string",
+                    "enum": [
+                        "Text",
+                        "Binary"
+                    ]
+                },
                 "message": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
@@ -1438,7 +1712,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -1446,6 +1724,24 @@
                     ]
                 },
                 "captureVariableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -1775,7 +2071,11 @@
                         "Event",
                         "Global",
                         "Session",
+                        "EventList",
+                        "GlobalList",
+                        "SessionList",
                         "Message",
+                        "Macro",
                         "Annotation",
                         "File",
                         "Special",
@@ -1783,6 +2083,24 @@
                     ]
                 },
                 "variableName": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "itemPlacement": {
+                    "type": "string",
+                    "enum": [
+                        "First",
+                        "Last",
+                        "Index",
+                        "All",
+                        "Add"
+                    ]
+                },
+                "delimiter": {
+                    "type": "string",
+                    "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
+                },
+                "index": {
                     "type": "string",
                     "pattern": "^((\\{\\{\\w+(:[^:}]*)+\\}\\})|.)*$"
                 }
@@ -1853,14 +2171,47 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "persistent"
-            ]
-        },
-        "Object": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {}
+            "ListVariable": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "isList": {
+                        "type": "string",
+                        "enum": [
+                            "true"
+                        ],
+                        "default": "true"
+                    },
+                    "persistent": {
+                        "type": "boolean"
+                    },
+                    "value": {
+                        "$ref": "#/definitions/Object"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Object"
+                        }
+                    },
+                    "delimiter": {
+                        "type": "string"
+                    }
+                },
+                "title": "true",
+                "required": [
+                    "isList",
+                    "persistent"
+                ]
+            },
+            "Object": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+            }
         }
     }
 }

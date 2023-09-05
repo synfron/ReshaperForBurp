@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+group 'com.synfron.reshaper.burp'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":extension")
+    implementation 'net.portswigger.burp.extensions:montoya-api:2023.3'
+}
