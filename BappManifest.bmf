@@ -2,12 +2,12 @@ Uuid: 7bcec7656b5746e9a85c427f243e6d5a
 ExtensionType: 1
 Name: Reshaper
 RepoName: reshaper
-ScreenVersion: 2.1.0
-SerialVersion: 18
+ScreenVersion: 2.2.0
+SerialVersion: 19
 MinPlatformVersion: 6
 ProOnly: False
 Author: Daquanne Dwight
 ShortDescription: Trigger actions and reshape HTTP request and response traffic using configurable rules
-EntryPoint: build/libs/reshaper-for-burp-2.1.0.jar
+EntryPoint: extension/build/libs/reshaper-for-burp-2.2.0.jar
 BuildCommand: ./gradlew jar
 SupportedProducts: Pro, Community 
