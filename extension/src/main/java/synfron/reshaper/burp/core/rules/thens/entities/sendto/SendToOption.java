@@ -5,5 +5,6 @@ public enum SendToOption {
     Intruder,
     Repeater,
     Spider, // Unused
-    Browser
+    Browser,
+    Organizer
 }

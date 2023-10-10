@@ -65,7 +65,8 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                            sendTo.getSelectedItem() == SendToOption.Repeater
+                            sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -73,7 +74,8 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                                sendTo.getSelectedItem() == SendToOption.Repeater
+                            sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -81,7 +83,8 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                                sendTo.getSelectedItem() == SendToOption.Repeater
+                            sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -89,7 +92,8 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                                sendTo.getSelectedItem() == SendToOption.Repeater
+                            sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
