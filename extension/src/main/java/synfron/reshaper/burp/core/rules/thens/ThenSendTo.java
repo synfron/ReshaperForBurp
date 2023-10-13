@@ -52,8 +52,51 @@ public class ThenSendTo extends Then<ThenSendTo> implements IHttpRuleOperation, 
             case Intruder -> sendToIntruder(eventInfo);
             case Repeater -> sendToRepeater(eventInfo);
             case Browser -> sendToBrowser(eventInfo);
+            case Organizer -> sendToOrganizer(eventInfo);
         }
         return RuleResponse.Continue;
+    }
+
+    private void sendToOrganizer(EventInfo eventInfo)
+    {
+        String host = null;
+        int port = 0;
+        boolean isHttps = false;
+        byte[] request = null;
+        boolean hasError = false;
+        try {
+            if (overrideDefaults) {
+                host = VariableString.getTextOrDefault(eventInfo, this.host, eventInfo.getDestinationAddress());
+                port = VariableString.getIntOrDefault(eventInfo, this.port, eventInfo.getDestinationPort());
+                isHttps = StringUtils.equalsIgnoreCase(
+                        VariableString.getTextOrDefault(eventInfo, this.protocol, eventInfo.getHttpProtocol()),
+                        "https"
+                );
+                request = CollectionUtils.defaultIfEmpty(
+                        eventInfo.getEncoder().encode(
+                                VariableString.getTextOrDefault(eventInfo, this.request, "")
+                        ),
+                        eventInfo.getHttpRequestMessage().getValue()
+                );
+            } else {
+                host = eventInfo.getDestinationAddress();
+                port = eventInfo.getDestinationPort();
+                isHttps = StringUtils.equalsIgnoreCase(eventInfo.getHttpProtocol(), "https");
+                request = eventInfo.getHttpRequestMessage().getValue();
+            }
+            BurpExtender.getApi().organizer().sendToOrganizer(HttpRequest.httpRequest(HttpService.httpService(host, port, isHttps), ByteArray.byteArray(request)));
+        } catch (Exception e) {
+            hasError = true;
+            throw e;
+        } finally {
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
+                    Pair.of("sendTo", sendTo),
+                    Pair.of("host", host),
+                    Pair.of("port", port),
+                    Pair.of("isHttps", isHttps),
+                    Pair.of("request", eventInfo.getEncoder().decode(request))
+            ));
+        }
     }
 
     private void sendToIntruder(EventInfo eventInfo) {
