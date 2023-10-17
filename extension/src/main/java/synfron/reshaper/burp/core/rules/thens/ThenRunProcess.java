@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.EventInfo;
@@ -69,7 +70,12 @@ public class ThenRunProcess extends Then<ThenRunProcess> implements IHttpRuleOpe
             input = VariableString.getTextOrDefault(eventInfo, this.input, "");
             captureVariableName = getVariableName(eventInfo);
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Process process = Runtime.getRuntime().exec(command.getText(eventInfo));
+            Process process;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                process = Runtime.getRuntime().exec(command.getText(eventInfo));
+            } else {
+                process = Runtime.getRuntime().exec(new String[]{ "sh", "-c", command.getText(eventInfo) });
+            }
             if (StringUtils.isNotEmpty(input)) {
                 IOUtils.write(input, process.getOutputStream(), Charset.defaultCharset());
                 process.getOutputStream().close();
