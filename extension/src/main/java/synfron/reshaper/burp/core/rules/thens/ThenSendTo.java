@@ -229,12 +229,12 @@ public class ThenSendTo extends Then<ThenSendTo> implements IHttpRuleOperation, 
         } finally {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                        Pair.of("sendTo", sendTo),
-                        Pair.of("host", host),
-                        Pair.of("port", port),
-                        Pair.of("isHttps", isHttps),
-                        Pair.of("request", eventInfo.getEncoder().decode(request))
-                ));
+                    Pair.of("sendTo", sendTo),
+                    Pair.of("host", host),
+                    Pair.of("port", port),
+                    Pair.of("isHttps", isHttps),
+                    Pair.of("request", eventInfo.getEncoder().decode(request))
+            ));
         }
     }
 
@@ -271,12 +271,12 @@ public class ThenSendTo extends Then<ThenSendTo> implements IHttpRuleOperation, 
         } finally {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                        Pair.of("sendTo", sendTo),
-                        Pair.of("host", host),
-                        Pair.of("port", port),
-                        Pair.of("isHttps", isHttps),
-                        Pair.of("request", eventInfo.getEncoder().decode(request))
-                ));
+                    Pair.of("sendTo", sendTo),
+                    Pair.of("host", host),
+                    Pair.of("port", port),
+                    Pair.of("isHttps", isHttps),
+                    Pair.of("request", eventInfo.getEncoder().decode(request))
+            ));
         }
     }
 
@@ -328,9 +328,9 @@ public class ThenSendTo extends Then<ThenSendTo> implements IHttpRuleOperation, 
         } finally {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                        Pair.of("sendTo", sendTo),
-                        Pair.of("data", eventInfo.getEncoder().decode(data))
-                ));
+                    Pair.of("sendTo", sendTo),
+                    Pair.of("data", eventInfo.getEncoder().decode(data))
+            ));
         }
     }
 
@@ -358,9 +358,9 @@ public class ThenSendTo extends Then<ThenSendTo> implements IHttpRuleOperation, 
         } finally {
             if (eventInfo.getDiagnostics().isEnabled())
                 eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(
-                        Pair.of("sendTo", sendTo),
-                        Pair.of("url", url)
-                ));
+                    Pair.of("sendTo", sendTo),
+                    Pair.of("url", url)
+            ));
         }
     }
 
