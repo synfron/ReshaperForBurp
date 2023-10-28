@@ -96,7 +96,7 @@ public class ThenReadFile extends Then<ThenReadFile> implements IHttpRuleOperati
                     Pair.of("failed", failed)
             ));
         }
-        return !failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
+        return failed && breakAfterFailure ? RuleResponse.BreakRules : RuleResponse.Continue;
     }
 
     private String getVariableName(EventInfo eventInfo) {
