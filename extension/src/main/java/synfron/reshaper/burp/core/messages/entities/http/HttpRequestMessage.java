@@ -154,4 +154,8 @@ public class HttpRequestMessage extends HttpEntity {
     public String getText() {
         return encoder.decode(getValue());
     }
+
+    public boolean isSet() {
+        return request.length > 0 || isChanged();
+    }
 }

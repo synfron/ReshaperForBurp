@@ -52,6 +52,7 @@ public class HttpEventInfo extends EventInfo {
         this.dataDirection = HttpDataDirection.Request;
         this.initialDataDirection = HttpDataDirection.Request;
         this.initialHttpResponse = null;
+        this.httpResponseMessage = new HttpResponseMessage((byte[]) null, encoder);
         this.sourceAddress = "burp::";
         this.proxyName = null;
     }

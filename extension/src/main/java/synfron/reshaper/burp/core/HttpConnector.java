@@ -309,7 +309,7 @@ public class HttpConnector implements
     @Override
     public ProxyResponseReceivedAction handleResponseReceived(InterceptedResponse interceptedResponse) {
         if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy)) {
-            HttpEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, getMessageId(BurpTool.Proxy, interceptedResponse.messageId()), interceptedResponse.initiatingRequest(), interceptedResponse, interceptedResponse.annotations());
+            HttpEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, getMessageId(BurpTool.Proxy, interceptedResponse.messageId()), interceptedResponse.initiatingRequest(), interceptedResponse, interceptedResponse.annotations(), interceptedResponse.listenerInterface(), null);
             return processEvent(false, eventInfo, true).asProxyResponseAction();
         }
         else {
