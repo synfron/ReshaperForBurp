@@ -78,7 +78,7 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         waitForCompletion.addActionListener(this::onWaitForCompletionChanged);
         failAfter.getDocument().addDocumentListener(new DocumentActionListener(this::onFailAfterChanged));
         failOnErrorStatusCode.addActionListener(this::onFailOnErrorStatusCodeChanged);
-        breakAfterFailure.addActionListener(this::onContinueAfterFailureChanged);
+        breakAfterFailure.addActionListener(this::onBreakAfterFailureChanged);
         captureOutput.addActionListener(this::onCaptureOutputChanged);
         captureAfterFailure.addActionListener(this::onCaptureAfterFailureChanged);
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
@@ -177,7 +177,7 @@ public class ThenSendRequestComponent extends ThenComponent<ThenSendRequestModel
         model.setFailOnErrorStatusCode(failOnErrorStatusCode.isSelected());
     }
 
-    private void onContinueAfterFailureChanged(ActionEvent actionEvent) {
+    private void onBreakAfterFailureChanged(ActionEvent actionEvent) {
         model.setBreakAfterFailure(breakAfterFailure.isSelected());
     }
 

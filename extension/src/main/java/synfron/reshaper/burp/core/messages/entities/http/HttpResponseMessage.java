@@ -146,4 +146,8 @@ public class HttpResponseMessage extends HttpEntity {
     public String getText() {
         return encoder.decode(getValue());
     }
+
+    public boolean isSet() {
+        return response.length > 0 || isChanged();
+    }
 }

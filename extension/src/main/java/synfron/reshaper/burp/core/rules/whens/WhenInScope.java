@@ -7,6 +7,7 @@ import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IHttpRuleOperation;
 import synfron.reshaper.burp.core.rules.IWebSocketRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleOperationType;
+import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 public class WhenInScope extends When<WhenInScope> implements IHttpRuleOperation, IWebSocketRuleOperation {
@@ -22,7 +23,8 @@ public class WhenInScope extends When<WhenInScope> implements IHttpRuleOperation
         String url = VariableString.getTextOrDefault(eventInfo, this.url, eventInfo.getUrl());
         try {
             isMatch = BurpExtender.getApi().scope().isInScope(url);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Log.get().withMessage("Invalid URL for checking scope").withException(e).log();
         }
         if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(this, isMatch, url);
         return isMatch;

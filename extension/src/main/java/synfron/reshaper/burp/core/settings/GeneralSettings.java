@@ -22,6 +22,8 @@ public class GeneralSettings {
     private ImportMethod importMethod = ImportMethod.File;
     private ExportMethod exportMethod = ExportMethod.Json;
     private String importUrl;
+    private String lastExportPath;
+    private String lastExportFileName = "ReshaperBackup.json";
 
     public void importSettings(GeneralSettings other) {
         if (other != null) {
@@ -37,8 +39,11 @@ public class GeneralSettings {
             this.enableSanityCheckWarnings = other.enableSanityCheckWarnings;
             this.logInExtenderOutput = other.logInExtenderOutput;
             this.logTabCharacterLimit = other.logTabCharacterLimit;
+            this.defaultEncoding = other.defaultEncoding;
             this.importMethod = other.importMethod;
             this.importUrl = other.importUrl;
+            this.lastExportPath = other.lastExportPath;
+            this.lastExportFileName = other.lastExportFileName;
         }
     }
 
