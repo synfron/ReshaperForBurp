@@ -70,7 +70,7 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         failAfter.getDocument().addDocumentListener(new DocumentActionListener(this::onFailAfterChanged));
         killAfterFailure.addActionListener(this::onKillAfterWaitChanged);
         failOnNonZeroExitCode.addActionListener(this::onFailOnNonZeroExitCodeChanged);
-        breakAfterFailure.addActionListener(this::onContinueAfterFailureChanged);
+        breakAfterFailure.addActionListener(this::onBreakAfterFailureChanged);
         captureOutput.addActionListener(this::onCaptureOutputChanged);
         captureAfterFailure.addActionListener(this::onCaptureAfterFailureChanged);
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
@@ -163,7 +163,7 @@ public class ThenRunProcessComponent extends ThenComponent<ThenRunProcessModel, 
         model.setFailOnNonZeroExitCode(failOnNonZeroExitCode.isSelected());
     }
 
-    private void onContinueAfterFailureChanged(ActionEvent actionEvent) {
+    private void onBreakAfterFailureChanged(ActionEvent actionEvent) {
         model.setBreakAfterFailure(breakAfterFailure.isSelected());
     }
 

@@ -21,7 +21,7 @@ public interface IDiagnostics {
 
     void logValue(When<?> when, boolean result, Object... values);
 
-    void logProperties(When<?> when, boolean hasError, List<? extends Pair<String, ? extends Serializable>> properties);
+    void logProperties(When<?> when, boolean result, List<? extends Pair<String, ? extends Serializable>> properties);
 
     void logValue(Then<?> then, boolean hasError, Object... values);
 

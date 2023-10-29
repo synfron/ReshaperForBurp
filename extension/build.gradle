@@ -4,7 +4,7 @@ plugins {
 
 group 'com.synfron.reshaper.burp'
 archivesBaseName = 'reshaper-for-burp'
-version '2.2.0'
+version '2.3.0'
 
 targetCompatibility = '17'
 sourceCompatibility = '17'

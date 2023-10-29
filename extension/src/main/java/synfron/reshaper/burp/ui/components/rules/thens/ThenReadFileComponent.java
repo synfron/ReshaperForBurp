@@ -1,10 +1,11 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.ProtocolType;
-import synfron.reshaper.burp.core.rules.thens.ThenPrompt;
+import synfron.reshaper.burp.core.messages.Encoder;
+import synfron.reshaper.burp.core.rules.thens.ThenReadFile;
 import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.ui.models.rules.thens.ThenPromptModel;
+import synfron.reshaper.burp.ui.models.rules.thens.ThenReadFileModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
@@ -12,57 +13,57 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenPrompt> {
-    private JTextField description;
-    private JTextField starterText;
-    private JTextField failAfter;
+public class ThenReadFileComponent extends ThenComponent<ThenReadFileModel, ThenReadFile> {
+    private JTextField filePath;
+    private JComboBox<String> encoding;
     private JCheckBox breakAfterFailure;
+    private JCheckBox captureAfterFailure;
     private JComboBox<VariableSource> captureVariableSource;
     private JTextField captureVariableName;
     private JComboBox<SetListItemPlacement> itemPlacement;
     private JTextField delimiter;
     private JTextField index;
 
-    public ThenPromptComponent(ProtocolType protocolType, ThenPromptModel then) {
+    public ThenReadFileComponent(ProtocolType protocolType, ThenReadFileModel then) {
         super(protocolType, then);
         initComponent();
     }
 
     private void initComponent() {
-        description = createTextField(true);
-        starterText = createTextField(true);
-        failAfter = createTextField(true);
+        filePath = createTextField(true);
+        encoding = createComboBox(Encoder.getEncodings().toArray(new String[0]), true);
         breakAfterFailure = new JCheckBox("Break After Failure");
+        captureAfterFailure = new JCheckBox("Capture After Failure");
         captureVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
         captureVariableName = createTextField(true);
         itemPlacement = createComboBox(SetListItemPlacement.values());
         delimiter = createTextField(true);
         index = createTextField(true);
 
-        description.setText(model.getDescription());
-        starterText.setText(model.getStarterText());
-        failAfter.setText(model.getFailAfter());
+        filePath.setText(model.getFilePath());
+        encoding.setSelectedItem(model.getEncoding());
         breakAfterFailure.setSelected(model.isBreakAfterFailure());
+        captureAfterFailure.setSelected(model.isCaptureAfterFailure());
         captureVariableSource.setSelectedItem(model.getCaptureVariableSource());
         captureVariableName.setText(model.getCaptureVariableName());
         itemPlacement.setSelectedItem(model.getItemPlacement());
         delimiter.setText(model.getDelimiter());
         index.setText(model.getIndex());
 
-        description.getDocument().addDocumentListener(new DocumentActionListener(this::onDescriptionChanged));
-        starterText.getDocument().addDocumentListener(new DocumentActionListener(this::onStarterTextChanged));
-        failAfter.getDocument().addDocumentListener(new DocumentActionListener(this::onFailAfterChanged));
+        filePath.getDocument().addDocumentListener(new DocumentActionListener(this::onFilePathChanged));
+        encoding.addActionListener(this::onEncodingChanged);
         breakAfterFailure.addActionListener(this::onBreakAfterFailureChanged);
+        captureAfterFailure.addActionListener(this::onCaptureAfterFailureChanged);
         captureVariableSource.addActionListener(this::onCaptureVariableSourceChanged);
         captureVariableName.getDocument().addDocumentListener(new DocumentActionListener(this::onCaptureVariableNameChanged));
         itemPlacement.addActionListener(this::onItemPlacementChanged);
         delimiter.getDocument().addDocumentListener(new DocumentActionListener(this::onDelimiterChanged));
         index.getDocument().addDocumentListener(new DocumentActionListener(this::onIndexChanged));
 
-        mainContainer.add(getLabeledField("Description *", description), "wrap");
-        mainContainer.add(getLabeledField("Starter Text", starterText), "wrap");
-        mainContainer.add(getLabeledField("Fail After (milliseconds) *", failAfter), "wrap");
+        mainContainer.add(getLabeledField("File Path *", filePath), "wrap");
+        mainContainer.add(getLabeledField("Encoding *", encoding), "wrap");
         mainContainer.add(breakAfterFailure, "wrap");
+        mainContainer.add(captureAfterFailure, "wrap");
         mainContainer.add(getLabeledField("Capture Variable Source", captureVariableSource), "wrap");
         mainContainer.add(getLabeledField("Capture Variable Name *", captureVariableName), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -82,20 +83,20 @@ public class ThenPromptComponent extends ThenComponent<ThenPromptModel, ThenProm
         ), "wrap");
     }
 
-    private void onDescriptionChanged(ActionEvent actionEvent) {
-        model.setDescription(description.getText());
+    private void onFilePathChanged(ActionEvent actionEvent) {
+        model.setFilePath(filePath.getText());
     }
 
-    private void onStarterTextChanged(ActionEvent actionEvent) {
-        model.setStarterText(starterText.getText());
-    }
-
-    private void onFailAfterChanged(ActionEvent actionEvent) {
-        model.setFailAfter(failAfter.getText());
+    private void onEncodingChanged(ActionEvent actionEvent) {
+        model.setEncoding((String) encoding.getSelectedItem());
     }
 
     private void onBreakAfterFailureChanged(ActionEvent actionEvent) {
         model.setBreakAfterFailure(breakAfterFailure.isSelected());
+    }
+
+    private void onCaptureAfterFailureChanged(ActionEvent actionEvent) {
+        model.setCaptureAfterFailure(captureAfterFailure.isSelected());
     }
 
     private void onCaptureVariableSourceChanged(ActionEvent actionEvent) {
