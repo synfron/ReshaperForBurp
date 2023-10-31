@@ -203,7 +203,9 @@ public class ReshaperObj {
                     ThenType.SetEventDirection,
                     ThenType.SetEncoding,
                     ThenType.SetValue,
-                    ThenType.SetVariable
+                    ThenType.SetVariable,
+                    ThenType.SaveFile,
+                    ThenType.ReadFile
             );
             Class<?> thenClass = supportedThenTypes
                     .filter(type -> eventInfo.getProtocolType().accepts(ProtocolType.fromRuleOperationType(type.getType())))

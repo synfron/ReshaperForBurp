@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.models.rules.whens;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.whens.WhenInScope;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -24,7 +25,11 @@ public class WhenInScopeModel extends WhenModel<WhenInScopeModel, WhenInScope> {
     }
 
     public List<String> validate() {
-        return super.validate();
+        List<String> errors = super.validate();
+        if (protocolType.accepts(ProtocolType.WebSocket) && StringUtils.isEmpty(url)) {
+            errors.add("URL is required");
+        }
+        return errors;
     }
 
     public boolean persist() {

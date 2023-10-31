@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HighlightColor;
 import synfron.reshaper.burp.core.rules.thens.ThenSendTo;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenSendToModel;
@@ -19,6 +20,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
     private JTextField port;
     private JTextField protocol;
     private JTextField request;
+    private JTextField response;
+    private JTextField comment;
+    private JComboBox<HighlightColor> highlightColor;
     private JTextField value;
     private JTextField url;
 
@@ -37,6 +41,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         port = createTextField(true);
         protocol = createTextField(true);
         request = createTextField(true);
+        response = createTextField(true);
+        comment = createTextField(true);
+        highlightColor = createComboBox(HighlightColor.values());
         value = createTextField(true);
         url = createTextField(true);
 
@@ -46,6 +53,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         port.setText(model.getPort());
         protocol.setText(model.getProtocol());
         request.setText(model.getRequest());
+        response.setText(model.getResponse());
+        comment.setText(model.getComment());
+        highlightColor.setSelectedItem(model.getHighlightColor());
         value.setText(model.getValue());
         url.setText(model.getUrl());
 
@@ -55,6 +65,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
         port.getDocument().addDocumentListener(new DocumentActionListener(this::onPortChanged));
         protocol.getDocument().addDocumentListener(new DocumentActionListener(this::onProtocolChanged));
         request.getDocument().addDocumentListener(new DocumentActionListener(this::onRequestChanged));
+        response.getDocument().addDocumentListener(new DocumentActionListener(this::onResponseChanged));
+        comment.getDocument().addDocumentListener(new DocumentActionListener(this::onCommentChanged));
+        highlightColor.addActionListener(this::onHighlightColorChanged);
         value.getDocument().addDocumentListener(new DocumentActionListener(this::onValueChanged));
         url.getDocument().addDocumentListener(new DocumentActionListener(this::onUrlChanged));
 
@@ -65,7 +78,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                            sendTo.getSelectedItem() == SendToOption.Repeater
+                                sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer ||
+                                sendTo.getSelectedItem() == SendToOption.SiteMap
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -73,7 +88,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                                sendTo.getSelectedItem() == SendToOption.Repeater
+                                sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer ||
+                                sendTo.getSelectedItem() == SendToOption.SiteMap
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -81,7 +98,9 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                                sendTo.getSelectedItem() == SendToOption.Repeater
+                                sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer ||
+                                sendTo.getSelectedItem() == SendToOption.SiteMap
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
@@ -89,13 +108,40 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
                 List.of(overrideDefaults, sendTo),
                 () -> overrideDefaults.isSelected() && (
                         sendTo.getSelectedItem() == SendToOption.Intruder ||
-                                sendTo.getSelectedItem() == SendToOption.Repeater
+                                sendTo.getSelectedItem() == SendToOption.Repeater ||
+                                sendTo.getSelectedItem() == SendToOption.Organizer ||
+                                sendTo.getSelectedItem() == SendToOption.SiteMap
+                )
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Response", response),
+                List.of(overrideDefaults, sendTo),
+                () -> overrideDefaults.isSelected() && (
+                        sendTo.getSelectedItem() == SendToOption.Organizer ||
+                            sendTo.getSelectedItem() == SendToOption.SiteMap
+                )
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Comment", comment),
+                List.of(overrideDefaults, sendTo),
+                () -> overrideDefaults.isSelected() && (
+                        sendTo.getSelectedItem() == SendToOption.SiteMap
+                )
+        ), "wrap");
+        mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Highlight Color", highlightColor),
+                List.of(overrideDefaults, sendTo),
+                () -> overrideDefaults.isSelected() && (
+                        sendTo.getSelectedItem() == SendToOption.SiteMap
                 )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Value", value),
                 List.of(overrideDefaults, sendTo),
-                () -> overrideDefaults.isSelected() && sendTo.getSelectedItem() == SendToOption.Comparer
+                () -> overrideDefaults.isSelected() && (
+                        sendTo.getSelectedItem() == SendToOption.Comparer ||
+                                sendTo.getSelectedItem() == SendToOption.Decoder
+                )
         ), "wrap");
         mainContainer.add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("URL", url),
@@ -128,6 +174,18 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
 
     private void onRequestChanged(ActionEvent actionEvent) {
         model.setRequest(request.getText());
+    }
+
+    private void onResponseChanged(ActionEvent actionEvent) {
+        model.setResponse(response.getText());
+    }
+
+    private void onCommentChanged(ActionEvent actionEvent) {
+        model.setComment(comment.getText());
+    }
+
+    private void onHighlightColorChanged(ActionEvent actionEvent) {
+        model.setHighlightColor((HighlightColor) highlightColor.getSelectedItem());
     }
 
     private void onValueChanged(ActionEvent actionEvent) {

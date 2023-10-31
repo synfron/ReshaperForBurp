@@ -3,6 +3,7 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.messages.HighlightColor;
 import synfron.reshaper.burp.core.rules.thens.ThenSendTo;
 import synfron.reshaper.burp.core.rules.thens.entities.sendto.SendToOption;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -25,6 +26,12 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
     @Getter
     private String request;
     @Getter
+    private String response;
+    @Getter
+    private HighlightColor highlightColor;
+    @Getter
+    private String comment;
+    @Getter
     private String value;
     @Getter
     private String url;
@@ -37,6 +44,9 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         port = VariableString.toString(then.getPort(), port);
         protocol = VariableString.toString(then.getProtocol(), protocol);
         request = VariableString.toString(then.getRequest(), request);
+        response = VariableString.toString(then.getResponse(), response);
+        comment = VariableString.toString(then.getComment(), comment);
+        highlightColor = then.getHighlightColor();
         value = VariableString.toString(then.getValue(), value);
         url = VariableString.toString(then.getUrl(), url);
     }
@@ -71,6 +81,21 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         propertyChanged("request", request);
     }
 
+    public void setResponse(String response) {
+        this.response = response;
+        propertyChanged("response", response);
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+        propertyChanged("comment", comment);
+    }
+
+    public void setHighlightColor(HighlightColor highlightColor) {
+        this.highlightColor = highlightColor;
+        propertyChanged("highlightColor", highlightColor);
+    }
+
     public void setValue(String value) {
         this.value = value;
         propertyChanged("value", value);
@@ -86,25 +111,17 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         List<String> errors = super.validate();
         if (overrideDefaults) {
             switch (sendTo) {
-                case Intruder -> validateIntruder(errors);
-                case Repeater -> validateRepeater(errors);
+                case Intruder, Repeater, Organizer, SiteMap -> validatePort(errors);
             }
         }
         return errors;
     }
 
-    private void validateIntruder(List<String> errors) {
+    private void validatePort(List<String> errors) {
         if (StringUtils.isNotEmpty(port) && !VariableString.isPotentialInt(port)) {
             errors.add("Port must be an integer");
         }
     }
-
-    private void validateRepeater(List<String> errors) {
-        if (StringUtils.isNotEmpty(port) && !VariableString.isPotentialInt(port)) {
-            errors.add("Port must be an integer");
-        }
-    }
-
     public boolean persist() {
         if (validate().size() != 0) {
             return false;
@@ -115,6 +132,9 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         ruleOperation.setPort(VariableString.getAsVariableString(port));
         ruleOperation.setProtocol(VariableString.getAsVariableString(protocol));
         ruleOperation.setRequest(VariableString.getAsVariableString(request));
+        ruleOperation.setResponse(VariableString.getAsVariableString(response));
+        ruleOperation.setComment(VariableString.getAsVariableString(comment));
+        ruleOperation.setHighlightColor(highlightColor);
         ruleOperation.setValue(VariableString.getAsVariableString(value));
         ruleOperation.setUrl(VariableString.getAsVariableString(url));
         setValidated(true);
@@ -132,7 +152,7 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
 
     @Override
     protected String getTargetName() {
-        return sendTo.name();
+        return sendTo.toString();
     }
 
     @Override

@@ -18,7 +18,8 @@ permissions:
 
 jobs:
   build:
-
+    env:
+      BURP_JAR_PATH: "/"
     runs-on: ubuntu-latest
 
     steps:
@@ -31,4 +32,10 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
-        arguments: build
+        arguments: build -b extension/build.gradle
+    - name: Rename file
+      run: mv extension/build/libs/reshaper-for-burp-*.jar extension/build/libs/reshaper-for-burp.jar
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        path: extension/build/libs/reshaper-for-burp.jar

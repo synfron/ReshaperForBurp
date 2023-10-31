@@ -23,7 +23,7 @@ public class WhenInScopeComponent extends WhenComponent<WhenInScopeModel, WhenIn
 
         url.getDocument().addDocumentListener(new DocumentActionListener(this::onUrlChanged));
 
-        mainContainer.add(getLabeledField("URL", url), "wrap");
+        mainContainer.add(getLabeledField(protocolType.accepts(ProtocolType.WebSocket) ? "URL *" : "URL", url), "wrap");
         getDefaultComponents().forEach(component -> mainContainer.add(component, "wrap"));
     }
 
