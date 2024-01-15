@@ -64,6 +64,8 @@ Parse HTTP Message - Extract values from an HTTP request or response message and
 
 Prompt - Get text via a prompt dialog
 
+Read File - Read a file
+
 Repeat - Repeat a group of Then actions by count, boolean value, or for each item in a list
 
 Run Process - Execute a command in a separate process
