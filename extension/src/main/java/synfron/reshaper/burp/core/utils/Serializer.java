@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -89,7 +90,7 @@ public class Serializer {
             (prettyPrint ?
                     objectMapper.writer().withDefaultPrettyPrinter() :
                     objectMapper.writer()
-            ).writeValue(jsonFactory.createGenerator(stringWriter), value);
+            ).writeValue(jsonFactory.createGenerator(stringWriter).configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true), value);
             return stringWriter.toString();
         } catch (IOException e) {
             throw new WrappedException(e);
