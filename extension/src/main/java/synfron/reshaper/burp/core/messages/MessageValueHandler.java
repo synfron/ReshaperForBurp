@@ -42,7 +42,7 @@ public class MessageValueHandler {
             case HttpRequestHeader -> requestMessage.getHeaders().getHeader(identifier.getText(eventInfo), itemPlacement);
             case HttpRequestBody -> requestMessage.getBody().getText();
             case HttpRequestStatusLine -> requestMessage.getStatusLine().getValue();
-            case HttpRequestCookie -> requestMessage.getHeaders().getCookies().getCookie(identifier.getText(eventInfo), itemPlacement);
+            case HttpRequestCookie -> requestMessage.getHeaders().getCookie(identifier.getText(eventInfo), itemPlacement);
             case HttpRequestUri -> requestMessage.getStatusLine().getUrl().getValue();
             case HttpRequestMessage -> requestMessage.getText();
             case HttpRequestMethod -> requestMessage.getStatusLine().getMethod();
@@ -59,7 +59,7 @@ public class MessageValueHandler {
             case HttpResponseHeader -> responseMessage.getHeaders().getHeader(identifier.getText(eventInfo), itemPlacement);
             case HttpResponseBody -> responseMessage.getBody().getText();
             case HttpResponseStatusLine -> responseMessage.getStatusLine().getValue();
-            case HttpResponseCookie -> responseMessage.getHeaders().getCookies().getCookie(identifier.getText(eventInfo), itemPlacement);
+            case HttpResponseCookie -> responseMessage.getHeaders().getCookie(identifier.getText(eventInfo), itemPlacement);
             case HttpResponseMessage -> responseMessage.getText();
             case HttpResponseStatusCode -> responseMessage.getStatusLine().getCode();
             case HttpResponseStatusMessage -> responseMessage.getStatusLine().getMessage();
@@ -108,7 +108,7 @@ public class MessageValueHandler {
             case HttpRequestHeader -> requestMessage.getHeaders().setHeader(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpRequestBody -> requestMessage.setBody(StringUtils.defaultString(replacementText));
             case HttpRequestStatusLine -> requestMessage.setStatusLine(replacementText);
-            case HttpRequestCookie -> requestMessage.getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
+            case HttpRequestCookie -> requestMessage.getHeaders().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpRequestUri -> requestMessage.getStatusLine().setUrl(replacementText);
             case HttpRequestMethod -> requestMessage.getStatusLine().setMethod(replacementText);
             case HttpRequestUriPath -> requestMessage.getStatusLine().getUrl().setPath(StringUtils.defaultString(replacementText));
@@ -124,7 +124,7 @@ public class MessageValueHandler {
             case HttpResponseHeader -> responseMessage.getHeaders().setHeader(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpResponseBody -> responseMessage.setBody(StringUtils.defaultString(replacementText));
             case HttpResponseStatusLine -> responseMessage.setStatusLine(replacementText);
-            case HttpResponseCookie -> responseMessage.getHeaders().getCookies().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
+            case HttpResponseCookie -> responseMessage.getHeaders().setCookie(identifier.getText(eventInfo), replacementText, itemPlacement);
             case HttpResponseStatusCode -> responseMessage.getStatusLine().setCode(replacementText);
             case HttpResponseStatusMessage -> responseMessage.getStatusLine().setMessage(StringUtils.defaultString(replacementText));
         }
@@ -134,8 +134,8 @@ public class MessageValueHandler {
         return switch (messageValue) {
             case HttpRequestHeader -> eventInfo.getHttpRequestMessage().getHeaders().getHeaderNames();
             case HttpResponseHeader -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().getHeaderNames();
-            case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookies().getCookiesNames();
-            case HttpResponseCookie -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().getCookies().getCookiesNames();
+            case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookiesNames();
+            case HttpResponseCookie -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().getCookiesNames();
             case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParams().getParamNames();
             default -> Collections.emptyList();
         };
