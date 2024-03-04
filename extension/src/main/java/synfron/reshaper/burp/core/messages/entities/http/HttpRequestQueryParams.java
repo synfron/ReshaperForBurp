@@ -49,7 +49,7 @@ public class HttpRequestQueryParams extends HttpEntity {
     public void setQueryParameter(String name, String value, SetItemPlacement itemPlacement) {
         if (value != null) {
             prepare();
-            params.set(name, value, itemPlacement);
+            params.setOrAdd(name, value, itemPlacement);
             changed = true;
         } else {
             deleteParameter(name, IItemPlacement.toDelete(itemPlacement));

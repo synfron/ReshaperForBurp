@@ -14,15 +14,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class HttpCookies extends HttpEntity {
+public class HttpRequestCookies extends HttpEntity implements IValue<String> {
     private ListMap<CaseInsensitiveString, String> cookies;
     private final String headerValue;
     @Getter
     private boolean changed;
-    @Getter @Setter
-    private Consumer<HttpCookies> propertyAddedListener;
 
-    public HttpCookies(String headerValue) {
+    public HttpRequestCookies(String headerValue) {
         this.headerValue = headerValue;
     }
 
@@ -32,9 +30,8 @@ public class HttpCookies extends HttpEntity {
 
     public void setCookie(String name, String value, SetItemPlacement itemPlacement) {
         if (value != null) {
-            getCookies().set(new CaseInsensitiveString(name), value, itemPlacement);
+            getCookies().setOrAdd(new CaseInsensitiveString(name), value, itemPlacement);
             changed = true;
-            propertyAdded();
         } else {
             deleteCookie(name, IItemPlacement.toDelete(itemPlacement));
         }
@@ -90,14 +87,8 @@ public class HttpCookies extends HttpEntity {
         return String.join("; ", cookieEntries);
     }
 
-    private void propertyAdded() {
-        if (propertyAddedListener != null) {
-            propertyAddedListener.accept(this);
-        }
-    }
-
-    public HttpCookies withPropertyAddedListener(Consumer<HttpCookies> consumer) {
-        propertyAddedListener = consumer;
-        return this;
+    @Override
+    public String toString() {
+        return getValue();
     }
 }
