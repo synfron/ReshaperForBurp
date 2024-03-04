@@ -40,8 +40,8 @@ public class WhenHasEntity extends When<WhenHasEntity> implements IHttpRuleOpera
                 case HttpResponseHeaders -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().getCount() > 0;
                 case HttpRequestHeader -> eventInfo.getHttpRequestMessage().getHeaders().contains(identifier.getText(eventInfo));
                 case HttpResponseHeader -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().contains(identifier.getText(eventInfo));
-                case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
-                case HttpResponseCookie -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().getCookies().contains(identifier.getText(eventInfo));
+                case HttpRequestCookie -> eventInfo.getHttpRequestMessage().getHeaders().containsCookie(identifier.getText(eventInfo));
+                case HttpResponseCookie -> ((HttpEventInfo)eventInfo).getHttpResponseMessage().getHeaders().containsCookie(identifier.getText(eventInfo));
                 case HttpRequestUriPath -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getPath());
                 case HttpRequestUriQueryParameters -> StringUtils.isNotEmpty(eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParametersText());
                 case HttpRequestUriQueryParameter -> eventInfo.getHttpRequestMessage().getStatusLine().getUrl().getQueryParams().hasQueryParameter(identifier.getText(eventInfo));

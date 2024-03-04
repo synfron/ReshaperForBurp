@@ -13,9 +13,8 @@ import java.util.stream.Collectors;
 public abstract class HttpHeaders extends HttpEntity {
     protected final List<String> headerLines;
     protected ListMap<CaseInsensitiveString, IValue<String>> headers;
-    private HttpCookies cookies;
-    private final String cookieHeaderName;
-    private boolean changed;
+    protected final String cookieHeaderName;
+    protected boolean changed;
 
     public HttpHeaders(List<String> headerLines, String cookieHeaderName) {
         this.headerLines = headerLines;
@@ -41,37 +40,29 @@ public abstract class HttpHeaders extends HttpEntity {
         if (value == null) {
             deleteHeader(name, IItemPlacement.toDelete(itemPlacement));
         } else if (name.equalsIgnoreCase(cookieHeaderName)) {
-            cookies = new HttpCookies(value);
-            headers.set(new CaseInsensitiveString(name), new Mapped<>(() -> this.cookies.getValue()), itemPlacement);
+            headers.setOrAdd(new CaseInsensitiveString(name), createCookie(value), itemPlacement);
         } else {
-            headers.set(new CaseInsensitiveString(name), new Value<>(value), itemPlacement);
+            headers.setOrAdd(new CaseInsensitiveString(name), new Value<>(value), itemPlacement);
         }
         changed = true;
     }
 
     public void deleteHeader(String name, DeleteItemPlacement itemPlacement) {
         getHeaders().remove(new CaseInsensitiveString(name), itemPlacement);
-        if (name.equalsIgnoreCase(cookieHeaderName)) {
-            cookies = null;
-        }
         changed = true;
     }
 
-    public HttpCookies getCookies() {
-        getHeaders();
-        return cookies != null ? cookies : new HttpCookies("").withPropertyAddedListener(cookies -> {
-            if (this.cookies == null) {
-                this.cookies = cookies;
-                headers.add(new CaseInsensitiveString(cookieHeaderName), new Mapped<>(() -> this.cookies.getValue()));
-            }
-        });
-    }
+    public abstract String getCookie(String cookieName, GetItemPlacement itemPlacement);
+
+    public abstract void setCookie(String cookieName, String value, SetItemPlacement itemPlacement);
+
+    public abstract IValue<String> createCookie(String value);
 
     public List<String> getHeaderNames() {
         return getHeaders().keys().stream().map(CaseInsensitiveString::toString).sorted().collect(Collectors.toList());
     }
 
-    private ListMap<CaseInsensitiveString, IValue<String>> getHeaders() {
+    protected ListMap<CaseInsensitiveString, IValue<String>> getHeaders() {
         if (headers == null) {
             headers = new ListMap<>();
             for (String headerLine : headerLines) {
@@ -79,8 +70,7 @@ public abstract class HttpHeaders extends HttpEntity {
                     String[] headerParts = headerLine.split(":", 2);
                     String headerValue = CollectionUtils.elementAtOrDefault(headerParts, 1, "").stripLeading();
                     if (headerParts[0].equalsIgnoreCase(cookieHeaderName)) {
-                        cookies = new HttpCookies(headerParts[1].trim());
-                        headers.add(new CaseInsensitiveString(headerParts[0]), new Mapped<>(() -> this.cookies.getValue()));
+                        headers.add(new CaseInsensitiveString(headerParts[0]), createCookie(headerValue.trim()));
                     } else {
                         headers.add(new CaseInsensitiveString(headerParts[0]), new Value<>(headerValue.trim()));
                     }
@@ -92,7 +82,7 @@ public abstract class HttpHeaders extends HttpEntity {
 
     @Override
     public boolean isChanged() {
-        return changed || (cookies != null && cookies.isChanged());
+        return changed;
     }
 
     public List<String> getValue() {
@@ -110,4 +100,8 @@ public abstract class HttpHeaders extends HttpEntity {
     public String getText() {
         return String.join("\r\n", getValue());
     }
+
+    public abstract List<String> getCookiesNames();
+
+    public abstract boolean containsCookie(String cookieName);
 }

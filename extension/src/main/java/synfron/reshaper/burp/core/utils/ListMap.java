@@ -10,13 +10,15 @@ import synfron.reshaper.burp.core.rules.SetItemPlacement;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ListMap<K, V> {
     private int nodeCount;
     private final HashMap<K, List<OrderedNode>> backingMap = new HashMap<>();
 
-    public void setLast(K key, V value) {
+    public void setLastOrAdd(K key, V value) {
         List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1));
         if (values.isEmpty()) {
             values.add(createNode(key, value));
@@ -25,7 +27,114 @@ public class ListMap<K, V> {
         }
     }
 
-    public void setAll(K key, V value) {
+    public V getWhere(K key, Predicate<V> predicate, GetItemPlacement itemPlacement) {
+        return switch (itemPlacement) {
+            case First -> getFirstWhere(key, predicate);
+            case Last -> getLastWhere(key, predicate);
+        };
+    }
+
+    public void computeWhereOrAdd(K key, Predicate<V> predicate, Function<V, V> compute, SetItemPlacement itemPlacement) {
+        switch (itemPlacement) {
+            case First -> computeFirstWhereOrAdd(key, predicate, compute);
+            case Last -> computeLastWhereOrAdd(key, predicate, compute);
+            case Only -> computeOnlyWhereOrAdd(key, predicate, compute);
+            case New -> add(key, compute.apply(null));
+            case All -> computeAllWhereOrAdd(key, predicate, compute);
+        }
+    }
+
+    public void computeLastWhereOrAdd(K key, Predicate<V> predicate, Function<V, V> compute) {
+        List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1)).stream()
+                .filter(node -> predicate.test(node.getValue()))
+                .toList();
+        if (values.isEmpty()) {
+            values.add(createNode(key, compute.apply(null)));
+        } else {
+            OrderedNode node = values.get(values.size() - 1);
+            V value = node.getValue();
+            V newValue = compute.apply(value);
+            if (value != newValue) {
+                node.setValue(newValue);
+            }
+        }
+    }
+
+    public V getLastWhere(K key, Predicate<V> predicate) {
+        List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1)).stream()
+                .filter(node -> predicate.test(node.getValue()))
+                .toList();
+        if (!values.isEmpty()) {
+            OrderedNode node = values.get(values.size() - 1);
+            return node.getValue();
+        }
+        return null;
+    }
+
+    public void computeFirstWhereOrAdd(K key, Predicate<V> predicate, Function<V, V> compute) {
+        List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1)).stream()
+                .filter(node -> predicate.test(node.getValue()))
+                .toList();
+        if (values.isEmpty()) {
+            values.add(createNode(key, compute.apply(null)));
+        } else {
+            OrderedNode node = values.get(0);
+            V value = node.getValue();
+            V newValue = compute.apply(value);
+            if (value != newValue) {
+                node.setValue(newValue);
+            }
+        }
+    }
+
+    public V getFirstWhere(K key, Predicate<V> predicate) {
+        List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1)).stream()
+                .filter(node -> predicate.test(node.getValue()))
+                .toList();
+        if (!values.isEmpty()) {
+            OrderedNode node = values.get(0);
+            return node.getValue();
+        }
+        return null;
+    }
+
+    public void computeAllWhereOrAdd(K key, Predicate<V> predicate, Function<V, V> compute) {
+        List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1)).stream()
+                .filter(node -> predicate.test(node.getValue()))
+                .toList();
+        if (values.isEmpty()) {
+            values.add(createNode(key, compute.apply(null)));
+        } else {
+            values.forEach(node -> {
+                V value = node.getValue();
+                V newValue = compute.apply(value);
+                if (value != newValue) {
+                    node.setValue(newValue);
+                }
+            });
+        }
+    }
+
+    public void computeOnlyWhereOrAdd(K key, Predicate<V> predicate, Function<V, V> compute) {
+        List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1)).stream()
+                .filter(node -> predicate.test(node.getValue()))
+                .toList();
+        if (values.isEmpty()) {
+            values.add(createNode(key, compute.apply(null)));
+        } else {
+            List<OrderedNode> nodesToRemove = CollectionUtils.subList(values, 1, values.size() - 1);
+            backingMap.get(key).removeAll(nodesToRemove);
+            OrderedNode node = values.get(0);
+            V value = node.getValue();
+            V newValue = compute.apply(value);
+            if (value != newValue) {
+                node.setValue(newValue);
+            }
+            nodeCount -= nodesToRemove.size();
+        }
+    }
+
+    public void setAllOrAdd(K key, V value) {
         List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1));
         if (values.isEmpty()) {
             values.add(createNode(key, value));
@@ -36,7 +145,7 @@ public class ListMap<K, V> {
         }
     }
 
-    public void setFirst(K key, V value) {
+    public void setFirstOrAdd(K key, V value) {
         List<OrderedNode> values = backingMap.computeIfAbsent(key, k -> new ArrayList<>(1));
         if (values.isEmpty()) {
             values.add(createNode(key, value));
@@ -65,12 +174,12 @@ public class ListMap<K, V> {
         values.add(createNode(key, value));
     }
 
-    public void set(K key, V value, SetItemPlacement itemPlacement) {
+    public void setOrAdd(K key, V value, SetItemPlacement itemPlacement) {
         switch (itemPlacement) {
-            case First -> setFirst(key, value);
-            case Last -> setLast(key, value);
+            case First -> setFirstOrAdd(key, value);
+            case Last -> setLastOrAdd(key, value);
             case New -> add(key, value);
-            case All -> setAll(key, value);
+            case All -> setAllOrAdd(key, value);
             case Only -> setOnly(key, value);
         }
     }
@@ -83,6 +192,12 @@ public class ListMap<K, V> {
     public V getLast(K key) {
         List<OrderedNode> nodes = backingMap.get(key);
         return CollectionUtils.hasAny(nodes) ? nodes.get(nodes.size() - 1).getValue() : null;
+    }
+
+    public List<V> getAll(K key) {
+        return CollectionUtils.defaultIfNull(backingMap.get(key)).stream()
+                .map(OrderedNode::getValue)
+                .toList();
     }
 
     public V get(K key, GetItemPlacement itemPlacement) {
@@ -120,6 +235,19 @@ public class ListMap<K, V> {
         }
     }
 
+    public void removeAllWhere(K key, Predicate<V> predicate) {
+        List<OrderedNode> nodes = backingMap.get(key);
+        if (nodes != null) {
+            List<OrderedNode> removeNodes = nodes.stream().filter(node -> predicate.test(node.getValue())).toList();
+            nodeCount -= removeNodes.size();
+            if (nodes.size() == removeNodes.size()) {
+                backingMap.remove(key);
+            } else {
+                nodes.removeAll(removeNodes);
+            }
+        }
+    }
+
     public void removeFirst(K key) {
         List<OrderedNode> nodes = backingMap.get(key);
         if (CollectionUtils.hasAny(nodes)) {
@@ -129,6 +257,20 @@ public class ListMap<K, V> {
                 nodes.remove(0);
             }
             nodeCount--;
+        }
+    }
+
+    public void removeFirstWhere(K key, Predicate<V> predicate) {
+        List<OrderedNode> nodes = backingMap.get(key);
+        if (nodes != null) {
+            List<OrderedNode> removeNodes = nodes.stream().filter(node -> predicate.test(node.getValue())).toList();
+            if (!removeNodes.isEmpty()) {
+                nodeCount -= 1;
+                nodes.remove(removeNodes.get(0));
+                if (nodes.size() == 0) {
+                    backingMap.remove(key);
+                }
+            }
         }
     }
 
@@ -144,11 +286,33 @@ public class ListMap<K, V> {
         }
     }
 
+    public void removeLastWhere(K key, Predicate<V> predicate) {
+        List<OrderedNode> nodes = backingMap.get(key);
+        if (nodes != null) {
+            List<OrderedNode> removeNodes = nodes.stream().filter(node -> predicate.test(node.getValue())).toList();
+            if (!removeNodes.isEmpty()) {
+                nodeCount -= 1;
+                nodes.remove(removeNodes.get(removeNodes.size() - 1));
+                if (nodes.size() == 0) {
+                    backingMap.remove(key);
+                }
+            }
+        }
+    }
+
     public void remove(K key, DeleteItemPlacement itemPlacement) {
         switch (itemPlacement) {
             case First -> removeFirst(key);
             case Last -> removeLast(key);
             case All -> removeAll(key);
+        }
+    }
+
+    public void removeWhere(K key, Predicate<V> predicate, DeleteItemPlacement itemPlacement) {
+        switch (itemPlacement) {
+            case First -> removeFirstWhere(key, predicate);
+            case Last -> removeLastWhere(key, predicate);
+            case All -> removeAllWhere(key, predicate);
         }
     }
 
