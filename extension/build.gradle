@@ -4,10 +4,10 @@ plugins {
 
 group 'com.synfron.reshaper.burp'
 archivesBaseName = 'reshaper-for-burp'
-version '2.3.2'
+version '2.3.3'
 
-targetCompatibility = '17'
-sourceCompatibility = '17'
+targetCompatibility = '21'
+sourceCompatibility = '21'
 
 repositories {
     mavenCentral()
@@ -39,11 +39,11 @@ dependencies {
     )
 
     compileOnly (
-            'org.projectlombok:lombok:1.18.24',
+            'org.projectlombok:lombok:1.18.30',
             'net.portswigger.burp.extensions:montoya-api:2023.10'
     )
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 jar {
