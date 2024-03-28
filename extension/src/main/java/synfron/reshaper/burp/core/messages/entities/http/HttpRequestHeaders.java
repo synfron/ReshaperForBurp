@@ -32,7 +32,7 @@ public class HttpRequestHeaders extends HttpHeaders {
                 }
             }
         } else if (value != null) {
-            getHeaders().add(new CaseInsensitiveString(cookieName), createCookie(cookieName, value));
+            getHeaders().add(new CaseInsensitiveString(cookieHeaderName), createCookie(cookieName, value));
         }
         changed = true;
     }
