@@ -92,6 +92,10 @@ public class VariableString implements Serializable {
         return TextUtils.asInt(getText(eventInfo));
     }
 
+    public Long getLong(EventInfo eventInfo) {
+        return TextUtils.asLong(getText(eventInfo));
+    }
+
     public Double getDouble(EventInfo eventInfo) {
         return TextUtils.asDouble(getText(eventInfo));
     }
@@ -131,6 +135,13 @@ public class VariableString implements Serializable {
     public static Integer getIntOrDefault(EventInfo eventInfo, VariableString variableString, Integer defaultValue) {
         Integer value;
         return variableString != null && !variableString.isEmpty() && (value = variableString.getInt(eventInfo)) != null ?
+                value :
+                defaultValue;
+    }
+
+    public static Long getLongOrDefault(EventInfo eventInfo, VariableString variableString, Integer defaultValue) {
+        Long value;
+        return variableString != null && !variableString.isEmpty() && (value = variableString.getLong(eventInfo)) != null ?
                 value :
                 defaultValue;
     }

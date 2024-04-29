@@ -9,6 +9,7 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ListVariable extends Variable {
 
@@ -53,11 +54,18 @@ public class ListVariable extends Variable {
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, "value", value));
     }
 
-    public void setValues(Object[] values, String delimiter) {
+    public void setValues(Object[] values, String delimiter, SetListItemsPlacement itemsPlacement) {
         this.delimiter = StringUtils.defaultString(delimiter, this.delimiter);
-        this.values = values == null ?
-                new ArrayList<>() :
-                Arrays.stream(values).map(TextUtils::toString).map(value -> (Object)value).collect(Collectors.toCollection(ArrayList::new));
+        List<Object> newValues = Arrays.stream(values).map(TextUtils::toString).map(value -> (Object)value).collect(Collectors.toCollection(ArrayList::new));
+        if (hasValue()) {
+            switch (itemsPlacement) {
+                case AddFirst -> this.values = Stream.concat(newValues.stream(), this.values.stream()).toList();
+                case AddLast -> this.values = Stream.concat(this.values.stream(), newValues.stream()).toList();
+                case Overwrite -> this.values = newValues;
+            }
+        } else {
+            this.values = newValues;
+        }
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, "value", getValue()));
     }
 

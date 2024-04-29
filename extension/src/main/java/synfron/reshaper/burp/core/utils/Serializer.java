@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class Serializer {
     @Getter
     private static ObjectMapper objectMapper;
-    private static JsonFactory jsonFactory = new JsonFactory();
+    private static final JsonFactory jsonFactory = new JsonFactory();
 
     static {
         VariableStringSerializer variableStringSerializer = new VariableStringSerializer();

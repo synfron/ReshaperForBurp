@@ -42,7 +42,7 @@ public abstract class ThenSetModel<P extends ThenSetModel<P, T>, T extends ThenS
     public ThenSetModel(ProtocolType protocolType, T then, Boolean isNew) {
         super(protocolType, then, isNew);
         useMessageValue = then.isUseMessageValue();
-        sourceMessageValue = then.getSourceMessageValue() != null ? then.getSourceMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isGettable(protocolType)).findFirst().orElse(null);;
+        sourceMessageValue = then.getSourceMessageValue() != null ? then.getSourceMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isGettable(protocolType)).findFirst().orElse(null);
         sourceIdentifier = VariableString.toString(then.getSourceIdentifier(), sourceIdentifier);
         sourceIdentifierPlacement = then.getSourceIdentifierPlacement();
         sourceMessageValueType = then.getSourceMessageValueType();

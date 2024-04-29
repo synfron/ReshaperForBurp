@@ -167,22 +167,18 @@ public class Diagnostics implements IDiagnostics {
 
     @Override
     public void logStart(EventInfo eventInfo) {
-        if (eventInfo instanceof HttpEventInfo) {
-            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+        if (eventInfo instanceof HttpEventInfo httpEventInfo) {
             logStart(httpEventInfo);
-        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
-            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+        } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
             logStart(webSocketEventInfo);
         }
     }
 
     @Override
     public void logEnd(EventInfo eventInfo) {
-        if (eventInfo instanceof HttpEventInfo) {
-            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+        if (eventInfo instanceof HttpEventInfo httpEventInfo) {
             logEnd(httpEventInfo);
-        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
-            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+        } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
             logEnd(webSocketEventInfo);
         }
     }

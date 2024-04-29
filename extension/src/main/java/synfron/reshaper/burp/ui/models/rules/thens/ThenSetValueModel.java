@@ -23,7 +23,7 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
 
     public ThenSetValueModel(ProtocolType protocolType, ThenSetValue then, Boolean isNew) {
         super(protocolType, then, isNew);
-        destinationMessageValue = then.getDestinationMessageValue() != null ? then.getDestinationMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isSettable(protocolType)).findFirst().orElse(null);;
+        destinationMessageValue = then.getDestinationMessageValue() != null ? then.getDestinationMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isSettable(protocolType)).findFirst().orElse(null);
         destinationIdentifier = VariableString.toString(then.getDestinationIdentifier(), destinationIdentifier);
         destinationIdentifierPlacement = then.getDestinationIdentifierPlacement();
     }

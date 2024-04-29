@@ -53,8 +53,8 @@ public class ThenSetVariable extends ThenSet<ThenSetVariable> implements IHttpRu
             {
                 String value = StringUtils.defaultString(TextUtils.toString(variable.getValue(IListItemPlacement.toGet(itemPlacement), VariableString.getIntOrDefault(eventInfo, index, null))));
                 switch (destinationMessageValueType) {
-                    case Json -> replacementText = TextUtils.setJsonValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);
-                    case Html -> replacementText = TextUtils.setHtmlValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);
+                    case Json -> replacementText = TextUtils.setJsonPathValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);
+                    case Html -> replacementText = TextUtils.setCssSelectorValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);
                     case Params -> replacementText = TextUtils.setParamValue(value, destinationMessageValuePath.getText(eventInfo), replacementText);
                 }
             }

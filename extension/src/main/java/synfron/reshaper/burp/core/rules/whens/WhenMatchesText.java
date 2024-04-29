@@ -83,8 +83,8 @@ public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleO
         if (messageValueType != MessageValueType.Text && messageValuePath != null)
         {
             switch (messageValueType) {
-                case Json -> value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo));
-                case Html -> value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo));
+                case Json -> value = TextUtils.getJsonPathValue(value, messageValuePath.getText(eventInfo));
+                case Html -> value = TextUtils.getCssSelectorValue(value, messageValuePath.getText(eventInfo));
                 case Params -> value = TextUtils.getParamValue(value, messageValuePath.getText(eventInfo));
             }
         }

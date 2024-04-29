@@ -22,11 +22,11 @@ import static java.awt.Component.TOP_ALIGNMENT;
 
 public interface IFormComponent {
 
-    default Component getLabeledField(String label, Component innerComponent) {
+    default JPanel getLabeledField(String label, Component innerComponent) {
         return getLabeledField(label, innerComponent, true);
     }
 
-    default Component getLabeledField(String label, Component innerComponent, boolean span) {
+    default JPanel getLabeledField(String label, Component innerComponent, boolean span) {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout());
         container.setBorder(null);

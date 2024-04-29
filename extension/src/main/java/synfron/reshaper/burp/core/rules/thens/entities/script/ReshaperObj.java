@@ -99,7 +99,7 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
             ListVariable variable = (ListVariable) GlobalVariables.get().add(Variables.asKey(name, true));
-            variable.setValues(values, delimiter);
+            variable.setValues(values, delimiter, SetListItemsPlacement.Overwrite);
         }
 
         public void setEventListVariable(String name, Object[] values, String delimiter) {
@@ -107,7 +107,7 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
             ListVariable variable = (ListVariable) ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(Variables.asKey(name, true));
-            variable.setValues(values, delimiter);
+            variable.setValues(values, delimiter, SetListItemsPlacement.Overwrite);
         }
 
         public void setSessionListVariable(String name, Object[] values, String delimiter) {
@@ -115,7 +115,7 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
             ListVariable variable = (ListVariable) ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().add(Variables.asKey(name, true));
-            variable.setValues(values, delimiter);
+            variable.setValues(values, delimiter, SetListItemsPlacement.Overwrite);
         }
 
         public void deleteGlobalVariable(String name) {
@@ -205,7 +205,8 @@ public class ReshaperObj {
                     ThenType.SetValue,
                     ThenType.SetVariable,
                     ThenType.SaveFile,
-                    ThenType.ReadFile
+                    ThenType.ReadFile,
+                    ThenType.Extract
             );
             Class<?> thenClass = supportedThenTypes
                     .filter(type -> eventInfo.getProtocolType().accepts(ProtocolType.fromRuleOperationType(type.getType())))

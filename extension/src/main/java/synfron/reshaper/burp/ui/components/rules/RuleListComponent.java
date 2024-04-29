@@ -101,8 +101,7 @@ public class RuleListComponent extends JPanel {
 
     private Color ruleListItemColorProvider(Object item, Color defaultColor) {
         Color newColor = null;
-        if (item instanceof RuleModel) {
-            RuleModel model = (RuleModel) item;
+        if (item instanceof RuleModel model) {
             if (!model.isEnabled()) {
                 newColor = new Color(
                         rgbScaler(defaultColor.getRed(), 2.6),

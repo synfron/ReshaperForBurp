@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationContainerComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModelType;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class WhenContainerComponent extends RuleOperationContainerComponent {
 
-    private final static Map<RuleOperationModelType<?,?>, Class<?>> componentMap;
+    private final static Map<RuleOperationModelType<?,?>, Class<? extends RuleOperationComponent<?,?>>> componentMap;
 
     static {
         componentMap = new HashMap<>();
@@ -32,7 +33,7 @@ public class WhenContainerComponent extends RuleOperationContainerComponent {
     }
 
     @Override
-    protected Map<RuleOperationModelType<?,?>, Class<?>> getComponentMap() {
+    protected Map<RuleOperationModelType<?,?>, Class<? extends RuleOperationComponent<?,?>>> getComponentMap() {
         return componentMap;
     }
 }
