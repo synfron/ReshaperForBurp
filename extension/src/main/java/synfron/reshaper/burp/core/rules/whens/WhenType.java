@@ -38,7 +38,8 @@ public class WhenType<T extends When<T>> extends RuleOperationType<T> {
                 MessageType,
                 ProxyName,
                 FromTool,
-                InScope
+                InScope,
+                Repeat
         );
     }
 }

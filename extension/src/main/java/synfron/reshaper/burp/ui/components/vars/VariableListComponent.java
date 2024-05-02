@@ -4,6 +4,7 @@ import com.alexandriasoftware.swing.JSplitButton;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.Variables;
@@ -14,6 +15,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.ItemEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +25,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class VariableListComponent extends JPanel {
+public class VariableListComponent extends JPanel implements HierarchyListener {
     private JList<VariableModel> variableList;
     private DefaultListModel<VariableModel> variableListModel;
     private VariableContainerComponent variableContainer;
+    private JRadioButtonMenuItem listVariable;
+    private JSplitButton add;
+    private boolean activated;
     private final IEventListener<CollectionChangedArgs> variablesCollectionChangedListener = this::onVariablesCollectionChanged;
     private final IEventListener<PropertyChangedArgs> variableModelChangedListener = this::onVariableModelChanged;
     private final IEventListener<PropertyChangedArgs> newVariableModelChangedListener = this::onNewVariableModelChanged;
-    private JRadioButtonMenuItem listVariable;
+    private final PropertyChangedEvent activationChangedEvent = new PropertyChangedEvent();
 
     public VariableListComponent() {
         initComponent();
@@ -39,7 +46,8 @@ public class VariableListComponent extends JPanel {
 
         variableListModel = new DefaultListModel<>();
         variableListModel.addAll(GlobalVariables.get().getValues().stream()
-                .map(variable -> new VariableModel(variable).withListener(variableModelChangedListener))
+                .map(variable -> new VariableModel(variable).withListener(variableModelChangedListener)
+                        .bindActivationChangedEvent(activationChangedEvent))
                 .collect(Collectors.toList()));
 
         variableList = new JList<>(variableListModel);
@@ -60,6 +68,13 @@ public class VariableListComponent extends JPanel {
         VariableModel variable = variableList.getSelectedValue();
         if (variable != null) {
             variableContainer.setModel(variable);
+            if (activated) {
+                activationChangedEvent.invoke(new PropertyChangedArgs(
+                        this,
+                        "activated",
+                        variable
+                ));
+            }
         }
         else if (!defaultSelect()) {
             variableContainer.setModel(null);
@@ -80,7 +95,7 @@ public class VariableListComponent extends JPanel {
     }
 
     private JSplitButton getAddButton() {
-        JSplitButton add = new JSplitButton("Add    ");
+        add = new JSplitButton("Add (Single)    ");
         JPopupMenu variableTypeOptions = new JPopupMenu();
 
         ButtonGroup variableType = new ButtonGroup();
@@ -93,6 +108,7 @@ public class VariableListComponent extends JPanel {
         listVariable.setActionCommand("List");
 
         add.addButtonClickedActionListener(this::onAdd);
+        listVariable.addItemListener(this::onListVariableSelectionChanged);
 
         variableType.add(singleVariable);
         variableType.add(listVariable);
@@ -105,8 +121,17 @@ public class VariableListComponent extends JPanel {
         return add;
     }
 
+    private void onListVariableSelectionChanged(ItemEvent itemEvent) {
+        if (listVariable.isSelected()) {
+            add.setText("Add (List)    ");
+        } else {
+            add.setText("Add (Single)    ");
+        }
+    }
+
     private void onAdd(ActionEvent actionEvent) {
-        VariableModel model = new VariableModel(listVariable.isSelected()).withListener(newVariableModelChangedListener);
+        VariableModel model = new VariableModel(listVariable.isSelected()).withListener(newVariableModelChangedListener)
+                .bindActivationChangedEvent(activationChangedEvent);
         variableListModel.addElement(model);
         variableList.setSelectedValue(model, true);
     }
@@ -137,7 +162,7 @@ public class VariableListComponent extends JPanel {
     }
 
     private boolean defaultSelect() {
-        if (variableList.getSelectedValue() == null && variableListModel.size() > 0) {
+        if (variableList.getSelectedValue() == null && !variableListModel.isEmpty()) {
             variableList.setSelectedIndex(variableListModel.size() - 1);
             return true;
         }
@@ -149,7 +174,8 @@ public class VariableListComponent extends JPanel {
             Variable item = (Variable) collectionChangedArgs.getItem();
             switch (collectionChangedArgs.getAction()) {
                 case Add -> {
-                    VariableModel variableModel = new VariableModel(item).withListener(variableModelChangedListener);
+                    VariableModel variableModel = new VariableModel(item).withListener(variableModelChangedListener)
+                            .bindActivationChangedEvent(activationChangedEvent);
                     variableListModel.addElement(variableModel);
                     defaultSelect();
                 }
@@ -177,6 +203,7 @@ public class VariableListComponent extends JPanel {
                                     .map(variable -> variableModelMap.containsKey(variable) ?
                                             variableModelMap.get(variable) :
                                             new VariableModel(variable).withListener(variableModelChangedListener)
+                                                    .bindActivationChangedEvent(activationChangedEvent)
                                     ),
                             draftModels
                     ).collect(Collectors.toList()));
@@ -201,10 +228,34 @@ public class VariableListComponent extends JPanel {
     public void setSelectionContainer(VariableContainerComponent variableContainer) {
         this.variableContainer = variableContainer;
 
-        if (variableListModel.size() == 0) {
-            VariableModel variableModel = new VariableModel(listVariable.isSelected()).withListener(newVariableModelChangedListener);
+        if (variableListModel.isEmpty()) {
+            VariableModel variableModel = new VariableModel(listVariable.isSelected()).withListener(newVariableModelChangedListener).bindActivationChangedEvent(activationChangedEvent);
             variableListModel.addElement(variableModel);
         }
         defaultSelect();
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        addHierarchyListener(this);
+    }
+
+    @Override
+    public void removeNotify() {
+        removeHierarchyListener(this);
+        super.removeNotify();
+    }
+
+    @Override
+    public void hierarchyChanged(HierarchyEvent e) {
+        if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+            this.activated = isShowing();
+            activationChangedEvent.invoke(new PropertyChangedArgs(
+                    this,
+                    "activated",
+                    activated ? variableList.getSelectedValue() : null
+            ));
+        }
     }
 }

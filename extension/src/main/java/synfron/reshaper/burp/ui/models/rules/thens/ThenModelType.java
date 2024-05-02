@@ -21,7 +21,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenEvaluateModel, ThenEvaluate> Evaluate = new ThenModelType<>(ThenEvaluateModel.class, ThenType.Evaluate);
     public static final ThenModelType<ThenSetEventDirectionModel, ThenSetEventDirection> SetEventDirection = new ThenModelType<>(ThenSetEventDirectionModel.class, ThenType.SetEventDirection);
     public static final ThenModelType<ThenSetEncodingModel, ThenSetEncoding> SetEncoding = new ThenModelType<>(ThenSetEncodingModel.class, ThenType.SetEncoding);
-    public static final ThenModelType<ThenSetValueModel, ThenSetValue> SetValue = new ThenModelType<>(ThenSetValueModel.class, ThenType.SetValue);
+    public static final ThenModelType<ThenSetValueModel, ThenSetValue> SetValue = new ThenModelType<>(ThenSetValueModel.class, ThenType.SetValue, true);
     public static final ThenModelType<ThenDeleteValueModel, ThenDeleteValue> DeleteValue = new ThenModelType<>(ThenDeleteValueModel.class, ThenType.DeleteValue);
     public static final ThenModelType<ThenSetVariableModel, ThenSetVariable> SetVariable = new ThenModelType<>(ThenSetVariableModel.class, ThenType.SetVariable);
     public static final ThenModelType<ThenDeleteVariableModel, ThenDeleteVariable> DeleteVariable = new ThenModelType<>(ThenDeleteVariableModel.class, ThenType.DeleteVariable);
@@ -40,6 +40,10 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
 
     private ThenModelType(Class<P> type, RuleOperationType<T> ruleOperationType) {
         super(type, ruleOperationType);
+    }
+
+    private ThenModelType(Class<P> type, RuleOperationType<T> ruleOperationType, boolean isDefault) {
+        super(type, ruleOperationType, isDefault);
     }
 
     public static List<ThenModelType<?,?>> getTypes(ProtocolType protocolType) {

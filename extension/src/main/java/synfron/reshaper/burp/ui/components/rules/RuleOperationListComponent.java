@@ -5,6 +5,7 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
@@ -125,6 +126,13 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         operationSelector = createComboBox(getRuleOperationModelTypes().stream()
                 .sorted(Comparator.comparing(RuleOperationModelType::getName))
                 .toArray(RuleOperationModelType[]::new));
+
+        RuleOperationModelType<?,?> defaultItem = getRuleOperationModelTypes().stream().filter(RuleOperationModelType::isDefault)
+                .findFirst().orElse(null);
+        if (defaultItem != null) {
+            operationSelector.setSelectedItem(defaultItem);
+        }
+
         JButton add = new JButton("Add");
 
         add.addActionListener(this::onAdd);

@@ -355,6 +355,14 @@ public class TextUtils {
         return Base64.getEncoder().encodeToString(encoder.encode(value));
     }
 
+    public static String base64UrlDecode(String value, Encoder encoder) {
+        return encoder.decode(Base64.getUrlDecoder().decode(value));
+    }
+
+    public static String base64UrlEncode(String value, Encoder encoder) {
+        return Base64.getUrlEncoder().encodeToString(encoder.encode(value));
+    }
+
     public static String toHex(String value, Encoder encoder) {
         return HexFormat.of().formatHex(encoder.encode(value));
     }
