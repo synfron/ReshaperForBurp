@@ -131,8 +131,8 @@ public class ValueGenerator {
         return date(min.atStartOfDay(), max.atStartOfDay());
     }
 
-    public static String password(int minLength, int maxLength, List<PasswordCharacterGroups> characterGroups) {
-        String characters = characterGroups.stream().map(PasswordCharacterGroups::getCharacters).collect(Collectors.joining());
+    public static String password(int minLength, int maxLength, List<PasswordCharacterGroup> characterGroups) {
+        String characters = characterGroups.stream().map(PasswordCharacterGroup::getCharacters).collect(Collectors.joining());
         List<Character> password = new ArrayList<>();
         int length = random.nextInt(minLength, maxLength + 1);
         for (int i = 0; i < length; i++) {

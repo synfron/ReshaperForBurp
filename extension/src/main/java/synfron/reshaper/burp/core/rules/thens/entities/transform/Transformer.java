@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 public abstract class Transformer implements ITransformer {
-    protected VariableString input;
+    public VariableString input;
 
     public abstract String transform(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties);
 }

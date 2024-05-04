@@ -21,7 +21,7 @@ public class IntegerTransformer extends Transformer {
     public String transform(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {
         String input = this.input.getText(eventInfo);
         int sourceBase = VariableString.getIntOrDefault(eventInfo, this.sourceBase, 10);
-        int targetBase = VariableString.getIntOrDefault(eventInfo, this.sourceBase, 10);
+        int targetBase = VariableString.getIntOrDefault(eventInfo, this.targetBase, 10);
         String value = TextUtils.changeBase(input, sourceBase, targetBase);
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("sourceBase", sourceBase));

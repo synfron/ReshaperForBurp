@@ -161,6 +161,14 @@ public class VariableString implements Serializable {
         return TextUtils.isInt(strippedText) || strippedText.isEmpty();
     }
 
+    public static boolean isPotentialLong(String formattedString) {
+        if (StringUtils.isEmpty(formattedString)) {
+            return false;
+        }
+        String strippedText = formattedString.replaceAll(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())), "");
+        return TextUtils.isLong(strippedText) || strippedText.isEmpty();
+    }
+
     public static boolean hasTag(String text) {
         if (StringUtils.isEmpty(text)) {
             return false;

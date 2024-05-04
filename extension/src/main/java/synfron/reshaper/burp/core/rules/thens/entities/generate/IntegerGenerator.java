@@ -24,7 +24,7 @@ public class IntegerGenerator implements IGenerator {
     public String generate(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {
         long minValue = this.minValue.getLong(eventInfo);
         long maxValue = this.maxValue.getLong(eventInfo);
-        int base = this.base.getInt(eventInfo);
+        int base = VariableString.getIntOrDefault(eventInfo, this.base, 10);
         String value = ValueGenerator.integer(minValue, maxValue, base);
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("minValue", minValue));

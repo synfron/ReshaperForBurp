@@ -129,7 +129,7 @@ public class ThenRepeatModel extends ThenModel<ThenRepeatModel, ThenRepeat> impl
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setSubGroupCount(Integer.parseInt(subGroupCount));
@@ -140,15 +140,6 @@ public class ThenRepeatModel extends ThenModel<ThenRepeatModel, ThenRepeat> impl
         ruleOperation.setCount(VariableString.getAsVariableString(count));
         ruleOperation.setBooleanValue(VariableString.getAsVariableString(booleanValue));
         ruleOperation.setMaxCount(Integer.parseInt(maxCount));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

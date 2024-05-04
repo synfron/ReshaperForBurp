@@ -127,7 +127,7 @@ public class RuleListComponent extends JPanel {
     }
 
     private boolean defaultSelect() {
-        if (rulesList.getSelectedValue() == null && ruleListModel.size() > 0) {
+        if (rulesList.getSelectedValue() == null && !ruleListModel.isEmpty()) {
             rulesList.setSelectedIndex(ruleListModel.size() - 1);
             return true;
         }
@@ -241,7 +241,7 @@ public class RuleListComponent extends JPanel {
     public void setSelectionContainer(RuleContainerComponent ruleContainer) {
         this.ruleContainer = ruleContainer;
 
-        if (ruleListModel.size() == 0) {
+        if (ruleListModel.isEmpty()) {
             rulesRegistry.addRule(createNewRule());
         }
         defaultSelect();

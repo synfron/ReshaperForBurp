@@ -22,20 +22,11 @@ public class WhenMessageTypeModel extends WhenModel<WhenMessageTypeModel, WhenMe
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setMessageType(messageType);
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override

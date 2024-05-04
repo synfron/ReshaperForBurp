@@ -123,7 +123,7 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         }
     }
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setSendTo(sendTo);
@@ -137,15 +137,6 @@ public class ThenSendToModel extends ThenModel<ThenSendToModel, ThenSendTo> {
         ruleOperation.setHighlightColor(highlightColor);
         ruleOperation.setValue(VariableString.getAsVariableString(value));
         ruleOperation.setUrl(VariableString.getAsVariableString(url));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

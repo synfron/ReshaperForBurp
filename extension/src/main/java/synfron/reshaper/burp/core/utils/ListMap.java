@@ -267,7 +267,7 @@ public class ListMap<K, V> {
             if (!removeNodes.isEmpty()) {
                 nodeCount -= 1;
                 nodes.remove(removeNodes.get(0));
-                if (nodes.size() == 0) {
+                if (nodes.isEmpty()) {
                     backingMap.remove(key);
                 }
             }
@@ -293,7 +293,7 @@ public class ListMap<K, V> {
             if (!removeNodes.isEmpty()) {
                 nodeCount -= 1;
                 nodes.remove(removeNodes.get(removeNodes.size() - 1));
-                if (nodes.size() == 0) {
+                if (nodes.isEmpty()) {
                     backingMap.remove(key);
                 }
             }

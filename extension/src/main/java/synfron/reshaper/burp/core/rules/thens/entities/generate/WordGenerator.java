@@ -4,13 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.utils.PasswordCharacterGroups;
 import synfron.reshaper.burp.core.utils.ValueGenerator;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 @Setter

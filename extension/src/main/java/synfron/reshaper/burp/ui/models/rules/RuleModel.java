@@ -131,7 +131,7 @@ public class RuleModel {
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         rule.setEnabled(false);

@@ -2,10 +2,9 @@ package synfron.reshaper.burp.core.rules.thens.entities.generate;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.utils.PasswordCharacterGroups;
+import synfron.reshaper.burp.core.utils.PasswordCharacterGroup;
 import synfron.reshaper.burp.core.utils.ValueGenerator;
 import synfron.reshaper.burp.core.vars.VariableString;
 
@@ -22,7 +21,7 @@ public class PasswordGenerator implements IGenerator {
 
     private VariableString maxLength;
 
-    EnumSet<PasswordCharacterGroups> characterGroups = EnumSet.allOf(PasswordCharacterGroups.class);
+    EnumSet<PasswordCharacterGroup> characterGroups = EnumSet.allOf(PasswordCharacterGroup.class);
 
     @Override
     public String generate(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {

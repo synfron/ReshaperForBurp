@@ -22,20 +22,11 @@ public class WhenWebSocketEventDirectionModel extends WhenModel<WhenWebSocketEve
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDataDirection(dataDirection);
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override

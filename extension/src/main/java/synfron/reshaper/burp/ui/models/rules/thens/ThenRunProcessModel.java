@@ -159,7 +159,7 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setCommand(VariableString.getAsVariableString(command));
@@ -176,15 +176,6 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
         ruleOperation.setItemPlacement(itemPlacement);
         ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
         ruleOperation.setIndex(VariableString.getAsVariableString(index));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

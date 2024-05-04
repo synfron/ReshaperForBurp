@@ -1,22 +1,17 @@
 package synfron.reshaper.burp.ui.components.settings;
 
-import burp.BurpExtender;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.Tab;
 import synfron.reshaper.burp.core.rules.thens.ThenType;
 import synfron.reshaper.burp.core.rules.whens.WhenType;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.settings.HideItemsModel;
-import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
@@ -76,7 +71,7 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
         }
     }
 
-    private void onHiddenTabdChanged(ActionEvent actionEvent) {
+    private void onHiddenTabChanged(ActionEvent actionEvent) {
         JCheckBox checkbox = (JCheckBox) actionEvent.getSource();
         Tab item = (Tab) checkbox.getClientProperty("item");
         
@@ -115,18 +110,18 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
         JPanel hideTabs = new JPanel(new MigLayout());
         hideTabs.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         hideTabs.add(new JLabel("Hide Tabs:"), "wrap");
-        addCheckboxes(hideTabs, 4, Stream.of(Tab.values()).filter(Tab::isHideable).toList(), model.getHiddenTabs(), this::onHiddenTabdChanged);
+        addCheckboxes(hideTabs, 4, Stream.of(Tab.values()).filter(Tab::isHideable).toList(), model.getHiddenTabs(), this::onHiddenTabChanged);
 
         JPanel hideWhenTypes = new JPanel(new MigLayout());
         hideWhenTypes.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         hideWhenTypes.add(new JLabel("Hide When Type Options:"), "wrap");
-        addCheckboxes(hideWhenTypes, 4, WhenType.getTypes().stream().map(WhenType::getName).sorted().toList(), model.getHiddenWhenTypes(), this::onHiddenWhenTypeChanged);
+        addCheckboxes(hideWhenTypes, 4, WhenType.getTypes().stream().map(WhenType::getName).sorted().distinct().toList(), model.getHiddenWhenTypes(), this::onHiddenWhenTypeChanged);
 
 
         JPanel hideThenTypes = new JPanel(new MigLayout());
         hideThenTypes.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         hideThenTypes.add(new JLabel("Hide Then Type Options:"), "wrap");
-        addCheckboxes(hideThenTypes, 4, ThenType.getTypes().stream().map(ThenType::getName).sorted().toList(), model.getHiddenThenTypes(), this::onHiddenThenTypeChanged);
+        addCheckboxes(hideThenTypes, 4, ThenType.getTypes().stream().map(ThenType::getName).sorted().distinct().toList(), model.getHiddenThenTypes(), this::onHiddenThenTypeChanged);
 
         container.add(hideTabs, "wrap");
         container.add(hideWhenTypes, "wrap");

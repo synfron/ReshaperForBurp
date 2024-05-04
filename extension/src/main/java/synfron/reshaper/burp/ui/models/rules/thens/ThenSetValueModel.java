@@ -54,22 +54,13 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDestinationMessageValue(destinationMessageValue);
         ruleOperation.setDestinationIdentifier(VariableString.getAsVariableString(destinationIdentifier));
         ruleOperation.setDestinationIdentifierPlacement(destinationIdentifierPlacement);
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override

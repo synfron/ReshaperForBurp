@@ -103,7 +103,7 @@ public class Diagnostics implements IDiagnostics {
 
     private boolean isLast(DiagnosticEntityType entityType) {
         List<DiagnosticRecord> records = getRecords();
-        return records.size() > 0 && records.get(records.size() - 1).getEntityType() == entityType;
+        return !records.isEmpty() && records.get(records.size() - 1).getEntityType() == entityType;
     }
 
     @Override

@@ -44,21 +44,12 @@ public class WhenHasEntityModel extends WhenModel<WhenHasEntityModel, WhenHasEnt
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setMessageValue(messageValue);
         ruleOperation.setIdentifier(VariableString.getAsVariableString(identifier));
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override

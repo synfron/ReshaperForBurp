@@ -14,21 +14,15 @@ import synfron.reshaper.burp.core.vars.*;
 
 import java.util.List;
 
+@Setter @Getter
 public class ThenExtract extends Then<ThenExtract> implements IHttpRuleOperation, IWebSocketRuleOperation {
 
-    @Getter @Setter
     private VariableString text;
-    @Getter @Setter
     private ExtractorType extractorType = ExtractorType.Regex;
-    @Getter @Setter
     private VariableString extractor;
-    @Getter @Setter
     private VariableSource listVariableSource = VariableSource.GlobalList;
-    @Getter @Setter
     private VariableString listVariableName;
-    @Getter @Setter
     private VariableString delimiter;
-    @Getter @Setter
     private SetListItemsPlacement itemsPlacement = SetListItemsPlacement.Overwrite;
 
     @Override

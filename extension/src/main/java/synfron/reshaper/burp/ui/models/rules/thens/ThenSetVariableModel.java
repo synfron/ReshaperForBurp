@@ -76,7 +76,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setTargetSource(targetSource);
@@ -85,15 +85,6 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
         ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
         ruleOperation.setIndex(VariableString.getAsVariableString(index));
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override

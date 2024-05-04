@@ -10,6 +10,7 @@ import synfron.reshaper.burp.core.rules.RuleOperationType;
 import synfron.reshaper.burp.core.rules.RuleResponse;
 import synfron.reshaper.burp.core.rules.thens.entities.generate.GenerateOption;
 import synfron.reshaper.burp.core.rules.thens.entities.generate.IGenerator;
+import synfron.reshaper.burp.core.rules.thens.entities.generate.UuidGenerator;
 import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -23,7 +24,7 @@ import java.util.List;
 @Getter
 public class ThenGenerate extends Then<ThenGenerate> implements IHttpRuleOperation, IWebSocketRuleOperation {
     private GenerateOption generateOption = GenerateOption.Uuid;
-    private IGenerator generator;
+    private IGenerator generator = new UuidGenerator();
     private VariableSource destinationVariableSource = VariableSource.Global;
     private VariableString destinationVariableName;
     private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;

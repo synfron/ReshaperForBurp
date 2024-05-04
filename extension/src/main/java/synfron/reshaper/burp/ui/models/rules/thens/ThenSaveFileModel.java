@@ -62,22 +62,13 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setFilePath(VariableString.getAsVariableString(filePath));
         ruleOperation.setText(VariableString.getAsVariableString(text));
         ruleOperation.setEncoding(VariableString.getAsVariableString(encoding));
         ruleOperation.setFileExistsAction(fileExistsAction);
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

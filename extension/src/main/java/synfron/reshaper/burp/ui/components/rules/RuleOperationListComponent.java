@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules;
 
+import burp.BurpExtender;
 import lombok.Getter;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
@@ -25,6 +26,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     protected JList<T> operationsList;
     protected DefaultListModel<T> operationsListModel;
     protected JComboBox<RuleOperationModelType<?,?>> operationSelector;
+    protected DefaultComboBoxModel<RuleOperationModelType<?,?>> operatorSelectorListModel = new DefaultComboBoxModel<>();
     @Getter
     private RuleOperationContainerComponent ruleOperationContainer;
     private final IEventListener<PropertyChangedArgs> ruleOperationChangedListener = this::onRuleOperationChanged;
@@ -72,7 +74,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     }
 
     private boolean defaultSelect() {
-        if (operationsList.getSelectedValue() == null && operationsListModel.size() > 0) {
+        if (operationsList.getSelectedValue() == null && !operationsListModel.isEmpty()) {
             operationsList.setSelectedIndex(operationsListModel.size() - 1);
             return true;
         }
@@ -123,15 +125,9 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private Component getAddOperation() {
         JPanel container = new JPanel();
 
-        operationSelector = createComboBox(getRuleOperationModelTypes().stream()
-                .sorted(Comparator.comparing(RuleOperationModelType::getName))
-                .toArray(RuleOperationModelType[]::new));
+        operationSelector = createComboBox(operatorSelectorListModel);
 
-        RuleOperationModelType<?,?> defaultItem = getRuleOperationModelTypes().stream().filter(RuleOperationModelType::isDefault)
-                .findFirst().orElse(null);
-        if (defaultItem != null) {
-            operationSelector.setSelectedItem(defaultItem);
-        }
+        syncOperationSelectorList();
 
         JButton add = new JButton("Add");
 
@@ -140,6 +136,18 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         container.add(operationSelector);
         container.add(add);
         return container;
+    }
+
+    protected void syncOperationSelectorList() {
+        operatorSelectorListModel.removeAllElements();
+        List<RuleOperationModelType<?,?>> operationTypes = getRuleOperationModelTypes().stream()
+                .sorted(Comparator.comparing(RuleOperationModelType::getName))
+                .toList();
+        operatorSelectorListModel.addAll(operationTypes);
+
+        RuleOperationModelType<?,?> defaultItem = operationTypes.stream().filter(RuleOperationModelType::isDefault)
+                .findFirst().orElse(CollectionUtils.firstOrDefault(operationTypes));
+        operationSelector.setSelectedItem(defaultItem);
     }
 
     private void onDelete(ActionEvent actionEvent) {

@@ -66,22 +66,13 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setTargetSource(targetSource);
         ruleOperation.setVariableName(VariableString.getAsVariableString(variableName));
         ruleOperation.setItemPlacement(itemPlacement);
         ruleOperation.setIndex(VariableString.getAsVariableString(index));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

@@ -4,9 +4,11 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenExtract;
-import synfron.reshaper.burp.core.rules.thens.ThenSetVariable;
 import synfron.reshaper.burp.core.rules.thens.entities.extract.ExtractorType;
-import synfron.reshaper.burp.core.vars.*;
+import synfron.reshaper.burp.core.vars.SetListItemsPlacement;
+import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
+import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.Collections;
@@ -96,7 +98,7 @@ public class ThenExtractModel extends ThenModel<ThenExtractModel, ThenExtract> i
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setText(VariableString.getAsVariableString(text));
@@ -106,15 +108,6 @@ public class ThenExtractModel extends ThenModel<ThenExtractModel, ThenExtract> i
         ruleOperation.setListVariableName(VariableString.getAsVariableString(listVariableName));
         ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
         ruleOperation.setItemsPlacement(itemsPlacement);
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

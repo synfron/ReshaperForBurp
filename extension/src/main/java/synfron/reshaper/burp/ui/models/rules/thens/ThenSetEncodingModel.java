@@ -35,19 +35,10 @@ public class ThenSetEncodingModel extends ThenModel<ThenSetEncodingModel, ThenSe
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setEncoding(VariableString.getAsVariableString(encoding));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

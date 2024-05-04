@@ -73,9 +73,9 @@ public class ThenType<T extends Then<T>> extends RuleOperationType<T> {
                 Intercept,
                 Repeat,
                 ReadFile,
+                Extract,
                 Generate,
-                Transform,
-                Extract
+                Transform
         );
     }
 }

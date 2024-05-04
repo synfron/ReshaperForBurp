@@ -114,7 +114,7 @@ public class ListVariable extends Variable {
 
     @Override
     public boolean hasValue() {
-        return values != null && values.size() > 0;
+        return values != null && !values.isEmpty();
     }
 
     @Override

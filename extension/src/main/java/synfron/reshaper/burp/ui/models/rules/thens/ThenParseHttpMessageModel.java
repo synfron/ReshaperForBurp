@@ -73,7 +73,7 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDataDirection(dataDirection);
@@ -86,15 +86,6 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
                 .collect(Collectors.toList())
         );
 
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

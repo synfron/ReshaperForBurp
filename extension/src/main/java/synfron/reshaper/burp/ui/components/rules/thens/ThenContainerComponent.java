@@ -42,6 +42,8 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.Repeat, ThenRepeatComponent.class);
         componentMap.put(ThenModelType.ReadFile, ThenReadFileComponent.class);
         componentMap.put(ThenModelType.Extract, ThenExtractComponent.class);
+        componentMap.put(ThenModelType.Generate, ThenGenerateComponent.class);
+        componentMap.put(ThenModelType.Transform, ThenTransformComponent.class);
     }
 
     public ThenContainerComponent(ProtocolType protocolType) {

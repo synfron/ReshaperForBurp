@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 public class UuidGenerator implements IGenerator {
 
+    @Getter
     public enum UuidVersion {
         V3(true),
         V4(false),

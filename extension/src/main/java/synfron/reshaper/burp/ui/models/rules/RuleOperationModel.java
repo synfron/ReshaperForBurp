@@ -46,8 +46,6 @@ public abstract class RuleOperationModel<P extends RuleOperationModel<P, T>, T e
 
     public abstract boolean persist();
 
-    public abstract boolean record();
-
     protected String getTargetName() {
         return "";
     }

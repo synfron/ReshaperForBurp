@@ -54,6 +54,20 @@ public interface IFormComponent {
         return comboBox;
     }
 
+    default <T> JComboBox<T> createComboBox(ComboBoxModel<T> model) {
+        return createComboBox(model, false);
+    }
+
+    default <T> JComboBox<T> createComboBox(ComboBoxModel<T> model, boolean isEditable) {
+        JComboBox<T> comboBox = new JComboBox<>(model);
+        if (isEditable) {
+            comboBox.setEditable(true);
+            int columnSize = comboBox.getFontMetrics(comboBox.getFont()).charWidth('m') * 20;
+            comboBox.setPreferredSize(new Dimension(columnSize, comboBox.getPreferredSize().height));
+        }
+        return comboBox;
+    }
+
     private ProtocolType getProtocolType() {
         return this instanceof RuleOperationComponent<?, ?> ? ((RuleOperationComponent<?, ?>)this).getProtocolType() : ProtocolType.Any;
     }
