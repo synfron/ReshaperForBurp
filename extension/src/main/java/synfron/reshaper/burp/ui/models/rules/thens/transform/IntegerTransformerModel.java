@@ -32,10 +32,10 @@ public class IntegerTransformerModel extends TransformerModel<IntegerTransformer
     @Override
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (!StringUtils.isEmpty(sourceBase) && VariableString.isPotentialInt(sourceBase)) {
+        if (!StringUtils.isEmpty(sourceBase) && !VariableString.isPotentialInt(sourceBase)) {
             errors.add("Source Base must be an integer");
         }
-        if (!StringUtils.isEmpty(targetBase) && VariableString.isPotentialInt(targetBase)) {
+        if (!StringUtils.isEmpty(targetBase) && !VariableString.isPotentialInt(targetBase)) {
             errors.add("Target Base must be an integer");
         }
         return errors;

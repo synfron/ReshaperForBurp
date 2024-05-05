@@ -1,22 +1,16 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.ProtocolType;
-import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.core.rules.DeleteItemPlacement;
 import synfron.reshaper.burp.core.rules.thens.ThenExtract;
 import synfron.reshaper.burp.core.rules.thens.entities.extract.ExtractorType;
-import synfron.reshaper.burp.core.vars.SetListItemPlacement;
 import synfron.reshaper.burp.core.vars.SetListItemsPlacement;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenExtractModel;
-import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.util.List;
+import java.util.Arrays;
 
 public class ThenExtractComponent extends ThenComponent<ThenExtractModel, ThenExtract> {
     private JTextField text;
@@ -37,7 +31,9 @@ public class ThenExtractComponent extends ThenComponent<ThenExtractModel, ThenEx
         text = createTextField(true);
         extractorType = createComboBox(ExtractorType.values());
         extractor = createTextField(true);
-        listVariableSource = createComboBox(VariableSource.getAllSettables(protocolType));
+        listVariableSource = createComboBox(Arrays.stream(VariableSource.values())
+                .filter(VariableSource::isList)
+                .toArray(VariableSource[]::new));
         listVariableName = createTextField(true);
         delimiter = createTextField(true);
         itemsPlacement = createComboBox(SetListItemsPlacement.values());
@@ -62,7 +58,7 @@ public class ThenExtractComponent extends ThenComponent<ThenExtractModel, ThenEx
 
         mainContainer.add(getLabeledField("Text *", text), "wrap");
         mainContainer.add(getLabeledField("Extractor Type", extractorType), "wrap");
-        mainContainer.add(getLabeledField( model.getExtractorType() + " *", extractor), "wrap");
+        mainContainer.add(getLabeledField( model.getExtractorType().getExtractorType() + " *", extractor), "wrap");
         mainContainer.add(getLabeledField("List Variable Source", listVariableSource), "wrap");
         mainContainer.add(getLabeledField("List Variable Name *", listVariableName), "wrap");
         mainContainer.add(getLabeledField("Delimiter *", delimiter), "wrap");

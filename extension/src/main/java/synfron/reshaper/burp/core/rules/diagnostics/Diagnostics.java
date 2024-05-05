@@ -264,6 +264,10 @@ public class Diagnostics implements IDiagnostics {
                 case EndsWith -> "ends with";
                 case BeginsWith -> "begins with";
                 case Regex -> "is matched by";
+                case LessThan -> "is less than";
+                case GreaterThan -> "is greater than";
+                case LessThanOrEqual -> "is less than or equals";
+                case GreaterThanOrEqual -> "is greater than or equals";
             };
         } else {
             return switch (matchType) {
@@ -272,6 +276,10 @@ public class Diagnostics implements IDiagnostics {
                 case EndsWith -> "does not end with";
                 case BeginsWith -> "does not begin with";
                 case Regex -> "is not matched by";
+                case LessThan -> "is not less than";
+                case GreaterThan -> "is not greater than";
+                case LessThanOrEqual -> "is not less than or equal to";
+                case GreaterThanOrEqual -> "is not greater than or equal to";
             };
         }
     }

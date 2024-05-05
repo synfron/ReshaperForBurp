@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.rules.thens.entities.transform.Base64Variant;
 import synfron.reshaper.burp.core.rules.thens.entities.transform.EncodeTransform;
 import synfron.reshaper.burp.core.vars.VariableString;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ public class Base64TransformerModel extends TransformerModel<Base64TransformerMo
 
     private Base64Variant variant;
     private EncodeTransform action;
-    private String encoding = "";
+    private String encoding = StandardCharsets.ISO_8859_1.displayName();
 
     public Base64TransformerModel(Base64Transformer transformer) {
         super(transformer);

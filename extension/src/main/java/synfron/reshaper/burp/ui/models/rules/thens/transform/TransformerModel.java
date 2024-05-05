@@ -34,7 +34,7 @@ public abstract class TransformerModel<T extends TransformerModel<T, R>, R exten
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, name, value));
     }
 
-    protected T withListener(IEventListener<PropertyChangedArgs> listener) {
+    public T withListener(IEventListener<PropertyChangedArgs> listener) {
         getPropertyChangedEvent().add(listener);
         return (T)this;
     }

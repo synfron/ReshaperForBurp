@@ -3,7 +3,7 @@ package synfron.reshaper.burp.ui.components;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
-import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
@@ -135,7 +135,7 @@ public interface IFormComponent {
             String tag = model.getTag();
             if (StringUtils.isNotEmpty(tag)) {
                 int cursorPosition = textComponent.getCaretPosition();
-                int insertPosition = VariableString.getVariableTagPositions(textComponent.getText()).stream()
+                int insertPosition = VariableTag.getVariableTagPositions(textComponent.getText()).stream()
                         .noneMatch(position -> position.getLeft() < cursorPosition && cursorPosition < position.getRight()) ?
                         cursorPosition :
                         textComponent.getText().length();

@@ -7,6 +7,7 @@ import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenSaveFile;
 import synfron.reshaper.burp.core.rules.thens.entities.savefile.FileExistsAction;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class ThenSaveFileModel extends ThenModel<ThenSaveFileModel, ThenSaveFile
         if (StringUtils.isEmpty(filePath)) {
             errors.add("File Path is required");
         }
-        if (!Encoder.isSupported(encoding) && !VariableString.hasTag(encoding)) {
+        if (!Encoder.isSupported(encoding) && !VariableTag.hasTag(encoding)) {
             errors.add("Unsupported encoding");
         }
         return errors;

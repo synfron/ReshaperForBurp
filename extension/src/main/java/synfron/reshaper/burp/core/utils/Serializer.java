@@ -63,7 +63,7 @@ public class Serializer {
         builder.visibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         builder.visibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         builder.visibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
-        builder.visibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
+        builder.visibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
         if (serializers.length > 0 || deserializers.length > 0) {
             SimpleModule module = new SimpleModule();
             Stream.of(serializers).forEach(module::addSerializer);

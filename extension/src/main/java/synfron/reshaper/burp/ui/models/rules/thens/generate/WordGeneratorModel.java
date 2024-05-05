@@ -3,15 +3,15 @@ package synfron.reshaper.burp.ui.models.rules.thens.generate;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.entities.generate.WordGenerator;
-import synfron.reshaper.burp.core.rules.thens.entities.generate.WordGeneratorType;
+import synfron.reshaper.burp.core.utils.ValueGenerator;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.List;
 
 @Getter
-public class WordGeneratorModel extends GeneratorModel<WordGeneratorModel, WordGenerator> {
+public class WordGeneratorModel extends GeneratorModel<WordGeneratorModel, WordGenerator> implements IWordGeneratorModel {
 
-    private WordGeneratorType generatorType;
+    private ValueGenerator.WordGeneratorType generatorType;
     private String count = "1";
     private String separator = "";
 
@@ -22,16 +22,19 @@ public class WordGeneratorModel extends GeneratorModel<WordGeneratorModel, WordG
         separator = VariableString.toString(generator.getSeparator(), separator);
     }
 
-    public void setGeneratorType(WordGeneratorType generatorType) {
+    @Override
+    public void setGeneratorType(ValueGenerator.WordGeneratorType generatorType) {
         this.generatorType = generatorType;
         propertyChanged("generatorType", generatorType);
     }
 
+    @Override
     public void setCount(String count) {
         this.count = count;
         propertyChanged("count", count);
     }
 
+    @Override
     public void setSeparator(String separator) {
         this.separator = separator;
         propertyChanged("separator", separator);
@@ -40,7 +43,7 @@ public class WordGeneratorModel extends GeneratorModel<WordGeneratorModel, WordG
     @Override
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (!StringUtils.isEmpty(count) && VariableString.isPotentialInt(count)) {
+        if (!StringUtils.isEmpty(count) && !VariableString.isPotentialInt(count)) {
             errors.add("Count must be an integer");
         }
         return errors;

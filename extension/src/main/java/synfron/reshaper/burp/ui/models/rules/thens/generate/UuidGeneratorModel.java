@@ -3,14 +3,15 @@ package synfron.reshaper.burp.ui.models.rules.thens.generate;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.rules.thens.entities.generate.UuidGenerator;
+import synfron.reshaper.burp.core.utils.ValueGenerator;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.List;
 
 @Getter
-public class UuidGeneratorModel extends GeneratorModel<UuidGeneratorModel, UuidGenerator> {
+public class UuidGeneratorModel extends GeneratorModel<UuidGeneratorModel, UuidGenerator> implements IUuidGeneratorModel {
 
-    private UuidGenerator.UuidVersion version;
+    private ValueGenerator.UuidVersion version;
 
     private String namespace = "";
     private String name = "";
@@ -22,16 +23,19 @@ public class UuidGeneratorModel extends GeneratorModel<UuidGeneratorModel, UuidG
         name = VariableString.toString(generator.getName(), name);
     }
 
-    public void setVersion(UuidGenerator.UuidVersion version) {
+    @Override
+    public void setVersion(ValueGenerator.UuidVersion version) {
         this.version = version;
         propertyChanged("version", version);
     }
 
+    @Override
     public void setNamespace(String namespace) {
         this.namespace = namespace;
         propertyChanged("namespace", namespace);
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
         propertyChanged("name", name);

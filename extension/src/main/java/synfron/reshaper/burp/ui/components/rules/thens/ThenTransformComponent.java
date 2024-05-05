@@ -32,7 +32,7 @@ public class ThenTransformComponent extends ThenComponent<ThenTransformModel, Th
     private TransformerComponent<?> getTransformer() {
         return switch (model.getTransformOption()) {
             case Base64 -> new Base64TransformerComponent((Base64TransformerModel) model.getTransformer());
-            case TextEncode -> new TextEncodeTransformerComponent((TextEncodeTransformerModel) model.getTransformer());
+            case Escape -> new EscapeTransformerComponent((EscapeTransformerModel) model.getTransformer());
             case JwtDecode -> new JwtDecodeTransformerComponent((JwtDecodeTransformerModel) model.getTransformer());
             case Case -> new CaseTransformerComponent((CaseTransformerModel) model.getTransformer());
             case Hash -> new HashTransformerComponent((HashTransformerModel) model.getTransformer());

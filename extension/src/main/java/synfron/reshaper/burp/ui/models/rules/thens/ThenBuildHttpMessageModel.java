@@ -162,7 +162,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(destinationVariableName) ?
-                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                List.of(new VariableSourceEntry(destinationVariableSource, List.of(destinationVariableName))) :
                 Collections.emptyList();
     }
 }

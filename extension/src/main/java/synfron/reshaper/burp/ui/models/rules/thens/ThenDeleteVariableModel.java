@@ -79,7 +79,7 @@ public class ThenDeleteVariableModel extends ThenModel<ThenDeleteVariableModel, 
 
     @Override
     protected String getTargetName() {
-        return abbreviateTargetName(VariableSourceEntry.getShortTag(targetSource, abbreviateTargetName(variableName)));
+        return abbreviateTargetName(VariableTag.getShortTag(targetSource, abbreviateTargetName(variableName)));
     }
 
     @Override

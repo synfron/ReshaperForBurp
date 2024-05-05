@@ -5,6 +5,7 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenSetEncoding;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class ThenSetEncodingModel extends ThenModel<ThenSetEncodingModel, ThenSe
     public List<String> validate() {
         List<String> errors = super.validate();
 
-        if (!Encoder.isSupported(encoding) && !VariableString.hasTag(encoding)) {
+        if (!Encoder.isSupported(encoding) && !VariableTag.hasTag(encoding)) {
             errors.add("Unsupported encoding");
         }
         return errors;

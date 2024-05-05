@@ -1,27 +1,27 @@
 package synfron.reshaper.burp.ui.components.rules.thens.generate;
 
-import synfron.reshaper.burp.core.rules.thens.entities.generate.UuidGenerator;
-import synfron.reshaper.burp.ui.models.rules.thens.generate.UuidGeneratorModel;
+import synfron.reshaper.burp.core.utils.ValueGenerator;
+import synfron.reshaper.burp.ui.models.rules.thens.generate.IUuidGeneratorModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class UuidGeneratorComponent extends GeneratorComponent<UuidGeneratorModel> {
+public class UuidGeneratorComponent extends GeneratorComponent<IUuidGeneratorModel> {
     
-    private JComboBox<UuidGenerator.UuidVersion> version;
+    private JComboBox<ValueGenerator.UuidVersion> version;
     private JTextField namespace;
     private JTextField name;
 
-    public UuidGeneratorComponent(UuidGeneratorModel model) {
-        super(model);
+    public UuidGeneratorComponent(IUuidGeneratorModel model, boolean allowVariableTags) {
+        super(model, allowVariableTags);
     }
 
     protected void initComponent() {
-        version = createComboBox(UuidGenerator.UuidVersion.values());
-        namespace = createTextField(true);
-        name = createTextField(true);
+        version = createComboBox(ValueGenerator.UuidVersion.values());
+        namespace = createTextField(allowVariableTags);
+        name = createTextField(allowVariableTags);
 
         version.setSelectedItem(model.getVersion());
         namespace.setText(model.getNamespace());
@@ -33,19 +33,19 @@ public class UuidGeneratorComponent extends GeneratorComponent<UuidGeneratorMode
 
         add(getLabeledField("Version", version), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
-                getLabeledField("Namespace *", namespace),
+                getLabeledField("Namespace (UUID) *", namespace),
                 version,
-                () -> ((UuidGenerator.UuidVersion)version.getSelectedItem()).isHasInputs()
+                () -> ((ValueGenerator.UuidVersion)version.getSelectedItem()).isHasInputs()
         ), "wrap");
         add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
                 getLabeledField("Name *", name),
                 version,
-                () -> ((UuidGenerator.UuidVersion)version.getSelectedItem()).isHasInputs()
+                () -> ((ValueGenerator.UuidVersion)version.getSelectedItem()).isHasInputs()
         ), "wrap");
     }
 
     private void onVersionChanged(ActionEvent actionEvent) {
-        model.setVersion((UuidGenerator.UuidVersion)version.getSelectedItem());
+        model.setVersion((ValueGenerator.UuidVersion)version.getSelectedItem());
     }
 
     private void onNamespaceChanged(ActionEvent actionEvent) {

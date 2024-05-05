@@ -8,7 +8,7 @@ import synfron.reshaper.burp.core.vars.VariableString;
 import java.util.List;
 
 @Getter
-public class IntegerGeneratorModel extends GeneratorModel<IntegerGeneratorModel, IntegerGenerator> {
+public class IntegerGeneratorModel extends GeneratorModel<IntegerGeneratorModel, IntegerGenerator> implements IIntegerGeneratorModel {
     private String minValue = "0";
     private String maxValue = "10";
     private String base = "10";
@@ -20,16 +20,19 @@ public class IntegerGeneratorModel extends GeneratorModel<IntegerGeneratorModel,
         base = VariableString.toString(generator.getBase(), base);
     }
 
+    @Override
     public void setBase(String base) {
         this.base = base;
         propertyChanged("base", base);
     }
 
+    @Override
     public void setMaxValue(String maxValue) {
         this.maxValue = maxValue;
         propertyChanged("maxValue", maxValue);
     }
 
+    @Override
     public void setMinValue(String minValue) {
         this.minValue = minValue;
         propertyChanged("minValue", minValue);
@@ -38,13 +41,17 @@ public class IntegerGeneratorModel extends GeneratorModel<IntegerGeneratorModel,
     @Override
     public List<String> validate() {
         List<String> errors = super.validate();
-        if (!StringUtils.isEmpty(minValue) && VariableString.isPotentialLong(minValue)) {
-            errors.add("Min Value must be an long integer");
+        if (StringUtils.isEmpty(minValue)) {
+            errors.add("Min Value is required");
+        } else if (!VariableString.isPotentialLong(minValue)) {
+            errors.add("Min Value must be a long integer");
         }
-        if (!StringUtils.isEmpty(maxValue) && VariableString.isPotentialLong(maxValue)) {
+        if (StringUtils.isEmpty(maxValue)) {
+            errors.add("Max Value is required");
+        } else if (!VariableString.isPotentialLong(maxValue)) {
             errors.add("Max Value must be a long integer");
         }
-        if (!StringUtils.isEmpty(base) && VariableString.isPotentialInt(base)) {
+        if (!StringUtils.isEmpty(base) && !VariableString.isPotentialInt(base)) {
             errors.add("Base must be an integer");
         }
         return errors;

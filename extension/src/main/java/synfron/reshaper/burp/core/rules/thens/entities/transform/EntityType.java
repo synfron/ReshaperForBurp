@@ -3,7 +3,7 @@ package synfron.reshaper.burp.core.rules.thens.entities.transform;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum EncoderType {
+public enum EntityType {
     Html("HTML"),
     Xml("XML"),
     Json("JSON"),

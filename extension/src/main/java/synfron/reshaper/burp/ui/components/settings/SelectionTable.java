@@ -53,7 +53,7 @@ public class SelectionTable<T> extends JPanel {
     private void onTableChanged(TableModelEvent e) {
         if (e.getType() == TableModelEvent.UPDATE && e.getFirstRow() >= 0) {
             Vector<?> row = tableModel.getDataVector().get(e.getFirstRow());
-            boolean checkboxState = (Boolean) row.get(0);
+            boolean checkboxState = (Boolean) row.getFirst();
             checkboxStateMap.put(row.get(1), checkboxState);
             if (!checkboxState && selectAll.isSelected()) {
                 selectAll.setSelected(false);
@@ -64,7 +64,7 @@ public class SelectionTable<T> extends JPanel {
     @SuppressWarnings("unchecked")
     public List<T> getSelectedValues() {
         return tableModel.getDataVector().stream()
-                .filter(row -> (boolean)row.get(0))
+                .filter(row -> (boolean)row.getFirst())
                 .map(row -> (T)row.get(1))
                 .toList();
     }

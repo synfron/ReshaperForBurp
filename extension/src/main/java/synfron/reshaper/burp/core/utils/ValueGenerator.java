@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.core.utils;
 
 import com.fasterxml.uuid.Generators;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
 import synfron.reshaper.burp.core.messages.Encoder;
@@ -89,7 +90,7 @@ public class ValueGenerator {
         return Long.toString(ZonedDateTime.now().toInstant().toEpochMilli());
     }
 
-    public static String timestamp(String minDate, String maxDate, String format) {
+    public static String timestamp(String format, String minDate, String maxDate) {
         format = StringUtils.defaultString(format, "yyyy-MM-dd");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         ZonedDateTime now = ZonedDateTime.now();
@@ -104,7 +105,7 @@ public class ValueGenerator {
         return Long.toString(date((LocalDate) min, (LocalDate) max).toInstant(now.getOffset()).toEpochMilli());
     }
 
-    public static String date(String minDate, String maxDate, String format) {
+    public static String date(String format, String minDate, String maxDate) {
         format = StringUtils.defaultString(format, "yyyy-MM-dd");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         ZonedDateTime now = ZonedDateTime.now();
@@ -333,5 +334,62 @@ public class ValueGenerator {
                     Map.entry('u', 363)
             ));
         }
+    }
+
+    public static String uuid(UuidVersion version, String namespace, String name) {
+        return switch (version) {
+            case V3 -> uuidV3(namespace, name);
+            case V4 -> uuidV4();
+            case V5 -> uuidV5(namespace, name);
+        };
+    }
+
+    public static String words(WordGeneratorType generatorType, int count, String separator) {
+        String value = switch (generatorType) {
+            case Word -> words(count, separator, false);
+            case Sentence -> sentences(count, separator);
+            case Paragraph -> paragraphs(count, separator);
+        };
+        return value;
+    }
+
+    public static String ipAddress(IpVersion version) {
+        return switch (version) {
+            case V4 -> ipAddressV4();
+            case V6 -> ipAddressV6();
+        };
+    }
+
+    public static String dateOrNow(String format, String minTimestamp, String maxTimestamp) {
+        return !StringUtils.isAllEmpty(minTimestamp, maxTimestamp) ? date(format, minTimestamp, maxTimestamp) : currentDate(format);
+    }
+
+    public static String timestampOrNow(String format, String minTimestamp, String maxTimestamp) {
+        String value = !StringUtils.isAllEmpty(minTimestamp, maxTimestamp) ? timestamp(format, minTimestamp, maxTimestamp) : currentTimestamp();
+        return value;
+    }
+
+    @Getter
+    public enum UuidVersion {
+        V3(true),
+        V4(false),
+        V5(true);
+
+        private final boolean hasInputs;
+
+        UuidVersion(boolean hasInputs) {
+            this.hasInputs = hasInputs;
+        }
+    }
+
+    public enum IpVersion {
+        V4,
+        V6
+    }
+
+    public enum WordGeneratorType {
+        Word,
+        Sentence,
+        Paragraph
     }
 }

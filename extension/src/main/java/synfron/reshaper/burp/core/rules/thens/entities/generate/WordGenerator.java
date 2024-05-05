@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 public class WordGenerator implements IGenerator {
 
-    private WordGeneratorType generatorType = WordGeneratorType.Paragraphs;
+    private ValueGenerator.WordGeneratorType generatorType = ValueGenerator.WordGeneratorType.Paragraph;
 
     private VariableString count;
 
@@ -24,11 +24,7 @@ public class WordGenerator implements IGenerator {
     public String generate(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {
         int count = VariableString.getIntOrDefault(eventInfo, this.count, 1);
         String separator = VariableString.getTextOrDefault(eventInfo, this.separator, "\n");
-        String value = switch (generatorType) {
-            case Words -> ValueGenerator.words(count, separator, false);
-            case Sentences -> ValueGenerator.sentences(count, separator);
-            case Paragraphs -> ValueGenerator.paragraphs(count, separator);
-        };
+        String value = ValueGenerator.words(generatorType, count, separator);
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("generatorType", generatorType));
             diagnosticProperties.add(Pair.of("count", count));
@@ -37,4 +33,5 @@ public class WordGenerator implements IGenerator {
         }
         return value;
     }
+
 }

@@ -148,7 +148,7 @@ public class ThenPromptModel extends ThenModel<ThenPromptModel, ThenPrompt> impl
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(captureVariableName) ?
-                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                List.of(new VariableSourceEntry(captureVariableSource, List.of(captureVariableName))) :
                 Collections.emptyList();
     }
 }

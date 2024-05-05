@@ -1,25 +1,25 @@
 package synfron.reshaper.burp.ui.components.rules.thens.generate;
 
-import synfron.reshaper.burp.ui.models.rules.thens.generate.TimestampGeneratorModel;
+import synfron.reshaper.burp.ui.models.rules.thens.generate.ITimestampGeneratorModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class TimestampGeneratorComponent extends GeneratorComponent<TimestampGeneratorModel> {
+public class TimestampGeneratorComponent extends GeneratorComponent<ITimestampGeneratorModel> {
 
     private JTextField format;
     private JTextField minTimestamp;
     private JTextField maxTimestamp;
 
-    public TimestampGeneratorComponent(TimestampGeneratorModel model) {
-        super(model);
+    public TimestampGeneratorComponent(ITimestampGeneratorModel model, boolean allowVariableTags) {
+        super(model, allowVariableTags);
     }
 
     protected void initComponent() {
-        format = createTextField(true);
-        minTimestamp = createTextField(true);
-        maxTimestamp = createTextField(true);
+        format = createTextField(allowVariableTags);
+        minTimestamp = createTextField(allowVariableTags);
+        maxTimestamp = createTextField(allowVariableTags);
 
         format.setText(model.getFormat());
         minTimestamp.setText(model.getMinTimestamp());

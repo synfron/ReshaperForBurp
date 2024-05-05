@@ -31,14 +31,14 @@ public class ThenGenerateComponent extends ThenComponent<ThenGenerateModel, Then
     
     private GeneratorComponent<?> getGenerator() {
         return switch (model.getGenerateOption()) {
-            case Uuid -> new UuidGeneratorComponent((UuidGeneratorModel) model.getGenerator());
-            case Words -> new WordGeneratorComponent((WordGeneratorModel) model.getGenerator());
-            case Bytes -> new BytesGeneratorComponent((BytesGeneratorModel) model.getGenerator());
-            case Integer -> new IntegerGeneratorComponent((IntegerGeneratorModel) model.getGenerator());
-            case IpAddress -> new IpAddressGeneratorComponent((IpAddressGeneratorModel) model.getGenerator());
-            case Timestamp -> new TimestampGeneratorComponent((TimestampGeneratorModel) model.getGenerator());
-            case UnixTimestamp -> new UnixTimestampGeneratorComponent((UnixTimestampGeneratorModel) model.getGenerator());
-            case Password -> new PasswordGeneratorComponent((PasswordGeneratorModel) model.getGenerator());
+            case Uuid -> new UuidGeneratorComponent((UuidGeneratorModel) model.getGenerator(), true);
+            case Words -> new WordGeneratorComponent((WordGeneratorModel) model.getGenerator(), true);
+            case Bytes -> new BytesGeneratorComponent((BytesGeneratorModel) model.getGenerator(), true);
+            case Integer -> new IntegerGeneratorComponent((IntegerGeneratorModel) model.getGenerator(), true);
+            case IpAddress -> new IpAddressGeneratorComponent((IpAddressGeneratorModel) model.getGenerator(), true);
+            case Timestamp -> new TimestampGeneratorComponent((TimestampGeneratorModel) model.getGenerator(), true);
+            case UnixTimestamp -> new UnixTimestampGeneratorComponent((UnixTimestampGeneratorModel) model.getGenerator(), true);
+            case Password -> new PasswordGeneratorComponent((PasswordGeneratorModel) model.getGenerator(), true);
         };
     }
 

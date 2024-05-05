@@ -9,6 +9,7 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.IVariableCreator;
 import synfron.reshaper.burp.ui.models.rules.thens.VariableCreatorRegistry;
@@ -95,7 +96,7 @@ public class WhenRepeatModel extends WhenModel<WhenRepeatModel, WhenRepeat> impl
 
     @Override
     protected String getTargetName() {
-        return abbreviateTargetName(VariableSourceEntry.getTag(listVariableSource, listVariableName));
+        return abbreviateTargetName(VariableTag.getTag(listVariableSource, listVariableName));
     }
 
     @Override
@@ -105,6 +106,6 @@ public class WhenRepeatModel extends WhenModel<WhenRepeatModel, WhenRepeat> impl
 
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
-        return List.of(new VariableSourceEntry(VariableSource.Event, entryVariableName));
+        return List.of(new VariableSourceEntry(VariableSource.Event, List.of(entryVariableName)));
     }
 }

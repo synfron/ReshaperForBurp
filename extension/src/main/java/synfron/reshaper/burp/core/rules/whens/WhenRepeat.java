@@ -42,11 +42,11 @@ public class WhenRepeat extends When<WhenRepeat> implements IHttpRuleOperation, 
         try {
             listVariableNameText = listVariableName.getText(eventInfo);
             entryVariableNameText = entryVariableName.getText(eventInfo);
-            VariableSourceEntry variable1 = new VariableSourceEntry(listVariableSource, listVariableNameText);
+            VariableSourceEntry variable1 = new VariableSourceEntry(listVariableSource, List.of(listVariableNameText));
             ListVariable variable = switch (variable1.getVariableSource()) {
-                case GlobalList -> (ListVariable) GlobalVariables.get().getOrDefault(Variables.asKey(variable1.getName(), true));
-                case EventList -> (ListVariable) eventInfo.getVariables().getOrDefault(Variables.asKey(variable1.getName(), true));
-                case SessionList -> (ListVariable) eventInfo.getSessionVariables().getOrDefault(Variables.asKey(variable1.getName(), true));
+                case GlobalList -> (ListVariable) GlobalVariables.get().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
+                case EventList -> (ListVariable) eventInfo.getVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
+                case SessionList -> (ListVariable) eventInfo.getSessionVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
                 default -> null;
             };
 
@@ -81,11 +81,11 @@ public class WhenRepeat extends When<WhenRepeat> implements IHttpRuleOperation, 
         finally {
             if (eventInfo.getDiagnostics().isEnabled()) {
                 eventInfo.getDiagnostics().logProperties(this, isMatch, Arrays.asList(
-                        Pair.of("listVariable", VariableSourceEntry.getTag(listVariableSource, listVariableNameText)),
+                        Pair.of("listVariable", VariableTag.getTag(listVariableSource, listVariableNameText)),
                         Pair.of("listSize", listSize != null ? listSize.toString() : "null"),
                         Pair.of("subGroupCount", subGroupCount),
                         Pair.of("successCriteria", successCriteria),
-                        Pair.of("entryVariable", VariableSourceEntry.getTag(VariableSource.Event, entryVariableNameText))
+                        Pair.of("entryVariable", VariableTag.getTag(VariableSource.Event, entryVariableNameText))
                 ));
                 if (diagnosticsPosition != -1) {
                     eventInfo.getDiagnostics().moveLast(diagnosticsPosition);

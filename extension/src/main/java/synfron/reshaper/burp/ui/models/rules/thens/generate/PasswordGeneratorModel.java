@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 @Getter
-public class PasswordGeneratorModel extends GeneratorModel<PasswordGeneratorModel, PasswordGenerator> {
+public class PasswordGeneratorModel extends GeneratorModel<PasswordGeneratorModel, PasswordGenerator> implements IPasswordGeneratorModel {
 
     private String minLength = "8";
     private String maxLength = "64";
@@ -23,21 +23,25 @@ public class PasswordGeneratorModel extends GeneratorModel<PasswordGeneratorMode
         characterGroups = EnumSet.copyOf(generator.getCharacterGroups());
     }
 
+    @Override
     public void setMinLength(String minLength) {
         this.minLength = minLength;
         propertyChanged("minLength", minLength);
     }
 
+    @Override
     public void setMaxLength(String maxLength) {
         this.maxLength = maxLength;
         propertyChanged("maxLength", maxLength);
     }
 
+    @Override
     public void addPasswordCharacterGroups(PasswordCharacterGroup passwordCharacterGroup) {
         characterGroups.add(passwordCharacterGroup);
         propertyChanged("characterGroups", characterGroups);
     }
 
+    @Override
     public void removePasswordCharacterGroups(PasswordCharacterGroup passwordCharacterGroup) {
         characterGroups.remove(passwordCharacterGroup);
         propertyChanged("characterGroups", characterGroups);

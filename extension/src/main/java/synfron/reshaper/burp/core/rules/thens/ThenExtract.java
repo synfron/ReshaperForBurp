@@ -39,11 +39,11 @@ public class ThenExtract extends Then<ThenExtract> implements IHttpRuleOperation
             extractorText = extractor.getText(eventInfo);
             listVariableNameText = listVariableName.getText(eventInfo);
             delimiterText = delimiter.getText(eventInfo);
-            VariableSourceEntry variableSource = new VariableSourceEntry(listVariableSource, listVariableNameText);
+            VariableSourceEntry variableSource = new VariableSourceEntry(listVariableSource, List.of(listVariableNameText));
             variable = switch (variableSource.getVariableSource()) {
-                case GlobalList -> (ListVariable) GlobalVariables.get().add(Variables.asKey(variableSource.getName(), true));
-                case EventList -> (ListVariable) eventInfo.getVariables().add(Variables.asKey(variableSource.getName(), true));
-                case SessionList -> (ListVariable) eventInfo.getSessionVariables().add(Variables.asKey(variableSource.getName(), true));
+                case GlobalList -> (ListVariable) GlobalVariables.get().add(Variables.asKey(variableSource.getParams().getFirst(), true));
+                case EventList -> (ListVariable) eventInfo.getVariables().add(Variables.asKey(variableSource.getParams().getFirst(), true));
+                case SessionList -> (ListVariable) eventInfo.getSessionVariables().add(Variables.asKey(variableSource.getParams().getFirst(), true));
                 default -> null;
             };
 

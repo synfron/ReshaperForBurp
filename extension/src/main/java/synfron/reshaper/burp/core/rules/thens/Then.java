@@ -35,7 +35,10 @@ import synfron.reshaper.burp.core.vars.Variables;
         @JsonSubTypes.Type(value = ThenSendRequest.class),
         @JsonSubTypes.Type(value = ThenSendMessage.class),
         @JsonSubTypes.Type(value = ThenRepeat.class),
-        @JsonSubTypes.Type(value = ThenReadFile.class)
+        @JsonSubTypes.Type(value = ThenReadFile.class),
+        @JsonSubTypes.Type(value = ThenExtract.class),
+        @JsonSubTypes.Type(value = ThenGenerate.class),
+        @JsonSubTypes.Type(value = ThenTransform.class)
 })
 public abstract class Then<T extends Then<T>> implements IRuleOperation<T> {
 

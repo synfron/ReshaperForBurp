@@ -25,7 +25,6 @@ public enum GenerateOption {
         return StringUtils.defaultString(name, name());
     }
 
-
     @Override
     public String toString() {
         return getName();

@@ -12,23 +12,23 @@ import java.util.List;
 
 @Setter
 @Getter
-public class TextEncodeTransformer extends Transformer {
+public class EscapeTransformer extends Transformer {
 
-    private EncoderType encoderType = EncoderType.Html;
-    private EncodeTransform action = EncodeTransform.Encode;
+    private EntityType entityType = EntityType.Html;
+    private EscapeTransform action = EscapeTransform.Escape;
 
     @Override
     public String transform(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {
         String input = this.input.getText(eventInfo);
-        String value = switch (encoderType) {
-            case Html -> action == EncodeTransform.Encode ? TextUtils.htmlEncode(input) : TextUtils.htmlDecode(input);
-            case Xml -> action == EncodeTransform.Encode ? TextUtils.xmlEncode(input) : TextUtils.xmlDecode(input);
-            case Json -> action == EncodeTransform.Encode ? TextUtils.jsonEscape(input) : TextUtils.jsonUnescape(input);
-            case Url -> action == EncodeTransform.Encode ? UrlUtils.urlEncode(input) : UrlUtils.urlDecode(input);
+        String value = switch (entityType) {
+            case Html -> action == EscapeTransform.Escape ? TextUtils.htmlEncode(input) : TextUtils.htmlDecode(input);
+            case Xml -> action == EscapeTransform.Escape ? TextUtils.xmlEncode(input) : TextUtils.xmlDecode(input);
+            case Json -> action == EscapeTransform.Escape ? TextUtils.jsonEscape(input) : TextUtils.jsonUnescape(input);
+            case Url -> action == EscapeTransform.Escape ? UrlUtils.urlEncode(input) : UrlUtils.urlDecode(input);
         };
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("input", input));
-            diagnosticProperties.add(Pair.of("encoderType", encoderType));
+            diagnosticProperties.add(Pair.of("entityType", entityType));
             diagnosticProperties.add(Pair.of("action", action));
             diagnosticProperties.add(Pair.of("value", value));
         }

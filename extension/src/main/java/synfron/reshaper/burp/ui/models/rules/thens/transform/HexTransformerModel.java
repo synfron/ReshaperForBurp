@@ -5,13 +5,14 @@ import synfron.reshaper.burp.core.rules.thens.entities.transform.HexTransformer;
 import synfron.reshaper.burp.core.rules.thens.entities.transform.TextTransform;
 import synfron.reshaper.burp.core.vars.VariableString;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Getter
 public class HexTransformerModel extends TransformerModel<HexTransformerModel, HexTransformer> {
 
     private TextTransform action;
-    private String encoding = "";
+    private String encoding = StandardCharsets.ISO_8859_1.displayName();
 
     public HexTransformerModel(HexTransformer transformer) {
         super(transformer);
@@ -31,8 +32,7 @@ public class HexTransformerModel extends TransformerModel<HexTransformerModel, H
 
     @Override
     public List<String> validate() {
-        List<String> errors = super.validate();
-        return errors;
+        return super.validate();
     }
 
     @Override

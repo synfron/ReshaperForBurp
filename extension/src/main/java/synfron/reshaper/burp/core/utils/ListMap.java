@@ -78,7 +78,7 @@ public class ListMap<K, V> {
         if (values.isEmpty()) {
             values.add(createNode(key, compute.apply(null)));
         } else {
-            OrderedNode node = values.get(0);
+            OrderedNode node = values.getFirst();
             V value = node.getValue();
             V newValue = compute.apply(value);
             if (value != newValue) {
@@ -92,7 +92,7 @@ public class ListMap<K, V> {
                 .filter(node -> predicate.test(node.getValue()))
                 .toList();
         if (!values.isEmpty()) {
-            OrderedNode node = values.get(0);
+            OrderedNode node = values.getFirst();
             return node.getValue();
         }
         return null;
@@ -124,7 +124,7 @@ public class ListMap<K, V> {
         } else {
             List<OrderedNode> nodesToRemove = CollectionUtils.subList(values, 1, values.size() - 1);
             backingMap.get(key).removeAll(nodesToRemove);
-            OrderedNode node = values.get(0);
+            OrderedNode node = values.getFirst();
             V value = node.getValue();
             V newValue = compute.apply(value);
             if (value != newValue) {
@@ -150,7 +150,7 @@ public class ListMap<K, V> {
         if (values.isEmpty()) {
             values.add(createNode(key, value));
         } else {
-            values.get(0).set(key, value);
+            values.getFirst().set(key, value);
         }
     }
 
@@ -160,7 +160,7 @@ public class ListMap<K, V> {
         if (values.isEmpty()) {
             node = createNode(key, value);
         } else {
-            node = values.get(0);
+            node = values.getFirst();
             node.set(key, value);
             nodeCount -= values.size();
             values.clear();
@@ -186,7 +186,7 @@ public class ListMap<K, V> {
 
     public V getFirst(K key) {
         List<OrderedNode> nodes = backingMap.get(key);
-        return CollectionUtils.hasAny(nodes) ? nodes.get(0).getValue() : null;
+        return CollectionUtils.hasAny(nodes) ? nodes.getFirst().getValue() : null;
     }
 
     public V getLast(K key) {
@@ -266,7 +266,7 @@ public class ListMap<K, V> {
             List<OrderedNode> removeNodes = nodes.stream().filter(node -> predicate.test(node.getValue())).toList();
             if (!removeNodes.isEmpty()) {
                 nodeCount -= 1;
-                nodes.remove(removeNodes.get(0));
+                nodes.remove(removeNodes.getFirst());
                 if (nodes.isEmpty()) {
                     backingMap.remove(key);
                 }

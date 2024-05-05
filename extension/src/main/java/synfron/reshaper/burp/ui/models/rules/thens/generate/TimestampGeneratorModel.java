@@ -5,7 +5,7 @@ import synfron.reshaper.burp.core.rules.thens.entities.generate.TimestampGenerat
 import synfron.reshaper.burp.core.vars.VariableString;
 
 @Getter
-public class TimestampGeneratorModel extends GeneratorModel<TimestampGeneratorModel, TimestampGenerator> {
+public class TimestampGeneratorModel extends GeneratorModel<TimestampGeneratorModel, TimestampGenerator> implements ITimestampGeneratorModel {
 
     private String format = "yyyy-MM-dd";
     private String minTimestamp = "";
@@ -18,16 +18,19 @@ public class TimestampGeneratorModel extends GeneratorModel<TimestampGeneratorMo
         maxTimestamp = VariableString.toString(generator.getMaxTimestamp(), maxTimestamp);
     }
 
+    @Override
     public void setFormat(String format) {
         this.format = format;
         propertyChanged("format", format);
     }
 
+    @Override
     public void setMinTimestamp(String minTimestamp) {
         this.minTimestamp = minTimestamp;
         propertyChanged("minTimestamp", minTimestamp);
     }
 
+    @Override
     public void setMaxTimestamp(String maxTimestamp) {
         this.maxTimestamp = maxTimestamp;
         propertyChanged("maxTimestamp", maxTimestamp);

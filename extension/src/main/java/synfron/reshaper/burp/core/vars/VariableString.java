@@ -1,10 +1,7 @@
 package synfron.reshaper.burp.core.vars;
 
-import burp.BurpExtender;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.getters.VariableGetterProvider;
 
@@ -13,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class VariableString implements Serializable {
     private final String text;
@@ -57,13 +53,6 @@ public class VariableString implements Serializable {
         return getAsVariableString(str, true);
     }
 
-    public static List<Pair<Integer, Integer>> getVariableTagPositions(String str) {
-        Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
-        return pattern.matcher(str).results()
-                .map(result -> Pair.of(result.start(), result.end()))
-                .collect(Collectors.toList());
-    }
-
     public static VariableString getAsVariableString(String str, boolean requiresParsing) {
         if (str == null) {
             return null;
@@ -71,17 +60,7 @@ public class VariableString implements Serializable {
         str = str.replace("%", "%%");
         if (requiresParsing) {
             List<VariableSourceEntry> variableSourceEntries = new ArrayList<>();
-            Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
-            str = pattern.matcher(str).replaceAll(match -> {
-                VariableSource variableSource = VariableSource.get(match.group(1));
-                String entryName = variableSource == VariableSource.Special ?
-                        getSpecialChar(match.group(2)) :
-                        match.group(2);
-                variableSourceEntries.add(
-                        new VariableSourceEntry(VariableSource.get(match.group(1)), entryName, match.group(0))
-                );
-                return "%s";
-            });
+            str = VariableTag.replaceTags(str, variableSourceEntries, "%s");
             return new VariableString(str, variableSourceEntries);
         } else {
             return new VariableString(str, Collections.emptyList());
@@ -109,17 +88,6 @@ public class VariableString implements Serializable {
             }
         }
         return String.format(text, variableVals.toArray());
-    }
-
-    private static String getSpecialChar(String sequences) {
-        try {
-            return TextUtils.parseSpecialChars(sequences);
-        } catch (Exception e) {
-            if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
-                Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", VariableSourceEntry.getTag(VariableSource.Special, sequences))).withException(e).logErr();
-            }
-        }
-        return null;
     }
 
     public static String getTextOrDefault(EventInfo eventInfo, VariableString variableString, String defaultValue) {
@@ -157,7 +125,7 @@ public class VariableString implements Serializable {
         if (StringUtils.isEmpty(formattedString)) {
             return false;
         }
-        String strippedText = formattedString.replaceAll(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())), "");
+        String strippedText = VariableTag.replaceTag(formattedString, "");
         return TextUtils.isInt(strippedText) || strippedText.isEmpty();
     }
 
@@ -165,15 +133,9 @@ public class VariableString implements Serializable {
         if (StringUtils.isEmpty(formattedString)) {
             return false;
         }
-        String strippedText = formattedString.replaceAll(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())), "");
+
+        String strippedText = VariableTag.replaceTag(formattedString, "");
         return TextUtils.isLong(strippedText) || strippedText.isEmpty();
     }
 
-    public static boolean hasTag(String text) {
-        if (StringUtils.isEmpty(text)) {
-            return false;
-        }
-        Pattern pattern = Pattern.compile(String.format("\\{\\{(%s):(.+?)\\}\\}", String.join("|", VariableSource.getSupportedNames())));
-        return pattern.matcher(text).find();
-    }
 }

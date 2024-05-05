@@ -138,7 +138,7 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(destinationVariableName) ?
-                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                List.of(new VariableSourceEntry(destinationVariableSource, List.of(destinationVariableName))) :
                 Collections.emptyList();
     }
 }

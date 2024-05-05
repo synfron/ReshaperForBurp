@@ -2,9 +2,11 @@ package synfron.reshaper.burp.core.utils;
 
 import burp.BurpExtender;
 import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.utilities.Base64DecodingOptions;
 import burp.api.montoya.utilities.DigestAlgorithm;
-import com.jayway.jsonpath.*;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.ParseContext;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONValue;
 import org.apache.commons.codec.binary.Hex;
@@ -50,7 +52,7 @@ public class TextUtils {
         return stripQuotes(getJsonPathContext().parse(text).set(jsonPath, JSONValue.parse(value)).jsonString());
     }
 
-    private static String stripQuotes(String text) {
+    public static String stripQuotes(String text) {
         if (text.startsWith("\"") && text.endsWith("\"")) {
             text = StringUtils.removeStart(text, "\"");
             text = StringUtils.removeEnd(text, "\"");
@@ -246,7 +248,7 @@ public class TextUtils {
 
     public static List<String> getChunks(String text, int size) {
         List<String> chunks = new ArrayList<>();
-        for (int startIndex = 0; startIndex < size; startIndex += size) {
+        for (int startIndex = 0; startIndex < text.length(); startIndex += size) {
             chunks.add(text.substring(startIndex, Math.min(startIndex + size, text.length())));
         }
         return  chunks;
@@ -421,5 +423,32 @@ public class TextUtils {
 
     public static String changeBase(String value, int sourceBase, int targetBase) {
         return Long.toString(Long.parseLong(value, sourceBase), targetBase);
+    }
+
+    public static boolean textOrNumberEquals(String item1, String item2, boolean ignoreCase) {
+        if (TextUtils.isLong(item1) && TextUtils.isLong(item2)) {
+            return Long.parseLong(item1) == Long.parseLong(item2);
+        } else if (TextUtils.isDouble(item1) && TextUtils.isDouble(item2)) {
+            return Double.parseDouble(item1) == Double.parseDouble(item2);
+        }
+        return ignoreCase ? StringUtils.equalsIgnoreCase(item1, item2) : StringUtils.equals(item1, item2);
+    }
+
+    public static boolean lessThan(String item1, String item2) {
+        if (TextUtils.isLong(item1) && TextUtils.isLong(item2)) {
+            return Long.parseLong(item1) < Long.parseLong(item2);
+        } else if (TextUtils.isDouble(item1) && TextUtils.isDouble(item2)) {
+            return Double.parseDouble(item1) < Double.parseDouble(item2);
+        }
+        return false;
+    }
+
+    public static boolean greaterThan(String item1, String item2) {
+        if (TextUtils.isLong(item1) && TextUtils.isLong(item2)) {
+            return Long.parseLong(item1) > Long.parseLong(item2);
+        } else if (TextUtils.isDouble(item1) && TextUtils.isDouble(item2)) {
+            return Double.parseDouble(item1) > Double.parseDouble(item2);
+        }
+        return false;
     }
 }

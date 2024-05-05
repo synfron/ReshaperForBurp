@@ -8,7 +8,6 @@ import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.TextUtils;
-import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -24,9 +23,9 @@ public class JwtDecodeTransformer extends Transformer {
     public String transform(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {
         String input = this.input.getText(eventInfo);
         String value = StringUtils.isNotEmpty(input) ? switch (segment) {
-            case Header -> TextUtils.base64Decode(input.split("\\.", 3)[0], new Encoder("UTF-8"));
-            case Payload -> TextUtils.base64Decode(CollectionUtils.elementAtOrDefault(input.split("\\.", 3), 1), new Encoder("UTF-8"));
-            case Signature -> TextUtils.base64Decode(CollectionUtils.elementAtOrDefault(input.split("\\.", 3), 2), new Encoder("UTF-8"));
+            case Header -> TextUtils.base64UrlDecode(input.split("\\.", 3)[0], new Encoder(StandardCharsets.UTF_8.displayName()));
+            case Payload -> TextUtils.base64UrlDecode(CollectionUtils.elementAtOrDefault(input.split("\\.", 3), 1), new Encoder(StandardCharsets.UTF_8.displayName()));
+            case Signature -> TextUtils.base64UrlDecode(CollectionUtils.elementAtOrDefault(input.split("\\.", 3), 2), new Encoder(StandardCharsets.ISO_8859_1.displayName()));
         } : "";
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("segment", segment));

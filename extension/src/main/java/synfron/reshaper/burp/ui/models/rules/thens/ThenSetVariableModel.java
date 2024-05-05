@@ -89,7 +89,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
 
     @Override
     protected String getTargetName() {
-        return VariableSourceEntry.getShortTag(targetSource, variableName);
+        return VariableTag.getShortTag(targetSource, variableName);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ThenSetVariableModel extends ThenSetModel<ThenSetVariableModel, The
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(variableName) ?
-                List.of(new VariableSourceEntry(targetSource, variableName)) :
+                List.of(new VariableSourceEntry(targetSource, List.of(variableName))) :
                 Collections.emptyList();
     }
 }

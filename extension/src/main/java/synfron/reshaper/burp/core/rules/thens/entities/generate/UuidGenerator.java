@@ -14,20 +14,7 @@ import java.util.List;
 @Getter
 public class UuidGenerator implements IGenerator {
 
-    @Getter
-    public enum UuidVersion {
-        V3(true),
-        V4(false),
-        V5(true);
-
-        private final boolean hasInputs;
-
-        UuidVersion(boolean hasInputs) {
-            this.hasInputs = hasInputs;
-        }
-    }
-
-    private UuidVersion version = UuidVersion.V4;
+    private ValueGenerator.UuidVersion version = ValueGenerator.UuidVersion.V4;
 
     private VariableString namespace;
 
@@ -37,11 +24,7 @@ public class UuidGenerator implements IGenerator {
     public String generate(EventInfo eventInfo, List<Pair<String, ? extends Serializable>> diagnosticProperties) {
         String namespace = VariableString.getTextOrDefault(eventInfo, this.namespace, null);
         String name = VariableString.getTextOrDefault(eventInfo, this.name, null);
-        String value = switch (version) {
-            case V3 -> ValueGenerator.uuidV3(namespace, name);
-            case V4 -> ValueGenerator.uuidV4();
-            case V5 -> ValueGenerator.uuidV5(namespace, name);
-        };
+        String value = ValueGenerator.uuid(version, namespace, name);
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("version", version));
             diagnosticProperties.add(Pair.of("namespace", namespace));
@@ -50,4 +33,5 @@ public class UuidGenerator implements IGenerator {
         }
         return value;
     }
+
 }

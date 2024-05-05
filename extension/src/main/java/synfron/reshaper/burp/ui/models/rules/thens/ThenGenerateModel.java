@@ -3,6 +3,8 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.thens.ThenGenerate;
 import synfron.reshaper.burp.core.rules.thens.entities.generate.GenerateOption;
 import synfron.reshaper.burp.core.rules.thens.entities.generate.IGenerator;
@@ -31,6 +33,7 @@ public class ThenGenerateModel extends ThenModel<ThenGenerateModel, ThenGenerate
     private SetListItemPlacement itemPlacement;
     private String delimiter = "{{s:n}}";
     private String index;
+    private final IEventListener<PropertyChangedArgs> generatorPropertyChangedListener = this::onGeneratorPropertyChanged;
 
     public ThenGenerateModel(ProtocolType protocolType, ThenGenerate then, Boolean isNew) {
         super(protocolType, then, isNew);
@@ -45,7 +48,7 @@ public class ThenGenerateModel extends ThenModel<ThenGenerateModel, ThenGenerate
     }
 
     private GeneratorModel<?,?> constructGeneratorModel(GenerateOption generateOption) {
-        return switch (generateOption) {
+        return (switch (generateOption) {
             case Uuid -> new UuidGeneratorModel(constructGenerator(generateOption));
             case Words -> new WordGeneratorModel(constructGenerator(generateOption));
             case Bytes -> new BytesGeneratorModel(constructGenerator(generateOption));
@@ -54,7 +57,11 @@ public class ThenGenerateModel extends ThenModel<ThenGenerateModel, ThenGenerate
             case Timestamp -> new TimestampGeneratorModel(constructGenerator(generateOption));
             case UnixTimestamp -> new UnixTimestampGeneratorModel(constructGenerator(generateOption));
             case Password -> new PasswordGeneratorModel(constructGenerator(generateOption));
-        };
+        }).withListener(generatorPropertyChangedListener);
+    }
+
+    private void onGeneratorPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        setValidated(false);
     }
 
     private <T extends IGenerator> T constructGenerator(GenerateOption generateOption) {
@@ -146,7 +153,7 @@ public class ThenGenerateModel extends ThenModel<ThenGenerateModel, ThenGenerate
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(destinationVariableName) ?
-                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                List.of(new VariableSourceEntry(destinationVariableSource, List.of(destinationVariableName))) :
                 Collections.emptyList();
     }
 }

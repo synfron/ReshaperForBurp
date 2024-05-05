@@ -152,19 +152,19 @@ public class ThenRepeat extends Then<ThenRepeat> implements IHttpRuleOperation, 
         String entryVariableNameText;
         listVariableNameText = listVariableName.getText(eventInfo);
         entryVariableNameText = entryVariableName.getText(eventInfo);
-        VariableSourceEntry variable1 = new VariableSourceEntry(listVariableSource, listVariableNameText);
+        VariableSourceEntry variable1 = new VariableSourceEntry(listVariableSource, List.of(listVariableNameText));
         ListVariable variable = switch (variable1.getVariableSource()) {
-            case GlobalList -> (ListVariable) GlobalVariables.get().getOrDefault(Variables.asKey(variable1.getName(), true));
-            case EventList -> (ListVariable) eventInfo.getVariables().getOrDefault(Variables.asKey(variable1.getName(), true));
-            case SessionList -> (ListVariable) eventInfo.getSessionVariables().getOrDefault(Variables.asKey(variable1.getName(), true));
+            case GlobalList -> (ListVariable) GlobalVariables.get().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
+            case EventList -> (ListVariable) eventInfo.getVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
+            case SessionList -> (ListVariable) eventInfo.getSessionVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
             default -> null;
         };
         listSize = variable != null ? variable.size() : null;
         conditionData.setValue(entryVariableNameText);
         if (diagnosticProperties != null) {
-            diagnosticProperties.add(Pair.of("listVariable", VariableSourceEntry.getTag(listVariableSource, listVariableNameText)));
+            diagnosticProperties.add(Pair.of("listVariable", VariableTag.getTag(listVariableSource, listVariableNameText)));
             diagnosticProperties.add(Pair.of("listSize", listSize != null ? listSize.toString() : "null"));
-            diagnosticProperties.add(Pair.of("entryVariable", VariableSourceEntry.getTag(VariableSource.Event, entryVariableNameText)));
+            diagnosticProperties.add(Pair.of("entryVariable", VariableTag.getTag(VariableSource.Event, entryVariableNameText)));
         }
         return variable != null ? variable.getIterator() : null;
     }

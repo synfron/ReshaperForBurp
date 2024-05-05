@@ -87,6 +87,10 @@ public class CollectionUtils {
         return (array != null && array.length > 0) ? array : defaultArray;
     }
 
+    public static <T> List<T> defaultIfEmpty(List<T> list, List<T> defaultList) {
+        return (list != null && !list.isEmpty()) ? list : defaultList;
+    }
+
     public static <T> List<T> defaultIfNull(List<T> list) {
         return list != null ? list : List.of();
     }

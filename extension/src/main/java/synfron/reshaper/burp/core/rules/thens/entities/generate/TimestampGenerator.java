@@ -2,7 +2,6 @@ package synfron.reshaper.burp.core.rules.thens.entities.generate;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.utils.ValueGenerator;
@@ -26,7 +25,7 @@ public class TimestampGenerator implements IGenerator {
         String format = VariableString.getTextOrDefault(eventInfo, this.format, null);
         String minTimestamp = VariableString.getTextOrDefault(eventInfo, this.minTimestamp, null);
         String maxTimestamp = VariableString.getTextOrDefault(eventInfo, this.maxTimestamp, null);
-        String value = StringUtils.isAllEmpty(minTimestamp, maxTimestamp) ? ValueGenerator.date(minTimestamp, maxTimestamp, format) : ValueGenerator.currentDate(format);
+        String value = ValueGenerator.dateOrNow(format, minTimestamp, maxTimestamp);
         if (diagnosticProperties != null) {
             diagnosticProperties.add(Pair.of("format", format));
             diagnosticProperties.add(Pair.of("minTimestamp", minTimestamp));
@@ -35,4 +34,5 @@ public class TimestampGenerator implements IGenerator {
         }
         return value;
     }
+
 }

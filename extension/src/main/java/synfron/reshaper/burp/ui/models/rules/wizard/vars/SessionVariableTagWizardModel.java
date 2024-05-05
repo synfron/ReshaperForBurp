@@ -17,7 +17,7 @@ public class SessionVariableTagWizardModel extends CustomVariableTagWizardModel 
     public List<String> getUpdatedVariableNames(List<VariableSourceEntry> entries) {
         return entries.stream()
                 .filter(entry -> entry.getVariableSource() == VariableSource.Session)
-                .map(VariableSourceEntry::getName)
+                .map(entry -> entry.getParams().getFirst())
                 .filter(VariableString::isValidVariableName)
                 .distinct()
                 .sorted(String::compareToIgnoreCase)

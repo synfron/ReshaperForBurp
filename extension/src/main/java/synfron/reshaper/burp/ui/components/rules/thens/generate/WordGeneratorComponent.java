@@ -1,26 +1,27 @@
 package synfron.reshaper.burp.ui.components.rules.thens.generate;
 
-import synfron.reshaper.burp.core.rules.thens.entities.generate.WordGeneratorType;
-import synfron.reshaper.burp.ui.models.rules.thens.generate.WordGeneratorModel;
+import synfron.reshaper.burp.core.utils.ValueGenerator;
+import synfron.reshaper.burp.ui.models.rules.thens.generate.IWordGeneratorModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class WordGeneratorComponent extends GeneratorComponent<WordGeneratorModel> {
+public class WordGeneratorComponent extends GeneratorComponent<IWordGeneratorModel> {
     
-    private JComboBox<WordGeneratorType> generatorType;
+    private JComboBox<ValueGenerator.WordGeneratorType> generatorType;
     private JTextField count;
     private JTextField separator;
 
-    public WordGeneratorComponent(WordGeneratorModel model) {
-        super(model);
+    public WordGeneratorComponent(IWordGeneratorModel model, boolean allowVariableTags) {
+        super(model, allowVariableTags);
     }
 
     protected void initComponent() {
-        generatorType = createComboBox(WordGeneratorType.values());
-        count = createTextField(true);
-        separator = createTextField(true);
+        generatorType = createComboBox(ValueGenerator.WordGeneratorType.values());
+        count = createTextField(allowVariableTags);
+        separator = createTextField(allowVariableTags);
 
         generatorType.setSelectedItem(model.getGeneratorType());
         count.setText(model.getCount());
@@ -32,11 +33,15 @@ public class WordGeneratorComponent extends GeneratorComponent<WordGeneratorMode
 
         add(getLabeledField("Generator Type", generatorType), "wrap");
         add(getLabeledField("Count *", count), "wrap");
-        add(getLabeledField("Separator", separator), "wrap");
+        add(ComponentVisibilityManager.withVisibilityFieldChangeDependency(
+                getLabeledField("Separator", separator),
+                count,
+                () -> !"1".equals(count.getText())
+        ), "wrap");
     }
 
     private void onGeneratorTypeChanged(ActionEvent actionEvent) {
-        model.setGeneratorType((WordGeneratorType)generatorType.getSelectedItem());
+        model.setGeneratorType((ValueGenerator.WordGeneratorType)generatorType.getSelectedItem());
     }
 
     private void onCountChanged(ActionEvent actionEvent) {

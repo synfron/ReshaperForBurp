@@ -37,12 +37,12 @@ public class ContextMenuHandler implements ContextMenuItemsProvider {
     }
 
     private void onCreateWebSocketRule(List<WebSocketMessage> selectedItems, ActionEvent actionEvent) {
-        WebSocketMessage webSocketMessage = selectedItems.get(0);
+        WebSocketMessage webSocketMessage = selectedItems.getFirst();
         openWhenWizard(new WhenWizardModel(new WebSocketEventInfo<>(WebSocketMessageType.Binary, WebSocketDataDirection.from(webSocketMessage.direction()), null, null, webSocketMessage.upgradeRequest(), webSocketMessage.annotations(), webSocketMessage.payload().getBytes(), new Variables())));
     }
 
     private void onCreateHttpRule(List<HttpRequestResponse> selectedItems, ActionEvent actionEvent) {
-        HttpRequestResponse httpRequestResponse = selectedItems.get(0);
+        HttpRequestResponse httpRequestResponse = selectedItems.getFirst();
         openWhenWizard(new WhenWizardModel(new HttpEventInfo(null, null, null, httpRequestResponse.request(), httpRequestResponse.response(), httpRequestResponse.annotations(), new Variables())));
     }
 

@@ -3,6 +3,8 @@ package synfron.reshaper.burp.ui.models.rules.thens;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.thens.ThenTransform;
 import synfron.reshaper.burp.core.rules.thens.entities.transform.TransformOption;
 import synfron.reshaper.burp.core.rules.thens.entities.transform.ITransformer;
@@ -31,6 +33,7 @@ public class ThenTransformModel extends ThenModel<ThenTransformModel, ThenTransf
     private SetListItemPlacement itemPlacement;
     private String delimiter = "{{s:n}}";
     private String index;
+    private final IEventListener<PropertyChangedArgs> transformerPropertyChangedListener = this::onTransformerPropertyChanged;
 
     public ThenTransformModel(ProtocolType protocolType, ThenTransform then, Boolean isNew) {
         super(protocolType, then, isNew);
@@ -45,16 +48,20 @@ public class ThenTransformModel extends ThenModel<ThenTransformModel, ThenTransf
     }
 
     private TransformerModel<?,?> constructTransformerModel(TransformOption transformOption) {
-        return switch (transformOption) {
+        return (switch (transformOption) {
             case Base64 -> new Base64TransformerModel(constructTransformer(transformOption));
-            case TextEncode -> new TextEncodeTransformerModel(constructTransformer(transformOption));
+            case Escape -> new EscapeTransformerModel(constructTransformer(transformOption));
             case JwtDecode -> new JwtDecodeTransformerModel(constructTransformer(transformOption));
             case Case -> new CaseTransformerModel(constructTransformer(transformOption));
             case Hash -> new HashTransformerModel(constructTransformer(transformOption));
             case Hex -> new HexTransformerModel(constructTransformer(transformOption));
             case Integer -> new IntegerTransformerModel(constructTransformer(transformOption));
             case Trim -> new TrimTransformerModel(constructTransformer(transformOption));
-        };
+        }).withListener(transformerPropertyChangedListener);
+    }
+
+    private void onTransformerPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        setValidated(false);
     }
 
     private <T extends ITransformer> T constructTransformer(TransformOption transformOption) {
@@ -146,7 +153,7 @@ public class ThenTransformModel extends ThenModel<ThenTransformModel, ThenTransf
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(destinationVariableName) ?
-                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                List.of(new VariableSourceEntry(destinationVariableSource, List.of(destinationVariableName))) :
                 Collections.emptyList();
     }
 }

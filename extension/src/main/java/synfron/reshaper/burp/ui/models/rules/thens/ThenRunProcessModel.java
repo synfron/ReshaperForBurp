@@ -193,7 +193,7 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return captureOutput && StringUtils.isNotEmpty(captureVariableName) ?
-                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                List.of(new VariableSourceEntry(captureVariableSource, List.of(captureVariableName))) :
                 Collections.emptyList();
     }
 }

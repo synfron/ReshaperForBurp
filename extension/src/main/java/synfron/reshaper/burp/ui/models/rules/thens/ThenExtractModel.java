@@ -5,10 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.thens.ThenExtract;
 import synfron.reshaper.burp.core.rules.thens.entities.extract.ExtractorType;
-import synfron.reshaper.burp.core.vars.SetListItemsPlacement;
-import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableSourceEntry;
-import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.*;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.Collections;
@@ -114,7 +111,7 @@ public class ThenExtractModel extends ThenModel<ThenExtractModel, ThenExtract> i
 
     @Override
     protected String getTargetName() {
-        return VariableSourceEntry.getShortTag(listVariableSource, listVariableName);
+        return VariableTag.getShortTag(listVariableSource, listVariableName);
     }
 
     @Override
@@ -125,7 +122,7 @@ public class ThenExtractModel extends ThenModel<ThenExtractModel, ThenExtract> i
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(listVariableName) ?
-                List.of(new VariableSourceEntry(listVariableSource, listVariableName)) :
+                List.of(new VariableSourceEntry(listVariableSource, List.of(listVariableName))) :
                 Collections.emptyList();
     }
 }

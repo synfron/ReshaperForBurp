@@ -2,25 +2,25 @@ package synfron.reshaper.burp.ui.components.rules.thens.generate;
 
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.utils.PasswordCharacterGroup;
-import synfron.reshaper.burp.ui.models.rules.thens.generate.PasswordGeneratorModel;
+import synfron.reshaper.burp.ui.models.rules.thens.generate.IPasswordGeneratorModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class PasswordGeneratorComponent extends GeneratorComponent<PasswordGeneratorModel> {
+public class PasswordGeneratorComponent extends GeneratorComponent<IPasswordGeneratorModel> {
 
     private JTextField minLength;
     private JTextField maxLength;
 
-    public PasswordGeneratorComponent(PasswordGeneratorModel model) {
-        super(model);
+    public PasswordGeneratorComponent(IPasswordGeneratorModel model, boolean allowVariableTags) {
+        super(model, allowVariableTags);
     }
 
     protected void initComponent() {
-        minLength = createTextField(true);
-        maxLength = createTextField(true);
+        minLength = createTextField(allowVariableTags);
+        maxLength = createTextField(allowVariableTags);
 
         minLength.setText(model.getMinLength());
         maxLength.setText(model.getMaxLength());
@@ -29,7 +29,7 @@ public class PasswordGeneratorComponent extends GeneratorComponent<PasswordGener
         maxLength.getDocument().addDocumentListener(new DocumentActionListener(this::onMaxLengthChanged));
 
         add(getLabeledField("Min Length *", minLength), "wrap");
-        add(getLabeledField("Max Length *", maxLength), "wrap");
+        add(getLabeledField("Max Length (Exclusive) *", maxLength), "wrap");
         add(getCharacterGroupOptions(), "wrap");
     }
 

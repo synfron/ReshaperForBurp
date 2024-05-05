@@ -24,7 +24,7 @@ public abstract class GeneratorModel<T extends GeneratorModel<T, G>, G extends I
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, name, value));
     }
 
-    protected T withListener(IEventListener<PropertyChangedArgs> listener) {
+    public T withListener(IEventListener<PropertyChangedArgs> listener) {
         getPropertyChangedEvent().add(listener);
         return (T)this;
     }

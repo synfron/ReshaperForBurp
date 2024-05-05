@@ -1,21 +1,21 @@
 package synfron.reshaper.burp.ui.components.rules.thens.generate;
 
-import synfron.reshaper.burp.core.rules.thens.entities.generate.IpAddressGenerator;
-import synfron.reshaper.burp.ui.models.rules.thens.generate.IpAddressGeneratorModel;
+import synfron.reshaper.burp.core.utils.ValueGenerator;
+import synfron.reshaper.burp.ui.models.rules.thens.generate.IIpAddressGeneratorModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class IpAddressGeneratorComponent extends GeneratorComponent<IpAddressGeneratorModel> {
+public class IpAddressGeneratorComponent extends GeneratorComponent<IIpAddressGeneratorModel> {
     
-    private JComboBox<IpAddressGenerator.IpVersion> version;
+    private JComboBox<ValueGenerator.IpVersion> version;
 
-    public IpAddressGeneratorComponent(IpAddressGeneratorModel model) {
-        super(model);
+    public IpAddressGeneratorComponent(IIpAddressGeneratorModel model, boolean allowVariableTags) {
+        super(model, allowVariableTags);
     }
 
     protected void initComponent() {
-        version = createComboBox(IpAddressGenerator.IpVersion.values());
+        version = createComboBox(ValueGenerator.IpVersion.values());
 
         version.setSelectedItem(model.getVersion());
 
@@ -25,6 +25,6 @@ public class IpAddressGeneratorComponent extends GeneratorComponent<IpAddressGen
     }
 
     private void onVersionChanged(ActionEvent actionEvent) {
-        model.setVersion((IpAddressGenerator.IpVersion)version.getSelectedItem());
+        model.setVersion((ValueGenerator.IpVersion)version.getSelectedItem());
     }
 }

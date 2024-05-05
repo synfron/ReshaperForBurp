@@ -7,7 +7,11 @@ public enum MatchType {
     Contains("Contains"),
     BeginsWith("Begins With"),
     EndsWith("Ends With"),
-    Regex("Regex");
+    Regex("Regex"),
+    LessThan("Less Than"),
+    GreaterThan("Greater Than"),
+    LessThanOrEqual("Less Than Or Equal"),
+    GreaterThanOrEqual("Greater Than Or Equal");
 
     @Getter
     private final String name;

@@ -104,7 +104,7 @@ public class ThenParseHttpMessageModel extends ThenModel<ThenParseHttpMessageMod
     public List<VariableSourceEntry> getVariableEntries() {
         return messageValueGetters.stream()
                 .filter(getter -> StringUtils.isNotEmpty(getter.getDestinationVariableName()))
-                .map(getter -> new VariableSourceEntry(getter.getDestinationVariableSource(), getter.getDestinationVariableName()))
+                .map(getter -> new VariableSourceEntry(getter.getDestinationVariableSource(), List.of(getter.getDestinationVariableName())))
                 .collect(Collectors.toList());
     }
 }
