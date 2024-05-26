@@ -140,6 +140,12 @@ Contributions are encouraged. Issues and Pull Requests welcome. Also help us spr
 
 Primary Developer: Daquanne Dwight
 
+## Documentation Links
+
+[Website](https://synfron.github.io/ReshaperForBurp/)
+
+[Wiki](https://github.com/synfron/ReshaperForBurp.docs/wiki)
+
 ## Support
 
 For help with how to use Reshaper for a particular need, to report a bug, or to make a suggestion, create an issue in GitHub or email support[at]synfron.com.
