@@ -16,12 +16,12 @@ public enum VariableSource {
     EventList("Event List", "el", false, ProtocolType.Any, true),
     GlobalList("Global List", "gl", false, ProtocolType.Any, true),
     SessionList("Session List", "sl", false, ProtocolType.Any, true),
-    Annotation("a", true, ProtocolType.Any, false),
+    Message("m", true, ProtocolType.Any, false),
     CookieJar("Cookie Jar", "cj", true, ProtocolType.Any, false),
+    Macro("mc", true, ProtocolType.Http, false),
+    Annotation("a", true, ProtocolType.Any, false),
     File("f", true, ProtocolType.Any, false),
     Generator("gr", true, ProtocolType.Any, false),
-    Macro("mc", true, ProtocolType.Http, false),
-    Message("m", true, ProtocolType.Any, false),
     Special("s", true, ProtocolType.Any, false);
 
     private final String displayName;

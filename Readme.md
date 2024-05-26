@@ -34,7 +34,7 @@ Proxy Name - If received by a certain Burp proxy listener
 
 Repeat - Repeat a group of When constraints for each item in a list
 
-[More](https://synfron.github.io/ReshaperForBurp/Rules.html#whens)
+[More](https://synfron.github.io/ReshaperForBurp/Whens.html)
 
 ### Thens
 
@@ -53,6 +53,10 @@ Delete Variable - Delete a variable
 Drop - Have Burp drop the connection
 
 Evaluate - Perform operations on values
+
+Extract - Extract values into lists
+
+Generate - Generate a value
 
 Highlight - Highlight the line item in the HTTP/WebSocket history
 
@@ -76,7 +80,13 @@ Run Script - Execute a JavaScript script
 
 Save File - Save text to a file
 
-Set Encoding - Set the encoding used to read and write bytes of the HTTP request or response body, or WebSocket message 
+Send Message - Send a separate WebSocket message
+
+Send Request - Send a separate HTTP request
+
+Send To - Send data to other Burp tools or the system's default browser
+
+Set Encoding - Set the encoding used to read and write bytes of the HTTP request or response body, or WebSocket message
 
 Set Event Direction - Change whether to send a request or to send a response at the end of processing
 
@@ -84,13 +94,9 @@ Set Value - Set the value of an HTTP/WebSocket event using another value (text, 
 
 Set Variable - Set a variable using another value (text, variable, or HTTP/WebSocket event entity)
 
-Send Message - Send a separate WebSocket message
+Transform - Transform/convert a value
 
-Send Request - Send a separate HTTP request
-
-Send To - Send data to other Burp tools or the system's default browser
-
-[More](https://synfron.github.io/ReshaperForBurp/Rules.html#thens)
+[More](https://synfron.github.io/ReshaperForBurp/Thens.html)
 
 ## Variables
 
@@ -109,8 +115,8 @@ Share values across different Rules while processing the same event or all event
 
 ### Build JAR with CLI
 
-1. Install Java 18.
-2. Install Gradle v8.5.
+1. Install Java 21.
+2. Install Gradle v8.6.
 3. Open a terminal into the `extension` directory of the project.
 4. Run the `gradle --refresh-dependencies build jar` command.
 5. The JAR will be placed in the `extension/build/libs` directory.

@@ -9,8 +9,8 @@ public enum MatchType {
     EndsWith("Ends With"),
     Regex("Regex"),
     LessThan("Less Than"),
-    GreaterThan("Greater Than"),
     LessThanOrEqual("Less Than Or Equal"),
+    GreaterThan("Greater Than"),
     GreaterThanOrEqual("Greater Than Or Equal");
 
     @Getter

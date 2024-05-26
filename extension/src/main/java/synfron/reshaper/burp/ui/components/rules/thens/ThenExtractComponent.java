@@ -54,11 +54,11 @@ public class ThenExtractComponent extends ThenComponent<ThenExtractModel, ThenEx
         delimiter.getDocument().addDocumentListener(new DocumentActionListener(this::onDelimiterChanged));
         itemsPlacement.addActionListener(this::onItemsPlacementChanged);
 
-        extractorField = getLabeledField( model.getExtractorType() + " *", extractor);
+        extractorField = getLabeledField( model.getExtractorType().getSyntax() + " *", extractor);
 
         mainContainer.add(getLabeledField("Text *", text), "wrap");
         mainContainer.add(getLabeledField("Extractor Type", extractorType), "wrap");
-        mainContainer.add(getLabeledField( model.getExtractorType().getExtractorType() + " *", extractor), "wrap");
+        mainContainer.add(extractorField, "wrap");
         mainContainer.add(getLabeledField("List Variable Source", listVariableSource), "wrap");
         mainContainer.add(getLabeledField("List Variable Name *", listVariableName), "wrap");
         mainContainer.add(getLabeledField("Delimiter *", delimiter), "wrap");
@@ -71,7 +71,7 @@ public class ThenExtractComponent extends ThenComponent<ThenExtractModel, ThenEx
 
     private void onExtractorTypeChanged(ActionEvent actionEvent) {
         model.setExtractorType((ExtractorType) extractorType.getSelectedItem());
-        ((JLabel)extractorField.getComponents()[0]).setText(model.getExtractorType().getExtractorType());
+        ((JLabel)extractorField.getComponents()[0]).setText(model.getExtractorType().getSyntax() + " *");
     }
 
     private void onExtractorChanged(ActionEvent actionEvent) {

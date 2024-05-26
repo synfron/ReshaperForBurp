@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 public enum TransformOption {
     Base64(Base64Transformer.class),
-    Escape("Escape", EscapeTransformer.class),
+    Escape(EscapeTransformer.class),
     JwtDecode("JWT Decode", JwtDecodeTransformer.class),
     Case(CaseTransformer.class),
     Hash(HashTransformer.class),

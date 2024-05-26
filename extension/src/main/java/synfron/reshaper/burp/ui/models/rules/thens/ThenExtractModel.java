@@ -82,9 +82,9 @@ public class ThenExtractModel extends ThenModel<ThenExtractModel, ThenExtract> i
             errors.add("Text is required");
         }
         if (StringUtils.isEmpty(extractor)) {
-            errors.add(extractorType.getExtractorType() + " is required");
+            errors.add(extractorType.getSyntax() + " is required");
         } else if (extractorType == ExtractorType.Chunk && !VariableString.isPotentialInt(extractor)) {
-            errors.add(extractorType.getExtractorType() + "Index must be an integer");
+            errors.add(extractorType.getSyntax() + "Index must be an integer");
         }
         if (StringUtils.isEmpty(listVariableName)) {
             errors.add("List Variable Name is required");

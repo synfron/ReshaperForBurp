@@ -187,27 +187,27 @@ public class ReshaperObj {
             EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
             String adjustedThenTypeName = StringUtils.prependIfMissing(thenType, "Then");
             Stream<ThenType<?>> supportedThenTypes = Stream.of(
-                    ThenType.Highlight,
-                    ThenType.Comment,
-                    ThenType.Evaluate,
                     ThenType.BuildHttpMessage,
+                    ThenType.Comment,
                     ThenType.DeleteValue,
                     ThenType.DeleteVariable,
                     ThenType.Drop,
+                    ThenType.Evaluate,
+                    ThenType.Extract,
+                    ThenType.Generate,
+                    ThenType.Highlight,
                     ThenType.Intercept,
                     ThenType.Log,
                     ThenType.ParseHttpMessage,
-                    ThenType.SendRequest,
+                    ThenType.ReadFile,
+                    ThenType.SaveFile,
                     ThenType.SendMessage,
+                    ThenType.SendRequest,
                     ThenType.SendTo,
-                    ThenType.SetEventDirection,
                     ThenType.SetEncoding,
+                    ThenType.SetEventDirection,
                     ThenType.SetValue,
                     ThenType.SetVariable,
-                    ThenType.SaveFile,
-                    ThenType.ReadFile,
-                    ThenType.Extract,
-                    ThenType.Generate,
                     ThenType.Transform
             );
             Class<?> thenClass = supportedThenTypes
