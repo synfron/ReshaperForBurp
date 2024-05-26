@@ -4,7 +4,7 @@ plugins {
 
 group 'com.synfron.reshaper.burp'
 archivesBaseName = 'reshaper-for-burp'
-version '2.3.3'
+version '2.4.0'
 
 targetCompatibility = '21'
 sourceCompatibility = '21'
@@ -35,7 +35,8 @@ dependencies {
             'org.jsoup:jsoup:1.15.3',
             'com.fasterxml.jackson.core:jackson-databind:2.14.0',
             'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.0',
-            'org.apache.commons:commons-text:1.10.0'
+            'org.apache.commons:commons-text:1.10.0',
+            'com.fasterxml.uuid:java-uuid-generator:5.0.0'
     )
 
     compileOnly (

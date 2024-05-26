@@ -1,6 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationContainerComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenModelType;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class ThenContainerComponent extends RuleOperationContainerComponent {
 
-    private final static Map<RuleOperationModelType<?,?>, Class<?>> componentMap;
+    private final static Map<RuleOperationModelType<?,?>, Class<? extends RuleOperationComponent<?,?>>> componentMap;
 
     static {
         componentMap = new HashMap<>();
@@ -40,6 +41,9 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
         componentMap.put(ThenModelType.Intercept, ThenInterceptComponent.class);
         componentMap.put(ThenModelType.Repeat, ThenRepeatComponent.class);
         componentMap.put(ThenModelType.ReadFile, ThenReadFileComponent.class);
+        componentMap.put(ThenModelType.Extract, ThenExtractComponent.class);
+        componentMap.put(ThenModelType.Generate, ThenGenerateComponent.class);
+        componentMap.put(ThenModelType.Transform, ThenTransformComponent.class);
     }
 
     public ThenContainerComponent(ProtocolType protocolType) {
@@ -47,7 +51,7 @@ public class ThenContainerComponent extends RuleOperationContainerComponent {
     }
 
     @Override
-    protected Map<RuleOperationModelType<?,?>, Class<?>> getComponentMap() {
+    protected Map<RuleOperationModelType<?,?>, Class<? extends RuleOperationComponent<?,?>>> getComponentMap() {
         return componentMap;
     }
 }

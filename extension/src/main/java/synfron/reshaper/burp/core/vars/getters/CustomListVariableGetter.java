@@ -7,12 +7,14 @@ import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.*;
 
+import java.util.List;
+
 public class CustomListVariableGetter extends VariableGetter {
 
     @Override
     public String getText(VariableSourceEntry variableSourceEntry, EventInfo eventInfo) {
-        String[] locatorParts = variableSourceEntry.getName().split(":", 2);
-        String variableName = locatorParts[0];
+        List<String> locatorParts = variableSourceEntry.getParams();
+        String variableName = locatorParts.getFirst();
         ListVariable variable = getVariable(variableSourceEntry, variableName, eventInfo);
         String place = CollectionUtils.elementAtOrDefault(locatorParts, 1);
         if (variable == null) {

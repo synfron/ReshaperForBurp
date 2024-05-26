@@ -904,7 +904,7 @@ class Api implements MontoyaApi {
 
     public static class ByteArrayImpl implements ByteArray {
 
-        private byte[] bytes;
+        private final byte[] bytes;
 
         public ByteArrayImpl(String text) {
             bytes = text.getBytes();

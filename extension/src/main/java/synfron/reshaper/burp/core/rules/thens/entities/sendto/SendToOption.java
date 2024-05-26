@@ -12,7 +12,7 @@ public enum SendToOption {
     Decoder,
     SiteMap("Site Map");
 
-    private String name;
+    private final String name;
 
     SendToOption() {
         name = name();

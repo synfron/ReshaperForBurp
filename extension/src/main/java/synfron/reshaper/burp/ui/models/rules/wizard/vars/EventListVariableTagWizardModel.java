@@ -17,7 +17,7 @@ public class EventListVariableTagWizardModel extends CustomListVariableTagWizard
     public List<String> getUpdatedVariableNames(List<VariableSourceEntry> entries) {
         return entries.stream()
                 .filter(entry -> entry.getVariableSource() == VariableSource.EventList)
-                .map(VariableSourceEntry::getName)
+                .map(entry -> entry.getParams().getFirst())
                 .filter(VariableString::isValidVariableName)
                 .distinct()
                 .sorted(String::compareToIgnoreCase)

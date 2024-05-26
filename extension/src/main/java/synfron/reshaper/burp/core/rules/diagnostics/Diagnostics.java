@@ -103,7 +103,7 @@ public class Diagnostics implements IDiagnostics {
 
     private boolean isLast(DiagnosticEntityType entityType) {
         List<DiagnosticRecord> records = getRecords();
-        return records.size() > 0 && records.get(records.size() - 1).getEntityType() == entityType;
+        return !records.isEmpty() && records.get(records.size() - 1).getEntityType() == entityType;
     }
 
     @Override
@@ -167,22 +167,18 @@ public class Diagnostics implements IDiagnostics {
 
     @Override
     public void logStart(EventInfo eventInfo) {
-        if (eventInfo instanceof HttpEventInfo) {
-            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+        if (eventInfo instanceof HttpEventInfo httpEventInfo) {
             logStart(httpEventInfo);
-        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
-            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+        } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
             logStart(webSocketEventInfo);
         }
     }
 
     @Override
     public void logEnd(EventInfo eventInfo) {
-        if (eventInfo instanceof HttpEventInfo) {
-            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+        if (eventInfo instanceof HttpEventInfo httpEventInfo) {
             logEnd(httpEventInfo);
-        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
-            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+        } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
             logEnd(webSocketEventInfo);
         }
     }
@@ -268,6 +264,10 @@ public class Diagnostics implements IDiagnostics {
                 case EndsWith -> "ends with";
                 case BeginsWith -> "begins with";
                 case Regex -> "is matched by";
+                case LessThan -> "is less than";
+                case GreaterThan -> "is greater than";
+                case LessThanOrEqual -> "is less than or equals";
+                case GreaterThanOrEqual -> "is greater than or equals";
             };
         } else {
             return switch (matchType) {
@@ -276,6 +276,10 @@ public class Diagnostics implements IDiagnostics {
                 case EndsWith -> "does not end with";
                 case BeginsWith -> "does not begin with";
                 case Regex -> "is not matched by";
+                case LessThan -> "is not less than";
+                case GreaterThan -> "is not greater than";
+                case LessThanOrEqual -> "is not less than or equal to";
+                case GreaterThanOrEqual -> "is not greater than or equal to";
             };
         }
     }

@@ -50,8 +50,8 @@ public class ThenSetValue extends ThenSet<ThenSetValue> implements IHttpRuleOper
                     IItemPlacement.toGet(destinationIdentifierPlacement)
             );
             switch (destinationMessageValueType) {
-                case Json -> replacementText = TextUtils.setJsonValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
-                case Html -> replacementText = TextUtils.setHtmlValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
+                case Json -> replacementText = TextUtils.setJsonPathValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
+                case Html -> replacementText = TextUtils.setCssSelectorValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
                 case Params -> replacementText = TextUtils.setParamValue(fullText, destinationMessageValuePath.getText(eventInfo), replacementText);
             }
         }

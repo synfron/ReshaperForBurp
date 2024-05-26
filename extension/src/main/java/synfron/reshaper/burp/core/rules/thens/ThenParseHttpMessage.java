@@ -114,14 +114,14 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
     private Pair<String, String> setVariable(EventInfo eventInfo, VariableSource variableSource, String variableName, SetListItemPlacement itemPlacement, String delimiter, Integer index, String value) {
         super.setVariable(variableSource, eventInfo, variableName, itemPlacement, delimiter, index, value);
         return variableSource.isList() ?
-                Pair.of(VariableSourceEntry.getTag(
+                Pair.of(VariableTag.getTag(
                         variableSource,
                         variableName,
                         itemPlacement.toString(),
                         itemPlacement.isHasIndexSetter() ?
                                 TextUtils.toString(index) : null
                 ), value) :
-                Pair.of(VariableSourceEntry.getTag(variableSource, variableName), value);
+                Pair.of(VariableTag.getTag(variableSource, variableName), value);
     }
 
     @Override

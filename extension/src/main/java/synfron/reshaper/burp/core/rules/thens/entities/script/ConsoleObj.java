@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 public class ConsoleObj {
     public void log(Object... args) {
         List<Object> values = getConsoleWritable(args);
-        Log.get().withMessage("Script Log").withPayload(values.size() == 1 ? values.get(0) : values).log();
+        Log.get().withMessage("Script Log").withPayload(values.size() == 1 ? values.getFirst() : values).log();
     }
 
     public void error(Object... args) {
         List<Object> values = getConsoleWritable(args);
-        Log.get().withMessage("Script Log").withPayload(values.size() == 1 ? values.get(0) : values).logErr();
+        Log.get().withMessage("Script Log").withPayload(values.size() == 1 ? values.getFirst() : values).logErr();
     }
 
     private List<Object> getConsoleWritable(Object[] values) {

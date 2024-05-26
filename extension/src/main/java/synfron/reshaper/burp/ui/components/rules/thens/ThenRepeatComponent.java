@@ -14,11 +14,11 @@ import java.util.Arrays;
 
 public class ThenRepeatComponent extends ThenComponent<ThenRepeatModel, ThenRepeat> {
 
-    protected JTextField subGroupCount;
-    protected JComboBox<RepeatCondition> repeatCondition;
-    protected JComboBox<VariableSource> listVariableSource;
-    protected JTextField listVariableName;
-    protected JTextField entryVariableName;
+    private JTextField subGroupCount;
+    private JComboBox<RepeatCondition> repeatCondition;
+    private JComboBox<VariableSource> listVariableSource;
+    private JTextField listVariableName;
+    private JTextField entryVariableName;
     private JTextField count;
     private JTextField booleanValue;
     protected JTextField maxCount;

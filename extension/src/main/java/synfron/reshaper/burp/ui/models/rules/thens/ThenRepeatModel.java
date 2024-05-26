@@ -9,6 +9,7 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.List;
@@ -129,7 +130,7 @@ public class ThenRepeatModel extends ThenModel<ThenRepeatModel, ThenRepeat> impl
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setSubGroupCount(Integer.parseInt(subGroupCount));
@@ -145,18 +146,9 @@ public class ThenRepeatModel extends ThenModel<ThenRepeatModel, ThenRepeat> impl
     }
 
     @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
-    }
-
-    @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return repeatCondition == RepeatCondition.HasNextItem ?
-                List.of(new VariableSourceEntry(VariableSource.Event, entryVariableName)) :
+                List.of(new VariableSourceEntry(VariableSource.Event, List.of(entryVariableName))) :
                 List.of();
     }
 
@@ -164,7 +156,7 @@ public class ThenRepeatModel extends ThenModel<ThenRepeatModel, ThenRepeat> impl
     protected String getTargetName() {
         return abbreviateTargetName(switch (repeatCondition) {
             case Count -> count;
-            case HasNextItem -> VariableSourceEntry.getTag(listVariableSource, listVariableName);
+            case HasNextItem -> VariableTag.getTag(listVariableSource, listVariableName);
             case WhileTrue -> booleanValue;
         });
     }

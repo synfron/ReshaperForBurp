@@ -17,7 +17,7 @@ public class Event<A> {
     public synchronized void remove(IEventListener<A> listener) {
         if (listeners != null) {
             listeners.removeIf(listenerReference -> listenerReference.get() == null || listenerReference.get().equals(listener));
-            if (listeners.size() == 0) {
+            if (listeners.isEmpty()) {
                 listeners = null;
             }
         }

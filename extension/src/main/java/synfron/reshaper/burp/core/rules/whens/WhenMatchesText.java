@@ -65,6 +65,10 @@ public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleO
                 case Contains -> ignoreCase ? StringUtils.containsIgnoreCase(sourceText, matchText) : StringUtils.contains(sourceText, matchText);
                 case Equals -> ignoreCase ? StringUtils.equalsIgnoreCase(sourceText, matchText) : StringUtils.equals(sourceText, matchText);
                 case Regex -> TextUtils.isMatch(sourceText, matchText, ignoreCase);
+                case LessThan -> TextUtils.lessThan(sourceText, matchText);
+                case GreaterThan -> TextUtils.greaterThan(sourceText, matchText);
+                case LessThanOrEqual -> TextUtils.lessThan(sourceText, matchText) || TextUtils.textOrNumberEquals(sourceText, matchText, ignoreCase);
+                case GreaterThanOrEqual -> TextUtils.greaterThan(sourceText, matchText) || TextUtils.textOrNumberEquals(sourceText, matchText, ignoreCase);
             };
         } catch (Exception ignored) {
         }
@@ -83,8 +87,8 @@ public class WhenMatchesText extends When<WhenMatchesText> implements IHttpRuleO
         if (messageValueType != MessageValueType.Text && messageValuePath != null)
         {
             switch (messageValueType) {
-                case Json -> value = TextUtils.getJsonValue(value, messageValuePath.getText(eventInfo));
-                case Html -> value = TextUtils.getHtmlValue(value, messageValuePath.getText(eventInfo));
+                case Json -> value = TextUtils.getJsonPathValue(value, messageValuePath.getText(eventInfo));
+                case Html -> value = TextUtils.getCssSelectorValue(value, messageValuePath.getText(eventInfo));
                 case Params -> value = TextUtils.getParamValue(value, messageValuePath.getText(eventInfo));
             }
         }

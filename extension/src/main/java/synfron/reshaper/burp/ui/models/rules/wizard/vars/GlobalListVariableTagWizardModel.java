@@ -18,7 +18,7 @@ public class GlobalListVariableTagWizardModel extends CustomListVariableTagWizar
                         GlobalVariables.get().getValues().stream().filter(Variable::isList).map(Variable::getName),
                         entries.stream()
                                 .filter(entry -> entry.getVariableSource() == VariableSource.GlobalList)
-                                .map(VariableSourceEntry::getName)
+                                .map(entry -> entry.getParams().getFirst())
                 )
                 .filter(VariableString::isValidVariableName)
                 .distinct()

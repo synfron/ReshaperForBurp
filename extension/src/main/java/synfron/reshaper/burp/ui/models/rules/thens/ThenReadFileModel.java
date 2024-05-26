@@ -5,11 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.ThenReadFile;
-import synfron.reshaper.burp.core.rules.thens.ThenReadFile;
-import synfron.reshaper.burp.core.vars.SetListItemPlacement;
-import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableSourceEntry;
-import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.*;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 
 import java.util.Collections;
@@ -101,7 +97,7 @@ public class ThenReadFileModel extends ThenModel<ThenReadFileModel, ThenReadFile
         if (StringUtils.isEmpty(filePath)) {
             errors.add("File Path is required");
         }
-        if (!Encoder.isSupported(encoding) && !VariableString.hasTag(encoding)) {
+        if (!Encoder.isSupported(encoding) && !VariableTag.hasTag(encoding)) {
             errors.add("Unsupported encoding");
         }
         if (StringUtils.isEmpty(captureVariableName)) {
@@ -120,7 +116,7 @@ public class ThenReadFileModel extends ThenModel<ThenReadFileModel, ThenReadFile
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setFilePath(VariableString.getAsVariableString(filePath));
@@ -132,15 +128,6 @@ public class ThenReadFileModel extends ThenModel<ThenReadFileModel, ThenReadFile
         ruleOperation.setItemPlacement(itemPlacement);
         ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
         ruleOperation.setIndex(VariableString.getAsVariableString(index));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }
@@ -158,7 +145,7 @@ public class ThenReadFileModel extends ThenModel<ThenReadFileModel, ThenReadFile
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(captureVariableName) ?
-                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                List.of(new VariableSourceEntry(captureVariableSource, List.of(captureVariableName))) :
                 Collections.emptyList();
     }
 }

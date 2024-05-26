@@ -6,7 +6,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableSourceEntry;
+import synfron.reshaper.burp.core.vars.VariableTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class FileVariableTagWizardModel implements IVariableTagWizardModel {
     @Override
     public String getTag() {
         return validate().isEmpty() ?
-                VariableSourceEntry.getShortTag(VariableSource.File, encoding, filePath) :
+                VariableTag.getShortTag(VariableSource.File, encoding, filePath) :
                 null;
     }
 }

@@ -50,7 +50,8 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
                 Map.entry(VariableSource.File, new FileVariableTagWizardModel()),
                 Map.entry(VariableSource.Special, new SpecialVariableTagWizardModel()),
                 Map.entry(VariableSource.CookieJar, new CookieJarVariableTagWizardModel()),
-                Map.entry(VariableSource.Annotation, new AnnotationVariableTagWizardModel())
+                Map.entry(VariableSource.Annotation, new AnnotationVariableTagWizardModel()),
+                Map.entry(VariableSource.Generator, new GeneratorVariableTagWizardModel())
         );
 
         tagModel = tagModelMap.get(variableSource);

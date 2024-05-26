@@ -5,6 +5,8 @@ import java.awt.*;
 
 public class VariablesTabComponent extends JPanel {
 
+    private VariableListComponent variablesList;
+
     public VariablesTabComponent() {
         initComponent();
     }
@@ -12,7 +14,7 @@ public class VariablesTabComponent extends JPanel {
     private void initComponent() {
         setLayout(new BorderLayout());
 
-        VariableListComponent variablesList = new VariableListComponent();
+        variablesList = new VariableListComponent();
         VariableContainerComponent variableContainer = new VariableContainerComponent();
         variablesList.setSelectionContainer(variableContainer);
 

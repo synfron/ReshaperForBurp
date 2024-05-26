@@ -33,19 +33,10 @@ public class ThenLogModel extends ThenModel<ThenLogModel, ThenLog> {
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setText(VariableString.getAsVariableString(text));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

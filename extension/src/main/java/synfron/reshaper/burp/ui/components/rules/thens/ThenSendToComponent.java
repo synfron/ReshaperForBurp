@@ -153,7 +153,7 @@ public class ThenSendToComponent extends ThenComponent<ThenSendToModel, ThenSend
     }
 
     private void onSendToChanged(ActionEvent actionEvent) {
-        model.setSendTo((SendToOption)sendTo.getSelectedItem());
+        model.setSendTo((SendToOption) sendTo.getSelectedItem());
     }
 
     private void onOverrideDefaultsChanged(ActionEvent actionEvent) {

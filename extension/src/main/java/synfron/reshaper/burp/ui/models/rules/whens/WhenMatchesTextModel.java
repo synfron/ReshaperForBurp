@@ -111,7 +111,7 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setIdentifier(VariableString.getAsVariableString(identifier));
@@ -125,15 +125,6 @@ public class WhenMatchesTextModel extends WhenModel<WhenMatchesTextModel, WhenMa
         ruleOperation.setMatchType(matchType);
         ruleOperation.setUseMessageValue(useMessageValue);
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override

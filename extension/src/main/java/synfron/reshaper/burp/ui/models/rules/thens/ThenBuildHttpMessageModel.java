@@ -128,7 +128,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDataDirection(dataDirection);
@@ -150,15 +150,6 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     }
 
     @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
-    }
-
-    @Override
     protected String getTargetName() {
         return dataDirection.name();
     }
@@ -171,7 +162,7 @@ public class ThenBuildHttpMessageModel extends ThenModel<ThenBuildHttpMessageMod
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(destinationVariableName) ?
-                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                List.of(new VariableSourceEntry(destinationVariableSource, List.of(destinationVariableName))) :
                 Collections.emptyList();
     }
 }
