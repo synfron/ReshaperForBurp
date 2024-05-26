@@ -14,6 +14,7 @@ import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.VariableString;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ThenDelay extends Then<ThenDelay> implements IHttpRuleOperation, IWebSocketRuleOperation {
     @Getter
@@ -33,7 +34,7 @@ public class ThenDelay extends Then<ThenDelay> implements IHttpRuleOperation, IW
             hasError = true;
             throw e;
         } finally {
-            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, Arrays.asList(Pair.of("millis", VariableString.getTextOrDefault(eventInfo, delay, "0"))));
+            if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logProperties(this, hasError, List.of(Pair.of("millis", VariableString.getTextOrDefault(eventInfo, delay, "0"))));
         }
         return RuleResponse.Continue;
     }

@@ -32,9 +32,12 @@ public class VariableModel {
     private boolean persistent;
     @Getter
     private boolean saved = true;
+    private boolean activated;
+    private boolean changedWhileInactive;
     @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     private final IEventListener<PropertyChangedArgs> variableChanged = this::onVariableChanged;
+    private final IEventListener<PropertyChangedArgs> activationChanged = this::onActivationChanged;
 
     public VariableModel(boolean isList) {
         this.isList = isList;
@@ -55,10 +58,18 @@ public class VariableModel {
     }
 
     private void onVariableChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (activated) {
+            syncProperties();
+        } else {
+            changedWhileInactive = true;
+        }
+    }
+
+    private void syncProperties() {
         SwingUtilities.invokeLater(() -> {
             value = StringUtils.defaultString(TextUtils.toString(variable.getValue()));
             if (isList) {
-                delimiter = StringEscapeUtils.escapeJava(((ListVariable)variable).getDelimiter());
+                delimiter = StringEscapeUtils.escapeJava(((ListVariable) variable).getDelimiter());
             }
             persistent = variable.isPersistent();
             propertyChanged("this", this);
@@ -66,8 +77,28 @@ public class VariableModel {
         });
     }
 
+    private void onActivationChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getValue() == this) {
+            if (!activated) {
+                activated = true;
+                if (changedWhileInactive) {
+                    syncProperties();
+                    changedWhileInactive = false;
+                }
+            }
+        } else {
+            activated = false;
+        }
+
+    }
+
     public VariableModel withListener(IEventListener<PropertyChangedArgs> listener) {
         propertyChangedEvent.add(listener);
+        return this;
+    }
+
+    public VariableModel bindActivationChangedEvent(PropertyChangedEvent activationChangedEvent) {
+        activationChangedEvent.add(activationChanged);
         return this;
     }
 
@@ -121,7 +152,7 @@ public class VariableModel {
     }
 
     public boolean save() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         Variable variable = this.variable;

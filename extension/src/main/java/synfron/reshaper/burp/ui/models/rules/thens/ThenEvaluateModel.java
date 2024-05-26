@@ -110,7 +110,7 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setX(VariableString.getAsVariableString(x));
@@ -121,15 +121,6 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
         ruleOperation.setItemPlacement(itemPlacement);
         ruleOperation.setDelimiter(VariableString.getAsVariableString(delimiter));
         ruleOperation.setIndex(VariableString.getAsVariableString(index));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }
@@ -147,7 +138,7 @@ public class ThenEvaluateModel extends ThenModel<ThenEvaluateModel, ThenEvaluate
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return StringUtils.isNotEmpty(destinationVariableName) ?
-                List.of(new VariableSourceEntry(destinationVariableSource, destinationVariableName)) :
+                List.of(new VariableSourceEntry(destinationVariableSource, List.of(destinationVariableName))) :
                 Collections.emptyList();
     }
 }

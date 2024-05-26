@@ -23,7 +23,7 @@ public class VariableCreatorRegistry {
             WeakReference<IVariableCreator> listenerReference = iterator.next();
             IVariableCreator creator = listenerReference.get();
             if (creator != null) {
-                entries.addAll(creator.getVariableEntries().stream().filter(entry -> VariableString.isValidVariableName(entry.getName())).toList());
+                entries.addAll(creator.getVariableEntries().stream().filter(entry -> VariableString.isValidVariableName(entry.getParams().getFirst())).toList());
             } else {
                 iterator.remove();
             }

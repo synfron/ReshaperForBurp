@@ -159,7 +159,7 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setCommand(VariableString.getAsVariableString(command));
@@ -181,15 +181,6 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     }
 
     @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
-    }
-
-    @Override
     protected String getTargetName() {
         return abbreviateTargetName(command);
     }
@@ -202,7 +193,7 @@ public class ThenRunProcessModel extends ThenModel<ThenRunProcessModel, ThenRunP
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return captureOutput && StringUtils.isNotEmpty(captureVariableName) ?
-                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                List.of(new VariableSourceEntry(captureVariableSource, List.of(captureVariableName))) :
                 Collections.emptyList();
     }
 }

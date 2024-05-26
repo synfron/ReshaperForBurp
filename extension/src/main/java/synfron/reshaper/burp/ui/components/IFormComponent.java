@@ -3,7 +3,7 @@ package synfron.reshaper.burp.ui.components;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
-import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
@@ -22,11 +22,11 @@ import static java.awt.Component.TOP_ALIGNMENT;
 
 public interface IFormComponent {
 
-    default Component getLabeledField(String label, Component innerComponent) {
+    default JPanel getLabeledField(String label, Component innerComponent) {
         return getLabeledField(label, innerComponent, true);
     }
 
-    default Component getLabeledField(String label, Component innerComponent, boolean span) {
+    default JPanel getLabeledField(String label, Component innerComponent, boolean span) {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout());
         container.setBorder(null);
@@ -46,6 +46,20 @@ public interface IFormComponent {
 
     default <T> JComboBox<T> createComboBox(T[] array, boolean isEditable) {
         JComboBox<T> comboBox = new JComboBox<>(array);
+        if (isEditable) {
+            comboBox.setEditable(true);
+            int columnSize = comboBox.getFontMetrics(comboBox.getFont()).charWidth('m') * 20;
+            comboBox.setPreferredSize(new Dimension(columnSize, comboBox.getPreferredSize().height));
+        }
+        return comboBox;
+    }
+
+    default <T> JComboBox<T> createComboBox(ComboBoxModel<T> model) {
+        return createComboBox(model, false);
+    }
+
+    default <T> JComboBox<T> createComboBox(ComboBoxModel<T> model, boolean isEditable) {
+        JComboBox<T> comboBox = new JComboBox<>(model);
         if (isEditable) {
             comboBox.setEditable(true);
             int columnSize = comboBox.getFontMetrics(comboBox.getFont()).charWidth('m') * 20;
@@ -121,7 +135,7 @@ public interface IFormComponent {
             String tag = model.getTag();
             if (StringUtils.isNotEmpty(tag)) {
                 int cursorPosition = textComponent.getCaretPosition();
-                int insertPosition = VariableString.getVariableTagPositions(textComponent.getText()).stream()
+                int insertPosition = VariableTag.getVariableTagPositions(textComponent.getText()).stream()
                         .noneMatch(position -> position.getLeft() < cursorPosition && cursorPosition < position.getRight()) ?
                         cursorPosition :
                         textComponent.getText().length();

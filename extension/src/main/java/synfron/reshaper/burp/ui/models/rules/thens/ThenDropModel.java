@@ -21,19 +21,10 @@ public class ThenDropModel extends ThenModel<ThenDropModel, ThenDrop> {
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDropMessage(dropMessage);
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

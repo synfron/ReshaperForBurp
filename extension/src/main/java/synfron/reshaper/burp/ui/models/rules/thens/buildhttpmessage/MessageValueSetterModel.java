@@ -90,21 +90,13 @@ public class MessageValueSetterModel {
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         messageValueSetter.setDestinationMessageValue(destinationMessageValue);
         messageValueSetter.setDestinationIdentifier(VariableString.getAsVariableString(destinationIdentifier));
         messageValueSetter.setDestinationIdentifierPlacement(destinationIdentifierPlacement);
         messageValueSetter.setSourceText(VariableString.getAsVariableString(sourceText));
-        return true;
-    }
-
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
         return true;
     }
 }

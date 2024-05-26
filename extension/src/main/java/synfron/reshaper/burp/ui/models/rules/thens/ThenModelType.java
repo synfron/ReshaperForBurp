@@ -21,7 +21,7 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenEvaluateModel, ThenEvaluate> Evaluate = new ThenModelType<>(ThenEvaluateModel.class, ThenType.Evaluate);
     public static final ThenModelType<ThenSetEventDirectionModel, ThenSetEventDirection> SetEventDirection = new ThenModelType<>(ThenSetEventDirectionModel.class, ThenType.SetEventDirection);
     public static final ThenModelType<ThenSetEncodingModel, ThenSetEncoding> SetEncoding = new ThenModelType<>(ThenSetEncodingModel.class, ThenType.SetEncoding);
-    public static final ThenModelType<ThenSetValueModel, ThenSetValue> SetValue = new ThenModelType<>(ThenSetValueModel.class, ThenType.SetValue);
+    public static final ThenModelType<ThenSetValueModel, ThenSetValue> SetValue = new ThenModelType<>(ThenSetValueModel.class, ThenType.SetValue, true);
     public static final ThenModelType<ThenDeleteValueModel, ThenDeleteValue> DeleteValue = new ThenModelType<>(ThenDeleteValueModel.class, ThenType.DeleteValue);
     public static final ThenModelType<ThenSetVariableModel, ThenSetVariable> SetVariable = new ThenModelType<>(ThenSetVariableModel.class, ThenType.SetVariable);
     public static final ThenModelType<ThenDeleteVariableModel, ThenDeleteVariable> DeleteVariable = new ThenModelType<>(ThenDeleteVariableModel.class, ThenType.DeleteVariable);
@@ -36,9 +36,16 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
     public static final ThenModelType<ThenInterceptModel, ThenIntercept> Intercept = new ThenModelType<>(ThenInterceptModel.class, ThenType.Intercept);
     public static final ThenModelType<ThenRepeatModel, ThenRepeat> Repeat = new ThenModelType<>(ThenRepeatModel.class, ThenType.Repeat);
     public static final ThenModelType<ThenReadFileModel, ThenReadFile> ReadFile = new ThenModelType<>(ThenReadFileModel.class, ThenType.ReadFile);
+    public static final ThenModelType<ThenExtractModel, ThenExtract> Extract = new ThenModelType<>(ThenExtractModel.class, ThenType.Extract);
+    public static final ThenModelType<ThenGenerateModel, ThenGenerate> Generate = new ThenModelType<>(ThenGenerateModel.class, ThenType.Generate);
+    public static final ThenModelType<ThenTransformModel, ThenTransform> Transform = new ThenModelType<>(ThenTransformModel.class, ThenType.Transform);
 
     private ThenModelType(Class<P> type, RuleOperationType<T> ruleOperationType) {
         super(type, ruleOperationType);
+    }
+
+    private ThenModelType(Class<P> type, RuleOperationType<T> ruleOperationType, boolean isDefault) {
+        super(type, ruleOperationType, isDefault);
     }
 
     public static List<ThenModelType<?,?>> getTypes(ProtocolType protocolType) {
@@ -68,7 +75,10 @@ public class ThenModelType<P extends ThenModel<P, T>, T extends Then<T>> extends
                 Drop,
                 Intercept,
                 Repeat,
-                ReadFile
+                ReadFile,
+                Extract,
+                Generate,
+                Transform
         ).filter(type -> protocolType == null || type.hasProtocolType(protocolType)).collect(Collectors.toList());
     }
 }

@@ -175,7 +175,7 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setRequest(VariableString.getAsVariableString(request));
@@ -199,15 +199,6 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
     }
 
     @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
-    }
-
-    @Override
     public RuleOperationModelType<ThenSendRequestModel, ThenSendRequest> getType() {
         return ThenModelType.SendRequest;
     }
@@ -215,7 +206,7 @@ public class ThenSendRequestModel extends ThenModel<ThenSendRequestModel, ThenSe
     @Override
     public List<VariableSourceEntry> getVariableEntries() {
         return captureOutput && StringUtils.isNotEmpty(captureVariableName) ?
-                List.of(new VariableSourceEntry(captureVariableSource, captureVariableName)) :
+                List.of(new VariableSourceEntry(captureVariableSource, List.of(captureVariableName))) :
                 Collections.emptyList();
     }
 }

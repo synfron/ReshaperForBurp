@@ -42,21 +42,12 @@ public class ThenSendMessageModel extends ThenModel<ThenSendMessageModel, ThenSe
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDataDirection(dataDirection);
         ruleOperation.setMessageType(messageType);
         ruleOperation.setMessage(VariableString.getAsVariableString(message));
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

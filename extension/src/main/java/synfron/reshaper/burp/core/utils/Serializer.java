@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
 public class Serializer {
     @Getter
     private static ObjectMapper objectMapper;
-    private static JsonFactory jsonFactory = new JsonFactory();
+    private static final JsonFactory jsonFactory = new JsonFactory();
 
     static {
         VariableStringSerializer variableStringSerializer = new VariableStringSerializer();
@@ -64,7 +63,7 @@ public class Serializer {
         builder.visibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         builder.visibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         builder.visibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
-        builder.visibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
+        builder.visibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
         if (serializers.length > 0 || deserializers.length > 0) {
             SimpleModule module = new SimpleModule();
             Stream.of(serializers).forEach(module::addSerializer);

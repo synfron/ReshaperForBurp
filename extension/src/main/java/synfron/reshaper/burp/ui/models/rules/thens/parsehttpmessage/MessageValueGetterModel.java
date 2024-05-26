@@ -136,7 +136,7 @@ public class MessageValueGetterModel {
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         messageValueGetter.setSourceMessageValue(sourceMessageValue);
@@ -147,14 +147,6 @@ public class MessageValueGetterModel {
         messageValueGetter.setItemPlacement(itemPlacement);
         messageValueGetter.setDelimiter(VariableString.getAsVariableString(delimiter));
         messageValueGetter.setIndex(VariableString.getAsVariableString(index));
-        return true;
-    }
-
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
         return true;
     }
 }

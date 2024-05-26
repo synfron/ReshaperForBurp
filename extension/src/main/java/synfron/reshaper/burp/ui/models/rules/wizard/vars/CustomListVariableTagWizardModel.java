@@ -6,6 +6,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.vars.GetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.core.vars.VariableTag;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public abstract class CustomListVariableTagWizardModel extends CustomVariableTag
     @Override
     public String getTag() {
         return validate().isEmpty() ?
-                VariableSourceEntry.getShortTag(
+                VariableTag.getShortTag(
                         getVariableSource(),
                         getVariableName(),
                         itemPlacement == GetListItemPlacement.Index ? index : itemPlacement.name()

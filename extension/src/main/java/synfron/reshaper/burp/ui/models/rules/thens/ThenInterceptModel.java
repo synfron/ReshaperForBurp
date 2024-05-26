@@ -22,19 +22,10 @@ public class ThenInterceptModel extends ThenModel<ThenInterceptModel, ThenInterc
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setInterceptResponse(interceptResponse);
-        setValidated(true);
-        return true;
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
         setValidated(true);
         return true;
     }

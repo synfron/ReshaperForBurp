@@ -69,11 +69,9 @@ public class MessageValueHandler {
     
 
     public static void setValue(EventInfo eventInfo, MessageValue messageValue, VariableString identifier, SetItemPlacement itemPlacement, String replacementText) {
-        if (eventInfo instanceof HttpEventInfo) {
-            HttpEventInfo httpEventInfo = (HttpEventInfo)eventInfo;
+        if (eventInfo instanceof HttpEventInfo httpEventInfo) {
             setValue(httpEventInfo, messageValue, identifier, itemPlacement, replacementText);
-        } else if (eventInfo instanceof WebSocketEventInfo<?>) {
-            WebSocketEventInfo<?> webSocketEventInfo = (WebSocketEventInfo<?>)eventInfo;
+        } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
             setValue(webSocketEventInfo, messageValue, replacementText);
         }
     }

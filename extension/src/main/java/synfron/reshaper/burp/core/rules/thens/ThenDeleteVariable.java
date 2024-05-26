@@ -41,7 +41,7 @@ public class ThenDeleteVariable extends Then<ThenDeleteVariable> implements IHtt
             if (eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logValue(
                     this,
                     hasError,
-                    VariableSourceEntry.getTag(
+                    VariableTag.getTag(
                             targetSource,
                             variableName.getText(eventInfo),
                             IListItemPlacement.toGet(itemPlacement),

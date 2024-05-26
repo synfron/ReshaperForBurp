@@ -1,83 +1,45 @@
 package synfron.reshaper.burp.core.vars;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.utils.TextUtils;
+import synfron.reshaper.burp.core.utils.CollectionUtils;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class VariableSourceEntry implements Serializable {
     private final VariableSource variableSource;
-    private final String name;
-    private final String tag;
+    private String tag;
+    private final List<String> params = new ArrayList<>();
 
-    private VariableSourceEntry() {
-        this(null, null, null);
-    }
-
-    public VariableSourceEntry(VariableSource variableSource, String name, String tag) {
+    public VariableSourceEntry(
+            @JsonProperty("variableSource") VariableSource variableSource,
+            @JsonProperty("name") String name,
+            @JsonProperty("params") List<String> params,
+            @JsonProperty("tag") String tag
+    ) {
         this.variableSource = variableSource;
-        this.name = name;
+        this.params.addAll(CollectionUtils.hasAny(params) ? params : VariableTag.parseParams(":" + StringUtils.defaultString(name)));
         this.tag = tag;
     }
 
-    public VariableSourceEntry(VariableSource variableSource, String name) {
-        this.variableSource = variableSource;
-        this.name = name;
-        this.tag = getTag();
+    public VariableSourceEntry(VariableSource variableSource, List<String> params, String tag) {
+        this(variableSource, null, params, tag);
     }
 
+    public VariableSourceEntry(VariableSource variableSource, List<String> params) {
+        this(variableSource, null, params, null);
+    }
+
+    @JsonProperty
     public String getTag() {
-        return StringUtils.isNotEmpty(tag) ? tag : getTag(variableSource, name);
+        if (StringUtils.isEmpty(tag)) {
+            tag = VariableTag.getTag(variableSource, false, params.toArray(String[]::new));
+        }
+        return tag;
     }
 
-    public static String getTag(VariableSource variableSource, String name, GetListItemPlacement itemPlacement, Integer index) {
-        return getTag(
-                variableSource,
-                name,
-                itemPlacement.toString(),
-                itemPlacement.isHasIndexSetter() ? TextUtils.toString(index) : null
-        );
-    }
-
-    public static String getTag(VariableSource variableSource, String name, SetListItemPlacement itemPlacement, Integer index) {
-        return getTag(
-                variableSource,
-                name,
-                itemPlacement != null ? itemPlacement.toString() : null,
-                itemPlacement != null && itemPlacement.isHasIndexSetter() ? TextUtils.toString(index) : null
-        );
-    }
-
-    public static String getTag(VariableSource variableSource, String... names) {
-        return String.format("{{%s}}", Stream.concat(
-                Stream.of(StringUtils.defaultString(variableSource.name().toLowerCase())),
-                Arrays.stream(names).map(name -> StringUtils.defaultIfEmpty(name, null))
-        ).filter(Objects::nonNull).collect(Collectors.joining(":")));
-    }
-
-    public static String getShortTag(VariableSource variableSource, String name) {
-        return String.format("{{%s:%s}}", variableSource.getShortName(), name);
-    }
-
-    public static String getShortTag(VariableSource variableSource, String... names) {
-        return String.format("{{%s}}", Stream.concat(
-                Stream.of(StringUtils.defaultString(variableSource.getShortName())),
-                Arrays.stream(names).map(name -> StringUtils.defaultIfEmpty(name, null))
-        ).filter(Objects::nonNull).collect(Collectors.joining(":")));
-    }
-
-    public static String getShortTag(VariableSource variableSource, String name, GetListItemPlacement itemPlacement, Integer index) {
-        return getShortTag(
-                variableSource,
-                name,
-                itemPlacement != null ? itemPlacement.toString() : null,
-                itemPlacement != null && itemPlacement.isHasIndexSetter() ? TextUtils.toString(index) : null
-        );
-    }
 }

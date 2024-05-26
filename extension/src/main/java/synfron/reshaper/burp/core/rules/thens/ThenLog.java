@@ -19,6 +19,7 @@ public class ThenLog extends Then<ThenLog> implements IHttpRuleOperation, IWebSo
     public RuleResponse perform(EventInfo eventInfo) {
         boolean hasError = true;
         try {
+
             Log.get().withMessage(text.getText(eventInfo)).log();
             hasError = false;
         } finally {

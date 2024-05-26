@@ -6,7 +6,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.MessageValue;
 import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableSourceEntry;
+import synfron.reshaper.burp.core.vars.VariableTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class MessageVariableTagWizardModel implements IVariableTagWizardModel {
     @Override
     public String getTag() {
         return validate().isEmpty() ?
-                VariableSourceEntry.getShortTag(
+                VariableTag.getShortTag(
                         VariableSource.Message,
                         messageValue.name().toLowerCase(),
                         messageValue.isIdentifierRequired() ? identifier : null

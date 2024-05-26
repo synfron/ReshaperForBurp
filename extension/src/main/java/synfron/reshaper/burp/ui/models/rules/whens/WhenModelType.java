@@ -13,7 +13,7 @@ public class WhenModelType<P extends WhenModel<P, T>, T extends When<T>> extends
     public static final WhenModelType<WhenEventDirectionModel, WhenEventDirection> EventDirection = new WhenModelType<>(WhenEventDirectionModel.class, WhenType.EventDirection);
     public static final WhenModelType<WhenWebSocketEventDirectionModel, WhenWebSocketEventDirection> WebSocketEventDirection = new WhenModelType<>(WhenWebSocketEventDirectionModel.class, WhenType.WebSocketEventDirection);
     public static final WhenModelType<WhenHasEntityModel, WhenHasEntity> HasEntity = new WhenModelType<>(WhenHasEntityModel.class, WhenType.HasEntity);
-    public static final WhenModelType<WhenMatchesTextModel, WhenMatchesText> MatchesText = new WhenModelType<>(WhenMatchesTextModel.class, WhenType.MatchesText);
+    public static final WhenModelType<WhenMatchesTextModel, WhenMatchesText> MatchesText = new WhenModelType<>(WhenMatchesTextModel.class, WhenType.MatchesText, true);
     public static final WhenModelType<WhenContentTypeModel, WhenContentType> ContentType = new WhenModelType<>(WhenContentTypeModel.class, WhenType.ContentType);
     public static final WhenModelType<WhenMimeTypeModel, WhenMimeType> MimeType = new WhenModelType<>(WhenMimeTypeModel.class, WhenType.MimeType);
     public static final WhenModelType<WhenMessageTypeModel, WhenMessageType> MessageType = new WhenModelType<>(WhenMessageTypeModel.class, WhenType.MessageType);
@@ -24,6 +24,10 @@ public class WhenModelType<P extends WhenModel<P, T>, T extends When<T>> extends
 
     private WhenModelType(Class<P> type, RuleOperationType<T> ruleOperationType) {
         super(type, ruleOperationType);
+    }
+
+    private WhenModelType(Class<P> type, RuleOperationType<T> ruleOperationType, boolean isDefault) {
+        super(type, ruleOperationType, isDefault);
     }
 
     public static List<WhenModelType<?,?>> getTypes(ProtocolType protocolType) {

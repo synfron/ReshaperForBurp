@@ -16,16 +16,15 @@ import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.ui.components.IFormComponent;
-import synfron.reshaper.burp.ui.components.ITabActivationListener;
+import synfron.reshaper.burp.ui.models.settings.HideItemsModel;
 import synfron.reshaper.burp.ui.utils.FocusActionListener;
+import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SettingsTabComponent extends JPanel implements IFormComponent, ITabActivationListener {
+public class SettingsTabComponent extends JPanel implements IFormComponent, HierarchyListener {
 
     private JCheckBox overwriteDuplicates;
     private SelectionTable<Rule> exportHttpRulesTable;
@@ -57,6 +56,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
     private JCheckBox webSockets;
     private ButtonGroup importMethod;
     private ButtonGroup exportMethod;
+    private JSplitButton exportData;
+    private JSplitButton importData;
 
     public SettingsTabComponent() {
         initComponent();
@@ -77,12 +78,33 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
                 BorderFactory.createEmptyBorder(4,4,4,4))
         );
 
-        container.add(getMiscOptions());
-        container.add(getCaptureTrafficOptions(), "top");
+        container.add(LeftGeneralOptions());
+        container.add(RightGeneralOptions(), "top");
         return container;
     }
 
-    private Component getMiscOptions() {
+    private void onHideFeatures(ActionEvent actionEvent) {
+        HideItemsModel model = new HideItemsModel(generalSettings);
+        ModalPrompter.open(model, ignored -> HideItemsOptionPane.showDialog(model), true);
+    }
+
+    private Component RightGeneralOptions() {
+        JPanel container = new JPanel(new MigLayout());
+        container.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+
+        defaultEncoding = createComboBox(Encoder.getEncodings().toArray(new String[0]));
+
+        defaultEncoding.setSelectedItem(generalSettings.getDefaultEncoding());
+
+        defaultEncoding.addActionListener(this::onSetDefaultEncodingChanged);
+
+
+        container.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
+        container.add(getCaptureTrafficOptions(), "wrap");
+        return container;
+    }
+
+    private Component LeftGeneralOptions() {
         JPanel container = new JPanel(new MigLayout());
 
         enableEventDiagnostics = new JCheckBox("Enable Event Diagnostics");
@@ -90,7 +112,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
         enableSanityCheckWarnings = new JCheckBox("Enable Sanity Check Warnings");
         logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
         logTabCharacterLimit = createTextField(false);
-        defaultEncoding = createComboBox(Encoder.getEncodings().toArray(new String[0]));
+        JButton hideFeatures = new JButton("Hide Features");
         JButton resetData = new JButton("Reset Data");
 
         enableEventDiagnostics.setSelected(generalSettings.isEnableEventDiagnostics());
@@ -98,14 +120,13 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
         enableSanityCheckWarnings.setSelected(generalSettings.isEnableSanityCheckWarnings());
         logInExtenderOutput.setSelected(generalSettings.isLogInExtenderOutput());
         logTabCharacterLimit.setText(Objects.toString(generalSettings.getLogTabCharacterLimit()));
-        defaultEncoding.setSelectedItem(generalSettings.getDefaultEncoding());
 
         enableEventDiagnostics.addActionListener(this::onEnableEventDiagnosticsChanged);
         diagnosticValueMaxLength.addFocusListener(new FocusActionListener(this::onDiagnosticValueMaxLengthFocusChanged));
         enableSanityCheckWarnings.addActionListener(this::onEnableSanityCheckWarningsChanged);
         logInExtenderOutput.addActionListener(this::onLogInExtenderOutputChanged);
         logTabCharacterLimit.addFocusListener(new FocusActionListener(this::onLogTabCharacterLimitFocusChanged));
-        defaultEncoding.addActionListener(this::onSetDefaultEncodingChanged);
+        hideFeatures.addActionListener(this::onHideFeatures);
         resetData.addActionListener(this::onResetData);
 
 
@@ -114,14 +135,16 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
         container.add(enableSanityCheckWarnings, "wrap");
         container.add(logInExtenderOutput, "wrap");
         container.add(getLabeledField("Logs Tab Character Limit", logTabCharacterLimit), "wrap");
-        container.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
-        container.add(resetData, "wrap");
+
+        JPanel buttons = new JPanel(new FlowLayout());
+        buttons.add(hideFeatures);
+        buttons.add(resetData);
+        container.add(buttons);
         return container;
     }
 
     private Component getCaptureTrafficOptions() {
         JPanel container = new JPanel(new MigLayout());
-        container.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         proxy = new JCheckBox("Proxy");
         repeater = new JCheckBox("Repeater");
@@ -255,7 +278,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
     }
 
     private JSplitButton getExportDataButton() {
-        JSplitButton exportData = new JSplitButton("Export Data    ");
+        exportData = new JSplitButton("Export Data (JSON)    ");
 
         JPopupMenu exportOptions = new JPopupMenu();
 
@@ -267,6 +290,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
         exportFromJson.setActionCommand(GeneralSettings.ExportMethod.Json.name());
         exportFromYaml.setSelected(generalSettings.getExportMethod() == GeneralSettings.ExportMethod.Yaml);
         exportFromYaml.setActionCommand(GeneralSettings.ExportMethod.Yaml.name());
+
+        setExportDataSelection(exportFromYaml);
 
         exportData.addButtonClickedActionListener(this::onExportData);
         exportFromYaml.addItemListener(this::onExportMethodChange);
@@ -298,7 +323,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
     }
 
     private JSplitButton getImportDataButton() {
-        JSplitButton importData = new JSplitButton("Import Data    ");
+        importData = new JSplitButton("Import Data (File)    ");
 
         JPopupMenu importOptions = new JPopupMenu();
 
@@ -310,6 +335,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
         importFromFile.setActionCommand(GeneralSettings.ImportMethod.File.name());
         importFromUrl.setSelected(generalSettings.getImportMethod() == GeneralSettings.ImportMethod.Url);
         importFromUrl.setActionCommand(GeneralSettings.ImportMethod.Url.name());
+
+        setImportDataSelection(importFromFile);
 
         importData.addButtonClickedActionListener(this::onImportData);
         importFromFile.addItemListener(this::onImportMethodChange);
@@ -327,6 +354,15 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
 
     private void onImportMethodChange(ItemEvent itemEvent) {
         generalSettings.setImportMethod(GeneralSettings.ImportMethod.valueOf(importMethod.getSelection().getActionCommand()));
+        setImportDataSelection((JRadioButtonMenuItem) itemEvent.getItem());
+    }
+
+    private void setImportDataSelection(JRadioButtonMenuItem fileMenuItem) {
+        if (fileMenuItem.isSelected()) {
+            importData.setText("Import Data (File)    ");
+        } else {
+            importData.setText("Import Data (URL)    ");
+        }
     }
 
 
@@ -360,6 +396,15 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
 
     private void onExportMethodChange(ItemEvent itemEvent) {
         generalSettings.setExportMethod(GeneralSettings.ExportMethod.valueOf(exportMethod.getSelection().getActionCommand()));
+        setExportDataSelection((JRadioButtonMenuItem)itemEvent.getItem());
+    }
+
+    private void setExportDataSelection(JRadioButtonMenuItem yamlMenuItem) {
+        if (yamlMenuItem.isSelected()) {
+            exportData.setText("Export Data (YAML)    ");
+        } else {
+            exportData.setText("Export Data (JSON)    ");
+        }
     }
 
     private void onExportData(ActionEvent actionEvent) {
@@ -460,8 +505,22 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, ITab
     }
 
     @Override
-    public void onActivated() {
-        refreshLists();
+    public void addNotify() {
+        super.addNotify();
+        addHierarchyListener(this);
+    }
+
+    @Override
+    public void removeNotify() {
+        removeHierarchyListener(this);
+        super.removeNotify();
+    }
+
+    @Override
+    public void hierarchyChanged(HierarchyEvent e) {
+        if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+            refreshLists();
+        }
     }
 
     private void refreshLists() {

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.vars.VariableSource;
-import synfron.reshaper.burp.core.vars.VariableSourceEntry;
+import synfron.reshaper.burp.core.vars.VariableTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class SpecialVariableTagWizardModel implements IVariableTagWizardModel {
     );
 
     @Getter
-    private SpecialChar specialChar = specialChars.get(0);
+    private SpecialChar specialChar = specialChars.getFirst();
 
     @Getter
     private String value;
@@ -72,7 +72,7 @@ public class SpecialVariableTagWizardModel implements IVariableTagWizardModel {
     @Override
     public String getTag() {
         return validate().isEmpty() ?
-                VariableSourceEntry.getShortTag(
+                VariableTag.getShortTag(
                         VariableSource.Special,
                         specialChar.code + (specialChar.isValueRequired() ? value : "")
                 ) :

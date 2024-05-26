@@ -36,5 +36,5 @@ public abstract class RuleOperationContainerComponent extends JPanel {
         return (Component)ObjectUtils.construct(componentClass, protocolType, model);
     }
     
-    protected abstract Map<RuleOperationModelType<?,?>, Class<?>> getComponentMap();
+    protected abstract Map<RuleOperationModelType<?,?>, Class<? extends RuleOperationComponent<?,?>>> getComponentMap();
 }

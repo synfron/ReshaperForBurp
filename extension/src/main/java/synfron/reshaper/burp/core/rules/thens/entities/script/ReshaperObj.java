@@ -99,7 +99,7 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
             ListVariable variable = (ListVariable) GlobalVariables.get().add(Variables.asKey(name, true));
-            variable.setValues(values, delimiter);
+            variable.setValues(values, delimiter, SetListItemsPlacement.Overwrite);
         }
 
         public void setEventListVariable(String name, Object[] values, String delimiter) {
@@ -107,7 +107,7 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
             ListVariable variable = (ListVariable) ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getVariables().add(Variables.asKey(name, true));
-            variable.setValues(values, delimiter);
+            variable.setValues(values, delimiter, SetListItemsPlacement.Overwrite);
         }
 
         public void setSessionListVariable(String name, Object[] values, String delimiter) {
@@ -115,7 +115,7 @@ public class ReshaperObj {
                 throw new IllegalArgumentException(String.format("Invalid variable name '%s'", name));
             }
             ListVariable variable = (ListVariable) ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getSessionVariables().add(Variables.asKey(name, true));
-            variable.setValues(values, delimiter);
+            variable.setValues(values, delimiter, SetListItemsPlacement.Overwrite);
         }
 
         public void deleteGlobalVariable(String name) {
@@ -187,25 +187,28 @@ public class ReshaperObj {
             EventInfo eventInfo = (EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo");
             String adjustedThenTypeName = StringUtils.prependIfMissing(thenType, "Then");
             Stream<ThenType<?>> supportedThenTypes = Stream.of(
-                    ThenType.Highlight,
-                    ThenType.Comment,
-                    ThenType.Evaluate,
                     ThenType.BuildHttpMessage,
+                    ThenType.Comment,
                     ThenType.DeleteValue,
                     ThenType.DeleteVariable,
                     ThenType.Drop,
+                    ThenType.Evaluate,
+                    ThenType.Extract,
+                    ThenType.Generate,
+                    ThenType.Highlight,
                     ThenType.Intercept,
                     ThenType.Log,
                     ThenType.ParseHttpMessage,
-                    ThenType.SendRequest,
+                    ThenType.ReadFile,
+                    ThenType.SaveFile,
                     ThenType.SendMessage,
+                    ThenType.SendRequest,
                     ThenType.SendTo,
-                    ThenType.SetEventDirection,
                     ThenType.SetEncoding,
+                    ThenType.SetEventDirection,
                     ThenType.SetValue,
                     ThenType.SetVariable,
-                    ThenType.SaveFile,
-                    ThenType.ReadFile
+                    ThenType.Transform
             );
             Class<?> thenClass = supportedThenTypes
                     .filter(type -> eventInfo.getProtocolType().accepts(ProtocolType.fromRuleOperationType(type.getType())))

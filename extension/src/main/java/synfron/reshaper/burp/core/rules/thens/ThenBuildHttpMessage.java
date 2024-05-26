@@ -58,7 +58,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements 
                             Pair.of("index", destinationVariableSource.isList() && itemPlacement.isHasIndexSetter() ? VariableString.getTextOrDefault(eventInfo, index, null) : null)
                     ),
                     messageValueSetters.stream().map(messageValueSetter -> Pair.of(
-                            VariableSourceEntry.getTag(
+                            VariableTag.getTag(
                                     VariableSource.Message,
                                     messageValueSetter.getDestinationMessageValue().name().toLowerCase(),
                                     messageValueSetter.getDestinationMessageValue().isIdentifierRequired() ? VariableString.getTextOrDefault(

@@ -23,7 +23,7 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
 
     public ThenSetValueModel(ProtocolType protocolType, ThenSetValue then, Boolean isNew) {
         super(protocolType, then, isNew);
-        destinationMessageValue = then.getDestinationMessageValue() != null ? then.getDestinationMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isSettable(protocolType)).findFirst().orElse(null);;
+        destinationMessageValue = then.getDestinationMessageValue() != null ? then.getDestinationMessageValue() : Arrays.stream(MessageValue.values()).filter(value -> value.isSettable(protocolType)).findFirst().orElse(null);
         destinationIdentifier = VariableString.toString(then.getDestinationIdentifier(), destinationIdentifier);
         destinationIdentifierPlacement = then.getDestinationIdentifierPlacement();
     }
@@ -54,22 +54,13 @@ public class ThenSetValueModel extends ThenSetModel<ThenSetValueModel, ThenSetVa
     }
 
     public boolean persist() {
-        if (validate().size() != 0) {
+        if (!validate().isEmpty()) {
             return false;
         }
         ruleOperation.setDestinationMessageValue(destinationMessageValue);
         ruleOperation.setDestinationIdentifier(VariableString.getAsVariableString(destinationIdentifier));
         ruleOperation.setDestinationIdentifierPlacement(destinationIdentifierPlacement);
         return super.persist();
-    }
-
-    @Override
-    public boolean record() {
-        if (validate().size() != 0) {
-            return false;
-        }
-        setValidated(true);
-        return true;
     }
 
     @Override
