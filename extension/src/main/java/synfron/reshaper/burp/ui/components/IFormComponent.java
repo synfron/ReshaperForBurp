@@ -27,6 +27,14 @@ public interface IFormComponent {
     }
 
     default JPanel getLabeledField(String label, Component innerComponent, boolean span) {
+        return getLabeledField(new JLabel(label), innerComponent, span);
+    }
+
+    default JPanel getLabeledField(JLabel label, Component innerComponent) {
+        return getLabeledField(label, innerComponent, true);
+    }
+
+    default JPanel getLabeledField(JLabel label, Component innerComponent, boolean span) {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout());
         container.setBorder(null);
@@ -35,7 +43,7 @@ public interface IFormComponent {
             container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
         }
 
-        container.add(new JLabel(label), "wrap");
+        container.add(label, "wrap");
         container.add(innerComponent, span ? "grow, push, span" : "");
         return container;
     }

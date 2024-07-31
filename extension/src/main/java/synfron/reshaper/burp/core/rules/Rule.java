@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.core.rules;
 
 import lombok.Getter;
-import lombok.Setter;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
@@ -15,9 +14,10 @@ import java.util.List;
 public class Rule implements Serializable {
     @Getter
     private final transient PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    @Getter @Setter
+
+    @Getter
     private List<? extends When<?>> whens = List.of();
-    @Getter @Setter
+    @Getter
     private List<? extends Then<?>> thens = List.of();
     @Getter
     private boolean enabled = true;
@@ -41,6 +41,16 @@ public class Rule implements Serializable {
     public void setAutoRun(boolean autoRun) {
         this.autoRun = autoRun;
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, "autoRun", autoRun));
+    }
+
+    public void setWhens(List<? extends When<?>> whens) {
+        this.whens = whens;
+        propertyChangedEvent.invoke(new PropertyChangedArgs(this, "whens", whens));
+    }
+
+    public void setThens(List<? extends Then<?>> thens) {
+        this.thens = thens;
+        propertyChangedEvent.invoke(new PropertyChangedArgs(this, "thens", thens));
     }
 
     public void setDiagnosticsEnabled(boolean diagnosticsEnabled) {

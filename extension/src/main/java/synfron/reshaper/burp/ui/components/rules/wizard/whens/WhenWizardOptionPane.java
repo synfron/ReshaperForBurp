@@ -21,6 +21,7 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
     private JTextField ruleName;
     private JPanel whenWizardItemsComponent;
     private final IEventListener<PropertyChangedArgs> whenWizardItemChangedListener = this::onWhenWizardItemChanged;
+    private JScrollPane bodyScrollPane;
 
     private WhenWizardOptionPane(WhenWizardModel model) {
         super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
@@ -58,10 +59,11 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
     }
 
     private void initComponent() {
-        container.add(getBody(), BorderLayout.CENTER);
+        bodyScrollPane = getBodyScrollPane();
+        container.add(bodyScrollPane, BorderLayout.CENTER);
     }
 
-    private Component getBody() {
+    private JScrollPane getBodyScrollPane() {
         JPanel container = new JPanel(new MigLayout());
 
         ruleName = createTextField(false);
@@ -79,6 +81,7 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         container.add(getPaddedButton(addItem), "wrap");
 
         scrollPane.setPreferredSize(container.getPreferredSize());
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         return scrollPane;
     }

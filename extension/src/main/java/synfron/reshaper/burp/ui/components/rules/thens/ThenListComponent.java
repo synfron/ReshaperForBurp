@@ -11,19 +11,26 @@ import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenModel;
 import synfron.reshaper.burp.ui.models.rules.thens.ThenModelType;
-import synfron.reshaper.burp.ui.models.rules.whens.WhenModelType;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ThenListComponent extends RuleOperationListComponent<ThenModel<?,?>> {
 
     private final IEventListener<PropertyChangedArgs> generalSettingsChangedListener = this::onGeneralSettingsChanged;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     public ThenListComponent(ProtocolType protocolType, RuleModel model) {
         super(protocolType, model);
         BurpExtender.getGeneralSettings().withListener(generalSettingsChangedListener);
+
+        model.getPropertyChangedEvent().add(modelPropertyChangedListener);
+    }
+
+    private void onModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getName().equals("thens")) {
+            refreshOperationsList();
+        }
     }
 
     @Override

@@ -21,22 +21,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter
 public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
-    @Getter
     private final EventInfo eventInfo;
-    @Getter
     private String ruleName;
-    @Getter
     private final List<WhenWizardItemModel> items = new ArrayList<>();
 
-    @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    @Getter
     private boolean invalidated;
-    @Getter
     private boolean dismissed;
 
-    @Setter @Getter
+    @Setter
     private ModalPrompter<WhenWizardModel> modalPrompter;
 
     public WhenWizardModel(EventInfo eventInfo) {

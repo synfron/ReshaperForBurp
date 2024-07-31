@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.ui.components.rules;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
@@ -86,7 +85,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         container.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         operationsListModel = new DefaultListModel<T>();
-        operationsListModel.addAll(getRuleOperations());
+        refreshOperationsList();
 
         operationsList = new JList<>(operationsListModel);
         operationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -98,6 +97,11 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
 
         container.add(scrollPane);
         return container;
+    }
+
+    protected void refreshOperationsList() {
+        operationsListModel.clear();
+        operationsListModel.addAll(getRuleOperations());
     }
 
     private Component getActionBar() {

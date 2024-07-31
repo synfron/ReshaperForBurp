@@ -1,12 +1,17 @@
 package synfron.reshaper.burp.ui.components.rules;
 
 import lombok.SneakyThrows;
+import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.rules.wizard.matchreplace.MatchAndReplaceWizardOptionPane;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
+import synfron.reshaper.burp.ui.models.rules.wizard.matchreplace.MatchAndReplaceWizardModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
+import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +43,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
     private void initComponent() {
         setLayout(new BorderLayout());
 
-        add(getRuleNameBox(), BorderLayout.PAGE_START);
+        add(getHeaderBar(), BorderLayout.PAGE_START);
         add(getRuleOperations(), BorderLayout.CENTER);
         add(getActionBar(), BorderLayout.PAGE_END);
     }
@@ -57,10 +62,33 @@ public class RuleComponent extends JPanel implements IFormComponent {
         }
     }
 
-    private Component getRuleNameBox() {
+    public Component getHeaderBar() {
         JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setLayout(new BorderLayout());
         container.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+
+        JButton addMatchAndReplace = new JButton("Add Match & Replace");
+        JPanel buttonContainer = new JPanel(new MigLayout());
+        buttonContainer.add(addMatchAndReplace);
+
+        addMatchAndReplace.addActionListener(this::onAddMatchAndReplace);
+
+        container.add(getRuleNameBox(), BorderLayout.LINE_START);
+        container.add(buttonContainer, BorderLayout.LINE_END);
+        return container;
+    }
+
+    private void onAddMatchAndReplace(ActionEvent actionEvent) {
+        try {
+            MatchAndReplaceWizardModel model = new MatchAndReplaceWizardModel(this.model);
+            ModalPrompter.open(model, ignored -> MatchAndReplaceWizardOptionPane.showDialog(model), true);
+        } catch (Exception e) {
+            Log.get().withMessage("Failed to create rule from content menu").withException(e).logErr();
+        }
+    }
+
+    private Component getRuleNameBox() {
+        JPanel container = new JPanel(new MigLayout());
 
         ruleName = createTextField(false);
 
@@ -71,7 +99,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
 
         ruleName.getDocument().addDocumentListener(new DocumentActionListener(this::onRuleNameChanged));
 
-        container.add(new JLabel("Rule Name *"));
+        container.add(new JLabel("Rule Name *"), "wrap");
         container.add(ruleName);
         return container;
     }
