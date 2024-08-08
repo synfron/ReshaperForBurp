@@ -1,10 +1,12 @@
 package synfron.reshaper.burp.ui.components.rules;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.matchreplace.MatchAndReplaceWizardOptionPane;
@@ -25,6 +27,8 @@ import java.util.Map;
 public class RuleComponent extends JPanel implements IFormComponent {
     private final ProtocolType protocolType;
     private final RuleModel model;
+    @Getter
+    private final Workspace workspace;
     private JCheckBox isEnabled;
     private JCheckBox autoRun;
     private JTextField ruleName;
@@ -32,6 +36,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
     private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     public RuleComponent(ProtocolType protocolType, RuleModel model) {
+        this.workspace = getHostedWorkspace();
         this.protocolType = protocolType;
         this.model = model;
 
@@ -83,7 +88,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
             MatchAndReplaceWizardModel model = new MatchAndReplaceWizardModel(this.model);
             ModalPrompter.open(model, ignored -> MatchAndReplaceWizardOptionPane.showDialog(model), true);
         } catch (Exception e) {
-            Log.get().withMessage("Failed to create rule from content menu").withException(e).logErr();
+            Log.get(workspace).withMessage("Failed to create rule from content menu").withException(e).logErr();
         }
     }
 
@@ -206,5 +211,11 @@ public class RuleComponent extends JPanel implements IFormComponent {
                     "Validation Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

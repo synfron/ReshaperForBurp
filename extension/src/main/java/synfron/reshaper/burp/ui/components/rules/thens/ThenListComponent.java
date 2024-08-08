@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
-import burp.BurpExtender;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
@@ -22,7 +21,7 @@ public class ThenListComponent extends RuleOperationListComponent<ThenModel<?,?>
 
     public ThenListComponent(ProtocolType protocolType, RuleModel model) {
         super(protocolType, model);
-        BurpExtender.getGeneralSettings().withListener(generalSettingsChangedListener);
+        workspace.getGeneralSettings().withListener(generalSettingsChangedListener);
 
         model.getPropertyChangedEvent().add(modelPropertyChangedListener);
     }
@@ -47,7 +46,7 @@ public class ThenListComponent extends RuleOperationListComponent<ThenModel<?,?>
     @Override
     protected List<RuleOperationModelType<?,?>> getRuleOperationModelTypes() {
         return ThenModelType.getTypes(protocolType).stream()
-                .filter(type -> !BurpExtender.getGeneralSettings().getHiddenThenTypes().contains(type.getName()))
+                .filter(type -> !workspace.getGeneralSettings().getHiddenThenTypes().contains(type.getName()))
                 .collect(Collectors.toList());
     }
 

@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.messages;
 
-import burp.BurpExtender;
 import burp.api.montoya.core.Annotations;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.requests.HttpRequest;
@@ -12,6 +11,7 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.rules.diagnostics.Diagnostics;
 import synfron.reshaper.burp.core.rules.diagnostics.IDiagnostics;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.UrlUtils;
 import synfron.reshaper.burp.core.vars.Variables;
 
@@ -41,30 +41,38 @@ public abstract class EventInfo {
     @Getter
     protected final Variables variables = new Variables();
     @Getter
+    protected final Workspace workspace;
+    @Getter
     private final Variables sessionVariables;
     @Getter
-    protected final Encoder encoder = new Encoder(BurpExtender.getGeneralSettings().getDefaultEncoding());
+    protected final Encoder encoder;
     protected boolean changed;
     @Getter
-    protected final IDiagnostics diagnostics = new Diagnostics();
+    protected final IDiagnostics diagnostics;
 
-    public EventInfo(BurpTool burpTool, HttpRequest httpRequest, Annotations annotations, Variables sessionVariables) {
+    public EventInfo(Workspace workspace, BurpTool burpTool, HttpRequest httpRequest, Annotations annotations, Variables sessionVariables) {
+        this.workspace = workspace;
+        encoder = new Encoder(workspace.getGeneralSettings().getDefaultEncoding());
+        diagnostics = new Diagnostics(workspace);
         this.sessionVariables = sessionVariables;
         this.burpTool = burpTool;
         this.initialHttpRequest = httpRequest;
         this.annotations = annotations;
-        httpRequestMessage = new HttpRequestMessage(httpRequest, encoder);
+        httpRequestMessage = new HttpRequestMessage(workspace, httpRequest, encoder);
         destinationPort = httpRequest.httpService().port();
         destinationAddress = httpRequest.httpService().host();
     }
 
     protected EventInfo(EventInfo sourceEventInfo) {
+        this.workspace = sourceEventInfo.workspace;
+        encoder = new Encoder(workspace.getGeneralSettings().getDefaultEncoding());
+        diagnostics = new Diagnostics(workspace);
         this.sessionVariables = sourceEventInfo.getSessionVariables();
         this.burpTool = sourceEventInfo.getBurpTool();
         this.initialHttpRequest = null;
         this.annotations = null;
         this.encoder.setEncoding(sourceEventInfo.getEncoder().getEncoding(), sourceEventInfo.getEncoder().isAutoSet());
-        httpRequestMessage = new HttpRequestMessage(sourceEventInfo.getHttpRequestMessage().getValue(), encoder);
+        httpRequestMessage = new HttpRequestMessage(workspace, sourceEventInfo.getHttpRequestMessage().getValue(), encoder);
         httpProtocol = sourceEventInfo.getHttpProtocol();
         destinationPort = sourceEventInfo.getDestinationPort();
         destinationAddress = sourceEventInfo.getDestinationAddress();

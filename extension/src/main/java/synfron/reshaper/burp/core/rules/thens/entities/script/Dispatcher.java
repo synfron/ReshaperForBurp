@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoException;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
+import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.utils.Log;
 
 import java.util.HashMap;
@@ -45,6 +46,10 @@ public class Dispatcher {
         current.set(this);
     }
 
+    public EventInfo getEventInfo() {
+        return (EventInfo) dataBag.get("eventInfo");
+    }
+
     private Runnable getRunner(Consumer<Context> consumer, boolean shutdownOnException, boolean close) {
         numTasks.incrementAndGet();
         return () -> {
@@ -56,7 +61,7 @@ public class Dispatcher {
                     setFirstException(e);
                     executor.shutdownNow();
                 } else {
-                    Log.get().withMessage("Script execution error")
+                    Log.get(getEventInfo().getWorkspace()).withMessage("Script execution error")
                             .withException(e)
                             .withPayload(e instanceof RhinoException ? ((RhinoException)e).getScriptStackTrace() : null)
                             .logErr();
@@ -112,7 +117,7 @@ public class Dispatcher {
                 }
             }
         } catch (InterruptedException e) {
-            Log.get().withMessage("Unexpected script termination").withException(e).logErr();
+            Log.get(getEventInfo().getWorkspace()).withMessage("Unexpected script termination").withException(e).logErr();
         }
     }
 

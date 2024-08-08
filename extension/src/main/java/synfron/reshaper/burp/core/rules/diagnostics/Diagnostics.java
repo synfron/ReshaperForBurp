@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.rules.diagnostics;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -14,12 +13,14 @@ import synfron.reshaper.burp.core.rules.MatchType;
 import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.thens.Then;
 import synfron.reshaper.burp.core.rules.whens.When;
+import synfron.reshaper.burp.core.settings.Workspace;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Diagnostics implements IDiagnostics {
+    private final Workspace workspace;
     private Integer diagnosticValueMaxLength;
 
     private List<DiagnosticRecord> records;
@@ -40,6 +41,10 @@ public class Diagnostics implements IDiagnostics {
                 "\t", "\\t"
         );
         EscapeChars = new LookupTranslator(escapeCharsMap);
+    }
+
+    public Diagnostics(Workspace workspace) {
+        this.workspace = workspace;
     }
 
     @Override
@@ -290,7 +295,7 @@ public class Diagnostics implements IDiagnostics {
 
     private int getDiagnosticValueMaxLength() {
         if (diagnosticValueMaxLength == null) {
-            diagnosticValueMaxLength = BurpExtender.getGeneralSettings().getDiagnosticValueMaxLength();
+            diagnosticValueMaxLength = workspace.getGeneralSettings().getDiagnosticValueMaxLength();
         }
         return diagnosticValueMaxLength;
     }

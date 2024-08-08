@@ -41,6 +41,10 @@ public class ComponentVisibilityManager {
 
     private static void updateVisibilityFieldChangeDependency(JPanel container, Component dependent, BooleanSupplier condition) {
         boolean isVisible = condition.getAsBoolean();
+        updateVisibility(container, dependent, isVisible);
+    }
+
+    public static void updateVisibility(JPanel container, Component dependent, boolean isVisible) {
         if (isVisible != dependent.isEnabled()) {
             if (isVisible) {
                 container.add(dependent);

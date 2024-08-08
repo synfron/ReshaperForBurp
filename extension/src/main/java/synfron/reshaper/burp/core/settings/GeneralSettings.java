@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Getter;
 import synfron.reshaper.burp.core.BurpTool;
-import synfron.reshaper.burp.core.Tab;
+import synfron.reshaper.burp.core.WorkspaceTab;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
@@ -34,7 +34,7 @@ public class GeneralSettings {
     private String lastExportFileName = "ReshaperBackup.json";
     private HashSet<String> hiddenThenTypes = new HashSet<>();
     private HashSet<String> hiddenWhenTypes = new HashSet<>();
-    private HashSet<Tab> hiddenTabs = new HashSet<>();
+    private HashSet<WorkspaceTab> hiddenTabs = new HashSet<>();
 
     @Getter @JsonIgnore
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
@@ -182,7 +182,7 @@ public class GeneralSettings {
         propertyChanged("hiddenWhenTypes", hiddenWhenTypes);
     }
 
-    public void setHiddenTabs(HashSet<Tab> hiddenTabs) {
+    public void setHiddenTabs(HashSet<WorkspaceTab> hiddenTabs) {
         this.hiddenTabs = hiddenTabs;
         propertyChanged("hiddenTabs", hiddenTabs);
     }

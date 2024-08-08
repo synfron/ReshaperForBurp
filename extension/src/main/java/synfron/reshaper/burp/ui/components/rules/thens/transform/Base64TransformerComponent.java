@@ -3,9 +3,11 @@ package synfron.reshaper.burp.ui.components.rules.thens.transform;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.thens.entities.transform.Base64Variant;
 import synfron.reshaper.burp.core.rules.thens.entities.transform.EncodeTransform;
+import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.transform.Base64TransformerModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class Base64TransformerComponent extends TransformerComponent<Base64TransformerModel> {

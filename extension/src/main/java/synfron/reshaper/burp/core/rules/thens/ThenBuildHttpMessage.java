@@ -76,7 +76,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements 
     }
 
     private String buildRequestMessage(EventInfo eventInfo) {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, starterHttpMessage, "")
         ), eventInfo.getEncoder());
         for (MessageValueSetter messageValueSetter : getMessageValueSetters()) {
@@ -93,7 +93,7 @@ public class ThenBuildHttpMessage extends Then<ThenBuildHttpMessage> implements 
     }
 
     private String buildResponseMessage(EventInfo eventInfo) {
-        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, starterHttpMessage, "")
         ), eventInfo.getEncoder());
         for (MessageValueSetter messageValueSetter : getMessageValueSetters()) {

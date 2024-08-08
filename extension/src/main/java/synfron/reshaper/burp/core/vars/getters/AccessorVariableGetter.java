@@ -27,7 +27,7 @@ public class AccessorVariableGetter extends VariableGetter {
             case Message -> getMessageVariable(eventInfo, variable.getParams());
             case File -> getFileText(eventInfo, variable.getParams());
             case Special -> variable.getParams().getFirst();
-            case CookieJar -> getCookie(variable.getParams());
+            case CookieJar -> getCookie(eventInfo, variable.getParams());
             case Annotation -> getAnnotation(eventInfo, variable.getParams());
             case Macro -> getMacro(eventInfo, variable.getParams());
             case Generator -> generate(eventInfo, variable.getParams());
@@ -75,6 +75,7 @@ public class AccessorVariableGetter extends VariableGetter {
             if (macroItemIndex >= 0 && messageValue != null) {
                 HttpRequestResponse requestResponse = CollectionUtils.elementAtOrDefault(eventInfo.getMacros(), macroItemIndex);
                 HttpEventInfo macroEventInfo = new HttpEventInfo(
+                        eventInfo.getWorkspace(),
                         HttpDataDirection.Response,
                         eventInfo.getBurpTool(),
                         null,
@@ -104,7 +105,7 @@ public class AccessorVariableGetter extends VariableGetter {
         return null;
     }
 
-    private String getCookie(List<String> parts) {
+    private String getCookie(EventInfo eventInfo, List<String> parts) {
         try {
             String domain = parts.getFirst();
             String name = parts.get(1);
@@ -117,9 +118,7 @@ public class AccessorVariableGetter extends VariableGetter {
                 }
             }
         } catch (Exception e) {
-            if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
-                Log.get().withMessage(String.format("Invalid use of cookie jar variable tag: %s", VariableTag.getTag(VariableSource.CookieJar, parts.toArray(String[]::new)))).withException(e).logErr();
-            }
+            Log.get(eventInfo.getWorkspace()).withMessage(String.format("Invalid use of cookie jar variable tag: %s", VariableTag.getTag(VariableSource.CookieJar, parts.toArray(String[]::new)))).withException(e).logErr();
         }
         return "";
     }
@@ -135,9 +134,7 @@ public class AccessorVariableGetter extends VariableGetter {
             }
             return FileUtils.readFileToString(file, encoding);
         } catch (Exception e) {
-            if (eventInfo.getDiagnostics().isEnabled()) {
-                Log.get().withMessage(String.format("Error reading file with variable tag: %s", VariableTag.getTag(VariableSource.Special, variableNameParts.toArray(String[]::new)))).withException(e).logErr();
-            }
+            Log.get(eventInfo.getWorkspace()).withMessage(String.format("Error reading file with variable tag: %s", VariableTag.getTag(VariableSource.Special, variableNameParts.toArray(String[]::new)))).withException(e).logErr();
         }
         return null;
     }

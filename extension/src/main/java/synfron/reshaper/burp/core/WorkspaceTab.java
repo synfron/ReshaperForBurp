@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum Tab {
+public enum WorkspaceTab {
     HttpRules("HTTP Rules"),
     WebSocketRules ("WebSocket Rules"),
     GlobalVariables("Global Variables"),
@@ -17,7 +17,7 @@ public enum Tab {
     private String name;
     private boolean hideable = true;
 
-    Tab(String name) {
+    WorkspaceTab(String name) {
         this.name = name;
     }
 
@@ -26,7 +26,7 @@ public enum Tab {
         return name;
     }
     
-    public static Tab byName(String name) {
-        return Arrays.stream(Tab.values()).filter(tab -> tab.name.equals(name)).findFirst().orElse(null);
+    public static WorkspaceTab byName(String name) {
+        return Arrays.stream(WorkspaceTab.values()).filter(tab -> tab.name.equals(name)).findFirst().orElse(null);
     }
 }

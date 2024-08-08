@@ -705,7 +705,7 @@ class Api implements MontoyaApi {
         }
     }
 
-    private static class EditorImpl implements Editor, IFormComponent {
+    private static class EditorImpl extends Component implements Editor, IFormComponent {
 
         private final JPanel component;
         protected final JTextPane editorBox;
@@ -745,6 +745,12 @@ class Api implements MontoyaApi {
         @Override
         public Component uiComponent() {
             return component;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends Component & IFormComponent> T getComponent() {
+            return (T) this;
         }
     }
 

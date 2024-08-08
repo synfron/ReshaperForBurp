@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.rules.thens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,24 +19,25 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+@Getter
 public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, IWebSocketRuleOperation {
-    @Getter @Setter
+    @Setter
     private VariableString description;
-    @Getter @Setter
+    @Setter
     private VariableString starterText;
-    @Getter @Setter
+    @Setter
     private VariableString failAfter;
-    @Getter @Setter
+    @Setter
     private boolean breakAfterFailure = true;
-    @Getter @Setter
+    @Setter
     private VariableSource captureVariableSource = VariableSource.Global;
-    @Getter @Setter
+    @Setter
     private VariableString captureVariableName;
-    @Getter @Setter
+    @Setter
     private SetListItemPlacement itemPlacement = SetListItemPlacement.Index;
-    @Getter @Setter
+    @Setter
     private VariableString delimiter;
-    @Getter @Setter
+    @Setter
     private VariableString index;
 
     @Override
@@ -56,11 +56,11 @@ public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, 
             starterText = VariableString.getTextOrDefault(eventInfo, this.starterText, "");
             PromptRequestMessage requestMessage = new PromptRequestMessage(UUID.randomUUID().toString(), description, starterText);
             MessageWaiter<PromptResponseMessage> messageWaiter = new MessageWaiter<>(
-                    BurpExtender.getMessageEvent(),
+                    eventInfo.getWorkspace().getMessageEvent(),
                     MessageType.PromptResponse,
                     responseMessage -> responseMessage.getMessageId().equals(requestMessage.getMessageId())
             );
-            BurpExtender.getMessageEvent().invoke(new MessageArgs(this, requestMessage));
+            eventInfo.getWorkspace().getMessageEvent().invoke(new MessageArgs(this, requestMessage));
             if (messageWaiter.waitForMessage(failAfterInMilliseconds, TimeUnit.MILLISECONDS)) {
                 output = messageWaiter.getMessage().getResponse();
                 if (output != null) {
@@ -78,7 +78,7 @@ public class ThenPrompt extends Then<ThenPrompt> implements IHttpRuleOperation, 
                 }
                 complete = true;
             } else {
-                BurpExtender.getMessageEvent().invoke(new MessageArgs(this, new PromptCancelMessage(requestMessage.getMessageId())));
+                eventInfo.getWorkspace().getMessageEvent().invoke(new MessageArgs(this, new PromptCancelMessage(requestMessage.getMessageId())));
                 failed = true;
             }
         } catch (InterruptedException e) {

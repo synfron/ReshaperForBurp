@@ -3,9 +3,12 @@ package synfron.reshaper.burp.ui.components;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
 import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
 import synfron.reshaper.burp.ui.utils.ModalPrompter;
@@ -20,7 +23,18 @@ import java.awt.event.KeyEvent;
 import static java.awt.Component.LEFT_ALIGNMENT;
 import static java.awt.Component.TOP_ALIGNMENT;
 
-public interface IFormComponent {
+public interface IFormComponent extends IWorkspaceDependentComponent, IWorkspaceHost {
+
+    @Override
+    default Workspace getWorkspace() {
+        return getHostedWorkspace(getComponent());
+    }
+
+    <T extends Component & IFormComponent> T getComponent();
+
+    default Workspace getHostedWorkspace() {
+        return getHostedWorkspace(getComponent());
+    }
 
     default JPanel getLabeledField(String label, Component innerComponent) {
         return getLabeledField(label, innerComponent, true);
@@ -104,7 +118,7 @@ public interface IFormComponent {
         return addContextMenu(addUndo(textComponent), false, getProtocolType());
     }
 
-    private static <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags, ProtocolType protocolType) {
+    private <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags, ProtocolType protocolType) {
         JPopupMenu popupMenu = new JPopupMenu();
 
         Action cut = new DefaultEditorKit.CutAction();
@@ -123,7 +137,7 @@ public interface IFormComponent {
         popupMenu.add(selectAll);
 
         if (supportsVariableTags) {
-            Action addVariableTag =  new ActionPerformedListener(event -> insertVariableTag(textComponent, protocolType));
+            Action addVariableTag =  new ActionPerformedListener(event -> createEntryPoint(() -> insertVariableTag(textComponent, protocolType)));
             addVariableTag.putValue(Action.NAME, "Insert Variable Tag");
             popupMenu.addSeparator();
             popupMenu.add(addVariableTag);

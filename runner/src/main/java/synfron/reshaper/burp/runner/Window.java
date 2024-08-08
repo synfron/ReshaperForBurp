@@ -6,6 +6,7 @@
 package synfron.reshaper.burp.runner;
 
 import burp.BurpExtender;
+import synfron.reshaper.burp.core.settings.Workspaces;
 import synfron.reshaper.burp.core.utils.BurpUtils;
 import synfron.reshaper.burp.ui.components.ReshaperComponent;
 
@@ -30,7 +31,7 @@ public class Window extends JFrame {
     }
 
     private void initComponents() {
-        add(new ReshaperComponent());
+        add(new ReshaperComponent(Workspaces.get()));
     }
 
 }

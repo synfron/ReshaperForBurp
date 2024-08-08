@@ -126,4 +126,10 @@ public class WhenWizardItemComponent extends JPanel implements IFormComponent {
         outerContainer.add(button);
         return outerContainer;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
+    }
 }

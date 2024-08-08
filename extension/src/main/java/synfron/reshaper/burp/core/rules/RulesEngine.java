@@ -47,9 +47,9 @@ public class RulesEngine implements IWhenGroup, IThenGroup {
                 thenResult = thenResult.or(perform(rule.getThens(), eventInfo));
             }
         } catch (RhinoException e) {
-            Log.get().withMessage("Failure running rule").withException(e).withPayload(e.getScriptStackTrace()).logErr();
+            Log.get(eventInfo.getWorkspace()).withMessage("Failure running rule").withException(e).withPayload(e.getScriptStackTrace()).logErr();
         } catch (Exception e) {
-            Log.get().withException(e).withMessage("Failure running rule").withPayload(rule).logErr();
+            Log.get(eventInfo.getWorkspace()).withException(e).withMessage("Failure running rule").withPayload(rule).logErr();
         } finally {
             if (rule.isEnabled() && eventInfo.getDiagnostics().isEnabled()) eventInfo.getDiagnostics().logEnd(rule);
         }

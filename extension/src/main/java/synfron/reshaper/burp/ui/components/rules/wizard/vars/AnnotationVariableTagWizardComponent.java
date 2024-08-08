@@ -6,6 +6,7 @@ import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.AnnotationVariableTagWizardModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class AnnotationVariableTagWizardComponent extends JPanel implements IFormComponent {
@@ -31,5 +32,11 @@ public class AnnotationVariableTagWizardComponent extends JPanel implements IFor
 
     private void onMessageAnnotationChanged(ActionEvent actionEvent) {
         model.setMessageAnnotation((MessageAnnotation)messageAnnotation.getSelectedItem());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

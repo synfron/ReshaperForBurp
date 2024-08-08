@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFormComponent {
 
@@ -26,7 +27,7 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
     private JCheckBox regexMatch;
 
     private MatchAndReplaceWizardOptionPane(MatchAndReplaceWizardModel model) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
         container = (JPanel)message;
         this.model = model;
         addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
@@ -34,7 +35,7 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
     }
 
     private void onPropertyChanged(PropertyChangeEvent event) {
-        if (getValue() != null && (int)getValue() == JOptionPane.OK_OPTION) {
+        if (Objects.equals(getValue(), "OK")) {
             if (!model.updateRule()) {
                 JOptionPane.showMessageDialog(this,
                         String.join("\n", model.validate()),
@@ -127,5 +128,11 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
 
     private void onRegexMatchChanged(ActionEvent actionEvent) {
         model.setRegexMatch(regexMatch.isSelected());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

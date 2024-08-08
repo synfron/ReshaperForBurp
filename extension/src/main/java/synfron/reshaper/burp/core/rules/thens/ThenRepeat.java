@@ -154,7 +154,7 @@ public class ThenRepeat extends Then<ThenRepeat> implements IHttpRuleOperation, 
         entryVariableNameText = entryVariableName.getText(eventInfo);
         VariableSourceEntry variable1 = new VariableSourceEntry(listVariableSource, List.of(listVariableNameText));
         ListVariable variable = switch (variable1.getVariableSource()) {
-            case GlobalList -> (ListVariable) GlobalVariables.get().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
+            case GlobalList -> (ListVariable) eventInfo.getWorkspace().getGlobalVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
             case EventList -> (ListVariable) eventInfo.getVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
             case SessionList -> (ListVariable) eventInfo.getSessionVariables().getOrDefault(Variables.asKey(variable1.getParams().getFirst(), true));
             default -> null;

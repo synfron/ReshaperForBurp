@@ -7,6 +7,7 @@ import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class SpecialVariableTagWizardComponent extends JPanel implements IFormComponent {
@@ -23,7 +24,7 @@ public class SpecialVariableTagWizardComponent extends JPanel implements IFormCo
         setLayout(new MigLayout());
 
         specialChar = createComboBox(model.getSpecialChars().toArray(new SpecialVariableTagWizardModel.SpecialChar[0]));
-        value = createTextField(true);
+        value = createTextField(false);
 
         specialChar.setSelectedItem(model.getSpecialChar());
         value.setText(model.getValue());
@@ -45,5 +46,11 @@ public class SpecialVariableTagWizardComponent extends JPanel implements IFormCo
 
     private void onValueChanged(ActionEvent actionEvent) {
         model.setValue(value.getText());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

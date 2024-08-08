@@ -4,19 +4,23 @@ import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Event<A> {
     private List<WeakReference<IEventListener<A>>> listeners;
 
     public synchronized void clearListeners() {
         if (listeners != null) {
-            listeners.clear();
+            listeners = null;
         }
     }
 
     public synchronized void remove(IEventListener<A> listener) {
         if (listeners != null) {
-            listeners.removeIf(listenerReference -> listenerReference.get() == null || listenerReference.get().equals(listener));
+            listeners = listeners.stream()
+                    .filter(listenerReference -> listenerReference.get() != null && !Objects.equals(listenerReference.get(), listener))
+                    .collect(Collectors.toCollection(LinkedList::new));
             if (listeners.isEmpty()) {
                 listeners = null;
             }
@@ -24,7 +28,11 @@ public class Event<A> {
     }
 
     public synchronized void add(IEventListener<A> listener) {
-        getListeners().add(new WeakReference<>(listener));
+        LinkedList<WeakReference<IEventListener<A>>> listeners = this.listeners == null ? new LinkedList<>() : this.listeners.stream()
+                .filter(listenerReference -> listenerReference.get() != null)
+                .collect(Collectors.toCollection(LinkedList::new));
+        listeners.add(new WeakReference<>(listener));
+        this.listeners = listeners;
     }
 
     public synchronized void invoke(A args) {
@@ -39,12 +47,5 @@ public class Event<A> {
                 }
             }
         }
-    }
-
-    private List<WeakReference<IEventListener<A>>> getListeners() {
-        if (listeners == null) {
-            listeners = new LinkedList<>();
-        }
-        return listeners;
     }
 }

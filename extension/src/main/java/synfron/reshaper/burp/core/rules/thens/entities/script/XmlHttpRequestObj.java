@@ -79,8 +79,9 @@ public class XmlHttpRequestObj {
         uriBuilder.setParameters(inputUriBuilder.getQueryParams());
         uriBuilder.setFragment(inputUriBuilder.getFragment());
         String request = String.format(requestTemplate, method, uriBuilder, requestUrl.getAuthority());
-        Encoder encoder = ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
-        requestMessage = new HttpRequestMessage(encoder.encode(request), encoder);
+        EventInfo eventInfo = (EventInfo) Dispatcher.getCurrent().getDataBag().get("eventInfo");
+        Encoder encoder = eventInfo.getEncoder();
+        requestMessage = new HttpRequestMessage(eventInfo.getWorkspace(), encoder.encode(request), encoder);
         setReadyState(OPENED);
     }
 
@@ -145,9 +146,10 @@ public class XmlHttpRequestObj {
             if (!Thread.interrupted()) {
                 try {
                     HttpRequestMessage requestMessage = this.requestMessage;
-                    Encoder encoder = ((EventInfo)Dispatcher.getCurrent().getDataBag().get("eventInfo")).getEncoder();
+                    EventInfo eventInfo = (EventInfo) Dispatcher.getCurrent().getDataBag().get("eventInfo");
+                    Encoder encoder = eventInfo.getEncoder();
                     if (StringUtils.isNotEmpty(body)) {
-                        requestMessage = new HttpRequestMessage(requestMessage.getValue(), encoder);
+                        requestMessage = new HttpRequestMessage(eventInfo.getWorkspace(), requestMessage.getValue(), encoder);
                         requestMessage.setBody(body);
                     }
                     boolean useHttps = !StringUtils.equalsIgnoreCase(requestUrl.getScheme(), "http");
@@ -164,7 +166,7 @@ public class XmlHttpRequestObj {
                         dispatcher.execute(context -> {
                             if (response != null) {
                                 responseURL = requestUrl.toString();
-                                responseMessage = new HttpResponseMessage(response, encoder);
+                                responseMessage = new HttpResponseMessage(eventInfo.getWorkspace(), response, encoder);
                                 setReadyState(DONE);
                                 execute(onload);
                             } else {

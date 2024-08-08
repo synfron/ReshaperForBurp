@@ -6,6 +6,7 @@ import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.CookieJarVariableTagWizardModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class CookieJarVariableTagWizardComponent extends JPanel implements IFormComponent {
@@ -70,5 +71,11 @@ public class CookieJarVariableTagWizardComponent extends JPanel implements IForm
         name.removeAllItems();
         model.getNames().getOptions().forEach(option -> name.addItem(option));
         name.setSelectedItem(model.getNames().getSelectedOption());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }
