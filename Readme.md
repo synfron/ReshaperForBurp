@@ -2,7 +2,7 @@
 
 Extension for Burp Suite to trigger actions and reshape HTTP request/response and WebSocket traffic using configurable Rules
 
-![Screenshot](https://user-images.githubusercontent.com/48854453/206939994-3cf7beb7-61bb-4f12-8b7b-10239e4d0281.png)
+![Screenshot](https://github.com/user-attachments/assets/3e07dbe2-a71a-4a8a-8f75-206ce7bb9254)
 
 [Example Usage](https://synfron.github.io/ReshaperForBurp/Examples.html)
 
@@ -103,6 +103,10 @@ Transform - Transform/convert a value
 Share values across different Rules while processing the same event or all events.
 
 [More](https://synfron.github.io/ReshaperForBurp/Variables.html)
+
+## Additional Features
+
+[Additional Features](https://synfron.github.io/ReshaperForBurp/Features.html)
 
 ## Development
 

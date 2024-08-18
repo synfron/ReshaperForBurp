@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.messages.entities.http;
 
-import burp.BurpExtender;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.requests.HttpRequest;
@@ -8,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.ContentType;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.SetItemPlacement;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.ObjectUtils;
 import synfron.reshaper.burp.core.utils.Url;
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 public class HttpRequestMessage extends HttpEntity {
 
+    private final Workspace workspace;
     private HttpRequest httpRequest;
     private final byte[] request;
     private final Encoder encoder;
@@ -26,13 +27,15 @@ public class HttpRequestMessage extends HttpEntity {
     private HttpBody body;
     private boolean initialized;
 
-    public HttpRequestMessage(HttpRequest httpRequest, Encoder encoder) {
+    public HttpRequestMessage(Workspace workspace, HttpRequest httpRequest, Encoder encoder) {
+        this.workspace = workspace;
         this.httpRequest = httpRequest;
         this.request = httpRequest != null ? httpRequest.toByteArray().getBytes() : new byte[0];
         this.encoder = encoder;
     }
 
-    public HttpRequestMessage(byte[] request, Encoder encoder) {
+    public HttpRequestMessage(Workspace workspace, byte[] request, Encoder encoder) {
+        this.workspace = workspace;
         this.request = request;
         this.encoder = encoder;
     }
@@ -59,13 +62,13 @@ public class HttpRequestMessage extends HttpEntity {
     }
 
     private void sanityCheckHeaders() {
-        if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
+        if (workspace.getGeneralSettings().isEnableSanityCheckWarnings()) {
             for (int byteIndex = 0; byteIndex < request.length; byteIndex++) {
                 if (request[byteIndex] == '\r') {
                     break;
                 } else if (request[byteIndex] == '\n') {
                     String headersWarning = "Sanity Check - Warning: First line of a raw request with value '%s' has a line feed without a carriage return, and may result in missing headers.";
-                    Log.get().withMessage(String.format(headersWarning, ByteArray.byteArray(Arrays.copyOfRange(request, 0, byteIndex)))).log();
+                    Log.get(workspace).withMessage(String.format(headersWarning, ByteArray.byteArray(Arrays.copyOfRange(request, 0, byteIndex)))).log();
                     break;
                 }
             }

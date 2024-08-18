@@ -1,8 +1,8 @@
 package synfron.reshaper.burp.core.vars;
 
-import burp.BurpExtender;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import synfron.reshaper.burp.core.settings.Workspaces;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 
@@ -108,9 +108,7 @@ public class VariableTag {
         try {
             return TextUtils.parseSpecialChars(sequences);
         } catch (Exception e) {
-            if (BurpExtender.getGeneralSettings().isEnableEventDiagnostics()) {
-                Log.get().withMessage(String.format("Invalid use of special character variable tag: %s", VariableTag.getTag(VariableSource.Special, sequences))).withException(e).logErr();
-            }
+            Log.get(Workspaces.get().getCurrentWorkspace()).withMessage(String.format("Invalid use of special character variable tag: %s", VariableTag.getTag(VariableSource.Special, sequences))).withException(e).logErr();
         }
         return null;
     }

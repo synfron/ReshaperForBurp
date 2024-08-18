@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.whens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -21,22 +20,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter
 public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
-    @Getter
     private final EventInfo eventInfo;
-    @Getter
     private String ruleName;
-    @Getter
     private final List<WhenWizardItemModel> items = new ArrayList<>();
 
-    @Getter
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    @Getter
     private boolean invalidated;
-    @Getter
     private boolean dismissed;
 
-    @Setter @Getter
+    @Setter
     private ModalPrompter<WhenWizardModel> modalPrompter;
 
     public WhenWizardModel(EventInfo eventInfo) {
@@ -133,12 +127,12 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
                 WhenEventDirection direction = new WhenEventDirection();
                 direction.setDataDirection(requiresResponse ? HttpDataDirection.Response : HttpDataDirection.Request);
                 whens.addFirst(direction);
-                rulesRegistry = BurpExtender.getHttpConnector().getRulesEngine().getRulesRegistry();
+                rulesRegistry = eventInfo.getWorkspace().getHttpConnector().getRulesEngine().getRulesRegistry();
             } else if (eventInfo instanceof WebSocketEventInfo<?> webSocketEventInfo) {
                 WhenWebSocketEventDirection direction = new WhenWebSocketEventDirection();
                 direction.setDataDirection(webSocketEventInfo.getDataDirection());
                 whens.addFirst(direction);
-                rulesRegistry = BurpExtender.getWebSocketConnector().getRulesEngine().getRulesRegistry();
+                rulesRegistry = eventInfo.getWorkspace().getWebSocketConnector().getRulesEngine().getRulesRegistry();
             }
 
             if (rulesRegistry != null) {

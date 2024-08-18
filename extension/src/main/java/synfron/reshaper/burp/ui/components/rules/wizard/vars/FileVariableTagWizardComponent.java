@@ -7,6 +7,7 @@ import synfron.reshaper.burp.ui.models.rules.wizard.vars.FileVariableTagWizardMo
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class FileVariableTagWizardComponent extends JPanel implements IFormComponent {
@@ -36,7 +37,7 @@ public class FileVariableTagWizardComponent extends JPanel implements IFormCompo
     private JPanel getFileBrowser() {
         JPanel container = new JPanel(new MigLayout());
 
-        filePath = createTextField(true);
+        filePath = createTextField(false);
         JButton browse = new JButton("Browse");
 
         filePath.setText(model.getFilePath());
@@ -75,5 +76,11 @@ public class FileVariableTagWizardComponent extends JPanel implements IFormCompo
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         return fileChooser;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

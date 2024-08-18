@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.messages.entities.http;
 
-import burp.BurpExtender;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.responses.HttpResponse;
@@ -8,6 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.messages.MimeType;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.Log;
 
 import java.util.Arrays;
@@ -26,16 +26,19 @@ public class HttpResponseMessage extends HttpEntity {
     private HttpHeaders headers;
     private HttpBody body;
     private boolean initialized;
+    private final Workspace workspace;
 
-    public HttpResponseMessage(HttpResponse httpResponse, Encoder encoder) {
+    public HttpResponseMessage(Workspace workspace, HttpResponse httpResponse, Encoder encoder) {
         this.httpResponse = httpResponse;
         this.response = httpResponse != null ? httpResponse.toByteArray().getBytes() : new byte[0];
         this.encoder = encoder;
+        this.workspace = workspace;
     }
 
-    public HttpResponseMessage(byte[] response, Encoder encoder) {
+    public HttpResponseMessage(Workspace workspace, byte[] response, Encoder encoder) {
         this.response = response;
         this.encoder = encoder;
+        this.workspace = workspace;
     }
 
     @Override
@@ -60,13 +63,13 @@ public class HttpResponseMessage extends HttpEntity {
     }
 
     private void sanityCheckHeaders() {
-        if (BurpExtender.getGeneralSettings().isEnableSanityCheckWarnings()) {
+        if (workspace.getGeneralSettings().isEnableSanityCheckWarnings()) {
             for (int byteIndex = 0; byteIndex < response.length; byteIndex++) {
                 if (response[byteIndex] == '\r') {
                     break;
                 } else if (response[byteIndex] == '\n') {
                     String headersWarning = "Sanity Check - Warning: First line of a raw response with value '%s' has a line feed without a carriage return, and may result in missing headers.";
-                    Log.get().withMessage(String.format(headersWarning, ByteArray.byteArray(Arrays.copyOfRange(response, 0, byteIndex)))).log();
+                    Log.get(workspace).withMessage(String.format(headersWarning, ByteArray.byteArray(Arrays.copyOfRange(response, 0, byteIndex)))).log();
                     break;
                 }
             }

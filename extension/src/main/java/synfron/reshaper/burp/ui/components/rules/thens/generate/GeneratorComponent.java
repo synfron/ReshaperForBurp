@@ -5,6 +5,7 @@ import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.generate.IGeneratorModel;
 
 import javax.swing.*;
+import java.awt.*;
 
 public abstract class GeneratorComponent<T extends IGeneratorModel<T>> extends JPanel implements IFormComponent {
 
@@ -20,4 +21,10 @@ public abstract class GeneratorComponent<T extends IGeneratorModel<T>> extends J
     }
 
     protected abstract void initComponent();
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
+    }
 }

@@ -11,6 +11,7 @@ import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.Url;
 import synfron.reshaper.burp.core.vars.Variables;
 
@@ -31,20 +32,20 @@ public class HttpEventInfo extends EventInfo {
     private String messageId;
     private HttpRequest httpRequestOverride;
 
-    public HttpEventInfo(HttpDataDirection dataDirection, BurpTool burpTool, String messageId, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, String proxyName, String sourceAddress, Variables sessionVariables) {
-        super(burpTool, httpRequest, annotations, sessionVariables);
+    public HttpEventInfo(Workspace workspace, HttpDataDirection dataDirection, BurpTool burpTool, String messageId, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, String proxyName, String sourceAddress, Variables sessionVariables) {
+        super(workspace, burpTool, httpRequest, annotations, sessionVariables);
         this.initialDataDirection = dataDirection;
         this.dataDirection = dataDirection;
         this.messageId = messageId;
         this.httpProtocol = httpRequest.httpService().secure() ? "https" : "http";
         this.initialHttpResponse = httpResponse;
-        this.httpResponseMessage = new HttpResponseMessage(httpResponse, encoder);
+        this.httpResponseMessage = new HttpResponseMessage(workspace, httpResponse, encoder);
         this.sourceAddress = sourceAddress;
         this.proxyName = proxyName;
     }
 
-    public HttpEventInfo(HttpDataDirection dataDirection, BurpTool burpTool, String messageId, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, Variables sessionVariables) {
-        this(dataDirection, burpTool, messageId, httpRequest, httpResponse, annotations, null, "burp::", sessionVariables);
+    public HttpEventInfo(Workspace workspace, HttpDataDirection dataDirection, BurpTool burpTool, String messageId, HttpRequest httpRequest, HttpResponse httpResponse, Annotations annotations, Variables sessionVariables) {
+        this(workspace, dataDirection, burpTool, messageId, httpRequest, httpResponse, annotations, null, "burp::", sessionVariables);
     }
 
     public HttpEventInfo(EventInfo sourceRequestEventInfo) {
@@ -52,7 +53,7 @@ public class HttpEventInfo extends EventInfo {
         this.dataDirection = HttpDataDirection.Request;
         this.initialDataDirection = HttpDataDirection.Request;
         this.initialHttpResponse = null;
-        this.httpResponseMessage = new HttpResponseMessage((byte[]) null, encoder);
+        this.httpResponseMessage = new HttpResponseMessage(sourceRequestEventInfo.workspace, (byte[]) null, encoder);
         this.sourceAddress = "burp::";
         this.proxyName = null;
     }
@@ -68,12 +69,12 @@ public class HttpEventInfo extends EventInfo {
     }
 
     public void setHttpRequestMessage(byte[] request) {
-        httpRequestMessage = new HttpRequestMessage(request, encoder);
+        httpRequestMessage = new HttpRequestMessage(workspace, request, encoder);
         changed = true;
     }
 
     public void setHttpResponseMessage(byte[] response) {
-        httpResponseMessage = new HttpResponseMessage(response, encoder);
+        httpResponseMessage = new HttpResponseMessage(workspace, response, encoder);
         changed = true;
     }
 

@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core.rules.thens;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +21,8 @@ public class ThenRunRules extends Then<ThenRunRules> implements IHttpRuleOperati
 
     private RulesEngine getRulesEngine(EventInfo eventInfo) {
         return (eventInfo instanceof HttpEventInfo) ?
-                BurpExtender.getHttpConnector().getRulesEngine() :
-                BurpExtender.getWebSocketConnector().getRulesEngine();
+                eventInfo.getWorkspace().getHttpConnector().getRulesEngine() :
+                eventInfo.getWorkspace().getWebSocketConnector().getRulesEngine();
     }
 
     public RuleResponse perform(EventInfo eventInfo) {

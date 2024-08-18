@@ -54,7 +54,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
     }
 
     private List<Pair<String, String>> parseRequestMessage(EventInfo eventInfo) {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getEncoder().encode(
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
         ), eventInfo.getEncoder());
         List<Pair<String, String>> variables = new ArrayList<>();
@@ -83,7 +83,7 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
     }
 
     private List<Pair<String, String>> parseResponseMessage(EventInfo eventInfo) {
-        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getEncoder().encode(
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
                 VariableString.getTextOrDefault(eventInfo, httpMessage, "")
         ), eventInfo.getEncoder());
         List<Pair<String, String>> variables = new ArrayList<>();

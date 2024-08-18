@@ -8,10 +8,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class ModalPrompter<T extends IPrompterModel<T>> implements IFormComponent {
+public class ModalPrompter<T extends IPrompterModel<T>> {
     private static final Map<String, JDialog> dialogMap = new ConcurrentHashMap<>();
     private final T model;
     private final IPrompter<T> prompter;
@@ -57,13 +58,13 @@ public class ModalPrompter<T extends IPrompterModel<T>> implements IFormComponen
         container.add(new JLabel(description), BorderLayout.PAGE_START);
         container.add(scrollPane, BorderLayout.CENTER);
 
-        JOptionPane optionPane = new JOptionPane(container, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        JOptionPane optionPane = new JOptionPane(container, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
         JDialog dialog = optionPane.createDialog(title);
         dialog.setResizable(true);
         dialogMap.put(id, dialog);
 
         optionPane.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, event -> {
-            if (optionPane.getValue() != null && (int)optionPane.getValue() == JOptionPane.OK_OPTION) {
+            if (Objects.equals(optionPane.getValue(), "OK")) {
                 valueHandler.accept(inputText.getText());
             } else {
                 valueHandler.accept(null);

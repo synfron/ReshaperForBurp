@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.core.rules;
 
 import synfron.reshaper.burp.core.messages.EventInfo;
-import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.Variables;
 
@@ -23,7 +22,7 @@ public interface IRuleOperation<T extends IRuleOperation<T>> extends Serializabl
     default Variables getVariables(VariableSource variableSource, EventInfo eventInfo) {
         return switch (variableSource) {
             case Event, EventList -> eventInfo.getVariables();
-            case Global, GlobalList -> GlobalVariables.get();
+            case Global, GlobalList -> eventInfo.getWorkspace().getGlobalVariables();
             case Session, SessionList -> eventInfo.getSessionVariables();
             default -> null;
         };

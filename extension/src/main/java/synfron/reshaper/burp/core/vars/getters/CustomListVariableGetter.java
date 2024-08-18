@@ -31,7 +31,7 @@ public class CustomListVariableGetter extends VariableGetter {
 
     private static ListVariable getVariable(VariableSourceEntry variable, String variableName, EventInfo eventInfo) {
         Variable value = switch (variable.getVariableSource()) {
-            case GlobalList -> (ListVariable) GlobalVariables.get().getOrDefault(Variables.asKey(variableName, true));
+            case GlobalList -> (ListVariable) eventInfo.getWorkspace().getGlobalVariables().getOrDefault(Variables.asKey(variableName, true));
             case EventList -> (ListVariable) eventInfo.getVariables().getOrDefault(Variables.asKey(variableName, true));
             case SessionList -> (ListVariable) eventInfo.getSessionVariables().getOrDefault(Variables.asKey(variableName, true));
             default -> null;

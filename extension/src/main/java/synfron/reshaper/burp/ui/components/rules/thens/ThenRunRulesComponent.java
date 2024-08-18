@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.ui.components.rules.thens;
 
-import burp.BurpExtender;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.rules.Rule;
@@ -25,8 +24,8 @@ public class ThenRunRulesComponent extends ThenComponent<ThenRunRulesModel, Then
 
     private RulesEngine getRulesEngine(ProtocolType protocolType) {
         return switch (protocolType) {
-            case Http -> BurpExtender.getHttpConnector().getRulesEngine();
-            case WebSocket -> BurpExtender.getWebSocketConnector().getRulesEngine();
+            case Http -> getHostedWorkspace(this).getHttpConnector().getRulesEngine();
+            case WebSocket -> getHostedWorkspace(this).getWebSocketConnector().getRulesEngine();
             default -> throw new UnsupportedOperationException("ProtocolType not supported here");
         };
     }

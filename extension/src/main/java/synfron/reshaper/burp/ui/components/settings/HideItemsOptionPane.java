@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.ui.components.settings;
 
 import net.miginfocom.swing.MigLayout;
-import synfron.reshaper.burp.core.Tab;
+import synfron.reshaper.burp.core.WorkspaceTab;
 import synfron.reshaper.burp.core.rules.thens.ThenType;
 import synfron.reshaper.burp.core.rules.whens.WhenType;
 import synfron.reshaper.burp.ui.components.IFormComponent;
@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
@@ -21,7 +22,7 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
     private final HideItemsModel model;
 
     private HideItemsOptionPane(HideItemsModel model) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
         container = (JPanel)message;
         this.model = model;
         addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
@@ -29,7 +30,7 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
     }
 
     private void onPropertyChanged(PropertyChangeEvent event) {
-        if (getValue() != null && (int)getValue() == JOptionPane.OK_OPTION) {
+        if (Objects.equals(getValue(), "OK")) {
             model.save();
         } else {
             model.setDismissed(true);
@@ -73,7 +74,7 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
 
     private void onHiddenTabChanged(ActionEvent actionEvent) {
         JCheckBox checkbox = (JCheckBox) actionEvent.getSource();
-        Tab item = (Tab) checkbox.getClientProperty("item");
+        WorkspaceTab item = (WorkspaceTab) checkbox.getClientProperty("item");
         
         if (checkbox.isSelected()) {
             model.addHiddenTab(item);
@@ -110,7 +111,7 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
         JPanel hideTabs = new JPanel(new MigLayout());
         hideTabs.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         hideTabs.add(new JLabel("Hide Tabs:"), "wrap");
-        addCheckboxes(hideTabs, 4, Stream.of(Tab.values()).filter(Tab::isHideable).toList(), model.getHiddenTabs(), this::onHiddenTabChanged);
+        addCheckboxes(hideTabs, 4, Stream.of(WorkspaceTab.values()).filter(WorkspaceTab::isHideable).toList(), model.getHiddenTabs(), this::onHiddenTabChanged);
 
         JPanel hideWhenTypes = new JPanel(new MigLayout());
         hideWhenTypes.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
@@ -128,5 +129,11 @@ public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
         container.add(hideThenTypes, "wrap");
 
         return container;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.core;
 
-import burp.BurpExtender;
 import burp.api.montoya.core.Annotations;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.ToolType;
@@ -14,6 +13,8 @@ import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
 import synfron.reshaper.burp.core.messages.WebSocketMessageSender;
 import synfron.reshaper.burp.core.messages.WebSocketMessageType;
 import synfron.reshaper.burp.core.rules.RulesEngine;
+import synfron.reshaper.burp.core.settings.Workspace;
+import synfron.reshaper.burp.core.settings.Workspaces;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.Variables;
 
@@ -21,28 +22,40 @@ public class WebSocketConnector implements
         ProxyWebSocketCreationHandler,
         WebSocketCreatedHandler {
     @Getter
-    private final RulesEngine rulesEngine = new RulesEngine();
+    private RulesEngine rulesEngine = new RulesEngine();
+    private Workspace workspace;
+
+    public WebSocketConnector(Workspace workspace) {
+        this.workspace = workspace;
+    }
 
     private BurpTool getBurpToolIfEnabled(ToolType toolType) {
         BurpTool burpTool = BurpTool.from(toolType);
-        return burpTool != null && BurpExtender.getGeneralSettings().isCapture(burpTool) ? burpTool : null;
+        return burpTool != null && workspace.getGeneralSettings().isCapture(burpTool) ? burpTool : null;
     }
 
     @Override
     public void handleWebSocketCreation(ProxyWebSocketCreation webSocketCreation) {
-        if (BurpExtender.getGeneralSettings().isCapture(BurpTool.Proxy) && BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
+        if (workspace == null) return;
+        if (workspace.getGeneralSettings().isCapture(BurpTool.Proxy) && workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
             webSocketCreation.proxyWebSocket().registerProxyMessageHandler(new WebSocketMessageConnector(BurpTool.Proxy, webSocketCreation.proxyWebSocket(), webSocketCreation.upgradeRequest()));
         }
     }
 
     @Override
     public void handleWebSocketCreated(WebSocketCreated webSocketCreated) {
+        if (workspace == null) return;
         if (!webSocketCreated.toolSource().isFromTool(ToolType.PROXY)) {
             BurpTool burpTool = getBurpToolIfEnabled(webSocketCreated.toolSource().toolType());
-            if (burpTool != null && burpTool != BurpTool.Proxy && BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
+            if (burpTool != null && burpTool != BurpTool.Proxy && workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 webSocketCreated.webSocket().registerMessageHandler(new WebSocketMessageConnector(BurpTool.Proxy, webSocketCreated.webSocket(), webSocketCreated.upgradeRequest()));
             }
         }
+    }
+
+    public void unload() {
+        rulesEngine = null;
+        workspace = null;
     }
 
     private class WebSocketMessageConnector implements ProxyMessageHandler, MessageHandler {
@@ -68,7 +81,8 @@ public class WebSocketConnector implements
 
         @Override
         public TextMessageReceivedAction handleTextMessageReceived(InterceptedTextMessage interceptedTextMessage) {
-            if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
+            if (workspace == null) return TextMessageReceivedAction.continueWith(interceptedTextMessage);
+            if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, interceptedTextMessage.annotations(), interceptedTextMessage.payload(), interceptedTextMessage.direction());
                 return processEvent(eventInfo).asProxyTextAction();
             }
@@ -77,7 +91,8 @@ public class WebSocketConnector implements
 
         @Override
         public TextMessageAction handleTextMessage(TextMessage textMessage) {
-            if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
+            if (workspace == null) return TextMessageAction.continueWith(textMessage);
+            if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, null, textMessage.payload(), textMessage.direction());
                 return processEvent(eventInfo).asTextAction();
             }
@@ -86,7 +101,8 @@ public class WebSocketConnector implements
 
         @Override
         public BinaryMessageReceivedAction handleBinaryMessageReceived(InterceptedBinaryMessage interceptedBinaryMessage) {
-            if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
+            if (workspace == null) return BinaryMessageReceivedAction.continueWith(interceptedBinaryMessage);
+            if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, interceptedBinaryMessage.annotations(), interceptedBinaryMessage.payload().getBytes(), interceptedBinaryMessage.direction());
                 return processEvent(eventInfo).asProxyBinaryAction();
             }
@@ -95,7 +111,8 @@ public class WebSocketConnector implements
 
         @Override
         public BinaryMessageAction handleBinaryMessage(BinaryMessage binaryMessage) {
-            if (BurpExtender.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
+            if (workspace == null) return BinaryMessageAction.continueWith(binaryMessage);
+            if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, null, binaryMessage.payload().getBytes(), binaryMessage.direction());
                 return processEvent(eventInfo).asBinaryAction();
             }
@@ -104,15 +121,16 @@ public class WebSocketConnector implements
 
         private <T> WebSocketEventInfo<T> asEventInfo(WebSocketMessageType messageType, Annotations annotations, T data, Direction direction) {
             WebSocketEventInfo<T> eventInfo = new WebSocketEventInfo<>(
-                    messageType,
+                    workspace, messageType,
                     WebSocketDataDirection.from(direction), burpTool, messageSender, httpRequest, annotations, data, sessionVariables
             );
-            eventInfo.getDiagnostics().setEventEnabled(BurpExtender.getGeneralSettings().isEnableEventDiagnostics());
+            eventInfo.getDiagnostics().setEventEnabled(workspace.getGeneralSettings().isEnableEventDiagnostics());
             return eventInfo;
         }
 
         private <T> EventResult<T> processEvent(WebSocketEventInfo<T> eventInfo) {
             EventResult<T> eventResult = new EventResult<>(eventInfo);
+            Workspaces.get().setCurrentWorkspace(workspace);
             try {
                 rulesEngine.run(eventInfo);
                 if (eventInfo.isChanged()) {
@@ -123,10 +141,10 @@ public class WebSocketConnector implements
                     }
                 }
             } catch (Exception e) {
-                Log.get().withMessage("Critical Error").withException(e).logErr();
+                Log.get(workspace).withMessage("Critical Error").withException(e).logErr();
             } finally {
                 if (eventInfo.getDiagnostics().hasLogs()) {
-                    Log.get().withMessage(eventInfo.getDiagnostics().getLogs()).logRaw();
+                    Log.get(workspace).withMessage(eventInfo.getDiagnostics().getLogs()).logRaw();
                 }
             }
             return eventResult;

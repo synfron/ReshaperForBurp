@@ -10,14 +10,6 @@ import java.util.stream.Collectors;
 
 public class GlobalVariables extends Variables {
 
-    private GlobalVariables() {}
-
-    private static final GlobalVariables global = new GlobalVariables();
-
-    public static GlobalVariables get() {
-        return global;
-    }
-
     public List<Variable> exportVariables() {
         return variables.values().stream()
                 .filter(Variable::isPersistent)

@@ -5,7 +5,8 @@ import lombok.Getter;
 public enum MessageType {
     PromptRequest(PromptRequestMessage.class),
     PromptResponse(PromptResponseMessage.class),
-    PromptCancel(PromptCancelMessage.class);
+    PromptCancel(PromptCancelMessage.class),
+    Log(LogMessage.class);
 
     @Getter
     private final Class<? extends Message> dataClass;

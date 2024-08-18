@@ -1,13 +1,15 @@
 package synfron.reshaper.burp.ui.components.rules;
 
-import burp.BurpExtender;
 import lombok.Getter;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
 import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModel;
 import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
@@ -20,9 +22,11 @@ import java.awt.event.ActionEvent;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,?>> extends JPanel implements IFormComponent {
+public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,?>> extends JPanel implements IFormComponent, IWorkspaceDependentComponent, IWorkspaceHost {
     protected final ProtocolType protocolType;
     protected final RuleModel model;
+    @Getter
+    protected final Workspace workspace;
     protected JList<T> operationsList;
     protected DefaultListModel<T> operationsListModel;
     protected JComboBox<RuleOperationModelType<?,?>> operationSelector;
@@ -32,6 +36,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     private final IEventListener<PropertyChangedArgs> ruleOperationChangedListener = this::onRuleOperationChanged;
 
     public RuleOperationListComponent(ProtocolType protocolType, RuleModel model) {
+        this.workspace = getHostedWorkspace();
         this.protocolType = protocolType;
         this.model = model;
         setModelChangedListeners();
@@ -65,12 +70,13 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
 
     private void onSelectionChanged(ListSelectionEvent listSelectionEvent) {
         T model = operationsList.getSelectedValue();
-        if (model != null) {
-            ruleOperationContainer.setModel(model);
-        }
-        else if (!defaultSelect()) {
-            ruleOperationContainer.setModel(null);
-        }
+        createEntryPoint(() -> {
+            if (model != null) {
+                ruleOperationContainer.setModel(model);
+            } else if (!defaultSelect()) {
+                ruleOperationContainer.setModel(null);
+            }
+        });
     }
 
     private boolean defaultSelect() {
@@ -86,7 +92,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
         container.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         operationsListModel = new DefaultListModel<T>();
-        operationsListModel.addAll(getRuleOperations());
+        refreshOperationsList();
 
         operationsList = new JList<>(operationsListModel);
         operationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -98,6 +104,11 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
 
         container.add(scrollPane);
         return container;
+    }
+
+    protected void refreshOperationsList() {
+        operationsListModel.clear();
+        operationsListModel.addAll(getRuleOperations());
     }
 
     private Component getActionBar() {
@@ -219,4 +230,10 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     protected abstract T getNewModel(RuleOperationModelType<?,?> ruleOperationModelType);
 
     protected abstract <R extends IRuleOperation<?>> T getModel(R then);
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
+    }
 }

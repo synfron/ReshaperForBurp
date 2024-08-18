@@ -26,6 +26,8 @@ public class RuleModel {
     @Getter
     private boolean autoRun;
     @Getter
+    private final ProtocolType protocolType;
+    @Getter
     private boolean isNew;
     @Getter
     private String name;
@@ -45,6 +47,7 @@ public class RuleModel {
     }
 
     public RuleModel(ProtocolType protocolType, Rule rule, boolean isNew) {
+        this.protocolType = protocolType;
         this.isNew = isNew;
         this.rule = rule;
         this.whens = rule.getWhens().stream()
@@ -93,6 +96,16 @@ public class RuleModel {
     public void setAutoRun(boolean autoRun) {
         this.autoRun = autoRun;
         propertyChanged("autoRun", autoRun);
+    }
+
+    public void addWhen(WhenModel<?,?> when) {
+        whens.add(when.withListener(ruleOperationChangedListener));
+        propertyChanged("whens", whens);
+    }
+
+    public void addThen(ThenModel<?,?> then) {
+        thens.add(then.withListener(ruleOperationChangedListener));
+        propertyChanged("thens", thens);
     }
 
     private void propertyChanged(String name, Object value) {

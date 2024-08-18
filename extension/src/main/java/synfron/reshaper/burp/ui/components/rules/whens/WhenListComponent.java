@@ -1,6 +1,5 @@
 package synfron.reshaper.burp.ui.components.rules.whens;
 
-import burp.BurpExtender;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
@@ -12,17 +11,25 @@ import synfron.reshaper.burp.ui.models.rules.RuleOperationModelType;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModel;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModelType;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class WhenListComponent extends RuleOperationListComponent<WhenModel<?,?>> {
 
     private final IEventListener<PropertyChangedArgs> generalSettingsChangedListener = this::onGeneralSettingsChanged;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onModelPropertyChanged;
 
     public WhenListComponent(ProtocolType protocolType, RuleModel model) {
         super(protocolType, model);
-        BurpExtender.getGeneralSettings().withListener(generalSettingsChangedListener);
+        workspace.getGeneralSettings().withListener(generalSettingsChangedListener);
+
+        model.getPropertyChangedEvent().add(modelPropertyChangedListener);
+    }
+
+    private void onModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getName().equals("whens")) {
+            refreshOperationsList();
+        }
     }
 
     @Override
@@ -39,7 +46,7 @@ public class WhenListComponent extends RuleOperationListComponent<WhenModel<?,?>
     @Override
     protected List<RuleOperationModelType<?,?>> getRuleOperationModelTypes() {
         return WhenModelType.getTypes(protocolType).stream()
-                .filter(type -> !BurpExtender.getGeneralSettings().getHiddenWhenTypes().contains(type.getName()))
+                .filter(type -> !workspace.getGeneralSettings().getHiddenWhenTypes().contains(type.getName()))
                 .collect(Collectors.toList());
     }
 

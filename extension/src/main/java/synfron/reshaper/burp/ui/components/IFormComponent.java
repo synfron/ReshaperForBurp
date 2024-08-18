@@ -3,9 +3,14 @@ package synfron.reshaper.burp.ui.components;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
+import synfron.reshaper.burp.ui.components.shared.PromptTextField;
+import synfron.reshaper.burp.ui.components.shared.TextPrompt;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
 import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
 import synfron.reshaper.burp.ui.utils.ModalPrompter;
@@ -20,13 +25,32 @@ import java.awt.event.KeyEvent;
 import static java.awt.Component.LEFT_ALIGNMENT;
 import static java.awt.Component.TOP_ALIGNMENT;
 
-public interface IFormComponent {
+public interface IFormComponent extends IWorkspaceDependentComponent, IWorkspaceHost {
+
+    @Override
+    default Workspace getWorkspace() {
+        return getHostedWorkspace(getComponent());
+    }
+
+    <T extends Component & IFormComponent> T getComponent();
+
+    default Workspace getHostedWorkspace() {
+        return getHostedWorkspace(getComponent());
+    }
 
     default JPanel getLabeledField(String label, Component innerComponent) {
         return getLabeledField(label, innerComponent, true);
     }
 
     default JPanel getLabeledField(String label, Component innerComponent, boolean span) {
+        return getLabeledField(new JLabel(label), innerComponent, span);
+    }
+
+    default JPanel getLabeledField(JLabel label, Component innerComponent) {
+        return getLabeledField(label, innerComponent, true);
+    }
+
+    default JPanel getLabeledField(JLabel label, Component innerComponent, boolean span) {
         JPanel container = new JPanel();
         container.setLayout(new MigLayout());
         container.setBorder(null);
@@ -35,7 +59,7 @@ public interface IFormComponent {
             container.setBorder(BorderFactory.createEmptyBorder(0, -3, 0, 0));
         }
 
-        container.add(new JLabel(label), "wrap");
+        container.add(label, "wrap");
         container.add(innerComponent, span ? "grow, push, span" : "");
         return container;
     }
@@ -80,6 +104,23 @@ public interface IFormComponent {
         return addContextMenu(addUndo(textField), supportsVariableTags, getProtocolType());
     }
 
+    private <T extends JTextField> T createTextField(T textField, boolean supportsVariableTags) {
+        textField.setColumns(20);
+        textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
+        textField.setAlignmentX(LEFT_ALIGNMENT);
+        return addContextMenu(addUndo(textField), supportsVariableTags, getProtocolType());
+    }
+
+    default PromptTextField createPromptTextField(String placeholder, boolean supportsVariableTags) {
+        PromptTextField textField = new PromptTextField(placeholder);
+        textField.getTextPrompt().setShow(TextPrompt.Show.FOCUS_LOST);
+        textField.getTextPrompt().changeStyle(Font.ITALIC);
+        textField.setColumns(20);
+        textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
+        textField.setAlignmentX(LEFT_ALIGNMENT);
+        return addContextMenu(addUndo(textField), supportsVariableTags, getProtocolType());
+    }
+
     default Component getPaddedButton(JButton button) {
         JPanel outerContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         outerContainer.setAlignmentX(LEFT_ALIGNMENT);
@@ -96,7 +137,7 @@ public interface IFormComponent {
         return addContextMenu(addUndo(textComponent), false, getProtocolType());
     }
 
-    private static <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags, ProtocolType protocolType) {
+    private <T extends JTextComponent> T addContextMenu(T textComponent, boolean supportsVariableTags, ProtocolType protocolType) {
         JPopupMenu popupMenu = new JPopupMenu();
 
         Action cut = new DefaultEditorKit.CutAction();
@@ -115,7 +156,7 @@ public interface IFormComponent {
         popupMenu.add(selectAll);
 
         if (supportsVariableTags) {
-            Action addVariableTag =  new ActionPerformedListener(event -> insertVariableTag(textComponent, protocolType));
+            Action addVariableTag =  new ActionPerformedListener(event -> createEntryPoint(() -> insertVariableTag(textComponent, protocolType)));
             addVariableTag.putValue(Action.NAME, "Insert Variable Tag");
             popupMenu.addSeparator();
             popupMenu.add(addVariableTag);

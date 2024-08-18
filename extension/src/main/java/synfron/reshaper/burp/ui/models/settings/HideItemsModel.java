@@ -2,7 +2,7 @@ package synfron.reshaper.burp.ui.models.settings;
 
 import lombok.Getter;
 import lombok.Setter;
-import synfron.reshaper.burp.core.Tab;
+import synfron.reshaper.burp.core.WorkspaceTab;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
@@ -17,7 +17,7 @@ public class HideItemsModel implements IPrompterModel<HideItemsModel> {
     private final GeneralSettings generalSettings;
     private final HashSet<String> hiddenThenTypes = new HashSet<>();
     private final HashSet<String> hiddenWhenTypes = new HashSet<>();
-    private final HashSet<Tab> hiddenTabs = new HashSet<>();
+    private final HashSet<WorkspaceTab> hiddenTabs = new HashSet<>();
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
     @Setter
     private ModalPrompter<HideItemsModel> modalPrompter;
@@ -50,7 +50,7 @@ public class HideItemsModel implements IPrompterModel<HideItemsModel> {
         propertyChanged("hiddenThenTypes", thenType);
     }
 
-    public void addHiddenTab(Tab tab) {
+    public void addHiddenTab(WorkspaceTab tab) {
         hiddenTabs.add(tab);
         propertyChanged("hiddenTabs", tab);
     }
@@ -65,7 +65,7 @@ public class HideItemsModel implements IPrompterModel<HideItemsModel> {
         propertyChanged("hiddenThenTypes", thenType);
     }
 
-    public void removeHiddenTab(Tab tab) {
+    public void removeHiddenTab(WorkspaceTab tab) {
         hiddenTabs.remove(tab);
         propertyChanged("hiddenTabs", tab);
     }

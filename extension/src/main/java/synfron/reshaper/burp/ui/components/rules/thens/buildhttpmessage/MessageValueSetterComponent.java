@@ -12,6 +12,7 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.stream.Stream;
@@ -96,5 +97,11 @@ public class MessageValueSetterComponent extends JPanel implements IFormComponen
 
     private void onDelete(ActionEvent actionEvent) {
         model.setDeleted(true);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

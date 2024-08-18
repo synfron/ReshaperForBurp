@@ -1,12 +1,16 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
-import synfron.reshaper.burp.core.vars.*;
+import synfron.reshaper.burp.core.vars.Variable;
+import synfron.reshaper.burp.core.vars.VariableSource;
+import synfron.reshaper.burp.core.vars.VariableSourceEntry;
+import synfron.reshaper.burp.core.vars.VariableString;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependent;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GlobalListVariableTagWizardModel extends CustomListVariableTagWizardModel {
+public class GlobalListVariableTagWizardModel extends CustomListVariableTagWizardModel implements IWorkspaceDependent {
 
     public GlobalListVariableTagWizardModel(List<VariableSourceEntry> entries) {
         super(entries);
@@ -15,7 +19,7 @@ public class GlobalListVariableTagWizardModel extends CustomListVariableTagWizar
     @Override
     public List<String> getUpdatedVariableNames(List<VariableSourceEntry> entries) {
         return Stream.concat(
-                        GlobalVariables.get().getValues().stream().filter(Variable::isList).map(Variable::getName),
+                getHostedWorkspace().getGlobalVariables().getValues().stream().filter(Variable::isList).map(Variable::getName),
                         entries.stream()
                                 .filter(entry -> entry.getVariableSource() == VariableSource.GlobalList)
                                 .map(entry -> entry.getParams().getFirst())

@@ -6,6 +6,7 @@ import synfron.reshaper.burp.ui.models.rules.thens.transform.TransformerModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public abstract class TransformerComponent<T extends TransformerModel<T, ?>> extends JPanel implements IFormComponent {
@@ -34,5 +35,11 @@ public abstract class TransformerComponent<T extends TransformerModel<T, ?>> ext
 
     private void onInputChanged(ActionEvent actionEvent) {
         model.setInput(input.getText());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }
