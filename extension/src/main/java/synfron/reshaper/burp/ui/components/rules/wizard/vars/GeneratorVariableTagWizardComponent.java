@@ -8,6 +8,7 @@ import synfron.reshaper.burp.ui.models.rules.wizard.vars.GeneratorVariableTagWiz
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.generator.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class GeneratorVariableTagWizardComponent extends JPanel implements IFormComponent {
@@ -60,5 +61,11 @@ public class GeneratorVariableTagWizardComponent extends JPanel implements IForm
     private void onSetGenerateOptionChanged(ActionEvent actionEvent) {
         model.setGenerateOption((GenerateOption) generateOption.getSelectedItem());
         setGenerator();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

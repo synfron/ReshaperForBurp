@@ -5,6 +5,7 @@ import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.CustomVariableTagWizardModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public abstract class CustomVariableTagWizardComponent<T extends CustomVariableTagWizardModel> extends JPanel implements IFormComponent {
@@ -30,5 +31,11 @@ public abstract class CustomVariableTagWizardComponent<T extends CustomVariableT
 
     private void onVariableNameChanged(ActionEvent actionEvent) {
         model.setVariableName((String)variableName.getSelectedItem());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

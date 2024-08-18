@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 public class WhenWizardOptionPane extends JOptionPane implements IFormComponent {
 
@@ -21,9 +22,10 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
     private JTextField ruleName;
     private JPanel whenWizardItemsComponent;
     private final IEventListener<PropertyChangedArgs> whenWizardItemChangedListener = this::onWhenWizardItemChanged;
+    private JScrollPane bodyScrollPane;
 
     private WhenWizardOptionPane(WhenWizardModel model) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
         container = (JPanel)message;
         this.model = model;
         addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
@@ -31,7 +33,7 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
     }
 
     private void onPropertyChanged(PropertyChangeEvent event) {
-        if (getValue() != null && (int)getValue() == JOptionPane.OK_OPTION) {
+        if (Objects.equals(getValue(), "OK")) {
             if (model.createRule()) {
                 JOptionPane.showMessageDialog(this,
                         "Rule created. Navigate to Reshaper to finish the rule.",
@@ -58,10 +60,11 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
     }
 
     private void initComponent() {
-        container.add(getBody(), BorderLayout.CENTER);
+        bodyScrollPane = getBodyScrollPane();
+        container.add(bodyScrollPane, BorderLayout.CENTER);
     }
 
-    private Component getBody() {
+    private JScrollPane getBodyScrollPane() {
         JPanel container = new JPanel(new MigLayout());
 
         ruleName = createTextField(false);
@@ -79,6 +82,7 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         container.add(getPaddedButton(addItem), "wrap");
 
         scrollPane.setPreferredSize(container.getPreferredSize());
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         return scrollPane;
     }
@@ -132,5 +136,11 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         whenWizardItemsComponent.remove(index);
         whenWizardItemsComponent.revalidate();
         whenWizardItemsComponent.repaint();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

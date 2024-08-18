@@ -1,13 +1,16 @@
 package synfron.reshaper.burp.ui.components.vars;
 
 import com.alexandriasoftware.swing.JSplitButton;
+import lombok.Getter;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
-import synfron.reshaper.burp.core.vars.GlobalVariables;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.Variables;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
 import synfron.reshaper.burp.ui.utils.ListCellRenderer;
 
@@ -25,7 +28,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class VariableListComponent extends JPanel implements HierarchyListener {
+public class VariableListComponent extends JPanel implements HierarchyListener, IWorkspaceDependentComponent, IWorkspaceHost {
+    @Getter
+    private final Workspace workspace;
     private JList<VariableModel> variableList;
     private DefaultListModel<VariableModel> variableListModel;
     private VariableContainerComponent variableContainer;
@@ -38,6 +43,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
     private final PropertyChangedEvent activationChangedEvent = new PropertyChangedEvent();
 
     public VariableListComponent() {
+        this.workspace = getHostedWorkspace(this);
         initComponent();
     }
 
@@ -45,7 +51,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
         setLayout(new BorderLayout());
 
         variableListModel = new DefaultListModel<>();
-        variableListModel.addAll(GlobalVariables.get().getValues().stream()
+        variableListModel.addAll(workspace.getGlobalVariables().getValues().stream()
                 .map(variable -> new VariableModel(variable).withListener(variableModelChangedListener)
                         .bindActivationChangedEvent(activationChangedEvent))
                 .collect(Collectors.toList()));
@@ -57,7 +63,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(variableList);
 
-        GlobalVariables.get().getCollectionChangedEvent().add(variablesCollectionChangedListener);
+        workspace.getGlobalVariables().getCollectionChangedEvent().add(variablesCollectionChangedListener);
         variableList.addListSelectionListener(this::onSelectionChanged);
 
         add(scrollPane, BorderLayout.CENTER);
@@ -67,7 +73,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
     private void onSelectionChanged(ListSelectionEvent listSelectionEvent) {
         VariableModel variable = variableList.getSelectedValue();
         if (variable != null) {
-            variableContainer.setModel(variable);
+            createEntryPoint(() -> variableContainer.setModel(variable));
             if (activated) {
                 activationChangedEvent.invoke(new PropertyChangedArgs(
                         this,
@@ -155,7 +161,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
     private void onDelete(ActionEvent actionEvent) {
         VariableModel variable = variableList.getSelectedValue();
         if (variable != null) {
-            if (!GlobalVariables.get().remove(Variables.asKey(variable.getName(), variable.isList()))) {
+            if (!workspace.getGlobalVariables().remove(Variables.asKey(variable.getName(), variable.isList()))) {
                 variableListModel.removeElement(variable);
             }
         }
@@ -170,7 +176,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
     }
 
     private void onVariablesCollectionChanged(CollectionChangedArgs collectionChangedArgs) {
-        SwingUtilities.invokeLater(() -> {
+        createInvokeLaterEntryPoint(() -> {
             Variable item = (Variable) collectionChangedArgs.getItem();
             switch (collectionChangedArgs.getAction()) {
                 case Add -> {
@@ -199,7 +205,7 @@ public class VariableListComponent extends JPanel implements HierarchyListener {
                             .filter(model -> model.getVariable() == null);
                     variableListModel.clear();
                     variableListModel.addAll(Stream.concat(
-                            GlobalVariables.get().getValues().stream()
+                            workspace.getGlobalVariables().getValues().stream()
                                     .map(variable -> variableModelMap.containsKey(variable) ?
                                             variableModelMap.get(variable) :
                                             new VariableModel(variable).withListener(variableModelChangedListener)

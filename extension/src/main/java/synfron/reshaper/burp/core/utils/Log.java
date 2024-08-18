@@ -1,22 +1,40 @@
 package synfron.reshaper.burp.core.utils;
 
 import burp.BurpExtender;
-import burp.api.montoya.core.ByteArray;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import java.nio.charset.StandardCharsets;
+import synfron.reshaper.burp.core.events.MessageArgs;
+import synfron.reshaper.burp.core.events.message.LogMessage;
+import synfron.reshaper.burp.core.settings.Workspace;
+import synfron.reshaper.burp.core.settings.Workspaces;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Log {
     private String message;
     private String exception;
     private Object payload;
+    @JsonIgnore
+    private final Workspace workspace;
 
-    private Log() {}
+    private Log(Workspace workspace) {
+        this.workspace = workspace;
+    }
+
+    private Log() {
+        this.workspace = null;
+    }
+
+    public static Log get(Workspace workspace) {
+        return new Log(workspace);
+    }
 
     public static Log get() {
-        return new Log();
+        return get(Workspaces.get().getCurrentWorkspace());
+    }
+
+    public static Log getSystem() {
+        return get(null);
     }
 
     public Log withMessage(String message) {
@@ -63,26 +81,21 @@ public class Log {
     }
 
     private void printOutput(String text, boolean isError) {
-        if (BurpExtender.getGeneralSettings().isLogInExtenderOutput()) {
+        if (workspace == null || workspace.getGeneralSettings().isLogInExtenderOutput()) {
             if (isError) {
                 BurpExtender.getApi().logging().logToError(text);
             } else {
                 BurpExtender.getApi().logging().logToOutput(text);
             }
         }
-        printToDisplay(text);
+        if (workspace != null) {
+            printToDisplay(text);
+        }
     }
 
     private void printToDisplay(String text) {
-        if (BurpExtender.getLogTextEditor() != null) {
-            BurpExtender.getLogTextEditor().setContents(BurpUtils.current.toByteArray(
-                    TextUtils.bufferAppend(
-                            new String(BurpExtender.getLogTextEditor().getContents().getBytes(), StandardCharsets.UTF_8),
-                            text,
-                            "\n",
-                            BurpExtender.getGeneralSettings().getLogTabCharacterLimit()
-                    ).getBytes(StandardCharsets.UTF_8)
-            ));
+        if (workspace != null) {
+            workspace.getMessageEvent().invoke(new MessageArgs(this, new LogMessage(text)));
         }
     }
 }

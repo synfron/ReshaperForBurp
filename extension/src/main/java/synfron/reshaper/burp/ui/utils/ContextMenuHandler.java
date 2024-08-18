@@ -9,6 +9,7 @@ import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.WebSocketDataDirection;
 import synfron.reshaper.burp.core.messages.WebSocketEventInfo;
 import synfron.reshaper.burp.core.messages.WebSocketMessageType;
+import synfron.reshaper.burp.core.settings.Workspaces;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.Variables;
 import synfron.reshaper.burp.ui.components.rules.wizard.whens.WhenWizardOptionPane;
@@ -38,19 +39,19 @@ public class ContextMenuHandler implements ContextMenuItemsProvider {
 
     private void onCreateWebSocketRule(List<WebSocketMessage> selectedItems, ActionEvent actionEvent) {
         WebSocketMessage webSocketMessage = selectedItems.getFirst();
-        openWhenWizard(new WhenWizardModel(new WebSocketEventInfo<>(WebSocketMessageType.Binary, WebSocketDataDirection.from(webSocketMessage.direction()), null, null, webSocketMessage.upgradeRequest(), webSocketMessage.annotations(), webSocketMessage.payload().getBytes(), new Variables())));
+        openWhenWizard(new WhenWizardModel(new WebSocketEventInfo<>(Workspaces.get().getDefault(), WebSocketMessageType.Binary, WebSocketDataDirection.from(webSocketMessage.direction()), null, null, webSocketMessage.upgradeRequest(), webSocketMessage.annotations(), webSocketMessage.payload().getBytes(), new Variables())));
     }
 
     private void onCreateHttpRule(List<HttpRequestResponse> selectedItems, ActionEvent actionEvent) {
         HttpRequestResponse httpRequestResponse = selectedItems.getFirst();
-        openWhenWizard(new WhenWizardModel(new HttpEventInfo(null, null, null, httpRequestResponse.request(), httpRequestResponse.response(), httpRequestResponse.annotations(), new Variables())));
+        openWhenWizard(new WhenWizardModel(new HttpEventInfo(Workspaces.get().getDefault(), null, null, null, httpRequestResponse.request(), httpRequestResponse.response(), httpRequestResponse.annotations(), new Variables())));
     }
 
     private void openWhenWizard(WhenWizardModel model) {
         try {
             ModalPrompter.open(model, ignored -> WhenWizardOptionPane.showDialog(model), true);
         } catch (Exception e) {
-            Log.get().withMessage("Failed to create rule from content menu").withException(e).logErr();
+            Log.get(Workspaces.get().getDefault()).withMessage("Failed to create rule from content menu").withException(e).logErr();
         }
     }
 }

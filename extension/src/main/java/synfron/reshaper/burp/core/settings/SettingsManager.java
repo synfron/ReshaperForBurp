@@ -1,51 +1,40 @@
 package synfron.reshaper.burp.core.settings;
 
-import burp.BurpExtender;
 import com.fasterxml.jackson.core.type.TypeReference;
-import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.exceptions.WrappedException;
-import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.utils.Serializer;
 import synfron.reshaper.burp.core.vars.GlobalVariables;
-import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.Variables;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.List;
 
 public class SettingsManager {
 
-    public static void importSettings(File file, boolean overwriteDuplicates) {
+    public static void importSettings(Workspace workspace, File file, boolean overwriteDuplicates) {
         try {
-            importSettings(Files.readString(file.toPath()), overwriteDuplicates);
+            importSettings(workspace, Files.readString(file.toPath()), overwriteDuplicates);
         } catch (IOException e) {
             throw new WrappedException(e);
         }
     }
 
-    public static void importSettings(String settingsJson, boolean overwriteDuplicates) {
-        ExportSettings exportSettings = Serializer.deserialize(
+    public static void importSettings(Workspace workspace, String settingsJson, boolean overwriteDuplicates) {
+        WorkspaceDataExport workspaceExport = Serializer.deserialize(
                 settingsJson,
                 new TypeReference<>() {}
         );
-        getGlobalVariables().importVariables(exportSettings.getVariables(), overwriteDuplicates);
-        getHttpRulesRegistry().importRules(exportSettings.getRules(), overwriteDuplicates);
-        getWebSocketRulesRegistry().importRules(exportSettings.getWebSocketRules(), overwriteDuplicates);
+        workspaceExport.copyTo(workspace, overwriteDuplicates);
     }
 
-    public static void exportSettings(File file, List<Variable> variables, List<Rule> httpRules, List<Rule> webSocketRules) {
+    public static void exportWorkspaceData(Workspace workspace, File file, WorkspaceDataExport workspaceExport) {
         try {
-            ExportSettings exportSettings = new ExportSettings();
-            exportSettings.setVariables(variables);
-            exportSettings.setRules(httpRules);
-            exportSettings.setWebSocketRules(webSocketRules);
-            String data = switch (BurpExtender.getGeneralSettings().getExportMethod()) {
-                case Json -> Serializer.serialize(exportSettings, false);
-                case Yaml -> Serializer.serializeYaml(exportSettings, false);
+            String data = switch (workspace.getGeneralSettings().getExportMethod()) {
+                case Json -> Serializer.serialize(workspaceExport, false);
+                case Yaml -> Serializer.serializeYaml(workspaceExport, false);
             };
             Files.writeString(file.toPath(), data);
         } catch (IOException e) {
@@ -53,35 +42,35 @@ public class SettingsManager {
         }
     }
 
-    public static void loadSettings() {
-        BurpExtender.getGeneralSettings().importSettings(Storage.get("Reshaper.generalSettings", new TypeReference<>() {}));
-        getGlobalVariables().importVariables(Storage.get("Reshaper.variables", new TypeReference<>() {}), false);
-        getHttpRulesRegistry().importRules(Storage.get("Reshaper.rules", new TypeReference<>() {}), false);
-        getWebSocketRulesRegistry().importRules(Storage.get("Reshaper.webSocketRules", new TypeReference<>() {}), false);
+    public static Workspaces loadPersistentWorkspaces() {
+        WorkspacesExport workspacesExport = Storage.get("Reshaper.workspaces", new TypeReference<>() {});
+        if (workspacesExport != null) {
+            return workspacesExport.toWorkspaces();
+        }
+
+        Workspaces workspaces = new Workspaces();
+        workspaces.initialize();
+        loadLegacySettings(workspaces.getWorkspaces().getFirst());
+        return workspaces;
     }
 
-    public static void saveSettings() {
-        Storage.store("Reshaper.generalSettings", BurpExtender.getGeneralSettings());
-        Storage.store("Reshaper.variables", getGlobalVariables().exportVariables());
-        Storage.store("Reshaper.rules", getHttpRulesRegistry().exportRules());
-        Storage.store("Reshaper.webSocketRules", getWebSocketRulesRegistry().exportRules());
+    private static void loadLegacySettings(Workspace workspace) {
+        workspace.getGeneralSettings().importSettings(Storage.get("Reshaper.generalSettings", new TypeReference<>() {}));
+        workspace.getGlobalVariables().importVariables(Storage.get("Reshaper.variables", new TypeReference<>() {}), false);
+        workspace.getHttpRulesRegistry().importRules(Storage.get("Reshaper.rules", new TypeReference<>() {}), false);
+        workspace.getWebSocketRulesRegistry().importRules(Storage.get("Reshaper.webSocketRules", new TypeReference<>() {}), false);
     }
 
-    private static GlobalVariables getGlobalVariables() {
-        return GlobalVariables.get();
+    public static void savePersistentWorkspaces(WorkspacesExport workspacesExport) {
+        Storage.store("Reshaper.workspaces", workspacesExport);
     }
 
-    private static RulesRegistry getHttpRulesRegistry() {
-        return BurpExtender.getRulesRegistry(ProtocolType.Http);
-    }
-
-    private static RulesRegistry getWebSocketRulesRegistry() {
-        return BurpExtender.getRulesRegistry(ProtocolType.WebSocket);
-    }
-
-    public static void resetData() {
-        Arrays.stream(getHttpRulesRegistry().getRules()).forEach(rule -> getHttpRulesRegistry().deleteRule(rule));
-        Arrays.stream(getWebSocketRulesRegistry().getRules()).forEach(rule -> getWebSocketRulesRegistry().deleteRule(rule));
-        GlobalVariables.get().getValues().forEach(variable -> GlobalVariables.get().remove(Variables.asKey(variable.getName(), variable.isList())));
+    public static void resetData(Workspace workspace) {
+        RulesRegistry httpRulesRegistry = workspace.getHttpRulesRegistry();
+        RulesRegistry webSocketRulesRegistry = workspace.getWebSocketRulesRegistry();
+        GlobalVariables globalVariables = workspace.getGlobalVariables();
+        Arrays.stream(httpRulesRegistry.getRules()).forEach(httpRulesRegistry::deleteRule);
+        Arrays.stream(webSocketRulesRegistry.getRules()).forEach(webSocketRulesRegistry::deleteRule);
+        globalVariables.getValues().forEach(variable -> globalVariables.remove(Variables.asKey(variable.getName(), variable.isList())));
     }
 }

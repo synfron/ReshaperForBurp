@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 public class VariableTagWizardOptionPane extends JOptionPane implements IFormComponent {
 
@@ -23,7 +24,7 @@ public class VariableTagWizardOptionPane extends JOptionPane implements IFormCom
     private final ProtocolType protocolType;
 
     private VariableTagWizardOptionPane(VariableTagWizardModel model, ProtocolType protocolType) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
         container = new VariableTagWizardContainerComponent(protocolType);
         outerContainer = (JPanel)message;
         this.model = model;
@@ -75,7 +76,7 @@ public class VariableTagWizardOptionPane extends JOptionPane implements IFormCom
     }
 
     private void onPropertyChanged(PropertyChangeEvent event) {
-        if (getValue() != null && (int)getValue() == JOptionPane.OK_OPTION) {
+        if (Objects.equals(getValue(), "OK")) {
             if (!model.validate().isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         String.join("\n", model.validate()),
@@ -96,5 +97,11 @@ public class VariableTagWizardOptionPane extends JOptionPane implements IFormCom
 
     private void setCurrentDialog(JDialog dialog) {
         this.currentDialog = dialog;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

@@ -6,15 +6,19 @@ import org.apache.commons.text.StringEscapeUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.*;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class VariableModel {
+public class VariableModel implements IWorkspaceHost, IWorkspaceDependent {
+    @Getter
+    private final Workspace workspace;
     @Getter
     private Variable variable;
     @Getter
@@ -40,12 +44,14 @@ public class VariableModel {
     private final IEventListener<PropertyChangedArgs> activationChanged = this::onActivationChanged;
 
     public VariableModel(boolean isList) {
+        this.workspace = getHostedWorkspace();
         this.isList = isList;
         delimiter = StringEscapeUtils.escapeJava("\n");
         saved = false;
     }
 
     public VariableModel(Variable variable) {
+        this.workspace = getHostedWorkspace();
         this.variable = variable.withListener(variableChanged);
         name = variable.getName();
         valueType = variable.getValueType();
@@ -66,7 +72,7 @@ public class VariableModel {
     }
 
     private void syncProperties() {
-        SwingUtilities.invokeLater(() -> {
+        createInvokeLaterEntryPoint(() -> {
             value = StringUtils.defaultString(TextUtils.toString(variable.getValue()));
             if (isList) {
                 delimiter = StringEscapeUtils.escapeJava(((ListVariable) variable).getDelimiter());
@@ -106,7 +112,7 @@ public class VariableModel {
         List<String> errors = new ArrayList<>();
         if (StringUtils.isEmpty(name)) {
             errors.add("Variable Name is required");
-        } else if ((variable == null || !StringUtils.equals(variable.getName(), name)) && GlobalVariables.get().has(Variables.asKey(name, isList))) {
+        } else if ((variable == null || !StringUtils.equals(variable.getName(), name)) && workspace.getGlobalVariables().has(Variables.asKey(name, isList))) {
             errors.add("Variable Name must be unique");
         } else if (!VariableString.isValidVariableName(name)) {
             errors.add("Variable Name is invalid");
@@ -157,10 +163,10 @@ public class VariableModel {
         }
         Variable variable = this.variable;
         if (variable == null) {
-            variable = GlobalVariables.get().add(Variables.asKey(name, isList));
+            variable = workspace.getGlobalVariables().add(Variables.asKey(name, isList));
         } else if (!StringUtils.equals(variable.getName(), name)) {
-            GlobalVariables.get().remove(Variables.asKey(variable.getName(), isList));
-            variable = GlobalVariables.get().add(Variables.asKey(name, isList));
+            workspace.getGlobalVariables().remove(Variables.asKey(variable.getName(), isList));
+            variable = workspace.getGlobalVariables().add(Variables.asKey(name, isList));
         }
         if (isList) {
             ((ListVariable)variable).setDelimiter(StringEscapeUtils.unescapeJava(delimiter));

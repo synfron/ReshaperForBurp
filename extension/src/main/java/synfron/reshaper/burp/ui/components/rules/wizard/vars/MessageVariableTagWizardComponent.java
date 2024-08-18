@@ -9,6 +9,7 @@ import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
@@ -52,5 +53,11 @@ public class MessageVariableTagWizardComponent extends JPanel implements IFormCo
 
     private void onIdentifierChanged(ActionEvent actionEvent) {
         model.setIdentifier(identifier.getText());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

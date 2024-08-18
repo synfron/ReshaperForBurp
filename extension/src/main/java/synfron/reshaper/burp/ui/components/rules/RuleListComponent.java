@@ -1,6 +1,6 @@
 package synfron.reshaper.burp.ui.components.rules;
 
-import burp.BurpExtender;
+import lombok.Getter;
 import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
@@ -9,6 +9,9 @@ import synfron.reshaper.burp.core.rules.Rule;
 import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.rules.whens.WhenEventDirection;
 import synfron.reshaper.burp.core.rules.whens.WhenWebSocketEventDirection;
+import synfron.reshaper.burp.core.settings.Workspace;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.utils.ActionPerformedListener;
 import synfron.reshaper.burp.ui.utils.ForegroundColorListCellRenderer;
@@ -26,9 +29,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RuleListComponent extends JPanel {
+public class RuleListComponent extends JPanel implements IWorkspaceHost, IWorkspaceDependentComponent {
     private final ProtocolType protocolType;
     private final RulesRegistry rulesRegistry;
+    @Getter
+    private final Workspace workspace;
     private JList<RuleModel> rulesList;
     private DefaultListModel<RuleModel> ruleListModel;
     private RuleContainerComponent ruleContainer;
@@ -36,8 +41,9 @@ public class RuleListComponent extends JPanel {
     private final IEventListener<CollectionChangedArgs> rulesCollectionChangedListener = this::onRulesCollectionChanged;
 
     public RuleListComponent(ProtocolType protocolType) {
+        this.workspace = getHostedWorkspace(this);
         this.protocolType = protocolType;
-        this.rulesRegistry = BurpExtender.getRulesRegistry(protocolType);
+        this.rulesRegistry = workspace.getRulesRegistry(protocolType);
         initComponent();
     }
 
@@ -119,11 +125,13 @@ public class RuleListComponent extends JPanel {
 
     private void onSelectionChanged(ListSelectionEvent listSelectionEvent) {
         RuleModel rule = rulesList.getSelectedValue();
-        if (rule != null) {
-            ruleContainer.setModel(rule);
-        } else if (!defaultSelect()) {
-            ruleContainer.setModel(null);
-        }
+        createEntryPoint(() -> {
+            if (rule != null) {
+                ruleContainer.setModel(rule);
+            } else if (!defaultSelect()) {
+                ruleContainer.setModel(null);
+            }
+        });
     }
 
     private boolean defaultSelect() {

@@ -5,10 +5,12 @@ import burp.api.montoya.ui.editor.Editor;
 import burp.api.montoya.ui.editor.HttpRequestEditor;
 import burp.api.montoya.ui.editor.HttpResponseEditor;
 import burp.api.montoya.ui.editor.WebSocketMessageEditor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.BurpUtils;
 import synfron.reshaper.burp.core.vars.VariableValueType;
 import synfron.reshaper.burp.ui.components.IFormComponent;
@@ -28,6 +30,8 @@ import java.util.Objects;
 
 public class VariableComponent extends JPanel implements IFormComponent {
     private final VariableModel model;
+    @Getter
+    private final Workspace workspace;
     private JTextField variableName;
     private Editor variableText;
     private JComboBox<VariableValueType> valueType;
@@ -38,6 +42,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
     private JPanel variableTextContainer;
 
     public VariableComponent(VariableModel model) {
+        this.workspace = getHostedWorkspace();
         this.model = model;
         model.withListener(variablePropertyChangedListener);
         initComponent();
@@ -153,7 +158,7 @@ public class VariableComponent extends JPanel implements IFormComponent {
     }
 
     private void onVariableTextChanged(ActionEvent actionEvent) {
-        SwingUtilities.invokeLater(() -> {
+        createInvokeLaterEntryPoint(() -> {
             if (!model.isSaved() || !Objects.equals(getVariableText(), model.getValue())) {
                 model.setValue(getVariableText());
             }
@@ -251,5 +256,11 @@ public class VariableComponent extends JPanel implements IFormComponent {
                     "Validation Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }

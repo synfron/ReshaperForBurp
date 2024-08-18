@@ -1,22 +1,25 @@
 package synfron.reshaper.burp.ui.components.settings;
 
-import burp.BurpExtender;
 import com.alexandriasoftware.swing.JSplitButton;
+import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.ProtocolType;
+import synfron.reshaper.burp.core.BurpTool;
+import synfron.reshaper.burp.core.events.CollectionChangedArgs;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.messages.Encoder;
 import synfron.reshaper.burp.core.rules.Rule;
-import synfron.reshaper.burp.core.settings.GeneralSettings;
-import synfron.reshaper.burp.core.settings.SettingsManager;
+import synfron.reshaper.burp.core.settings.*;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
-import synfron.reshaper.burp.core.vars.GlobalVariables;
 import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
 import synfron.reshaper.burp.ui.models.settings.HideItemsModel;
+import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
 import synfron.reshaper.burp.ui.utils.FocusActionListener;
 import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
@@ -34,13 +37,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SettingsTabComponent extends JPanel implements IFormComponent, HierarchyListener {
-
+public class SettingsTabComponent extends JPanel implements IFormComponent, HierarchyListener, IWorkspaceDependentComponent {
+    @Getter
+    private final Workspace workspace;
     private JCheckBox overwriteDuplicates;
     private SelectionTable<Rule> exportHttpRulesTable;
     private SelectionTable<Rule> exportWebSocketRulesTable;
     private SelectionTable<Variable> exportVariablesTable;
-    private final GeneralSettings generalSettings = BurpExtender.getGeneralSettings();
+    private final GeneralSettings generalSettings;
     private JCheckBox enableEventDiagnostics;
     private JTextField diagnosticValueMaxLength;
     private JCheckBox enableSanityCheckWarnings;
@@ -53,14 +57,37 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
     private JCheckBox scanner;
     private JCheckBox target;
     private JCheckBox extender;
+    private JCheckBox session;
     private JCheckBox webSockets;
     private ButtonGroup importMethod;
     private ButtonGroup exportMethod;
     private JSplitButton exportData;
     private JSplitButton importData;
+    private final IEventListener<PropertyChangedArgs> workspacesPropertyChangedListener = this::onWorkspacesPropertyChanged;
+    private final IEventListener<CollectionChangedArgs> workspacesChangedListener = this::onWorkspacesChangedListener;
+
+    private JButton enableWorkspaces;
+    private JPanel rightGeneralSettings;
 
     public SettingsTabComponent() {
+        workspace = getHostedWorkspace(this);
+        generalSettings = workspace.getGeneralSettings();
         initComponent();
+        Workspaces.get().withListener(workspacesPropertyChangedListener)
+                .withCollectionListener(workspacesChangedListener);
+    }
+
+    private void onWorkspacesPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getName().equals("enabled")) {
+            enableWorkspaces.setText(Workspaces.get().isEnabled() ? "Disable Workspaces" : "Enable Workspaces");
+            ComponentVisibilityManager.updateVisibility(rightGeneralSettings, enableWorkspaces, !Workspaces.get().isEnabled() || Workspaces.get().getWorkspaces().size() == 1);
+        } else if  (propertyChangedArgs.getName().equals("workspaces")) {
+            ComponentVisibilityManager.updateVisibility(rightGeneralSettings, enableWorkspaces, !Workspaces.get().isEnabled() || Workspaces.get().getWorkspaces().size() == 1);
+        }
+    }
+
+    private void onWorkspacesChangedListener(CollectionChangedArgs collectionChangedArgs) {
+        ComponentVisibilityManager.updateVisibility(rightGeneralSettings, enableWorkspaces, !Workspaces.get().isEnabled() || Workspaces.get().getWorkspaces().size() == 1);
     }
 
     private void initComponent() {
@@ -83,14 +110,18 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         return container;
     }
 
+    private void onEnableWorkspaces(ActionEvent actionEvent) {
+        Workspaces.get().setEnabled(!Workspaces.get().isEnabled());
+    }
+
     private void onHideFeatures(ActionEvent actionEvent) {
         HideItemsModel model = new HideItemsModel(generalSettings);
         ModalPrompter.open(model, ignored -> HideItemsOptionPane.showDialog(model), true);
     }
 
     private Component RightGeneralOptions() {
-        JPanel container = new JPanel(new MigLayout());
-        container.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        rightGeneralSettings = new JPanel(new MigLayout());
+        rightGeneralSettings.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         defaultEncoding = createComboBox(Encoder.getEncodings().toArray(new String[0]));
 
@@ -98,10 +129,15 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
 
         defaultEncoding.addActionListener(this::onSetDefaultEncodingChanged);
 
+        enableWorkspaces = new JButton(Workspaces.get().isEnabled() ? "Disable Workspaces" : "Enable Workspaces");
+        enableWorkspaces.addActionListener(this::onEnableWorkspaces);
 
-        container.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
-        container.add(getCaptureTrafficOptions(), "wrap");
-        return container;
+        rightGeneralSettings.add(getLabeledField("Default Encoding", defaultEncoding), "wrap");
+        rightGeneralSettings.add(getCaptureTrafficOptions(), "wrap");
+        rightGeneralSettings.add(enableWorkspaces, "wrap");
+
+        ComponentVisibilityManager.updateVisibility(rightGeneralSettings, enableWorkspaces, !Workspaces.get().isEnabled() || Workspaces.get().getWorkspaces().size() == 1);
+        return rightGeneralSettings;
     }
 
     private Component LeftGeneralOptions() {
@@ -110,7 +146,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         enableEventDiagnostics = new JCheckBox("Enable Event Diagnostics");
         diagnosticValueMaxLength = createTextField(false);
         enableSanityCheckWarnings = new JCheckBox("Enable Sanity Check Warnings");
-        logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
+        logInExtenderOutput = new JCheckBox("Replicate Logs to Extension Output");
         logTabCharacterLimit = createTextField(false);
         JButton hideFeatures = new JButton("Hide Features");
         JButton resetData = new JButton("Reset Data");
@@ -146,13 +182,14 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
     private Component getCaptureTrafficOptions() {
         JPanel container = new JPanel(new MigLayout());
 
-        proxy = new JCheckBox("Proxy");
-        repeater = new JCheckBox("Repeater");
-        intruder = new JCheckBox("Intruder");
-        scanner = new JCheckBox("Scanner");
-        target = new JCheckBox("Target");
-        extender = new JCheckBox("Extender");
-        webSockets = new JCheckBox("WebSockets");
+        proxy = new JCheckBox(BurpTool.Proxy.toString());
+        repeater = new JCheckBox(BurpTool.Repeater.toString());
+        intruder = new JCheckBox(BurpTool.Intruder.toString());
+        scanner = new JCheckBox(BurpTool.Scanner.toString());
+        target = new JCheckBox(BurpTool.Target.toString());
+        extender = new JCheckBox(BurpTool.Extender.toString());
+        session = new JCheckBox(BurpTool.Session.toString());
+        webSockets = new JCheckBox(BurpTool.WebSockets.toString());
 
         proxy.setSelected(generalSettings.isCaptureProxy());
         repeater.setSelected(generalSettings.isCaptureRepeater());
@@ -160,6 +197,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         scanner.setSelected(generalSettings.isCaptureScanner());
         target.setSelected(generalSettings.isCaptureTarget());
         extender.setSelected(generalSettings.isCaptureExtender());
+        session.setSelected(generalSettings.isCaptureSession());
         webSockets.setSelected(generalSettings.isCaptureWebSockets());
 
         proxy.addActionListener(this::onProxyChanged);
@@ -168,6 +206,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         scanner.addActionListener(this::onScannerChanged);
         target.addActionListener(this::onTargetChanged);
         extender.addActionListener(this::onExtenderChanged);
+        session.addActionListener(this::onSessionChanged);
         webSockets.addActionListener(this::onWebSocketsChanged);
 
         container.add(new JLabel("Capture Traffic From:"), "wrap");
@@ -177,7 +216,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         container.add(scanner, "wrap");
         container.add(target);
         container.add(extender, "wrap");
-        container.add(webSockets);
+        container.add(session);
+        container.add(webSockets, "wrap");
         return container;
     }
 
@@ -185,11 +225,11 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         try {
             int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to reset data? This will remove all rules and variables.", "Reset Data", JOptionPane.YES_NO_OPTION);
             if (response == JOptionPane.YES_OPTION) {
-                SettingsManager.resetData();
+                SettingsManager.resetData(workspace);
                 refreshLists();
             }
         } catch (Exception e) {
-            Log.get().withMessage("Error resetting data").withException(e).logErr();
+            Log.get(workspace).withMessage("Error resetting data").withException(e).logErr();
 
             JOptionPane.showMessageDialog(this,
                     "Error resetting data",
@@ -249,6 +289,10 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
 
     private void onExtenderChanged(ActionEvent actionEvent) {
         generalSettings.setCaptureExtender(extender.isSelected());
+    }
+
+    private void onSessionChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureSession(session.isSelected());
     }
 
     private void onWebSocketsChanged(ActionEvent actionEvent) {
@@ -414,11 +458,14 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
             if (result == JFileChooser.APPROVE_OPTION) {
                 generalSettings.setLastExportPath(FilenameUtils.getFullPath(fileChooser.getSelectedFile().getAbsolutePath()));
                 generalSettings.setLastExportFileName(FilenameUtils.getName(fileChooser.getSelectedFile().getAbsolutePath()));
-                SettingsManager.exportSettings(
+                SettingsManager.exportWorkspaceData(
+                        workspace,
                         fileChooser.getSelectedFile(),
-                        exportVariablesTable.getSelectedValues(),
-                        exportHttpRulesTable.getSelectedValues(),
-                        exportWebSocketRulesTable.getSelectedValues()
+                        new WorkspaceDataExport(
+                            exportHttpRulesTable.getSelectedValues(),
+                            exportWebSocketRulesTable.getSelectedValues(),
+                            exportVariablesTable.getSelectedValues()
+                        )
                 );
 
                 JOptionPane.showMessageDialog(this,
@@ -428,7 +475,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
                 );
             }
         } catch (Exception e) {
-            Log.get().withMessage("Error exporting data").withException(e).logErr();
+            Log.get(workspace).withMessage("Error exporting data").withException(e).logErr();
 
             JOptionPane.showMessageDialog(this,
                     "Error exporting data",
@@ -454,7 +501,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
                 file = fileChooser.getSelectedFile().getAbsolutePath();
                 generalSettings.setLastExportPath(FilenameUtils.getFullPath(file));
                 generalSettings.setLastExportFileName(FilenameUtils.getName(file));
-                SettingsManager.importSettings(fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
+                SettingsManager.importSettings(workspace, fileChooser.getSelectedFile(), overwriteDuplicates.isSelected());
                 refreshLists();
 
                 JOptionPane.showMessageDialog(this,
@@ -464,7 +511,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
                 );
             }
         } catch (Exception e) {
-            Log.get().withMessage("Error importing data from file").withException(e).logErr();
+            Log.get(workspace).withMessage("Error importing data from file").withException(e).logErr();
 
             JOptionPane.showMessageDialog(this,
                     String.format("Error importing data from file: %s", file),
@@ -484,7 +531,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
                 connection.setConnectTimeout(10000);
                 connection.setReadTimeout(10000);
                 String settingsJson = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
-                SettingsManager.importSettings(settingsJson, overwriteDuplicates.isSelected());
+                SettingsManager.importSettings(workspace, settingsJson, overwriteDuplicates.isSelected());
                 refreshLists();
 
                 JOptionPane.showMessageDialog(this,
@@ -494,7 +541,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
                 );
             }
         } catch (Exception e) {
-            Log.get().withMessage("Error importing data from URL").withException(e).logErr();
+            Log.get(workspace).withMessage("Error importing data from URL").withException(e).logErr();
 
             JOptionPane.showMessageDialog(this,
                     String.format("Error importing data from URL: %s", url),
@@ -530,15 +577,21 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
     }
 
     private List<Rule> getExportHttpRulesData() {
-        return BurpExtender.getRulesRegistry(ProtocolType.Http).exportRules();
+        return workspace.getHttpRulesRegistry().exportRules();
     }
 
     private List<Rule> getExportWebSocketRulesData() {
-        return BurpExtender.getRulesRegistry(ProtocolType.WebSocket).exportRules();
+        return workspace.getWebSocketRulesRegistry().exportRules();
     }
 
     private List<Variable> getExportVariablesData() {
-        return GlobalVariables.get().exportVariables();
+        return workspace.getGlobalVariables().exportVariables();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Component & IFormComponent> T getComponent() {
+        return (T) this;
     }
 }
 
