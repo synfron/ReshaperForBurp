@@ -7,6 +7,8 @@ import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
 import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
+import synfron.reshaper.burp.ui.components.shared.PromptTextField;
+import synfron.reshaper.burp.ui.components.shared.TextPrompt;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
@@ -96,6 +98,23 @@ public interface IFormComponent extends IWorkspaceDependentComponent, IWorkspace
 
     default JTextField createTextField(boolean supportsVariableTags) {
         JTextField textField = new JTextField();
+        textField.setColumns(20);
+        textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
+        textField.setAlignmentX(LEFT_ALIGNMENT);
+        return addContextMenu(addUndo(textField), supportsVariableTags, getProtocolType());
+    }
+
+    private <T extends JTextField> T createTextField(T textField, boolean supportsVariableTags) {
+        textField.setColumns(20);
+        textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
+        textField.setAlignmentX(LEFT_ALIGNMENT);
+        return addContextMenu(addUndo(textField), supportsVariableTags, getProtocolType());
+    }
+
+    default PromptTextField createPromptTextField(String placeholder, boolean supportsVariableTags) {
+        PromptTextField textField = new PromptTextField(placeholder);
+        textField.getTextPrompt().setShow(TextPrompt.Show.FOCUS_LOST);
+        textField.getTextPrompt().changeStyle(Font.ITALIC);
         textField.setColumns(20);
         textField.setMaximumSize(new Dimension(textField.getPreferredSize().width, textField.getPreferredSize().height));
         textField.setAlignmentX(LEFT_ALIGNMENT);

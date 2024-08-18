@@ -5,6 +5,7 @@ import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.extension.ExtensionUnloadingHandler;
 import lombok.Getter;
 import synfron.reshaper.burp.core.HttpConnector;
+import synfron.reshaper.burp.core.SessionHandlingActionExchange;
 import synfron.reshaper.burp.core.WebSocketConnector;
 import synfron.reshaper.burp.core.events.CollectionChangedAction;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
@@ -31,6 +32,7 @@ public class BurpExtender implements BurpExtension, ExtensionUnloadingHandler {
             api.userInterface().registerSuiteTab("Reshaper", new ReshaperComponent(Workspaces.get()));
             Workspaces.get().getCollectionChangedEvent().add(onWorkspacesChangedListener);
             Workspaces.get().getWorkspaces().forEach(this::registerWorkspace);
+            api.http().registerSessionHandlingAction(new SessionHandlingActionExchange(Workspaces.get()));
 
             api.extension().registerUnloadingHandler(this);
             api.userInterface().registerContextMenuItemsProvider(contextMenuHandler);
@@ -51,7 +53,6 @@ public class BurpExtender implements BurpExtension, ExtensionUnloadingHandler {
         api.proxy().registerResponseHandler(httpConnector);
         api.proxy().registerWebSocketCreationHandler(webSocketConnector);
         api.http().registerHttpHandler(httpConnector);
-        api.http().registerSessionHandlingAction(httpConnector);
         api.websockets().registerWebSocketCreatedHandler(webSocketConnector);
     }
 

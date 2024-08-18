@@ -281,7 +281,7 @@ public class HttpConnector implements
 
     @Override
     public ProxyRequestReceivedAction handleRequestReceived(InterceptedRequest interceptedRequest) {
-        if (workspace == null) ProxyRequestReceivedAction.continueWith(interceptedRequest);
+        if (workspace == null) return ProxyRequestReceivedAction.continueWith(interceptedRequest);
         if (workspace.getGeneralSettings().isCapture(BurpTool.Proxy)) {
             HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Proxy, getMessageId(BurpTool.Proxy, interceptedRequest.messageId()), interceptedRequest, null, interceptedRequest.annotations(), interceptedRequest.listenerInterface(), interceptedRequest.sourceIpAddress());
             return processEvent(true, eventInfo, true).asProxyRequestAction();
@@ -293,7 +293,7 @@ public class HttpConnector implements
 
     @Override
     public RequestToBeSentAction handleHttpRequestToBeSent(HttpRequestToBeSent requestToBeSent) {
-        if (workspace == null) RequestToBeSentAction.continueWith(requestToBeSent);
+        if (workspace == null) return RequestToBeSentAction.continueWith(requestToBeSent);
         if (!requestToBeSent.toolSource().isFromTool(ToolType.PROXY)) {
             BurpTool burpTool = getBurpToolIfEnabled(requestToBeSent.toolSource().toolType());
             if (burpTool != null && burpTool != BurpTool.Proxy) {
@@ -307,7 +307,7 @@ public class HttpConnector implements
 
     @Override
     public ActionResult performAction(SessionHandlingActionData actionData) {
-        if (workspace == null) ActionResult.actionResult(actionData.request());
+        if (workspace == null || !workspace.getGeneralSettings().isCapture(BurpTool.Session)) return ActionResult.actionResult(actionData.request());
         HttpEventInfo eventInfo = asEventInfo(true, BurpTool.Session, null, actionData.request(), null, actionData.annotations());
         eventInfo.setMacros(CollectionUtils.defaultIfNull(actionData.macroRequestResponses()));
         processEvent(true, eventInfo, false);
@@ -321,7 +321,7 @@ public class HttpConnector implements
 
     @Override
     public ProxyResponseReceivedAction handleResponseReceived(InterceptedResponse interceptedResponse) {
-        if (workspace == null) ProxyResponseReceivedAction.continueWith(interceptedResponse);
+        if (workspace == null) return ProxyResponseReceivedAction.continueWith(interceptedResponse);
         if (workspace.getGeneralSettings().isCapture(BurpTool.Proxy)) {
             HttpEventInfo eventInfo = asEventInfo(false, BurpTool.Proxy, getMessageId(BurpTool.Proxy, interceptedResponse.messageId()), interceptedResponse.initiatingRequest(), interceptedResponse, interceptedResponse.annotations(), interceptedResponse.listenerInterface(), null);
             return processEvent(false, eventInfo, true).asProxyResponseAction();
@@ -333,7 +333,7 @@ public class HttpConnector implements
 
     @Override
     public ResponseReceivedAction handleHttpResponseReceived(HttpResponseReceived responseReceived) {
-        if (workspace == null) ResponseReceivedAction.continueWith(responseReceived);
+        if (workspace == null) return ResponseReceivedAction.continueWith(responseReceived);
         if (responseReceived.toolSource().toolType() != ToolType.PROXY) {
             BurpTool burpTool = getBurpToolIfEnabled(responseReceived.toolSource().toolType());
             if (burpTool != null && burpTool != BurpTool.Proxy) {
@@ -356,7 +356,7 @@ public class HttpConnector implements
 
     @Override
     public String name() {
-        return "Reshaper - " + workspace.getWorkspaceName();
+        return "Reshaper";
     }
 
     public static class EventResult {

@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.components.rules.wizard.matchreplace;
 
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.PromptTextField;
 import synfron.reshaper.burp.ui.models.rules.wizard.matchreplace.MatchAndReplaceWizardModel;
 import synfron.reshaper.burp.ui.models.rules.wizard.matchreplace.MatchType;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
@@ -21,9 +22,9 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
     private final MatchAndReplaceWizardModel model;
     private JComboBox<MatchType> matchType;
     private JTextField identifier;
-    private JTextField match;
+    private PromptTextField match;
     private JLabel matchLabel;
-    private JTextField replace;
+    private PromptTextField replace;
     private JCheckBox regexMatch;
 
     private MatchAndReplaceWizardOptionPane(MatchAndReplaceWizardModel model) {
@@ -76,8 +77,8 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
                 "Match" :
                 "Match *"
         );
-        match = createTextField(true);
-        replace = createTextField(true);
+        match = createPromptTextField(getMatchPlaceHolderText(model.getMatchType()), true);
+        replace = createPromptTextField(getReplacePlaceHolderText(model.getMatchType()),true);
         regexMatch = new JCheckBox("Regex match");
 
         matchType.setSelectedItem(model.getMatchType());
@@ -105,6 +106,20 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
         return container;
     }
 
+    private String getMatchPlaceHolderText(MatchType matchType) {
+        return switch (matchType) {
+            case RequestHeaderLine, ResponseHeaderLine -> "Leave blank to add a new header";
+            default -> "Regex / text to match";
+        };
+    }
+
+    private String getReplacePlaceHolderText(MatchType matchType) {
+        return switch (matchType) {
+            case RequestHeaderLine, ResponseHeaderLine -> "Leave blank to remove the header";
+            default -> "Literal string to replace";
+        };
+    }
+
     private void onMatchTypeChanged(ActionEvent actionEvent) {
         MatchType matchType = (MatchType) this.matchType.getSelectedItem();
         model.setMatchType(matchType);
@@ -112,6 +127,8 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
                 "Match" :
                 "Match *"
         );
+        match.getTextPrompt().setText(getMatchPlaceHolderText(model.getMatchType()));
+        replace.getTextPrompt().setText(getReplacePlaceHolderText(model.getMatchType()));
     }
 
     private void onIdentifierChanged(ActionEvent actionEvent) {

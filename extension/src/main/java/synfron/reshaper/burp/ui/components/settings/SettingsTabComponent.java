@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.BurpTool;
 import synfron.reshaper.burp.core.events.CollectionChangedArgs;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
@@ -56,6 +57,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
     private JCheckBox scanner;
     private JCheckBox target;
     private JCheckBox extender;
+    private JCheckBox session;
     private JCheckBox webSockets;
     private ButtonGroup importMethod;
     private ButtonGroup exportMethod;
@@ -144,7 +146,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         enableEventDiagnostics = new JCheckBox("Enable Event Diagnostics");
         diagnosticValueMaxLength = createTextField(false);
         enableSanityCheckWarnings = new JCheckBox("Enable Sanity Check Warnings");
-        logInExtenderOutput = new JCheckBox("Replicate Logs in Extender Output");
+        logInExtenderOutput = new JCheckBox("Replicate Logs to Extension Output");
         logTabCharacterLimit = createTextField(false);
         JButton hideFeatures = new JButton("Hide Features");
         JButton resetData = new JButton("Reset Data");
@@ -180,13 +182,14 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
     private Component getCaptureTrafficOptions() {
         JPanel container = new JPanel(new MigLayout());
 
-        proxy = new JCheckBox("Proxy");
-        repeater = new JCheckBox("Repeater");
-        intruder = new JCheckBox("Intruder");
-        scanner = new JCheckBox("Scanner");
-        target = new JCheckBox("Target");
-        extender = new JCheckBox("Extender");
-        webSockets = new JCheckBox("WebSockets");
+        proxy = new JCheckBox(BurpTool.Proxy.toString());
+        repeater = new JCheckBox(BurpTool.Repeater.toString());
+        intruder = new JCheckBox(BurpTool.Intruder.toString());
+        scanner = new JCheckBox(BurpTool.Scanner.toString());
+        target = new JCheckBox(BurpTool.Target.toString());
+        extender = new JCheckBox(BurpTool.Extender.toString());
+        session = new JCheckBox(BurpTool.Session.toString());
+        webSockets = new JCheckBox(BurpTool.WebSockets.toString());
 
         proxy.setSelected(generalSettings.isCaptureProxy());
         repeater.setSelected(generalSettings.isCaptureRepeater());
@@ -194,6 +197,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         scanner.setSelected(generalSettings.isCaptureScanner());
         target.setSelected(generalSettings.isCaptureTarget());
         extender.setSelected(generalSettings.isCaptureExtender());
+        session.setSelected(generalSettings.isCaptureSession());
         webSockets.setSelected(generalSettings.isCaptureWebSockets());
 
         proxy.addActionListener(this::onProxyChanged);
@@ -202,6 +206,7 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         scanner.addActionListener(this::onScannerChanged);
         target.addActionListener(this::onTargetChanged);
         extender.addActionListener(this::onExtenderChanged);
+        session.addActionListener(this::onSessionChanged);
         webSockets.addActionListener(this::onWebSocketsChanged);
 
         container.add(new JLabel("Capture Traffic From:"), "wrap");
@@ -211,7 +216,8 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
         container.add(scanner, "wrap");
         container.add(target);
         container.add(extender, "wrap");
-        container.add(webSockets);
+        container.add(session);
+        container.add(webSockets, "wrap");
         return container;
     }
 
@@ -283,6 +289,10 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
 
     private void onExtenderChanged(ActionEvent actionEvent) {
         generalSettings.setCaptureExtender(extender.isSelected());
+    }
+
+    private void onSessionChanged(ActionEvent actionEvent) {
+        generalSettings.setCaptureSession(session.isSelected());
     }
 
     private void onWebSocketsChanged(ActionEvent actionEvent) {

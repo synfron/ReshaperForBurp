@@ -81,7 +81,7 @@ public class WebSocketConnector implements
 
         @Override
         public TextMessageReceivedAction handleTextMessageReceived(InterceptedTextMessage interceptedTextMessage) {
-            if (workspace == null) TextMessageReceivedAction.continueWith(interceptedTextMessage);
+            if (workspace == null) return TextMessageReceivedAction.continueWith(interceptedTextMessage);
             if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, interceptedTextMessage.annotations(), interceptedTextMessage.payload(), interceptedTextMessage.direction());
                 return processEvent(eventInfo).asProxyTextAction();
@@ -91,7 +91,7 @@ public class WebSocketConnector implements
 
         @Override
         public TextMessageAction handleTextMessage(TextMessage textMessage) {
-            if (workspace == null) TextMessageAction.continueWith(textMessage);
+            if (workspace == null) return TextMessageAction.continueWith(textMessage);
             if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<String> eventInfo = asEventInfo(WebSocketMessageType.Text, null, textMessage.payload(), textMessage.direction());
                 return processEvent(eventInfo).asTextAction();
@@ -101,7 +101,7 @@ public class WebSocketConnector implements
 
         @Override
         public BinaryMessageReceivedAction handleBinaryMessageReceived(InterceptedBinaryMessage interceptedBinaryMessage) {
-            if (workspace == null) BinaryMessageReceivedAction.continueWith(interceptedBinaryMessage);
+            if (workspace == null) return BinaryMessageReceivedAction.continueWith(interceptedBinaryMessage);
             if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, interceptedBinaryMessage.annotations(), interceptedBinaryMessage.payload().getBytes(), interceptedBinaryMessage.direction());
                 return processEvent(eventInfo).asProxyBinaryAction();
@@ -111,7 +111,7 @@ public class WebSocketConnector implements
 
         @Override
         public BinaryMessageAction handleBinaryMessage(BinaryMessage binaryMessage) {
-            if (workspace == null) BinaryMessageAction.continueWith(binaryMessage);
+            if (workspace == null) return BinaryMessageAction.continueWith(binaryMessage);
             if (workspace.getGeneralSettings().isCapture(BurpTool.WebSockets)) {
                 WebSocketEventInfo<byte[]> eventInfo = asEventInfo(WebSocketMessageType.Binary, null, binaryMessage.payload().getBytes(), binaryMessage.direction());
                 return processEvent(eventInfo).asBinaryAction();

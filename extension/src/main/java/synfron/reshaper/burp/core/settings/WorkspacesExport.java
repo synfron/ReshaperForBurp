@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 public class WorkspacesExport implements Serializable {
+    private int version = 0;
     private UUID defaultWorkspaceUuid;
     private boolean enabled;
     private List<WorkspaceExport> workspaces = Collections.emptyList();
 
     public WorkspacesExport(Workspaces workspaces) {
+        version = 1;
         defaultWorkspaceUuid = workspaces.getDefaultWorkspaceUuid();
         enabled = workspaces.isEnabled();
         this.workspaces = workspaces.getWorkspaces().stream().map(WorkspaceExport::new).toList();

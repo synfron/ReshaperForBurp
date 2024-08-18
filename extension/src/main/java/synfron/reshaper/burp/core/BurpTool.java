@@ -8,9 +8,19 @@ public enum BurpTool {
     Intruder,
     Target,
     Scanner,
-    Extender,
+    Extender("Extensions"),
     Session,
     WebSockets;
+
+    private final String displayName;
+
+    BurpTool() {
+        displayName = name();
+    }
+
+    BurpTool(String displayName) {
+        this.displayName = displayName;
+    }
 
     public static BurpTool from(ToolType toolType) {
         return switch (toolType) {
@@ -20,7 +30,13 @@ public enum BurpTool {
             case INTRUDER -> Intruder;
             case REPEATER -> Repeater;
             case EXTENSIONS -> Extender;
-            case SUITE, SEQUENCER, RECORDED_LOGIN_REPLAYER, COMPARER, DECODER, LOGGER -> null;
+            case SUITE, SEQUENCER, RECORDED_LOGIN_REPLAYER, COMPARER, DECODER, LOGGER, ORGANIZER -> null;
         };
+    }
+
+
+    @Override
+    public String toString() {
+        return displayName;
     }
 }

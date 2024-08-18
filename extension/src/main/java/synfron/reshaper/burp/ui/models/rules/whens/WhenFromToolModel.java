@@ -31,7 +31,7 @@ public class WhenFromToolModel extends WhenModel<WhenFromToolModel, WhenFromTool
 
     @Override
     protected String getTargetName() {
-        return tool.name();
+        return tool.toString();
     }
 
     @Override

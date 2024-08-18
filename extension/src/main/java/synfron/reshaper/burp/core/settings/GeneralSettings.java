@@ -20,11 +20,12 @@ public class GeneralSettings {
     private boolean captureRepeater;
     private boolean captureIntruder;
     private boolean captureExtender;
+    private boolean captureSession = true;
     private boolean captureWebSockets = true;
     private boolean enableEventDiagnostics;
     private int diagnosticValueMaxLength = 200;
     private boolean enableSanityCheckWarnings = true;
-    private boolean logInExtenderOutput = true;
+    private boolean logInExtenderOutput = false;
     private int logTabCharacterLimit = 1000000;
     private String defaultEncoding = Encoder.getDefaultEncoderName();
     private ImportMethod importMethod = ImportMethod.File;
@@ -49,6 +50,7 @@ public class GeneralSettings {
             this.captureIntruder = other.captureIntruder;
             this.captureExtender = other.captureExtender;
             this.captureWebSockets = other.captureWebSockets;
+            this.captureSession = other.captureSession;
             this.enableEventDiagnostics = other.enableEventDiagnostics;
             this.diagnosticValueMaxLength = other.diagnosticValueMaxLength;
             this.enableSanityCheckWarnings = other.enableSanityCheckWarnings;
@@ -73,7 +75,7 @@ public class GeneralSettings {
             case Scanner -> isCaptureScanner();
             case Intruder -> isCaptureIntruder();
             case Extender -> isCaptureExtender();
-            case Session -> true;
+            case Session -> isCaptureSession();
             case WebSockets -> isCaptureWebSockets();
         };
     }
@@ -115,6 +117,11 @@ public class GeneralSettings {
     public void setCaptureExtender(boolean captureExtender) {
         this.captureExtender = captureExtender;
         propertyChanged("captureExtender", captureExtender);
+    }
+
+    public void setCaptureSession(boolean captureSession) {
+        this.captureSession = captureSession;
+        propertyChanged("captureSession", captureSession);
     }
 
     public void setCaptureWebSockets(boolean captureWebSockets) {
