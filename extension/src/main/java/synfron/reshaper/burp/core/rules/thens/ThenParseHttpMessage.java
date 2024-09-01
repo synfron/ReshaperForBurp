@@ -2,9 +2,11 @@ package synfron.reshaper.burp.core.rules.thens;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.messages.HttpDataDirection;
+import synfron.reshaper.burp.core.messages.HttpEventInfo;
 import synfron.reshaper.burp.core.messages.MessageValueHandler;
 import synfron.reshaper.burp.core.messages.entities.http.HttpRequestMessage;
 import synfron.reshaper.burp.core.messages.entities.http.HttpResponseMessage;
@@ -54,9 +56,12 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
     }
 
     private List<Pair<String, String>> parseRequestMessage(EventInfo eventInfo) {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
-                VariableString.getTextOrDefault(eventInfo, httpMessage, "")
-        ), eventInfo.getEncoder());
+        String message = VariableString.getTextOrDefault(eventInfo, httpMessage, "");
+        HttpRequestMessage httpRequestMessage = StringUtils.isNotEmpty(message) ?
+                new HttpRequestMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
+                        message
+                ), eventInfo.getEncoder()) :
+                eventInfo.getHttpRequestMessage();
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
@@ -83,9 +88,15 @@ public class ThenParseHttpMessage extends Then<ThenParseHttpMessage> implements 
     }
 
     private List<Pair<String, String>> parseResponseMessage(EventInfo eventInfo) {
-        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(
-                VariableString.getTextOrDefault(eventInfo, httpMessage, "")
-        ), eventInfo.getEncoder());
+        String message = VariableString.getTextOrDefault(eventInfo, httpMessage, "");
+        HttpResponseMessage httpResponseMessage;
+        if (StringUtils.isNotEmpty(message)) {
+            httpResponseMessage = new HttpResponseMessage(eventInfo.getWorkspace(), eventInfo.getEncoder().encode(message), eventInfo.getEncoder());
+        } else if (eventInfo instanceof HttpEventInfo httpEventInfo) {
+            httpResponseMessage = httpEventInfo.getHttpResponseMessage();
+        } else {
+            httpResponseMessage = new HttpResponseMessage(eventInfo.getWorkspace(), new byte[0], eventInfo.getEncoder());
+        }
         List<Pair<String, String>> variables = new ArrayList<>();
         for (MessageValueGetter messageValueGetter : getMessageValueGetters()) {
             String variableName = messageValueGetter.getDestinationVariableName().getText(eventInfo);
