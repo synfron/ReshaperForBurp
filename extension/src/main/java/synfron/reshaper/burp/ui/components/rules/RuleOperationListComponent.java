@@ -109,6 +109,7 @@ public abstract class RuleOperationListComponent<T extends RuleOperationModel<?,
     protected void refreshOperationsList() {
         operationsListModel.clear();
         operationsListModel.addAll(getRuleOperations());
+        setModelChangedListeners();
     }
 
     private Component getActionBar() {
