@@ -17,7 +17,6 @@ import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,23 +25,23 @@ public class ContextMenuHandler implements ContextMenuItemsProvider {
     @Override
     public List<Component> provideMenuItems(ContextMenuEvent event) {
         JMenuItem menuItem = new JMenuItem("Create Rule");
-        menuItem.addActionListener(actionEvent -> onCreateHttpRule(event.selectedRequestResponses(), actionEvent));
+        menuItem.addActionListener(actionEvent -> onCreateHttpRule(event.selectedRequestResponses()));
         return event.selectedRequestResponses().size() == 1 ? Collections.singletonList(menuItem) : Collections.emptyList();
     }
 
     @Override
     public List<Component> provideMenuItems(WebSocketContextMenuEvent event) {
         JMenuItem menuItem = new JMenuItem("Create Rule");
-        menuItem.addActionListener(actionEvent -> onCreateWebSocketRule(event.selectedWebSocketMessages(), actionEvent));
+        menuItem.addActionListener(actionEvent -> onCreateWebSocketRule(event.selectedWebSocketMessages()));
         return event.selectedWebSocketMessages().size() == 1 ? Collections.singletonList(menuItem) : Collections.emptyList();
     }
 
-    private void onCreateWebSocketRule(List<WebSocketMessage> selectedItems, ActionEvent actionEvent) {
+    private void onCreateWebSocketRule(List<WebSocketMessage> selectedItems) {
         WebSocketMessage webSocketMessage = selectedItems.getFirst();
         openWhenWizard(new WhenWizardModel(new WebSocketEventInfo<>(Workspaces.get().getDefault(), WebSocketMessageType.Binary, WebSocketDataDirection.from(webSocketMessage.direction()), null, null, webSocketMessage.upgradeRequest(), webSocketMessage.annotations(), webSocketMessage.payload().getBytes(), new Variables())));
     }
 
-    private void onCreateHttpRule(List<HttpRequestResponse> selectedItems, ActionEvent actionEvent) {
+    private void onCreateHttpRule(List<HttpRequestResponse> selectedItems) {
         HttpRequestResponse httpRequestResponse = selectedItems.getFirst();
         openWhenWizard(new WhenWizardModel(new HttpEventInfo(Workspaces.get().getDefault(), null, null, null, httpRequestResponse.request(), httpRequestResponse.response(), httpRequestResponse.annotations(), new Variables())));
     }

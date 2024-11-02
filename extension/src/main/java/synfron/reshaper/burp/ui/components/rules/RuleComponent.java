@@ -86,7 +86,7 @@ public class RuleComponent extends JPanel implements IFormComponent {
     private void onAddMatchAndReplace(ActionEvent actionEvent) {
         try {
             MatchAndReplaceWizardModel model = new MatchAndReplaceWizardModel(this.model);
-            ModalPrompter.open(model, ignored -> MatchAndReplaceWizardOptionPane.showDialog(model), true);
+            ModalPrompter.open(model, ignored -> MatchAndReplaceWizardOptionPane.showDialog(model, this), true);
         } catch (Exception e) {
             Log.get(workspace).withMessage("Failed to create rule from content menu").withException(e).logErr();
         }

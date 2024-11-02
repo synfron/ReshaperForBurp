@@ -48,11 +48,11 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
         }
     }
 
-    public static void showDialog(MatchAndReplaceWizardModel model) {
+    public static void showDialog(MatchAndReplaceWizardModel model, Component relativeComponent) {
         MatchAndReplaceWizardOptionPane optionPane = new MatchAndReplaceWizardOptionPane(model);
         JDialog dialog = optionPane.createDialog("Match & Replace");
         dialog.setResizable(true);
-
+        dialog.setLocationRelativeTo(relativeComponent);
         dialog.setModal(false);
         dialog.setVisible(true);
 

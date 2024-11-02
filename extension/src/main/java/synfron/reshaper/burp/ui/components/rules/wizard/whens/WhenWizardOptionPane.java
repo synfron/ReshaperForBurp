@@ -55,8 +55,35 @@ public class WhenWizardOptionPane extends JOptionPane implements IFormComponent 
         JDialog dialog = optionPane.createDialog("When");
         dialog.setResizable(true);
 
+        Point screenCenterLocation = getSceenCenterLocation();
+        if (screenCenterLocation != null) {
+            dialog.setLocation(
+                screenCenterLocation.x - dialog.getPreferredSize().width / 2,
+                screenCenterLocation.y - dialog.getPreferredSize().height / 2
+            );
+        }
         dialog.setModal(false);
         dialog.setVisible(true);
+    }
+
+    private static Point getSceenCenterLocation() {
+        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+        Point mouseLocation = pointerInfo.getLocation();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] screens = ge.getScreenDevices();
+
+        for (GraphicsDevice screen : screens) {
+            GraphicsConfiguration gc = screen.getDefaultConfiguration();
+            Rectangle bounds = gc.getBounds();
+            if (bounds.contains(mouseLocation)) {
+                Point location = bounds.getLocation();
+                return new Point(
+                        location.x + bounds.width / 2,
+                        location.y + bounds.height / 2
+                );
+            }
+        }
+        return null;
     }
 
     private void initComponent() {

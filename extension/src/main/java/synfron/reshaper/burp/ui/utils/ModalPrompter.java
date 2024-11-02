@@ -45,7 +45,7 @@ public class ModalPrompter<T extends IPrompterModel<T>> {
         }
     }
 
-    public static void createTextAreaDialog(String id, String title, String description, String text, Consumer<String> valueHandler) {
+    public static void createTextAreaDialog(String id, String title, String description, String text, Consumer<String> valueHandler, Component relativeComponent) {
         JPanel container = new JPanel(new BorderLayout());
 
         JScrollPane scrollPane = new JScrollPane();
@@ -60,6 +60,7 @@ public class ModalPrompter<T extends IPrompterModel<T>> {
 
         JOptionPane optionPane = new JOptionPane(container, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
         JDialog dialog = optionPane.createDialog(title);
+        dialog.setLocationRelativeTo(relativeComponent);
         dialog.setResizable(true);
         dialogMap.put(id, dialog);
 
