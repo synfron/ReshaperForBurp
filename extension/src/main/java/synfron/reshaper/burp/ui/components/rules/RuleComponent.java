@@ -8,8 +8,8 @@ import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.Log;
-import synfron.reshaper.burp.ui.components.IFormComponent;
-import synfron.reshaper.burp.ui.components.rules.wizard.matchreplace.MatchAndReplaceWizardOptionPane;
+import synfron.reshaper.burp.ui.components.rules.wizard.matchreplace.MatchAndReplaceWizardComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;
 import synfron.reshaper.burp.ui.models.rules.wizard.matchreplace.MatchAndReplaceWizardModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -86,7 +86,11 @@ public class RuleComponent extends JPanel implements IFormComponent {
     private void onAddMatchAndReplace(ActionEvent actionEvent) {
         try {
             MatchAndReplaceWizardModel model = new MatchAndReplaceWizardModel(this.model);
-            ModalPrompter.open(model, ignored -> MatchAndReplaceWizardOptionPane.showDialog(model, this), true);
+            ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+                "Match & Replace",
+                model,
+                new MatchAndReplaceWizardComponent(model)
+            ));
         } catch (Exception e) {
             Log.get(workspace).withMessage("Failed to create rule from content menu").withException(e).logErr();
         }

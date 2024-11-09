@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
 import lombok.Getter;
-import lombok.Setter;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
@@ -9,7 +8,6 @@ import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.ui.models.rules.thens.VariableCreatorRegistry;
 import synfron.reshaper.burp.ui.utils.IPrompterModel;
-import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import java.util.List;
 import java.util.Map;
@@ -28,12 +26,9 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
     @Getter
-    private boolean invalidated;
+    private boolean invalidated = true;
     @Getter
     private boolean dismissed;
-
-    @Setter @Getter
-    private ModalPrompter<VariableTagWizardModel> modalPrompter;
 
     public VariableTagWizardModel() {
         List<VariableSourceEntry> variableSourceEntries = VariableCreatorRegistry.getVariableEntries();
@@ -62,12 +57,6 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
         return this;
     }
 
-    @Override
-    public void resetPropertyChangedListener() {
-        propertyChangedEvent.clearListeners();
-        tagModelMap.values().forEach(item -> item.getPropertyChangedEvent().clearListeners());
-    }
-
     private void propertyChanged(String name, Object value) {
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, name, value));
     }
@@ -77,6 +66,7 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
         this.tagModel = tagModelMap.get(variableSource);
         propertyChanged("variableSource", variableSource);
         propertyChanged("tagModel", tagModel);
+        propertyChanged("fieldsSize", true);
     }
 
     public void setInvalidated(boolean invalidated) {
@@ -90,6 +80,23 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
     }
 
     @Override
+    public boolean submit() {
+        if (validate().isEmpty()) {
+            setInvalidated(false);
+            setDismissed(true);
+            return true;
+        }
+        setInvalidated(true);
+        return false;
+    }
+
+    @Override
+    public boolean cancel() {
+        setDismissed(true);
+        return true;
+    }
+
+    @Override
     public String getTag() {
         return validate().isEmpty() ?
                 tagModel.getTag() :
@@ -99,7 +106,6 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
     @Override
     public List<String> validate() {
         List<String> errors = tagModel.validate();
-        setInvalidated(!errors.isEmpty());
         return errors;
     }
 }

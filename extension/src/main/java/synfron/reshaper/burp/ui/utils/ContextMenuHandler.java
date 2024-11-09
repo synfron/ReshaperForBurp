@@ -12,7 +12,7 @@ import synfron.reshaper.burp.core.messages.WebSocketMessageType;
 import synfron.reshaper.burp.core.settings.Workspaces;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.vars.Variables;
-import synfron.reshaper.burp.ui.components.rules.wizard.whens.WhenWizardOptionPane;
+import synfron.reshaper.burp.ui.components.rules.wizard.whens.WhenWizardComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
 
 import javax.swing.*;
@@ -48,7 +48,11 @@ public class ContextMenuHandler implements ContextMenuItemsProvider {
 
     private void openWhenWizard(WhenWizardModel model) {
         try {
-            ModalPrompter.open(model, ignored -> WhenWizardOptionPane.showDialog(model), true);
+            ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+                "When",
+                model,
+                new WhenWizardComponent(model)
+            ));
         } catch (Exception e) {
             Log.get(Workspaces.get().getDefault()).withMessage("Failed to create rule from content menu").withException(e).logErr();
         }

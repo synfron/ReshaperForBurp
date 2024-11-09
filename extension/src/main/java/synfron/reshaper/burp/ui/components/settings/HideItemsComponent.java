@@ -4,50 +4,27 @@ import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.WorkspaceTab;
 import synfron.reshaper.burp.core.rules.thens.ThenType;
 import synfron.reshaper.burp.core.rules.whens.WhenType;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.models.settings.HideItemsModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.stream.Stream;
 
-public class HideItemsOptionPane extends JOptionPane implements IFormComponent {
+public class HideItemsComponent extends JPanel implements IFormComponent {
 
-    private final JPanel container;
     private final HideItemsModel model;
 
-    private HideItemsOptionPane(HideItemsModel model) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
-        container = (JPanel)message;
+    public HideItemsComponent(HideItemsModel model) {
         this.model = model;
-        addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
         initComponent();
     }
 
-    private void onPropertyChanged(PropertyChangeEvent event) {
-        if (Objects.equals(getValue(), "OK")) {
-            model.save();
-        } else {
-            model.setDismissed(true);
-        }
-    }
-
-    public static void showDialog(HideItemsModel model) {
-        HideItemsOptionPane optionPane = new HideItemsOptionPane(model);
-        JDialog dialog = optionPane.createDialog("Hide Features");
-        dialog.setResizable(true);
-
-        dialog.setModal(false);
-        dialog.setVisible(true);
-    }
-
     private void initComponent() {
-        container.add(getBody(), BorderLayout.CENTER);
+        add(getBody(), BorderLayout.CENTER);
     }
     
     private <T> void addCheckboxes(JPanel container, int maxRowLength, java.util.List<T> items, HashSet<T> checkedItems, ActionListener checkboxChangedListener) {

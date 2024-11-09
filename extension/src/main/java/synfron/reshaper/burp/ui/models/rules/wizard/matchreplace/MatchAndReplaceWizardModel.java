@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.matchreplace;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
@@ -19,7 +18,6 @@ import synfron.reshaper.burp.ui.models.rules.whens.WhenEventDirectionModel;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenMatchesTextModel;
 import synfron.reshaper.burp.ui.models.rules.whens.WhenModel;
 import synfron.reshaper.burp.ui.utils.IPrompterModel;
-import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,7 @@ public class MatchAndReplaceWizardModel implements IPrompterModel<MatchAndReplac
 
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
 
-    private boolean invalidated;
+    private boolean invalidated = true;
     private boolean dismissed;
     private MatchType matchType = MatchType.Url;
     private String identifier = "";
@@ -39,16 +37,8 @@ public class MatchAndReplaceWizardModel implements IPrompterModel<MatchAndReplac
     private String replace = "";
     private boolean regexMatch;
 
-
-    @Setter
-    private ModalPrompter<MatchAndReplaceWizardModel> modalPrompter;
-
     public MatchAndReplaceWizardModel(RuleModel rule) {
         this.rule = rule;
-    }
-
-    public void resetPropertyChangedListener() {
-        propertyChangedEvent.clearListeners();
     }
 
     private void propertyChanged(String name, Object value) {
@@ -58,6 +48,7 @@ public class MatchAndReplaceWizardModel implements IPrompterModel<MatchAndReplac
     public void setMatchType(MatchType matchType) {
         this.matchType = matchType;
         propertyChanged("matchType", matchType);
+        propertyChanged("fieldsSize", true);
     }
 
     public void setIdentifier(String identifier) {
@@ -101,6 +92,21 @@ public class MatchAndReplaceWizardModel implements IPrompterModel<MatchAndReplac
     public void setDismissed(boolean dismissed) {
         this.dismissed = dismissed;
         propertyChanged("dismissed", dismissed);
+    }
+
+    @Override
+    public boolean submit() {
+        if (updateRule()) {
+            setDismissed(true);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean cancel() {
+        setDismissed(true);
+        return true;
     }
 
     public boolean updateRule() {

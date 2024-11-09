@@ -1,7 +1,9 @@
 package synfron.reshaper.burp.ui.components.rules.wizard.matchreplace;
 
 import net.miginfocom.swing.MigLayout;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.core.events.IEventListener;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.components.shared.PromptTextField;
 import synfron.reshaper.burp.ui.models.rules.wizard.matchreplace.MatchAndReplaceWizardModel;
 import synfron.reshaper.burp.ui.models.rules.wizard.matchreplace.MatchType;
@@ -11,14 +13,9 @@ import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.beans.PropertyChangeEvent;
-import java.util.Objects;
 
-public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFormComponent {
+public class MatchAndReplaceWizardComponent extends JPanel implements IFormComponent {
 
-    private final JPanel container;
     private final MatchAndReplaceWizardModel model;
     private JComboBox<MatchType> matchType;
     private JTextField identifier;
@@ -26,46 +23,26 @@ public class MatchAndReplaceWizardOptionPane extends JOptionPane implements IFor
     private JLabel matchLabel;
     private PromptTextField replace;
     private JCheckBox regexMatch;
+    private final IEventListener<PropertyChangedArgs> modelChangedListener = this::onModelChanged;
 
-    private MatchAndReplaceWizardOptionPane(MatchAndReplaceWizardModel model) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
-        container = (JPanel)message;
+    public MatchAndReplaceWizardComponent(MatchAndReplaceWizardModel model) {
         this.model = model;
-        addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
         initComponent();
+
+        model.withListener(modelChangedListener);
     }
 
-    private void onPropertyChanged(PropertyChangeEvent event) {
-        if (Objects.equals(getValue(), "OK")) {
-            if (!model.updateRule()) {
-                JOptionPane.showMessageDialog(this,
-                        String.join("\n", model.validate()),
-                        "Validation Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            model.setDismissed(true);
+    private void onModelChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getName().equals("invalidated") && model.isInvalidated()) {
+            JOptionPane.showMessageDialog(this,
+                    String.join("\n", model.validate()),
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public static void showDialog(MatchAndReplaceWizardModel model, Component relativeComponent) {
-        MatchAndReplaceWizardOptionPane optionPane = new MatchAndReplaceWizardOptionPane(model);
-        JDialog dialog = optionPane.createDialog("Match & Replace");
-        dialog.setResizable(true);
-        dialog.setLocationRelativeTo(relativeComponent);
-        dialog.setModal(false);
-        dialog.setVisible(true);
-
-        optionPane.container.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                dialog.pack();
-            }
-        });
-    }
-
     private void initComponent() {
-        container.add(getBody(), BorderLayout.CENTER);
+        add(getBody(), BorderLayout.CENTER);
     }
 
     private Component getBody() {

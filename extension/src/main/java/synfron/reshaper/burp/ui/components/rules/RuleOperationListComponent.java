@@ -7,7 +7,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.CollectionUtils;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.RuleModel;

@@ -3,9 +3,14 @@ package synfron.reshaper.burp.ui.utils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.MessageArgs;
 import synfron.reshaper.burp.core.events.MessageEvent;
+import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.message.PromptRequestMessage;
 import synfron.reshaper.burp.core.events.message.PromptResponseMessage;
+import synfron.reshaper.burp.ui.components.TextPromptComponent;
 import synfron.reshaper.burp.ui.components.workspaces.WorkspaceComponent;
+import synfron.reshaper.burp.ui.models.TextPromptModel;
+
+import java.awt.*;
 
 public class UiMessageHandler {
     private final MessageEvent messageEvent;
@@ -22,16 +27,29 @@ public class UiMessageHandler {
         switch (messageArgs.getData().getMessageType()) {
             case PromptRequest -> {
                 PromptRequestMessage message = (PromptRequestMessage)messageArgs.getData();
-                ModalPrompter.createTextAreaDialog(
-                        message.getMessageId(),
-                        "Prompt",
-                        message.getDescription(),
-                        message.getText(),
-                        value -> messageEvent.invoke(new MessageArgs(this, new PromptResponseMessage(
+
+                TextPromptModel model = new TextPromptModel(message.getDescription(), message.getText());
+
+                IEventListener<PropertyChangedArgs> modelPropertyChanged = args -> {
+                    if (args.getName().equals("dismissed") && model.isDismissed() && !model.isInvalidated()) {
+                        messageEvent.invoke(new MessageArgs(this, new PromptResponseMessage(
                                 message.getMessageId(),
-                                value
-                        ))),
-                        workspaceComponent
+                                model.getText()
+                        )));
+                    }
+                };
+                model.withListener(modelPropertyChanged);
+
+                ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+                        "Prompt",
+                        model,
+                        new TextPromptComponent(model)
+                )
+                        .resizable(true)
+                        .size(new Dimension(360, 200))
+                        .locationRelativeTo(workspaceComponent)
+                        .registrationId(message.getMessageId())
+                        .dataBag(modelPropertyChanged)
                 );
             }
             case PromptCancel -> ModalPrompter.dismiss(messageArgs.getData().getMessageId());

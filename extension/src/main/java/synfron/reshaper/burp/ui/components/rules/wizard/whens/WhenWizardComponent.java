@@ -3,7 +3,7 @@ package synfron.reshaper.burp.ui.components.rules.wizard.whens;
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardItemModel;
 import synfron.reshaper.burp.ui.models.rules.wizard.whens.WhenWizardModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
@@ -12,83 +12,44 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.util.Objects;
 
-public class WhenWizardOptionPane extends JOptionPane implements IFormComponent {
+public class WhenWizardComponent extends JPanel implements IFormComponent {
 
-    private final JPanel container;
     private final WhenWizardModel model;
     private JTextField ruleName;
     private JPanel whenWizardItemsComponent;
     private final IEventListener<PropertyChangedArgs> whenWizardItemChangedListener = this::onWhenWizardItemChanged;
     private JScrollPane bodyScrollPane;
+    private final IEventListener<PropertyChangedArgs> modelChangedListener = this::onModelChanged;
 
-    private WhenWizardOptionPane(WhenWizardModel model) {
-        super(new JPanel(new BorderLayout()), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{ "OK", "Cancel" }, "OK");
-        container = (JPanel)message;
+    public WhenWizardComponent(WhenWizardModel model) {
         this.model = model;
-        addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, this::onPropertyChanged);
         initComponent();
+
+        model.withListener(modelChangedListener);
     }
 
-    private void onPropertyChanged(PropertyChangeEvent event) {
-        if (Objects.equals(getValue(), "OK")) {
-            if (model.createRule()) {
-                JOptionPane.showMessageDialog(this,
-                        "Rule created. Navigate to Reshaper to finish the rule.",
-                        "Rule Created",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
+    private void onModelChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getName().equals("invalidated")) {
+            if (model.isInvalidated()) {
                 JOptionPane.showMessageDialog(this,
                         String.join("\n", model.validate()),
                         "Validation Error",
                         JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            model.setDismissed(true);
-        }
-    }
-
-    public static void showDialog(WhenWizardModel model) {
-        WhenWizardOptionPane optionPane = new WhenWizardOptionPane(model);
-        JDialog dialog = optionPane.createDialog("When");
-        dialog.setResizable(true);
-
-        Point screenCenterLocation = getSceenCenterLocation();
-        if (screenCenterLocation != null) {
-            dialog.setLocation(
-                screenCenterLocation.x - dialog.getPreferredSize().width / 2,
-                screenCenterLocation.y - dialog.getPreferredSize().height / 2
-            );
-        }
-        dialog.setModal(false);
-        dialog.setVisible(true);
-    }
-
-    private static Point getSceenCenterLocation() {
-        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
-        Point mouseLocation = pointerInfo.getLocation();
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] screens = ge.getScreenDevices();
-
-        for (GraphicsDevice screen : screens) {
-            GraphicsConfiguration gc = screen.getDefaultConfiguration();
-            Rectangle bounds = gc.getBounds();
-            if (bounds.contains(mouseLocation)) {
-                Point location = bounds.getLocation();
-                return new Point(
-                        location.x + bounds.width / 2,
-                        location.y + bounds.height / 2
-                );
+        } else if (propertyChangedArgs.getName().equals("dismissed")) {
+            if (!model.isInvalidated()) {
+                JOptionPane.showMessageDialog(this,
+                        "Rule created. Navigate to Reshaper to finish the rule.",
+                        "Rule Created",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         }
-        return null;
     }
 
     private void initComponent() {
         bodyScrollPane = getBodyScrollPane();
-        container.add(bodyScrollPane, BorderLayout.CENTER);
+        add(bodyScrollPane, BorderLayout.CENTER);
     }
 
     private JScrollPane getBodyScrollPane() {
