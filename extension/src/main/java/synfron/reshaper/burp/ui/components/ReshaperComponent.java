@@ -12,7 +12,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.settings.Workspaces;
 import synfron.reshaper.burp.ui.components.workspaces.WorkspaceComponent;
-import synfron.reshaper.burp.ui.components.workspaces.WorkspaceNameOptionPane;
+import synfron.reshaper.burp.ui.components.workspaces.WorkspaceNameComponent;
 import synfron.reshaper.burp.ui.models.workspaces.WorkspaceNameModel;
 import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
@@ -224,8 +224,20 @@ public class ReshaperComponent extends JPanel {
 
         private void onAddNewWorkspace(ActionEvent actionEvent) {
             Workspace workspace = new Workspace(UUID.randomUUID(), "");
-            WorkspaceNameModel model = new WorkspaceNameModel(workspace, ignored -> Workspaces.get().add(workspace));
-            ModalPrompter.open(model, ignored -> WorkspaceNameOptionPane.showDialog(model), true);
+            WorkspaceNameModel model = new WorkspaceNameModel(workspace);
+
+            IEventListener<PropertyChangedArgs> modelPropertyChanged = args -> {
+              if (args.getName().equals("dismissed") && model.isDismissed() && !model.isInvalidated()) {
+                  Workspaces.get().add(workspace);
+              }
+            };
+            model.withListener(modelPropertyChanged);
+
+            ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+                    "Workspace",
+                    model,
+                    new WorkspaceNameComponent(model)
+            ).dataBag(modelPropertyChanged));
         }
 
         private void onDefaultWorkspace(ActionEvent actionEvent) {
@@ -234,7 +246,12 @@ public class ReshaperComponent extends JPanel {
 
         private void onRename(ActionEvent actionEvent) {
             WorkspaceNameModel model = new WorkspaceNameModel(workspace);
-            ModalPrompter.open(model, ignored -> WorkspaceNameOptionPane.showDialog(model), true);
+
+            ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+                    "Workspace",
+                    model,
+                    new WorkspaceNameComponent(model)
+            ));
         }
 
         private void onDelete(ActionEvent actionEvent) {

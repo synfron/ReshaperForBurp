@@ -32,7 +32,7 @@ public class WorkspaceComponent extends JPanel implements IWorkspaceHost {
 
     public WorkspaceComponent(Workspace workspace) {
         this.workspace = workspace;
-        this.uiMessageHandler = new UiMessageHandler(workspace.getMessageEvent());
+        this.uiMessageHandler = new UiMessageHandler(workspace.getMessageEvent(), this);
         initComponents();
     }
 

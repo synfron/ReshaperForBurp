@@ -16,7 +16,7 @@ import synfron.reshaper.burp.core.settings.*;
 import synfron.reshaper.burp.core.utils.Log;
 import synfron.reshaper.burp.core.utils.TextUtils;
 import synfron.reshaper.burp.core.vars.Variable;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
 import synfron.reshaper.burp.ui.models.settings.HideItemsModel;
 import synfron.reshaper.burp.ui.utils.ComponentVisibilityManager;
@@ -116,7 +116,11 @@ public class SettingsTabComponent extends JPanel implements IFormComponent, Hier
 
     private void onHideFeatures(ActionEvent actionEvent) {
         HideItemsModel model = new HideItemsModel(generalSettings);
-        ModalPrompter.open(model, ignored -> HideItemsOptionPane.showDialog(model), true);
+        ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+                "Hide Features",
+                model,
+                new HideItemsComponent(model)
+        ));
     }
 
     private Component RightGeneralOptions() {

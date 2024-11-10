@@ -13,7 +13,7 @@ import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.utils.BurpUtils;
 import synfron.reshaper.burp.core.vars.VariableValueType;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.models.vars.VariableModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 import synfron.reshaper.burp.ui.utils.DocumentListenerFinder;

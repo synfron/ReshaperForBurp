@@ -1,7 +1,7 @@
 package synfron.reshaper.burp.ui.components.rules.thens.transform;
 
 import net.miginfocom.swing.MigLayout;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.transform.TransformerModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 

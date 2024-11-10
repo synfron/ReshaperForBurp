@@ -1,4 +1,4 @@
-package synfron.reshaper.burp.ui.components;
+package synfron.reshaper.burp.ui.components.shared;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
@@ -6,9 +6,7 @@ import synfron.reshaper.burp.core.ProtocolType;
 import synfron.reshaper.burp.core.settings.Workspace;
 import synfron.reshaper.burp.core.vars.VariableTag;
 import synfron.reshaper.burp.ui.components.rules.RuleOperationComponent;
-import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardOptionPane;
-import synfron.reshaper.burp.ui.components.shared.PromptTextField;
-import synfron.reshaper.burp.ui.components.shared.TextPrompt;
+import synfron.reshaper.burp.ui.components.rules.wizard.vars.VariableTagWizardComponent;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceDependentComponent;
 import synfron.reshaper.burp.ui.components.workspaces.IWorkspaceHost;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.VariableTagWizardModel;
@@ -21,6 +19,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.function.Consumer;
 
 import static java.awt.Component.LEFT_ALIGNMENT;
 import static java.awt.Component.TOP_ALIGNMENT;
@@ -169,24 +168,32 @@ public interface IFormComponent extends IWorkspaceDependentComponent, IWorkspace
 
     private static <T extends JTextComponent> void insertVariableTag(T textComponent, ProtocolType protocolType) {
         VariableTagWizardModel model = new VariableTagWizardModel();
-        do {
-            ModalPrompter.open(model, ignored -> VariableTagWizardOptionPane.showDialog(model, protocolType), false);
-        } while (model.isInvalidated() && !model.isDismissed());
-        if (!model.isDismissed()) {
-            String tag = model.getTag();
-            if (StringUtils.isNotEmpty(tag)) {
-                int cursorPosition = textComponent.getCaretPosition();
-                int insertPosition = VariableTag.getVariableTagPositions(textComponent.getText()).stream()
-                        .noneMatch(position -> position.getLeft() < cursorPosition && cursorPosition < position.getRight()) ?
-                        cursorPosition :
-                        textComponent.getText().length();
-                StringBuilder text = new StringBuilder(textComponent.getText());
-                text.insert(insertPosition, tag);
-                textComponent.setText(text.toString());
-                textComponent.setCaretPosition(insertPosition + tag.length());
+
+        Consumer<Boolean> fieldUpdater = valid -> {
+            if (valid) {
+                String tag = model.getTag();
+                if (StringUtils.isNotEmpty(tag)) {
+                    int cursorPosition = textComponent.getCaretPosition();
+                    int insertPosition = VariableTag.getVariableTagPositions(textComponent.getText()).stream()
+                            .noneMatch(position -> position.getLeft() < cursorPosition && cursorPosition < position.getRight()) ?
+                            cursorPosition :
+                            textComponent.getText().length();
+                    StringBuilder text = new StringBuilder(textComponent.getText());
+                    text.insert(insertPosition, tag);
+                    textComponent.setText(text.toString());
+                    textComponent.setCaretPosition(insertPosition + tag.length());
+                }
             }
-        }
-        textComponent.requestFocus();
+            textComponent.requestFocus();
+        };
+
+        ModalPrompter.open(model, new ModalPrompter.FormPromptArgs<>(
+            "Variable Tag",
+            model,
+            new VariableTagWizardComponent(model, protocolType, fieldUpdater)
+        ).resizable(true));
+
+
     }
 
     static <T extends JTextComponent> T addUndo(T textComponent) {
