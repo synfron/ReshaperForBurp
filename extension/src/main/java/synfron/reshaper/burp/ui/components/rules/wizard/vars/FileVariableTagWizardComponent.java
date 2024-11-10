@@ -2,7 +2,7 @@ package synfron.reshaper.burp.ui.components.rules.wizard.vars;
 
 import net.miginfocom.swing.MigLayout;
 import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.wizard.vars.FileVariableTagWizardModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 

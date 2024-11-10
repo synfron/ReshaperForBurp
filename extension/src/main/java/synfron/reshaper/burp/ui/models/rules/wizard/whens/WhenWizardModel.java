@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.ui.models.rules.wizard.whens;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
@@ -14,7 +13,6 @@ import synfron.reshaper.burp.core.rules.RulesRegistry;
 import synfron.reshaper.burp.core.rules.whens.*;
 import synfron.reshaper.burp.core.vars.VariableString;
 import synfron.reshaper.burp.ui.utils.IPrompterModel;
-import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -27,19 +25,11 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     private final List<WhenWizardItemModel> items = new ArrayList<>();
 
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    private boolean invalidated;
+    private boolean invalidated = true;
     private boolean dismissed;
-
-    @Setter
-    private ModalPrompter<WhenWizardModel> modalPrompter;
 
     public WhenWizardModel(EventInfo eventInfo) {
         this.eventInfo = eventInfo;
-    }
-
-    public void resetPropertyChangedListener() {
-        propertyChangedEvent.clearListeners();
-        items.forEach(item -> item.getPropertyChangedEvent().clearListeners());
     }
 
     public void setRuleName(String ruleName) {
@@ -105,6 +95,21 @@ public class WhenWizardModel implements IPrompterModel<WhenWizardModel> {
     public void setDismissed(boolean dismissed) {
         this.dismissed = dismissed;
         propertyChanged("dismissed", dismissed);
+    }
+
+    @Override
+    public boolean submit() {
+        if (createRule()) {
+            setDismissed(true);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean cancel() {
+        setDismissed(true);
+        return true;
     }
 
     public boolean createRule() {

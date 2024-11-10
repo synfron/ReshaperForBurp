@@ -1,14 +1,12 @@
 package synfron.reshaper.burp.ui.models.settings;
 
 import lombok.Getter;
-import lombok.Setter;
 import synfron.reshaper.burp.core.WorkspaceTab;
 import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.settings.GeneralSettings;
 import synfron.reshaper.burp.ui.utils.IPrompterModel;
-import synfron.reshaper.burp.ui.utils.ModalPrompter;
 
 import java.util.HashSet;
 
@@ -19,8 +17,6 @@ public class HideItemsModel implements IPrompterModel<HideItemsModel> {
     private final HashSet<String> hiddenWhenTypes = new HashSet<>();
     private final HashSet<WorkspaceTab> hiddenTabs = new HashSet<>();
     private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-    @Setter
-    private ModalPrompter<HideItemsModel> modalPrompter;
     private boolean dismissed;
 
     public HideItemsModel(GeneralSettings generalSettings) {
@@ -78,11 +74,6 @@ public class HideItemsModel implements IPrompterModel<HideItemsModel> {
     }
 
     @Override
-    public void resetPropertyChangedListener() {
-        propertyChangedEvent.clearListeners();
-    }
-
-    @Override
     public boolean isInvalidated() {
         return false;
     }
@@ -90,5 +81,20 @@ public class HideItemsModel implements IPrompterModel<HideItemsModel> {
     public void setDismissed(boolean dismissed) {
         this.dismissed = dismissed;
         propertyChanged("dismissed", dismissed);
+    }
+
+    @Override
+    public boolean submit() {
+        if (save()) {
+            setDismissed(true);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean cancel() {
+        setDismissed(true);
+        return true;
     }
 }

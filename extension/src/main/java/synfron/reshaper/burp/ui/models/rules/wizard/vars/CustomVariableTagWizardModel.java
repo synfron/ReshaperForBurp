@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.vars.VariableSource;
@@ -29,6 +30,11 @@ public abstract class CustomVariableTagWizardModel implements IVariableTagWizard
 
     protected void propertyChanged(String name, Object value) {
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, name, value));
+    }
+
+    public CustomVariableTagWizardModel withListener(IEventListener<PropertyChangedArgs> listener) {
+        getPropertyChangedEvent().add(listener);
+        return this;
     }
 
     public void setVariableName(String variableName) {

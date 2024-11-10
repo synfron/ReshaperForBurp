@@ -1,12 +1,10 @@
 package synfron.reshaper.burp.ui.components.rules.thens.generate;
 
 import synfron.reshaper.burp.core.messages.Encoder;
-import synfron.reshaper.burp.ui.components.IFormComponent;
 import synfron.reshaper.burp.ui.models.rules.thens.generate.IBytesGeneratorModel;
 import synfron.reshaper.burp.ui.utils.DocumentActionListener;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class BytesGeneratorComponent extends GeneratorComponent<IBytesGeneratorModel> {

@@ -55,7 +55,7 @@ import burp.api.montoya.websocket.WebSocketCreatedHandler;
 import burp.api.montoya.websocket.WebSockets;
 import burp.api.montoya.websocket.extension.ExtensionWebSocketCreation;
 import synfron.reshaper.burp.core.utils.BurpUtils;
-import synfron.reshaper.burp.ui.components.IFormComponent;
+import synfron.reshaper.burp.ui.components.shared.IFormComponent;
 
 import javax.swing.*;
 import java.awt.*;
