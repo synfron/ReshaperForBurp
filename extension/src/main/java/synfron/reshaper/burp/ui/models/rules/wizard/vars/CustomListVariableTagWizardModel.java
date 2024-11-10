@@ -2,7 +2,6 @@ package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.vars.GetListItemPlacement;
 import synfron.reshaper.burp.core.vars.VariableSourceEntry;
 import synfron.reshaper.burp.core.vars.VariableString;
@@ -18,9 +17,6 @@ public abstract class CustomListVariableTagWizardModel extends CustomVariableTag
     @Getter
     private String index;
 
-    @Getter
-    private final PropertyChangedEvent propertyChangedEvent = new PropertyChangedEvent();
-
     public CustomListVariableTagWizardModel(List<VariableSourceEntry> entries) {
         super(entries);
     }
@@ -28,6 +24,7 @@ public abstract class CustomListVariableTagWizardModel extends CustomVariableTag
     public void setItemPlacement(GetListItemPlacement itemPlacement) {
         this.itemPlacement = itemPlacement;
         propertyChanged("itemPlacement", itemPlacement);
+        propertyChanged("fieldsSize", true);
     }
 
     public void setIndex(String index) {

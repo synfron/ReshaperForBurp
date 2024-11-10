@@ -2,6 +2,7 @@ package synfron.reshaper.burp.ui.models.rules.wizard.vars;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import synfron.reshaper.burp.core.events.IEventListener;
 import synfron.reshaper.burp.core.events.PropertyChangedArgs;
 import synfron.reshaper.burp.core.events.PropertyChangedEvent;
 import synfron.reshaper.burp.core.messages.MessageValue;
@@ -30,6 +31,11 @@ public class MacroVariableTagWizardModel implements IVariableTagWizardModel {
         propertyChangedEvent.invoke(new PropertyChangedArgs(this, name, value));
     }
 
+    public MacroVariableTagWizardModel withListener(IEventListener<PropertyChangedArgs> listener) {
+        getPropertyChangedEvent().add(listener);
+        return this;
+    }
+
     public void setMacroItemNumber(String macroItemNumber) {
         this.macroItemNumber = macroItemNumber;
         propertyChanged("macroItemNumber", macroItemNumber);
@@ -38,6 +44,7 @@ public class MacroVariableTagWizardModel implements IVariableTagWizardModel {
     public void setMessageValue(MessageValue messageValue) {
         this.messageValue = messageValue;
         propertyChanged("messageValue", messageValue);
+        propertyChanged("fieldsSize", true);
     }
 
     public void setIdentifier(String identifier) {

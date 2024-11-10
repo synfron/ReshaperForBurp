@@ -29,6 +29,7 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
     private boolean invalidated = true;
     @Getter
     private boolean dismissed;
+    private final IEventListener<PropertyChangedArgs> modelPropertyChangedListener = this::onChildModelPropertyChanged;
 
     public VariableTagWizardModel() {
         List<VariableSourceEntry> variableSourceEntries = VariableCreatorRegistry.getVariableEntries();
@@ -37,19 +38,25 @@ public class VariableTagWizardModel implements IVariableTagWizardModel, IPrompte
                 Map.entry(VariableSource.Event, new EventVariableTagWizardModel(variableSourceEntries)),
                 Map.entry(VariableSource.Global, new GlobalVariableTagWizardModel(variableSourceEntries)),
                 Map.entry(VariableSource.Session, new SessionVariableTagWizardModel(variableSourceEntries)),
-                Map.entry(VariableSource.EventList, new EventListVariableTagWizardModel(variableSourceEntries)),
-                Map.entry(VariableSource.GlobalList, new GlobalListVariableTagWizardModel(variableSourceEntries)),
-                Map.entry(VariableSource.SessionList, new SessionListVariableTagWizardModel(variableSourceEntries)),
-                Map.entry(VariableSource.Message, new MessageVariableTagWizardModel()),
-                Map.entry(VariableSource.Macro, new MacroVariableTagWizardModel()),
+                Map.entry(VariableSource.EventList, new EventListVariableTagWizardModel(variableSourceEntries).withListener(modelPropertyChangedListener)),
+                Map.entry(VariableSource.GlobalList, new GlobalListVariableTagWizardModel(variableSourceEntries).withListener(modelPropertyChangedListener)),
+                Map.entry(VariableSource.SessionList, new SessionListVariableTagWizardModel(variableSourceEntries).withListener(modelPropertyChangedListener)),
+                Map.entry(VariableSource.Message, new MessageVariableTagWizardModel().withListener(modelPropertyChangedListener)),
+                Map.entry(VariableSource.Macro, new MacroVariableTagWizardModel().withListener(modelPropertyChangedListener)),
                 Map.entry(VariableSource.File, new FileVariableTagWizardModel()),
                 Map.entry(VariableSource.Special, new SpecialVariableTagWizardModel()),
                 Map.entry(VariableSource.CookieJar, new CookieJarVariableTagWizardModel()),
                 Map.entry(VariableSource.Annotation, new AnnotationVariableTagWizardModel()),
-                Map.entry(VariableSource.Generator, new GeneratorVariableTagWizardModel())
+                Map.entry(VariableSource.Generator, new GeneratorVariableTagWizardModel().withListener(modelPropertyChangedListener))
         );
 
         tagModel = tagModelMap.get(variableSource);
+    }
+
+    private void onChildModelPropertyChanged(PropertyChangedArgs propertyChangedArgs) {
+        if (propertyChangedArgs.getName().equals("fieldsSize")) {
+            propertyChanged(propertyChangedArgs.getName(), propertyChangedArgs.getValue());
+        }
     }
 
     public VariableTagWizardModel withListener(IEventListener<PropertyChangedArgs> listener) {
