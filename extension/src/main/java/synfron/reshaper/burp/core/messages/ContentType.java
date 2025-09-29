@@ -54,6 +54,9 @@ public class ContentType {
     }
 
     public static ContentType get(burp.api.montoya.http.message.ContentType contentType) {
+        if (contentType == null) {
+            return Unknown;
+        }
         return switch (contentType) {
             case AMF -> Amf;
             case XML -> Xml;
