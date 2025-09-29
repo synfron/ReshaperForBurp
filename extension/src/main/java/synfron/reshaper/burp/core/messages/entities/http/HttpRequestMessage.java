@@ -50,6 +50,7 @@ public class HttpRequestMessage extends HttpEntity {
 
     private void initialize() {
         if (!initialized) {
+            initialized = true;
             if (httpRequest == null) {
                 sanityCheckHeaders();
                 httpRequest = HttpRequest.httpRequest(ByteArray.byteArray(request));
@@ -57,7 +58,6 @@ public class HttpRequestMessage extends HttpEntity {
             if (!encoder.isUseDefault() && encoder.isAutoSet() && !getContentType().isTextBased()) {
                 encoder.setEncoding("default", true);
             }
-            initialized = true;
         }
     }
 
