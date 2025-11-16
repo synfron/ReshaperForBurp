@@ -30,7 +30,7 @@ public enum BurpTool {
             case INTRUDER -> Intruder;
             case REPEATER -> Repeater;
             case EXTENSIONS -> Extender;
-            case SUITE, SEQUENCER, RECORDED_LOGIN_REPLAYER, COMPARER, DECODER, LOGGER, ORGANIZER -> null;
+            case SUITE, SEQUENCER, RECORDED_LOGIN_REPLAYER, COMPARER, DECODER, LOGGER, ORGANIZER, BURP_AI -> null;
         };
     }
 

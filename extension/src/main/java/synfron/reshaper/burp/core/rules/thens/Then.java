@@ -1,7 +1,6 @@
 package synfron.reshaper.burp.core.rules.thens;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.rules.IRuleOperation;
 import synfron.reshaper.burp.core.rules.RuleResponse;
@@ -11,7 +10,6 @@ import synfron.reshaper.burp.core.vars.Variable;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.Variables;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ThenBreak.class),
         @JsonSubTypes.Type(value = ThenDelay.class),
@@ -29,12 +27,15 @@ import synfron.reshaper.burp.core.vars.Variables;
         @JsonSubTypes.Type(value = ThenSetEventDirection.class),
         @JsonSubTypes.Type(value = ThenSetValue.class),
         @JsonSubTypes.Type(value = ThenSetVariable.class),
+        @JsonSubTypes.Type(value = ThenSetEncoding.class),
         @JsonSubTypes.Type(value = ThenRunProcess.class),
         @JsonSubTypes.Type(value = ThenBuildHttpMessage.class),
         @JsonSubTypes.Type(value = ThenParseHttpMessage.class),
         @JsonSubTypes.Type(value = ThenSendRequest.class),
         @JsonSubTypes.Type(value = ThenSendMessage.class),
         @JsonSubTypes.Type(value = ThenRepeat.class),
+        @JsonSubTypes.Type(value = ThenPrompt.class),
+        @JsonSubTypes.Type(value = ThenSaveFile.class),
         @JsonSubTypes.Type(value = ThenReadFile.class),
         @JsonSubTypes.Type(value = ThenExtract.class),
         @JsonSubTypes.Type(value = ThenGenerate.class),

@@ -1,5 +1,6 @@
 package synfron.reshaper.burp.core.rules;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import synfron.reshaper.burp.core.messages.EventInfo;
 import synfron.reshaper.burp.core.vars.VariableSource;
 import synfron.reshaper.burp.core.vars.Variables;
@@ -26,5 +27,10 @@ public interface IRuleOperation<T extends IRuleOperation<T>> extends Serializabl
             case Session, SessionList -> eventInfo.getSessionVariables();
             default -> null;
         };
+    }
+
+    @JsonProperty(value = "@class", index = 0)
+    default String getJid() {
+        return "." + getClass().getSimpleName();
     }
 }
